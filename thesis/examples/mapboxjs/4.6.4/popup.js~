@@ -1,6 +1,0 @@
-function popup() {
-    popup = L.popup();
-    popup.setLatLng(L.latLng(0,0));
-    popup.setContent('Hello world!');
-    popup.openOn(map);
-}

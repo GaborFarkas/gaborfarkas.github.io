@@ -1,5 +1,0 @@
-function modify() {
-    control = new OpenLayers.Control.ModifyFeature(map.layers[0]);
-    map.addControl(control);
-    control.activate();
-}

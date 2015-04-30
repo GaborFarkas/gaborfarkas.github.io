@@ -1,6 +1,0 @@
-function attributes() {
-    map.featureLayer.eachLayer(function(layer) {
-        var attribute = layer.feature.properties;
-    });
-    return attribute;
-}

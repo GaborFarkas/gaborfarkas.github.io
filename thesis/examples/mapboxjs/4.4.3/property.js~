@@ -1,5 +1,0 @@
-function property() {
-    evt = function() {/*Do something*/};
-    map.on('changeproperty', evt);
-    map.fireEvent('changeproperty');
-}

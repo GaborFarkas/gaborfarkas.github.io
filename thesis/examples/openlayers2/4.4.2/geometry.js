@@ -1,3 +1,0 @@
-function geometry() {
-    lyr.geometryType = 'OpenLayers.Geometry.Point';
-}

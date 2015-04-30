@@ -1,4 +1,0 @@
-function resolution(){
-    lyr.maxZoom = 18;
-    lyr.minZoom = 0;
-}

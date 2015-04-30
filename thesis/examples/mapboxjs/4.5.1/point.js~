@@ -1,3 +1,0 @@
-function point() {
-    L.circleMarker(L.latLng(0,0)).addTo(lyr);
-}

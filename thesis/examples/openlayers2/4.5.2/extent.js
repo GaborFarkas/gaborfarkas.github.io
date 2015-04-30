@@ -1,3 +1,0 @@
-function extent() {
-    lyr.getDataExtent();
-}
