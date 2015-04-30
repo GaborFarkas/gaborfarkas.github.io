@@ -31,9 +31,12 @@
         <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/mapbox.js"></script>
         <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/plugins/draw/draw.js"></script>
         <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/plugins/measure/measure.js"></script>
+        <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/plugins/leaflet.geometryutil.js"></script>
+        <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/plugins/leaflet.snap.js"></script>
         <script type="text/javascript" src="../../../js/benchmark.js"></script>
         <script type="text/javascript" src="draw.js"></script>
         <script type="text/javascript" src="modify.js"></script>
+        <script type="text/javascript" src="snap.js"></script>
         <script type="text/javascript" src="measure.js"></script>
     
     </head>
@@ -122,6 +125,13 @@
                             <button onclick="benchmark('Modify', modify)" disabled>Benchmark</button>
                             <span>Source: 
                                 <a href="modify.js">modify.js</a>
+                            </span>
+                            <br>
+                            <p>Snap</p>
+                            <button onclick="load(snap)">Load</button>
+                            <button onclick="benchmark('Snap', snap)" disabled>Benchmark</button>
+                            <span>Source: 
+                                <a href="snap.js">snap.js</a>
                             </span>
                             <br>
                             <p>Measure</p>
