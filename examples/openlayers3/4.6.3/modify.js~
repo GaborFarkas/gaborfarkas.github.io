@@ -1,0 +1,6 @@
+function modify() {
+    control = new ol.interaction.Modify({
+        features: map.getLayers().getArray()[1].getSource().getFeatures()
+    });
+    map.addInteraction(control);
+}

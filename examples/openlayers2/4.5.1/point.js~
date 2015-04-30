@@ -1,0 +1,7 @@
+function point() {
+    lyr.addFeatures([
+        new OpenLayers.Feature.Vector({
+            geometry: new OpenLayers.Geometry.Point(0,0)
+        })
+    ]);
+}

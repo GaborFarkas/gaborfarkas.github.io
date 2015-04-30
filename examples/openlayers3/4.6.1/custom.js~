@@ -1,0 +1,22 @@
+function custom() {
+    proj4.defs('EPSG:23700', '+proj=somerc +lat_0=47.14439372222222 +lon_0=19.04857177777778 +k_0=0.99993 +x_0=650000 +y_0=200000 +ellps=GRS67 +towgs84=52.17,-71.82,-14.9,0,0,0,0 +units=m +no_defs');
+    map = new ol.Map({
+        target: 'map',
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: 'http://www.agt.bme.hu/cgi-bin/mapserv?map=/var/www/html/gis/wms/eu_dem/eu_dem.map',
+                    params: {
+                        layers: 'mo_eov_szines',
+                        format: 'image/png'
+                    }
+                })
+            })
+        ],
+        view: new ol.View({
+            projection: 'EPSG:23700',
+            center: [676800,190500],
+            zoom: 7
+        })
+    });
+}

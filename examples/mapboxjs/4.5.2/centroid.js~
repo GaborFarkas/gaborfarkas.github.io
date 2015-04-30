@@ -1,0 +1,3 @@
+function centroid () {
+    return feat.getBounds.getCenter();
+}

@@ -1,0 +1,42 @@
+function attribute() {
+    function filterFeature(feature, property, value, operator) {
+        var bool;
+        if (feature.getProperties()[property]) {
+            bool = false;
+            var featProp = feature.getProperties()[property];
+            switch (operator) {
+                case "==":
+                    bool = (featProp == value);
+                    break;
+                case "<":
+                    bool = (featProp < value);
+                    break;
+                case "<=":
+                    bool = (featProp <= value);
+                    break;
+                case ">":
+                    bool = (featProp > value);
+                    break;
+                case ">=":
+                    bool = (featProp >= value);
+                    break;
+                case "!=":
+                    bool = (featProp != value);
+                    break;
+                default:
+                    throw new TypeError("Operator not supported. Valid operators: '==', '!=' '<', '<=', '>', '>='.");
+                    break;
+            }
+        }
+        return bool;
+    }
+    
+    var featArray = [];
+    var features = lyr.getSource().getFeatures();
+    for (var i=0;i<features.length;i++) {
+        if (filterFeature(features[i], 'name', 'Hungary', '==')) {
+            featArray.push(features[i]);
+        }
+    }
+    return featArray;
+}

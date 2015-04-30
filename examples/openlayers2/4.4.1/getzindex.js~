@@ -1,0 +1,3 @@
+function getzindex() {
+    map.removeLayer(map.layers[0]);
+}

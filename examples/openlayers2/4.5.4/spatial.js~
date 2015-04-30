@@ -1,0 +1,15 @@
+function spatial() {
+    var featArray = [];
+    var layer = map.layers[0];
+    var filter = new OpenLayers.Filter.Spatial({
+        type: 'INTERSECTS',
+        value: poly
+    });
+    for (var i=0;i<layer.features.length;i++) {
+        var feat = layer.features[i];
+        if (filter.evaluate(feat)) {
+            featArray.push(feat);
+        }
+    }
+    return featArray;
+}

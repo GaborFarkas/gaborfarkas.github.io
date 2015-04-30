@@ -1,0 +1,15 @@
+function attrtable() {
+    lyr.getSource().headers = {name: 'string', population: 'int', area: 'float'};
+    function getAttributeTable(source) {
+        var attrTable = {};
+        var features = source.getFeatures();
+        for (var i=0;i<features.length;i++) {
+            var tableEntry = attrTable[features[i].getId() || i] = {};
+            for (var j in source.headers) {
+                tableEntry[j] = features[i].getProperties()[j] ? features[i].getProperties()[j] : null;
+            }
+        }
+        return attrTable;
+    }
+    getAttributeTable(lyr.getSource());
+}

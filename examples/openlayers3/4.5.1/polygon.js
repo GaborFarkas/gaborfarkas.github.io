@@ -1,0 +1,5 @@
+function polygon() {
+    lyr.getSource().addFeature(new ol.Feature({
+        geometry: new ol.geom.Polygon([[[0,0], [0,-0.5], [2,-0.4], [0,0]]])
+    }));
+}

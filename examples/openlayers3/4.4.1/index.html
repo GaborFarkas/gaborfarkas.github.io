@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Gabor Farkas" >
+
+    <title>4.4.1. General operations (OpenLayers 3)</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="../../../css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="../../../css/simple-sidebar.css" rel="stylesheet">
+    <link href="../../../css/mapstyle.css" rel="stylesheet">
+    
+    <link href="../../../js/OpenLayers-3.4.0/ol.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script type="text/javascript" src="../../../js/OpenLayers-3.4.0/ol.js"></script>
+    <script type="text/javascript" src="../../../js/benchmark.js"></script>
+    <script type="text/javascript" src="addlyr.js"></script>
+    <script type="text/javascript" src="rmlyr.js"></script>
+    <script type="text/javascript" src="getzindex.js"></script>
+    <script type="text/javascript" src="setzindex.js"></script>
+
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="../../index.html">
+                        Examples
+                    </a>
+                </li>
+                <li>
+                        <a href="../../openlayers2/index.html">OpenLayers 2</a>
+                    </li>
+                    <li>
+                        <a href="../index.html">OpenLayers 3</a>
+                        <ul>
+                            <li>
+                                <a href="../dataio.html">4.3. Data I/O</a>
+                            </li>
+                            <li>
+                                <a href="../lyrman.html">4.4. Layer management</a>
+                                <ul>
+                                    <li>
+                                        General operations
+                                    </li>
+                                    <li>
+                                        <a href="../4.4.2/index.html">Layer attributes</a>
+                                    </li>
+                                    <li>
+                                        <a href="../4.4.3/index.html">Layer events</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="../featman.html">4.5. Feature management</a>
+                            </li>
+                            <li>
+                                <a href="../mapcont.html">4.6. Map controls</a>
+                            </li>
+                            <li>
+                                <a href="../comcont.html">4.7. Composing controls</a>
+                            </li>
+                            <li>
+                                <a href="../broken/index.html">Broken functions</a>
+                            </li>
+                        </ul>
+                    </li>
+                <li>
+                    <a href="../../mapboxjs/index.html">Mapbox JS</a>
+                </li>
+                <li>
+                    <a href="../../../licenses.html">Legal terms</a>
+                </li>
+                <li>
+                    <a href="../../../contact.html">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1>General layer operations in OpenLayers 3</h1>
+                            <div id="map"></div>
+                            <div id="info"></div>
+                            <br>
+                            <p>Add layer</p>
+                            <button onclick="benchmark('Add layer', addlyr)">Benchmark</button>
+                            <span>Source: 
+                                <a href="addlyr.js">addlyr.js</a>
+                            </span>
+                            <br>
+                            <p>Remove layer</p>
+                            <button onclick="benchmark('Remove layer', rmlyr)">Benchmark</button>
+                            <span>Source: 
+                                <a href="rmlyr.js">rmlyr.js</a>
+                            </span>
+                            <br>
+                            <p>Get Z index</p>
+                            <button onclick="benchmark('Get Z index', getzindex)">Benchmark</button>
+                            <span>Source: 
+                                <a href="getzindex.js">getzindex.js</a>
+                            </span>
+                            <br>
+                            <p>Set Z index</p>
+                            <button onclick="benchmark('Set Z index', setzindex)">Benchmark</button>
+                            <span>Source: 
+                                <a href="setzindex.js">setzindex.js</a>
+                            </span>
+                            <br><br>
+                            <div id="benchmarkOutput" class="benchmarkOutput"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+    <script type="text/javascript" >
+        var map = new ol.Map({target: 'map'}),
+        lyr;
+        
+        function benchmark(testname, testfunc) {
+            var bench = new Benchmark(testname,
+                function() {
+                    testfunc();
+                }, {
+                    'setup': function() {
+                        lyr = new ol.layer.Vector({});
+                        map.addLayer(lyr);
+                    },
+                    'teardown': function() {
+                        var lyrs = map.getLayers().getArray();
+                        lyrs.splice(0, lyrs.length);
+                    },
+                    'onComplete': function(evt) {
+                        var output = document.getElementById('benchmarkOutput');
+                        if (output.innerHTML !== '') {
+                            output.insertAdjacentHTML('beforeend', '<br>');
+                        }
+                        output.insertAdjacentHTML('beforeend', String(evt.target));
+                        output.scrollTop = output.scrollHeight - output.getBoundingClientRect().height;
+                    }
+                }
+            );
+            bench.run();
+        }
+        
+        function load(loadfunc) {
+            loadfunc();
+        }
+    </script>
+
+
+</body>
+
+</html>

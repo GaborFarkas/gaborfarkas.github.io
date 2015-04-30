@@ -1,0 +1,3 @@
+function getzindex() {
+    map.addLayer(new ol.layer.Vector({}));
+}

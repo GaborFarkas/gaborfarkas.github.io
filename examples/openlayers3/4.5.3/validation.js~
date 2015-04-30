@@ -1,0 +1,16 @@
+function validation() {
+    lyr.headers = {name: 'string', population: 'int', area: 'float'};
+    function setValidatedAttributes(layer, feature, attributesObject) {
+        for (var i in attributesObject) {
+            if (layer.headers[i] === 'int') {
+                attributesObject[i] = parseInt(attributesObject[i], 10);
+            } else if (layer.headers[i] === 'float') {
+                attributesObject[i] = parseFloat(attributesObject[i]);
+            } else {
+                attributesObject[i] = String(attributesObject[i]);
+            }
+            feature.setProperties(attributesObject);
+        }
+    }
+    setValidatedAttributes(lyr, feat, {population: 500000});
+}

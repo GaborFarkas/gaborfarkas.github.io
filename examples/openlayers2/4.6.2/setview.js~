@@ -1,0 +1,3 @@
+function setview() {
+    map.setCenter([[2026000,5793000],13);
+}

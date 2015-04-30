@@ -1,0 +1,18 @@
+function attrtable() {
+    map.featureLayer.headers = {name: 'string', population: 'int', area: 'float'};
+    function getAttributeTable(layer) {
+        var attrTable = {};
+        layer.eachLayer(function(featureLayer) {
+            var tableEntry = attrTable[featureLayer._leaflet_id] = {};
+            for (var i in layer.headers) {
+                if (featureLayer.feature.properties[i]) {
+                    tableEntry[i] = featureLayer.feature.properties[i];
+                } else {
+                    tableEntry[i] = null;
+                }
+            }
+        });
+        return attrTable;
+    }
+    getAttributeTable(map.featureLayer);
+}

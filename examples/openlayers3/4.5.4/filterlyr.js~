@@ -1,0 +1,52 @@
+function filterlyr() {
+    function filterFeature(feature, property, value, operator) {
+        var bool = false;
+        if (feature.getProperties()[property]) {
+            bool = false;
+            var featProp = feature.getProperties()[property];
+            switch (operator) {
+                case "==":
+                    bool = (featProp == value);
+                    break;
+                case "<":
+                    bool = (featProp < value);
+                    break;
+                case "<=":
+                    bool = (featProp <= value);
+                    break;
+                case ">":
+                    bool = (featProp > value);
+                    break;
+                case ">=":
+                    bool = (featProp >= value);
+                    break;
+                case "!=":
+                    bool = (featProp != value);
+                    break;
+                default:
+                    throw new TypeError("Operator not supported. Valid operators: '==', '!=' '<', '<=', '>', '>='.");
+                    break;
+            }
+        }
+        return bool;
+    }
+    
+    function filterLayer(layer, property, value, operator) {
+        var featArr = [];
+        var source = layer.getSource();
+        source.filtered = source.filtered || [];
+        if (source.filtered.length > 0) {
+            source.addFeatures(source.filtered);
+            source.filtered = [];
+        }
+        var features = source.getFeatures();
+        for (var i=0;i<features.length;i++) {
+            if (! filterFeature(features[i], property, value, operator)) {
+                featArr.push(features[i]);
+                source.removeFeature(features[i]);
+            }
+        }
+        source.filtered = featArr;
+    }
+    filterLayer(lyr, 'name', 'Hungary', '==');
+}
