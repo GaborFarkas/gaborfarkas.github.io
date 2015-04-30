@@ -149,7 +149,8 @@
         <!-- /#wrapper -->
         <script type="text/javascript" >
             var lyr = new ol.layer.Vector({
-                source: new ol.source.GeoJSON({
+                source: new ol.source.Vector({
+                    format: new ol.format.GeoJSON(),
                     url: '../../../res/vector/countries_trunk.geojson'
                 })
             });

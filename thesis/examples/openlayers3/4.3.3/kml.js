@@ -3,7 +3,8 @@ function kml() {
         target: 'map',
         layers: [
             new ol.layer.Vector({
-                source: new ol.source.KML({
+                source: new ol.source.Vector({
+                    format: new ol.format.KML(),
                     url: '../../../res/vector/ne_roads.kml'
                 })
             })

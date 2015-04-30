@@ -3,7 +3,8 @@ function gpx() {
         target: 'map',
         layers: [
             new ol.layer.Vector({
-                source: new ol.source.GPX({
+                source: new ol.source.Vector({,
+                    format: new ol.format.GPX,
                     url: '../../../res/vector/ne_roads.gpx'
                 })
             })
