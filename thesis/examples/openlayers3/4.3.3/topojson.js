@@ -3,7 +3,7 @@ function topojson() {
         target: 'map',
         layers: [
             new ol.layer.Vector({
-                source: new ol.source.Vector({
+                source: new ol.source.StaticVector({
                     format: new ol.format.TopoJSON(),
                     url: '../../../res/vector/ne_roads.topojson'
                 })

@@ -3,7 +3,7 @@ function geojson() {
         target: 'map',
         layers: [
             new ol.layer.Vector({
-                source: new ol.source.Vector({
+                source: new ol.source.StaticVector({
                     format: new ol.format.GeoJSON(),
                     url: '../../../res/vector/ne_roads.geojson'
                 })
