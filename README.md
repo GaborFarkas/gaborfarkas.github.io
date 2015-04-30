@@ -1,1 +1,0 @@
-# gaborfarkas.github.io
