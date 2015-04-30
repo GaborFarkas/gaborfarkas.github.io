@@ -1,0 +1,16 @@
+function validation() {
+    map.featureLayer.headers = {name: 'string', population: 'int', area: 'float'};
+    function setValidatedAttributes(layer, feature, attributesObject) {
+        for (var i in attributesObject) {
+            if (layer.headers[i] === 'int') {
+                var attribute = parseInt(attributesObject[i], 10);
+            } else if (layer.headers[i] === 'float') {
+                var attribute = parseFloat(attributesObject[i]);
+            } else {
+                var attribute = String(attributesObject[i]);
+            }
+            feature.properties[i] = attribute;
+        }
+    }
+    setValidatedAttributes(map.featureLayer, feat, {population: 500000});
+}

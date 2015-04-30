@@ -1,0 +1,3 @@
+function intersect() {
+    lyr.features[0].geometry.intersects(new OpenLayers.Geometry.Point(0,0));
+}

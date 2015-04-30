@@ -1,0 +1,14 @@
+function toolbar() {
+    var customControl = L.Control.extend({
+        options: {
+            position: 'topright'
+        },
+        onAdd: function (map) {
+            var container = L.DomUtil.create('div', 'leaflet-bar');
+            container.title = 'My custom control';
+            L.DomUtil.create('a', 'custom-control', container);
+            return container;
+        }
+    });
+    control = new customControl().addTo(map);
+}
