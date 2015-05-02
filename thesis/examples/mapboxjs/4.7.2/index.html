@@ -8,7 +8,7 @@
         <meta name="description" content="">
         <meta name="author" content="Gabor Farkas" >
     
-        <title>Broken functions (Mapbox JS)</title>
+        <title>4.7.2. Thematic layers (Mapbox JS)</title>
     
         <!-- Bootstrap Core CSS -->
         <link href="../../../css/bootstrap.min.css" rel="stylesheet">
@@ -26,10 +26,12 @@
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
         
-        <script type="text/javascript" src="https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js"></script>
+        <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/mapbox.js"></script>
+        <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/plugins/heat.js"></script>
         <script type="text/javascript" src="../../../js/benchmark.js"></script>
-        <script type="text/javascript" src="utfgrid.js"></script>
-        <script type="text/javascript" src="marker.js"></script>
+        <script type="text/javascript" src="chloropleth.js"></script>
+        <script type="text/javascript" src="proportional.js"></script>
+        <script type="text/javascript" src="heatmap.js"></script>
     
     </head>
     
@@ -66,9 +68,20 @@
                         </li>
                         <li>
                             <a href="../comcont.html">4.7. Composing controls</a>
+                            <ul>
+                                <li>
+                                    <a href="../4.7.1/index.html">Vector styles</a>
+                                </li>
+                                <li>
+                                    Thematic layers
+                                </li>
+                                <li>
+                                    <a href="../4.7.3/index.html">Cartographic elements</a>
+                                </li>
+                            </ul>
                         </li>
                         <li>
-                            Broken functions
+                            <a href="../broken/index.html">Broken functions</a>
                         </li>
                         </ul>
                     </li>
@@ -87,20 +100,29 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-lg-12">
-                            <h1>Broken functions in Mapbox JS</h1>
+                            <h1>Thematic layers in Mapbox JS</h1>
                             <div id="map"></div>
                             <div id="info"></div>
                             <br>
-                            <p>UTFGrid</p>
-                            <button onclick="load(utfgrid)">Load</button>
+                            <p>Chloropleth</p>
+                            <button onclick="load(chloropleth)">Load</button>
+                            <button onclick="benchmark('Chloropleth', chloropleth)" disabled>Benchmark</button>
                             <span>Source: 
-                                <a href="utfgrid.js">utfgrid.js</a>
+                                <a href="chloropleth.js">chloropleth.js</a>
                             </span>
                             <br>
-                            <p>Markers via loadURL</p>
-                            <button onclick="load(marker)">Load</button>
+                            <p>Proportional</p>
+                            <button onclick="load(proportional)">Load</button>
+                            <button onclick="benchmark('Proportional', proportional)" disabled>Benchmark</button>
                             <span>Source: 
-                                <a href="marker.js">marker.js</a>
+                                <a href="proportional.js">proportional.js</a>
+                            </span>
+                            <br>
+                            <p>Heatmap</p>
+                            <button onclick="load(heatmap)">Load</button>
+                            <button onclick="benchmark('Heatmap', heatmap)" disabled>Benchmark</button>
+                            <span>Source: 
+                                <a href="heatmap.js">heatmap.js</a>
                             </span>
                             <br><br>
                             <div id="benchmarkOutput" class="benchmarkOutput"></div>
@@ -118,7 +140,8 @@
             function benchmark(testname, testfunc) {
                 var bench = new Benchmark(testname,
                     function() {
-                        load(testfunc);
+                        map.remove();
+                        testfunc();
                     }, {
                         'onComplete': function(evt) {
                             var output = document.getElementById('benchmarkOutput');
@@ -130,7 +153,7 @@
                         }
                     }
                 );
-                bench.run({'async': true});
+                bench.run();
             }
             
             function load(loadfunc) {

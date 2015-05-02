@@ -8,7 +8,7 @@
         <meta name="description" content="">
         <meta name="author" content="Gabor Farkas" >
     
-        <title>Broken functions (Mapbox JS)</title>
+        <title>4.7.3. Cartographic elements (Mapbox JS)</title>
     
         <!-- Bootstrap Core CSS -->
         <link href="../../../css/bootstrap.min.css" rel="stylesheet">
@@ -18,6 +18,7 @@
         <link href="../../../css/mapstyle.css" rel="stylesheet">
         
         <link href="../../../js/mapboxjs-2.1.6/mapbox.css" rel="stylesheet">
+        <link href="../../../js/mapboxjs-2.1.6/plugins/minimap/minimap.css" rel="stylesheet">
     
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -26,10 +27,15 @@
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
         
-        <script type="text/javascript" src="https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js"></script>
+        <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/mapbox.js"></script>
+        <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/plugins/graticule.js"></script>
+        <script type="text/javascript" src="../../../js/mapboxjs-2.1.6/plugins/minimap/minimap.js"></script>
         <script type="text/javascript" src="../../../js/benchmark.js"></script>
-        <script type="text/javascript" src="utfgrid.js"></script>
-        <script type="text/javascript" src="marker.js"></script>
+        <script type="text/javascript" src="legend.js"></script>
+        <script type="text/javascript" src="scaleline.js"></script>
+        <script type="text/javascript" src="narrow.js"></script>
+        <script type="text/javascript" src="graticule.js"></script>
+        <script type="text/javascript" src="overview.js"></script>
     
     </head>
     
@@ -66,9 +72,20 @@
                         </li>
                         <li>
                             <a href="../comcont.html">4.7. Composing controls</a>
+                            <ul>
+                                <li>
+                                    <a href="../4.7.1/index.html">Vector styles</a>
+                                </li>
+                                <li>
+                                    <a href="../4.7.2/index.html">Thematic layers</a>
+                                </li>
+                                <li>
+                                    Cartographic elements
+                                </li>
+                            </ul>
                         </li>
                         <li>
-                            Broken functions
+                            <a href="../broken/index.html">Broken functions</a>
                         </li>
                         </ul>
                     </li>
@@ -87,20 +104,43 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-lg-12">
-                            <h1>Broken functions in Mapbox JS</h1>
+                            <h1>Cartographic elements in Mapbox JS</h1>
                             <div id="map"></div>
                             <div id="info"></div>
                             <br>
-                            <p>UTFGrid</p>
-                            <button onclick="load(utfgrid)">Load</button>
+                            <p>Legend</p>
+                            <button onclick="load(legend)">Load</button>
+                            <button onclick="benchmark('Legend', legend)">Benchmark</button>
                             <span>Source: 
-                                <a href="utfgrid.js">utfgrid.js</a>
+                                <a href="legend.js">legend.js</a>
                             </span>
                             <br>
-                            <p>Markers via loadURL</p>
-                            <button onclick="load(marker)">Load</button>
+                            <p>Scale line</p>
+                            <button onclick="load(scaleline)">Load</button>
+                            <button onclick="benchmark('Scale line', scaleline)">Benchmark</button>
                             <span>Source: 
-                                <a href="marker.js">marker.js</a>
+                                <a href="scaleline.js">scaleline.js</a>
+                            </span>
+                            <br>
+                            <p>North arrow</p>
+                            <button onclick="load(narrow)">Load</button>
+                            <button onclick="benchmark('North arrow', narrow)">Benchmark</button>
+                            <span>Source: 
+                                <a href="narrow.js">narrow.js</a>
+                            </span>
+                            <br>
+                            <p>Graticule</p>
+                            <button onclick="load(graticule)">Load</button>
+                            <button onclick="benchmark('Graticule', graticule)">Benchmark</button>
+                            <span>Source: 
+                                <a href="graticule.js">graticule.js</a>
+                            </span>
+                            <br>
+                            <p>Overview map</p>
+                            <button onclick="load(overview)">Load</button>
+                            <button onclick="benchmark('Overview map', overview)">Benchmark</button>
+                            <span>Source: 
+                                <a href="overview.js">overview.js</a>
                             </span>
                             <br><br>
                             <div id="benchmarkOutput" class="benchmarkOutput"></div>
@@ -118,7 +158,8 @@
             function benchmark(testname, testfunc) {
                 var bench = new Benchmark(testname,
                     function() {
-                        load(testfunc);
+                        map.remove();
+                        testfunc();
                     }, {
                         'onComplete': function(evt) {
                             var output = document.getElementById('benchmarkOutput');
@@ -130,7 +171,7 @@
                         }
                     }
                 );
-                bench.run({'async': true});
+                bench.run();
             }
             
             function load(loadfunc) {
