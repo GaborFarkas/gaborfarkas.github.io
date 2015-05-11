@@ -19,9 +19,9 @@ function heatmap() {
             geojsonLyr.eachLayer(function(layer) {
                 var latlng = layer.getLatLng();
                 var prop = layer.feature.properties;
-                latLngs.push([latlng.lat, latlng.lng, prop['POP_MAX']/max]);
+                latLngs.push([latlng.lat, latlng.lng, prop['POP_MAX']]);
             });
-            L.heatLayer(latLngs).addTo(map);
+            L.heatLayer(latLngs, {max: max}).addTo(map);
         }
     }
     ajax.send();

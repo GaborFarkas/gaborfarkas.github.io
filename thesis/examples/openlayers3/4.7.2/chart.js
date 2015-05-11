@@ -12,10 +12,10 @@ function chart() {
             var canvasWidth = size[0], canvasHeight = size[1];
             canvas.setAttribute('width', canvasWidth);
             canvas.setAttribute('height', canvasHeight);
-            var mapExtent = map.getView().calculateExtent(map.getSize())
+            var mapExtent = map.getView().calculateExtent(map.getSize());
             var canvasOrigin = map.getPixelFromCoordinate([extent[0], extent[3]]);
             var mapOrigin = map.getPixelFromCoordinate([mapExtent[0], mapExtent[3]]);
-            var delta = [mapOrigin[0]-canvasOrigin[0], mapOrigin[1]-canvasOrigin[1]]
+            var delta = [mapOrigin[0]-canvasOrigin[0], mapOrigin[1]-canvasOrigin[1]];
             var radius = self.options.radius || 15;
             var totalArc = -90*Math.PI / 180;
             var percentToRadians = 1 / 100*360 *Math.PI / 180;

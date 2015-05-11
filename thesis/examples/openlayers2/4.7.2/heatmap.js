@@ -21,8 +21,8 @@ function heatmap() {
             var prop = map.layers[0].features[i].attributes;
             max = max < prop['POP_MAX'] ? prop['POP_MAX'] : max;
         }
-        map.layers[0].styleMap = new OpenLayers.StyleMap({
-            default: new OpenLayers.Style({
+        map.layers[0].styleMap = new OpenLayers.StyleMap(
+            new OpenLayers.Style({
                 pointRadius: 20,
                 weight: '${weight}'
                 }, {
@@ -32,7 +32,7 @@ function heatmap() {
                     }
                 }
             })
-        });
+        );
     }});
     map.layers[0].refresh();
 }
