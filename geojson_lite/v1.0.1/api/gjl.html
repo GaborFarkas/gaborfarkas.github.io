@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>GeoJSON Lite API Docs: Namespace: gjl</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: gjl</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>gjl</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gjl.js.html">gjl.js</a>, <a href="gjl.js.html#line2">line 2</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="gjl.Object.html">Object</a></dt>
+            <dd></dd>
+        
+            <dt><a href="gjl.RandomFactory.html">RandomFactory</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+     
+
+    
+        <h3 class="subsection-title">Namespaces</h3>
+
+        <dl>
+            <dt><a href="gjl.feat.html">feat</a></dt>
+            <dd></dd>
+        
+            <dt><a href="gjl.geom.html">geom</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".validateGeoJSON"><span class="type-signature">(static) </span>validateGeoJSON<span class="signature">(geojson, detailed<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Validates a GeoJSON object according to the <a href="http://geojson.org/geojson-spec.html">GeoJSON Format Specification</a>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>geojson</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">GeoJSON object</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>detailed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">A boolean value indicating the request for additional details about the nature of the error, if there are any. Note, that this will throw only the first error found.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gjl.js.html">gjl.js</a>, <a href="gjl.js.html#line22">line 22</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        The first error found in the object, if <code>detailed</code> is <code>true</code>.
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The result of the validity check, if <code>detailed</code> is <code>false</code>.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">GeoJSON Lite</a></h2><h3>Classes</h3><ul><li><a href="gjl.feat.Feature.html">Feature</a></li><li><a href="gjl.feat.FeatureCollection.html">FeatureCollection</a></li><li><a href="gjl.geom.Geometry.html">Geometry</a></li><li><a href="gjl.geom.GeometryCollection.html">GeometryCollection</a></li><li><a href="gjl.geom.LineString.html">LineString</a></li><li><a href="gjl.geom.MultiLineString.html">MultiLineString</a></li><li><a href="gjl.geom.MultiPoint.html">MultiPoint</a></li><li><a href="gjl.geom.MultiPolygon.html">MultiPolygon</a></li><li><a href="gjl.geom.Point.html">Point</a></li><li><a href="gjl.geom.Polygon.html">Polygon</a></li><li><a href="gjl.Object.html">Object</a></li><li><a href="gjl.RandomFactory.html">RandomFactory</a></li></ul><h3>Namespaces</h3><ul><li><a href="gjl.html">gjl</a></li><li><a href="gjl.feat.html">feat</a></li><li><a href="gjl.geom.html">geom</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Feb 03 2016 17:41:04 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
