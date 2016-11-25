@@ -1,6 +1,6 @@
 // OpenLayers 3. See https://openlayers.org/
 // License: https://raw.githubusercontent.com/openlayers/ol3/master/LICENSE.md
-// Version: v3.17.1-922-ge7b312d
+// Version: v3.17.1-1056-g2ea49db
 ;(function (root, factory) {
   if (typeof exports === "object") {
     module.exports = factory();
@@ -3050,7 +3050,7 @@ ol.AssertionError = function(code) {
 
   /**
    * Error code. The meaning of the code can be found on
-   * {@link https://openlayers.org/en/latest/errors.html} (replace `latest` with
+   * {@link https://openlayers.org/en/latest/doc/errors/} (replace `latest` with
    * the version found in the OpenLayers script's header comment if a version
    * other than the latest is used).
    * @type {number}
@@ -4820,8 +4820,12 @@ ol.string.compareVersions = function(v1, v2) {
     var n1 = parseInt(s1[i] || '0', 10);
     var n2 = parseInt(s2[i] || '0', 10);
 
-    if (n1 > n2) return 1;
-    if (n2 > n1) return -1;
+    if (n1 > n2) {
+      return 1;
+    }
+    if (n2 > n1) {
+      return -1;
+    }
   }
 
   return 0;
@@ -5147,6 +5151,69 @@ ol.coordinate.toStringHDMS = function(coordinate, opt_fractionDigits) {
  */
 ol.coordinate.toStringXY = function(coordinate, opt_fractionDigits) {
   return ol.coordinate.format(coordinate, '{x}, {y}', opt_fractionDigits);
+};
+
+goog.provide('ol.easing');
+
+
+/**
+ * Start slow and speed up.
+ * @param {number} t Input between 0 and 1.
+ * @return {number} Output between 0 and 1.
+ * @api
+ */
+ol.easing.easeIn = function(t) {
+  return Math.pow(t, 3);
+};
+
+
+/**
+ * Start fast and slow down.
+ * @param {number} t Input between 0 and 1.
+ * @return {number} Output between 0 and 1.
+ * @api
+ */
+ol.easing.easeOut = function(t) {
+  return 1 - ol.easing.easeIn(1 - t);
+};
+
+
+/**
+ * Start slow, speed up, and then slow down again.
+ * @param {number} t Input between 0 and 1.
+ * @return {number} Output between 0 and 1.
+ * @api
+ */
+ol.easing.inAndOut = function(t) {
+  return 3 * t * t - 2 * t * t * t;
+};
+
+
+/**
+ * Maintain a constant speed over time.
+ * @param {number} t Input between 0 and 1.
+ * @return {number} Output between 0 and 1.
+ * @api
+ */
+ol.easing.linear = function(t) {
+  return t;
+};
+
+
+/**
+ * Start slow, speed up, and at the very end slow down again.  This has the
+ * same general behavior as {@link ol.easing.inAndOut}, but the final slowdown
+ * is delayed.
+ * @param {number} t Input between 0 and 1.
+ * @return {number} Output between 0 and 1.
+ * @api
+ */
+ol.easing.upAndDown = function(t) {
+  if (t < 0.5) {
+    return ol.easing.inAndOut(2 * t);
+  } else {
+    return 1 - ol.easing.inAndOut(2 * (t - 0.5));
+  }
 };
 
 goog.provide('ol.extent');
@@ -9902,6 +9969,7 @@ goog.require('ol.RotationConstraint');
 goog.require('ol.array');
 goog.require('ol.asserts');
 goog.require('ol.coordinate');
+goog.require('ol.easing');
 goog.require('ol.extent');
 goog.require('ol.geom.Polygon');
 goog.require('ol.geom.SimpleGeometry');
@@ -9978,6 +10046,20 @@ ol.View = function(opt_options) {
   this.hints_ = [0, 0];
 
   /**
+   * @private
+   * @type {Array.<Array.<ol.ViewAnimation>>}
+   */
+  this.animations_ = [];
+
+  /**
+   * @private
+   * @type {number|undefined}
+   */
+  this.updateAnimationKey_;
+
+  this.updateAnimations_ = this.updateAnimations_.bind(this);
+
+  /**
    * @type {Object.<string, *>}
    */
   var properties = {};
@@ -10047,6 +10129,196 @@ ol.View = function(opt_options) {
 };
 ol.inherits(ol.View, ol.Object);
 
+
+/**
+ * Animate the view.  The view's center, zoom (or resolution), and rotation
+ * can be animated for smooth transitions between view states.  For example,
+ * to animate the view to a new zoom level:
+ *
+ *     view.animate({zoom: view.getZoom() + 1});
+ *
+ * By default, the animation lasts one second and uses in-and-out easing.  You
+ * can customize this behavior by including `duration` (in milliseconds) and
+ * `easing` options (see {@link ol.easing}).
+ *
+ * To chain together multiple animations, call the method with multiple
+ * animation objects.  For example, to first zoom and then pan:
+ *
+ *     view.animate({zoom: 10}, {center: [0, 0]});
+ *
+ * If you provide a function as the last argument to the animate method, it
+ * will get called at the end of an animation series.  The callback will be
+ * called with `true` if the animation series completed on its own or `false`
+ * if it was cancelled.
+ *
+ * Animations are cancelled by user interactions (e.g. dragging the map) or by
+ * calling `view.setCenter()`, `view.setResolution()`, or `view.setRotation()`
+ * (or another method that calls one of these).
+ *
+ * @param {...(olx.AnimationOptions|function(boolean))} var_args Animation
+ *     options.  Multiple animations can be run in series by passing multiple
+ *     options objects.  To run multiple animations in parallel, call the method
+ *     multiple times.  An optional callback can be provided as a final
+ *     argument.  The callback will be called with a boolean indicating whether
+ *     the animation completed without being cancelled.
+ * @api
+ */
+ol.View.prototype.animate = function(var_args) {
+  var start = Date.now();
+  var center = this.getCenter().slice();
+  var resolution = this.getResolution();
+  var rotation = this.getRotation();
+  var animationCount = arguments.length;
+  var callback;
+  if (animationCount > 1 && typeof arguments[animationCount - 1] === 'function') {
+    callback = arguments[animationCount - 1];
+    --animationCount;
+  }
+  var series = [];
+  for (var i = 0; i < animationCount; ++i) {
+    var options = /** @type olx.AnimationOptions */ (arguments[i]);
+
+    var animation = /** @type {ol.ViewAnimation} */ ({
+      start: start,
+      complete: false,
+      anchor: options.anchor,
+      duration: options.duration || 1000,
+      easing: options.easing || ol.easing.inAndOut
+    });
+
+    if (options.center) {
+      animation.sourceCenter = center;
+      animation.targetCenter = options.center;
+      center = animation.targetCenter;
+    }
+
+    if (options.zoom !== undefined) {
+      animation.sourceResolution = resolution;
+      animation.targetResolution = this.constrainResolution(
+            this.maxResolution_, options.zoom - this.minZoom_, 0);
+      resolution = animation.targetResolution;
+    } else if (options.resolution) {
+      animation.sourceResolution = this.getResolution();
+      animation.targetResolution = options.resolution;
+      resolution = animation.targetResolution;
+    }
+
+    if (options.rotation !== undefined) {
+      animation.sourceRotation = rotation;
+      animation.targetRotation = options.rotation;
+      rotation = animation.targetRotation;
+    }
+
+    animation.callback = callback;
+    start += animation.duration;
+    series.push(animation);
+  }
+  this.animations_.push(series);
+  this.setHint(ol.View.Hint.ANIMATING, 1);
+  this.updateAnimations_();
+};
+
+
+/**
+ * Determine if the view is being animated.
+ * @return {boolean} The view is being animated.
+ */
+ol.View.prototype.getAnimating = function() {
+  return this.getHints()[ol.View.Hint.ANIMATING] > 0;
+};
+
+
+/**
+ * Cancel any ongoing animations.
+ */
+ol.View.prototype.cancelAnimations = function() {
+  this.setHint(ol.View.Hint.ANIMATING, -this.getHints()[ol.View.Hint.ANIMATING]);
+  for (var i = 0, ii = this.animations_.length; i < ii; ++i) {
+    var series = this.animations_[i];
+    if (series[0].callback) {
+      series[0].callback(false);
+    }
+  }
+  this.animations_.length = 0;
+};
+
+/**
+ * Update all animations.
+ */
+ol.View.prototype.updateAnimations_ = function() {
+  if (this.updateAnimationKey_ !== undefined) {
+    cancelAnimationFrame(this.updateAnimationKey_);
+    this.updateAnimationKey_ = undefined;
+  }
+  if (!this.getAnimating()) {
+    return;
+  }
+  var now = Date.now();
+  var more = false;
+  for (var i = this.animations_.length - 1; i >= 0; --i) {
+    var series = this.animations_[i];
+    var seriesComplete = true;
+    for (var j = 0, jj = series.length; j < jj; ++j) {
+      var animation = series[j];
+      if (animation.complete) {
+        continue;
+      }
+      var elapsed = now - animation.start;
+      var fraction = elapsed / animation.duration;
+      if (fraction >= 1) {
+        animation.complete = true;
+        fraction = 1;
+      } else {
+        seriesComplete = false;
+      }
+      var progress = animation.easing(fraction);
+      if (animation.sourceCenter) {
+        var x0 = animation.sourceCenter[0];
+        var y0 = animation.sourceCenter[1];
+        var x1 = animation.targetCenter[0];
+        var y1 = animation.targetCenter[1];
+        var x = x0 + progress * (x1 - x0);
+        var y = y0 + progress * (y1 - y0);
+        this.set(ol.View.Property.CENTER, [x, y]);
+      }
+      if (animation.sourceResolution) {
+        var resolution = animation.sourceResolution +
+            progress * (animation.targetResolution - animation.sourceResolution);
+        if (animation.anchor) {
+          this.set(ol.View.Property.CENTER,
+              this.calculateCenterZoom(resolution, animation.anchor));
+        }
+        this.set(ol.View.Property.RESOLUTION, resolution);
+      }
+      if (animation.sourceRotation !== undefined) {
+        var rotation = animation.sourceRotation +
+            progress * (animation.targetRotation - animation.sourceRotation);
+        if (animation.anchor) {
+          this.set(ol.View.Property.CENTER,
+              this.calculateCenterRotate(rotation, animation.anchor));
+        }
+        this.set(ol.View.Property.ROTATION, rotation);
+      }
+      more = true;
+      if (!animation.complete) {
+        break;
+      }
+    }
+    if (seriesComplete) {
+      this.animations_[i] = null;
+      this.setHint(ol.View.Hint.ANIMATING, -1);
+      var callback = series[0].callback;
+      if (callback) {
+        callback(true);
+      }
+    }
+  }
+  // prune completed series
+  this.animations_ = this.animations_.filter(Boolean);
+  if (more && this.updateAnimationKey_ === undefined) {
+    this.updateAnimationKey_ = requestAnimationFrame(this.updateAnimations_);
+  }
+};
 
 /**
  * @param {number} rotation Target rotation.
@@ -10496,6 +10768,9 @@ ol.View.prototype.rotate = function(rotation, opt_anchor) {
  */
 ol.View.prototype.setCenter = function(center) {
   this.set(ol.View.Property.CENTER, center);
+  if (this.getAnimating()) {
+    this.cancelAnimations();
+  }
 };
 
 
@@ -10510,6 +10785,7 @@ ol.View.prototype.setHint = function(hint, delta) {
   this.hints_[hint] += delta;
   ol.DEBUG && console.assert(this.hints_[hint] >= 0,
       'Hint at %s must be positive, was %s', hint, this.hints_[hint]);
+  this.changed();
   return this.hints_[hint];
 };
 
@@ -10522,6 +10798,9 @@ ol.View.prototype.setHint = function(hint, delta) {
  */
 ol.View.prototype.setResolution = function(resolution) {
   this.set(ol.View.Property.RESOLUTION, resolution);
+  if (this.getAnimating()) {
+    this.cancelAnimations();
+  }
 };
 
 
@@ -10533,6 +10812,9 @@ ol.View.prototype.setResolution = function(resolution) {
  */
 ol.View.prototype.setRotation = function(rotation) {
   this.set(ol.View.Property.ROTATION, rotation);
+  if (this.getAnimating()) {
+    this.cancelAnimations();
+  }
 };
 
 
@@ -10689,69 +10971,6 @@ ol.View.Hint = {
   INTERACTING: 1
 };
 
-goog.provide('ol.easing');
-
-
-/**
- * Start slow and speed up.
- * @param {number} t Input between 0 and 1.
- * @return {number} Output between 0 and 1.
- * @api
- */
-ol.easing.easeIn = function(t) {
-  return Math.pow(t, 3);
-};
-
-
-/**
- * Start fast and slow down.
- * @param {number} t Input between 0 and 1.
- * @return {number} Output between 0 and 1.
- * @api
- */
-ol.easing.easeOut = function(t) {
-  return 1 - ol.easing.easeIn(1 - t);
-};
-
-
-/**
- * Start slow, speed up, and then slow down again.
- * @param {number} t Input between 0 and 1.
- * @return {number} Output between 0 and 1.
- * @api
- */
-ol.easing.inAndOut = function(t) {
-  return 3 * t * t - 2 * t * t * t;
-};
-
-
-/**
- * Maintain a constant speed over time.
- * @param {number} t Input between 0 and 1.
- * @return {number} Output between 0 and 1.
- * @api
- */
-ol.easing.linear = function(t) {
-  return t;
-};
-
-
-/**
- * Start slow, speed up, and at the very end slow down again.  This has the
- * same general behavior as {@link ol.easing.inAndOut}, but the final slowdown
- * is delayed.
- * @param {number} t Input between 0 and 1.
- * @return {number} Output between 0 and 1.
- * @api
- */
-ol.easing.upAndDown = function(t) {
-  if (t < 0.5) {
-    return ol.easing.inAndOut(2 * t);
-  } else {
-    return 1 - ol.easing.inAndOut(2 * (t - 0.5));
-  }
-};
-
 goog.provide('ol.animation');
 
 goog.require('ol');
@@ -10761,6 +10980,7 @@ goog.require('ol.easing');
 
 
 /**
+ * Deprecated (use {@link ol.View#animate} instead).
  * Generate an animated transition that will "bounce" the resolution as it
  * approaches the final value.
  * @param {olx.animation.BounceOptions} options Bounce options.
@@ -10768,6 +10988,7 @@ goog.require('ol.easing');
  * @api
  */
 ol.animation.bounce = function(options) {
+  ol.DEBUG && console.warn('ol.animation.bounce() is deprecated.  Use view.animate() instead.');
   var resolution = options.resolution;
   var start = options.start ? options.start : Date.now();
   var duration = options.duration !== undefined ? options.duration : 1000;
@@ -10799,12 +11020,14 @@ ol.animation.bounce = function(options) {
 
 
 /**
+ * Deprecated (use {@link ol.View#animate} instead).
  * Generate an animated transition while updating the view center.
  * @param {olx.animation.PanOptions} options Pan options.
  * @return {ol.PreRenderFunction} Pre-render function.
  * @api
  */
 ol.animation.pan = function(options) {
+  ol.DEBUG && console.warn('ol.animation.pan() is deprecated.  Use view.animate() instead.');
   var source = options.source;
   var start = options.start ? options.start : Date.now();
   var sourceX = source[0];
@@ -10840,12 +11063,14 @@ ol.animation.pan = function(options) {
 
 
 /**
+ * Deprecated (use {@link ol.View#animate} instead).
  * Generate an animated transition while updating the view rotation.
  * @param {olx.animation.RotateOptions} options Rotate options.
  * @return {ol.PreRenderFunction} Pre-render function.
  * @api
  */
 ol.animation.rotate = function(options) {
+  ol.DEBUG && console.warn('ol.animation.rotate() is deprecated.  Use view.animate() instead.');
   var sourceRotation = options.rotation ? options.rotation : 0;
   var start = options.start ? options.start : Date.now();
   var duration = options.duration !== undefined ? options.duration : 1000;
@@ -10887,12 +11112,14 @@ ol.animation.rotate = function(options) {
 
 
 /**
+ * Deprecated (use {@link ol.View#animate} instead).
  * Generate an animated transition while updating the view resolution.
  * @param {olx.animation.ZoomOptions} options Zoom options.
  * @return {ol.PreRenderFunction} Pre-render function.
  * @api
  */
 ol.animation.zoom = function(options) {
+  ol.DEBUG && console.warn('ol.animation.zoom() is deprecated.  Use view.animate() instead.');
   var sourceResolution = options.resolution;
   var start = options.start ? options.start : Date.now();
   var duration = options.duration !== undefined ? options.duration : 1000;
@@ -12305,7 +12532,7 @@ ol.color.RGB_COLOR_RE_ =
  * @private
  */
 ol.color.RGBA_COLOR_RE_ =
-    /^(?:rgba)?\((0|[1-9]\d{0,2}),\s?(0|[1-9]\d{0,2}),\s?(0|[1-9]\d{0,2}),\s?(0|1|0\.\d{0,10})\)$/i;
+    /^(?:rgba)?\((0|[1-9]\d{0,2}),\s?(0|[1-9]\d{0,2}),\s?(0|[1-9]\d{0,2}),\s?(0|1|0\.\d{0,16})\)$/i;
 
 
 /**
@@ -13522,7 +13749,6 @@ goog.provide('ol.control.Rotate');
 goog.require('ol.events');
 goog.require('ol.events.EventType');
 goog.require('ol');
-goog.require('ol.animation');
 goog.require('ol.control.Control');
 goog.require('ol.css');
 goog.require('ol.easing');
@@ -13650,13 +13876,14 @@ ol.control.Rotate.prototype.resetNorth_ = function() {
       if (currentRotation > Math.PI) {
         currentRotation -= 2 * Math.PI;
       }
-      map.beforeRender(ol.animation.rotate({
-        rotation: currentRotation,
+      view.animate({
+        rotation: 0,
         duration: this.duration_,
         easing: ol.easing.easeOut
-      }));
+      });
+    } else {
+      view.setRotation(0);
     }
-    view.setRotation(0);
   }
 };
 
@@ -13695,7 +13922,6 @@ goog.provide('ol.control.Zoom');
 goog.require('ol');
 goog.require('ol.events');
 goog.require('ol.events.EventType');
-goog.require('ol.animation');
 goog.require('ol.control.Control');
 goog.require('ol.css');
 goog.require('ol.easing');
@@ -13797,15 +14023,19 @@ ol.control.Zoom.prototype.zoomByDelta_ = function(delta) {
   }
   var currentResolution = view.getResolution();
   if (currentResolution) {
+    var newResolution = view.constrainResolution(currentResolution, delta);
     if (this.duration_ > 0) {
-      map.beforeRender(ol.animation.zoom({
-        resolution: currentResolution,
+      if (view.getAnimating()) {
+        view.cancelAnimations();
+      }
+      view.animate({
+        resolution: newResolution,
         duration: this.duration_,
         easing: ol.easing.easeOut
-      }));
+      });
+    } else {
+      view.setResolution(newResolution);
     }
-    var newResolution = view.constrainResolution(currentResolution, delta);
-    view.setResolution(newResolution);
   }
 };
 
@@ -16418,14 +16648,14 @@ ol.MapBrowserEvent = function(type, map, browserEvent, opt_dragging,
   this.originalEvent = browserEvent;
 
   /**
-   * The pixel of the original browser event.
+   * The map pixel relative to the viewport corresponding to the original browser event.
    * @type {ol.Pixel}
    * @api stable
    */
   this.pixel = map.getEventPixel(browserEvent);
 
   /**
-   * The coordinate of the original browser event.
+   * The coordinate in view projection corresponding to the original browser event.
    * @type {ol.Coordinate}
    * @api stable
    */
@@ -17459,8 +17689,6 @@ ol.TileQueue.prototype.loadMoreTiles = function(maxTotalLoading, maxNewLoads) {
 
 goog.provide('ol.Kinetic');
 
-goog.require('ol.animation');
-
 
 /**
  * @classdesc
@@ -17565,32 +17793,6 @@ ol.Kinetic.prototype.end = function() {
 
 
 /**
- * @param {ol.Coordinate} source Source coordinate for the animation.
- * @return {ol.PreRenderFunction} Pre-render function for kinetic animation.
- */
-ol.Kinetic.prototype.pan = function(source) {
-  var decay = this.decay_;
-  var initialVelocity = this.initialVelocity_;
-  var velocity = this.minVelocity_ - initialVelocity;
-  var duration = this.getDuration_();
-  var easingFunction = (
-      /**
-       * @param {number} t T.
-       * @return {number} Easing.
-       */
-      function(t) {
-        return initialVelocity * (Math.exp((decay * t) * duration) - 1) /
-            velocity;
-      });
-  return ol.animation.pan({
-    source: source,
-    duration: duration,
-    easing: easingFunction
-  });
-};
-
-
-/**
  * @private
  * @return {number} Duration of animation (milliseconds).
  */
@@ -17620,7 +17822,6 @@ goog.provide('ol.interaction.Interaction');
 
 goog.require('ol');
 goog.require('ol.Object');
-goog.require('ol.animation');
 goog.require('ol.easing');
 
 
@@ -17715,16 +17916,17 @@ ol.interaction.Interaction.prototype.setMap = function(map) {
 ol.interaction.Interaction.pan = function(map, view, delta, opt_duration) {
   var currentCenter = view.getCenter();
   if (currentCenter) {
-    if (opt_duration && opt_duration > 0) {
-      map.beforeRender(ol.animation.pan({
-        source: currentCenter,
-        duration: opt_duration,
-        easing: ol.easing.linear
-      }));
-    }
     var center = view.constrainCenter(
         [currentCenter[0] + delta[0], currentCenter[1] + delta[1]]);
-    view.setCenter(center);
+    if (opt_duration) {
+      view.animate({
+        duration: opt_duration,
+        easing: ol.easing.linear,
+        center: center
+      });
+    } else {
+      view.setCenter(center);
+    }
   }
 };
 
@@ -17754,22 +17956,16 @@ ol.interaction.Interaction.rotateWithoutConstraints = function(map, view, rotati
   if (rotation !== undefined) {
     var currentRotation = view.getRotation();
     var currentCenter = view.getCenter();
-    if (currentRotation !== undefined && currentCenter &&
-        opt_duration && opt_duration > 0) {
-      map.beforeRender(ol.animation.rotate({
-        rotation: currentRotation,
+    if (currentRotation !== undefined && currentCenter && opt_duration > 0) {
+      view.animate({
+        rotation: rotation,
+        anchor: opt_anchor,
         duration: opt_duration,
         easing: ol.easing.easeOut
-      }));
-      if (opt_anchor) {
-        map.beforeRender(ol.animation.pan({
-          source: currentCenter,
-          duration: opt_duration,
-          easing: ol.easing.easeOut
-        }));
-      }
+      });
+    } else {
+      view.rotate(rotation, opt_anchor);
     }
-    view.rotate(rotation, opt_anchor);
   }
 };
 
@@ -17823,26 +18019,20 @@ ol.interaction.Interaction.zoomWithoutConstraints = function(map, view, resoluti
     var currentResolution = view.getResolution();
     var currentCenter = view.getCenter();
     if (currentResolution !== undefined && currentCenter &&
-        resolution !== currentResolution &&
-        opt_duration && opt_duration > 0) {
-      map.beforeRender(ol.animation.zoom({
-        resolution: currentResolution,
+        resolution !== currentResolution && opt_duration) {
+      view.animate({
+        resolution: resolution,
+        anchor: opt_anchor,
         duration: opt_duration,
         easing: ol.easing.easeOut
-      }));
+      });
+    } else {
       if (opt_anchor) {
-        map.beforeRender(ol.animation.pan({
-          source: currentCenter,
-          duration: opt_duration,
-          easing: ol.easing.easeOut
-        }));
+        var center = view.calculateCenterZoom(resolution, opt_anchor);
+        view.setCenter(center);
       }
+      view.setResolution(resolution);
     }
-    if (opt_anchor) {
-      var center = view.calculateCenterZoom(resolution, opt_anchor);
-      view.setCenter(center);
-    }
-    view.setResolution(resolution);
   }
 };
 
@@ -18370,6 +18560,7 @@ goog.provide('ol.interaction.DragPan');
 goog.require('ol');
 goog.require('ol.View');
 goog.require('ol.coordinate');
+goog.require('ol.easing');
 goog.require('ol.events.condition');
 goog.require('ol.functions');
 goog.require('ol.interaction.Pointer');
@@ -18399,12 +18590,6 @@ ol.interaction.DragPan = function(opt_options) {
    * @type {ol.Kinetic|undefined}
    */
   this.kinetic_ = options.kinetic;
-
-  /**
-   * @private
-   * @type {?ol.PreRenderFunction}
-   */
-  this.kineticPreRenderFn_ = null;
 
   /**
    * @type {ol.Pixel}
@@ -18472,18 +18657,16 @@ ol.interaction.DragPan.handleUpEvent_ = function(mapBrowserEvent) {
       var distance = this.kinetic_.getDistance();
       var angle = this.kinetic_.getAngle();
       var center = /** @type {!ol.Coordinate} */ (view.getCenter());
-      this.kineticPreRenderFn_ = this.kinetic_.pan(center);
-      map.beforeRender(this.kineticPreRenderFn_);
       var centerpx = map.getPixelFromCoordinate(center);
       var dest = map.getCoordinateFromPixel([
         centerpx[0] - distance * Math.cos(angle),
         centerpx[1] - distance * Math.sin(angle)
       ]);
-      dest = view.constrainCenter(dest);
-      view.setCenter(dest);
-    } else {
-      // the view is not updated, force a render
-      map.render();
+      view.animate({
+        center: view.constrainCenter(dest),
+        duration: 500,
+        easing: ol.easing.easeOut
+      });
     }
     view.setHint(ol.View.Hint.INTERACTING, -1);
     return false;
@@ -18508,11 +18691,8 @@ ol.interaction.DragPan.handleDownEvent_ = function(mapBrowserEvent) {
     if (!this.handlingDownUpSequence) {
       view.setHint(ol.View.Hint.INTERACTING, 1);
     }
-    if (this.kineticPreRenderFn_ &&
-        map.removePreRenderFunction(this.kineticPreRenderFn_)) {
-      view.setCenter(mapBrowserEvent.frameState.viewState.center);
-      this.kineticPreRenderFn_ = null;
-    }
+    // stop any current animation
+    view.setCenter(mapBrowserEvent.frameState.viewState.center);
     if (this.kinetic_) {
       this.kinetic_.begin();
     }
@@ -19034,7 +19214,6 @@ ol.inherits(ol.interaction.DragBox.Event, ol.events.Event);
 goog.provide('ol.interaction.DragZoom');
 
 goog.require('ol');
-goog.require('ol.animation');
 goog.require('ol.easing');
 goog.require('ol.events.condition');
 goog.require('ol.extent');
@@ -19108,23 +19287,13 @@ ol.interaction.DragZoom.prototype.onBoxEnd = function() {
   var resolution = view.constrainResolution(
       view.getResolutionForExtent(extent, size));
 
-  var currentResolution = /** @type {number} */ (view.getResolution());
-
-  var currentCenter = /** @type {!ol.Coordinate} */ (view.getCenter());
-
-  map.beforeRender(ol.animation.zoom({
-    resolution: currentResolution,
+  view.animate({
+    resolution: resolution,
+    center: ol.extent.getCenter(extent),
     duration: this.duration_,
     easing: ol.easing.easeOut
-  }));
-  map.beforeRender(ol.animation.pan({
-    source: currentCenter,
-    duration: this.duration_,
-    easing: ol.easing.easeOut
-  }));
+  });
 
-  view.setCenter(ol.extent.getCenter(extent));
-  view.setResolution(resolution);
 };
 
 goog.provide('ol.events.KeyCode');
@@ -19338,6 +19507,8 @@ ol.interaction.KeyboardZoom.handleEvent = function(mapBrowserEvent) {
 goog.provide('ol.interaction.MouseWheelZoom');
 
 goog.require('ol');
+goog.require('ol.View');
+goog.require('ol.easing');
 goog.require('ol.events.EventType');
 goog.require('ol.has');
 goog.require('ol.interaction.Interaction');
@@ -19403,6 +19574,38 @@ ol.interaction.MouseWheelZoom = function(opt_options) {
    */
   this.timeoutId_ = undefined;
 
+  /**
+   * @private
+   * @type {ol.interaction.MouseWheelZoom.Mode|undefined}
+   */
+  this.mode_ = undefined;
+
+  /**
+   * Trackpad events separated by this delay will be considered separate
+   * interactions.
+   * @type {number}
+   */
+  this.trackpadEventGap_ = 400;
+
+  /**
+   * @type {number|undefined}
+   */
+  this.trackpadTimeoutId_ = undefined;
+
+  /**
+   * The number of delta values per zoom level
+   * @private
+   * @type {number}
+   */
+  this.trackpadDeltaPerZoom_ = 300;
+
+  /**
+   * The zoom factor by which scroll zooming is allowed to exceed the limits.
+   * @private
+   * @type {number}
+   */
+  this.trackpadZoomBuffer_ = 1.5;
+
 };
 ol.inherits(ol.interaction.MouseWheelZoom, ol.interaction.Interaction);
 
@@ -19411,57 +19614,121 @@ ol.inherits(ol.interaction.MouseWheelZoom, ol.interaction.Interaction);
  * Handles the {@link ol.MapBrowserEvent map browser event} (if it was a
  * mousewheel-event) and eventually zooms the map.
  * @param {ol.MapBrowserEvent} mapBrowserEvent Map browser event.
- * @return {boolean} `false` to stop event propagation.
+ * @return {boolean} Allow event propagation.
  * @this {ol.interaction.MouseWheelZoom}
  * @api
  */
 ol.interaction.MouseWheelZoom.handleEvent = function(mapBrowserEvent) {
-  var stopEvent = false;
-  if (mapBrowserEvent.type == ol.events.EventType.WHEEL ||
-      mapBrowserEvent.type == ol.events.EventType.MOUSEWHEEL) {
-    var map = mapBrowserEvent.map;
-    var wheelEvent = /** @type {WheelEvent} */ (mapBrowserEvent.originalEvent);
-
-    if (this.useAnchor_) {
-      this.lastAnchor_ = mapBrowserEvent.coordinate;
-    }
-
-    // Delta normalisation inspired by
-    // https://github.com/mapbox/mapbox-gl-js/blob/001c7b9/js/ui/handler/scroll_zoom.js
-    //TODO There's more good stuff in there for inspiration to improve this interaction.
-    var delta;
-    if (mapBrowserEvent.type == ol.events.EventType.WHEEL) {
-      delta = wheelEvent.deltaY;
-      if (ol.has.FIREFOX &&
-          wheelEvent.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-        delta /= ol.has.DEVICE_PIXEL_RATIO;
-      }
-      if (wheelEvent.deltaMode === WheelEvent.DOM_DELTA_LINE) {
-        delta *= 40;
-      }
-    } else if (mapBrowserEvent.type == ol.events.EventType.MOUSEWHEEL) {
-      delta = -wheelEvent.wheelDeltaY;
-      if (ol.has.SAFARI) {
-        delta /= 3;
-      }
-    }
-
-    this.delta_ += delta;
-
-    if (this.startTime_ === undefined) {
-      this.startTime_ = Date.now();
-    }
-
-    var timeLeft = Math.max(this.timeout_ - (Date.now() - this.startTime_), 0);
-
-    clearTimeout(this.timeoutId_);
-    this.timeoutId_ = setTimeout(
-        this.doZoom_.bind(this, map), timeLeft);
-
-    mapBrowserEvent.preventDefault();
-    stopEvent = true;
+  var type = mapBrowserEvent.type;
+  if (type !== ol.events.EventType.WHEEL && type !== ol.events.EventType.MOUSEWHEEL) {
+    return true;
   }
-  return !stopEvent;
+
+  mapBrowserEvent.preventDefault();
+
+  var map = mapBrowserEvent.map;
+  var wheelEvent = /** @type {WheelEvent} */ (mapBrowserEvent.originalEvent);
+
+  if (this.useAnchor_) {
+    this.lastAnchor_ = mapBrowserEvent.coordinate;
+  }
+
+  // Delta normalisation inspired by
+  // https://github.com/mapbox/mapbox-gl-js/blob/001c7b9/js/ui/handler/scroll_zoom.js
+  var delta;
+  if (mapBrowserEvent.type == ol.events.EventType.WHEEL) {
+    delta = wheelEvent.deltaY;
+    if (ol.has.FIREFOX &&
+        wheelEvent.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
+      delta /= ol.has.DEVICE_PIXEL_RATIO;
+    }
+    if (wheelEvent.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+      delta *= 40;
+    }
+  } else if (mapBrowserEvent.type == ol.events.EventType.MOUSEWHEEL) {
+    delta = -wheelEvent.wheelDeltaY;
+    if (ol.has.SAFARI) {
+      delta /= 3;
+    }
+  }
+
+  if (delta === 0) {
+    return false;
+  }
+
+  var now = Date.now();
+
+  if (this.startTime_ === undefined) {
+    this.startTime_ = now;
+  }
+
+  if (!this.mode_ || now - this.startTime_ > this.trackpadEventGap_) {
+    this.mode_ = Math.abs(delta) < 4 ?
+        ol.interaction.MouseWheelZoom.Mode.TRACKPAD :
+        ol.interaction.MouseWheelZoom.Mode.WHEEL;
+  }
+
+  if (this.mode_ === ol.interaction.MouseWheelZoom.Mode.TRACKPAD) {
+    var view = map.getView();
+    if (this.trackpadTimeoutId_) {
+      clearTimeout(this.trackpadTimeoutId_);
+    } else {
+      view.setHint(ol.View.Hint.INTERACTING, 1);
+    }
+    this.trackpadTimeoutId_ = setTimeout(this.decrementInteractingHint_.bind(this), this.trackpadEventGap_);
+    var resolution = view.getResolution() * Math.pow(2, delta / this.trackpadDeltaPerZoom_);
+    var minResolution = view.getMinResolution();
+    var maxResolution = view.getMaxResolution();
+    var rebound = 0;
+    if (resolution < minResolution) {
+      resolution = Math.max(resolution, minResolution / this.trackpadZoomBuffer_);
+      rebound = 1;
+    } else if (resolution > maxResolution) {
+      resolution = Math.min(resolution, maxResolution * this.trackpadZoomBuffer_);
+      rebound = -1;
+    }
+    if (this.lastAnchor_) {
+      var center = view.calculateCenterZoom(resolution, this.lastAnchor_);
+      view.setCenter(center);
+    }
+    view.setResolution(resolution);
+    if (rebound > 0) {
+      view.animate({
+        resolution: minResolution,
+        easing: ol.easing.easeOut,
+        anchor: this.lastAnchor_,
+        duration: 500
+      });
+    } else if (rebound < 0) {
+      view.animate({
+        resolution: maxResolution,
+        easing: ol.easing.easeOut,
+        anchor: this.lastAnchor_,
+        duration: 500
+      });
+    }
+    this.startTime_ = now;
+    return false;
+  }
+
+  this.delta_ += delta;
+
+  var timeLeft = Math.max(this.timeout_ - (now - this.startTime_), 0);
+
+  clearTimeout(this.timeoutId_);
+  this.timeoutId_ = setTimeout(this.handleWheelZoom_.bind(this, map), timeLeft);
+
+  return false;
+};
+
+
+/**
+ * @private
+ */
+ol.interaction.MouseWheelZoom.prototype.decrementInteractingHint_ = function() {
+  this.trackpadTimeoutId_ = undefined;
+  var view = this.getMap().getView();
+  view.setHint(ol.View.Hint.INTERACTING, -1);
 };
 
 
@@ -19469,15 +19736,16 @@ ol.interaction.MouseWheelZoom.handleEvent = function(mapBrowserEvent) {
  * @private
  * @param {ol.Map} map Map.
  */
-ol.interaction.MouseWheelZoom.prototype.doZoom_ = function(map) {
+ol.interaction.MouseWheelZoom.prototype.handleWheelZoom_ = function(map) {
+  var view = map.getView();
+  if (view.getAnimating()) {
+    view.cancelAnimations();
+  }
   var maxDelta = ol.MOUSEWHEELZOOM_MAXDELTA;
   var delta = ol.math.clamp(this.delta_, -maxDelta, maxDelta);
-
-  var view = map.getView();
-
   ol.interaction.Interaction.zoomByDelta(map, view, -delta, this.lastAnchor_,
       this.duration_);
-
+  this.mode_ = undefined;
   this.delta_ = 0;
   this.lastAnchor_ = null;
   this.startTime_ = undefined;
@@ -19496,6 +19764,15 @@ ol.interaction.MouseWheelZoom.prototype.setMouseAnchor = function(useAnchor) {
   if (!useAnchor) {
     this.lastAnchor_ = null;
   }
+};
+
+
+/**
+ * @enum {string}
+ */
+ol.interaction.MouseWheelZoom.Mode = {
+  TRACKPAD: 'trackpad',
+  WHEEL: 'wheel'
 };
 
 goog.provide('ol.interaction.PinchRotate');
@@ -19657,7 +19934,6 @@ ol.interaction.PinchRotate.handleDownEvent_ = function(mapBrowserEvent) {
     if (!this.handlingDownUpSequence) {
       map.getView().setHint(ol.View.Hint.INTERACTING, 1);
     }
-    map.render();
     return true;
   } else {
     return false;
@@ -19812,7 +20088,6 @@ ol.interaction.PinchZoom.handleDownEvent_ = function(mapBrowserEvent) {
     if (!this.handlingDownUpSequence) {
       map.getView().setHint(ol.View.Hint.INTERACTING, 1);
     }
-    map.render();
     return true;
   } else {
     return false;
@@ -22470,10 +22745,9 @@ ol.style.Image.prototype.load = function() {};
  */
 ol.style.Image.prototype.unlistenImageChange = function(listener, thisArg) {};
 
-goog.provide('ol.style.Circle');
+goog.provide('ol.style.RegularShape');
 
 goog.require('ol');
-goog.require('ol.color');
 goog.require('ol.colorlike');
 goog.require('ol.dom');
 goog.require('ol.has');
@@ -22484,22 +22758,20 @@ goog.require('ol.style.Image');
 
 /**
  * @classdesc
- * Set circle style for vector features.
+ * Set regular shape style for vector features. The resulting shape will be
+ * a regular polygon when `radius` is provided, or a star when `radius1` and
+ * `radius2` are provided.
  *
  * @constructor
- * @param {olx.style.CircleOptions=} opt_options Options.
+ * @param {olx.style.RegularShapeOptions} options Options.
  * @extends {ol.style.Image}
  * @api
  */
-ol.style.Circle = function(opt_options) {
+ol.style.RegularShape = function(options) {
 
-  var options = opt_options || {};
-
-  /**
-   * @private
-   * @type {ol.style.AtlasManager|undefined}
-   */
-  this.atlasManager_ = options.atlasManager;
+  ol.DEBUG && console.assert(
+      options.radius !== undefined || options.radius1 !== undefined,
+      'must provide either "radius" or "radius1"');
 
   /**
    * @private
@@ -22527,21 +22799,41 @@ ol.style.Circle = function(opt_options) {
 
   /**
    * @private
-   * @type {ol.style.Stroke}
+   * @type {Array.<number>}
    */
-  this.stroke_ = options.stroke !== undefined ? options.stroke : null;
+  this.origin_ = [0, 0];
 
   /**
    * @private
    * @type {number}
    */
-  this.radius_ = options.radius;
+  this.points_ = options.points;
+
+  /**
+   * @protected
+   * @type {number}
+   */
+  this.radius_ = /** @type {number} */ (options.radius !== undefined ?
+      options.radius : options.radius1);
 
   /**
    * @private
-   * @type {Array.<number>}
+   * @type {number}
    */
-  this.origin_ = [0, 0];
+  this.radius2_ =
+      options.radius2 !== undefined ? options.radius2 : this.radius_;
+
+  /**
+   * @private
+   * @type {number}
+   */
+  this.angle_ = options.angle !== undefined ? options.angle : 0;
+
+  /**
+   * @private
+   * @type {ol.style.Stroke}
+   */
+  this.stroke_ = options.stroke !== undefined ? options.stroke : null;
 
   /**
    * @private
@@ -22567,6 +22859,12 @@ ol.style.Circle = function(opt_options) {
    */
   this.hitDetectionImageSize_ = null;
 
+  /**
+   * @protected
+   * @type {ol.style.AtlasManager|undefined}
+   */
+  this.atlasManager_ = options.atlasManager;
+
   this.render_(this.atlasManager_);
 
   /**
@@ -22575,29 +22873,40 @@ ol.style.Circle = function(opt_options) {
   var snapToPixel = options.snapToPixel !== undefined ?
       options.snapToPixel : true;
 
+  /**
+   * @type {boolean}
+   */
+  var rotateWithView = options.rotateWithView !== undefined ?
+      options.rotateWithView : false;
+
   ol.style.Image.call(this, {
     opacity: 1,
-    rotateWithView: false,
-    rotation: 0,
+    rotateWithView: rotateWithView,
+    rotation: options.rotation !== undefined ? options.rotation : 0,
     scale: 1,
     snapToPixel: snapToPixel
   });
 
 };
-ol.inherits(ol.style.Circle, ol.style.Image);
+ol.inherits(ol.style.RegularShape, ol.style.Image);
 
 
 /**
- * Clones the style.  If an atlasmanger was provided to the original style it will be used in the cloned style, too.
- * @return {ol.style.Image} The cloned style.
+ * Clones the style. If an atlasmanager was provided to the original style it will be used in the cloned style, too.
+ * @return {ol.style.RegularShape} The cloned style.
  * @api
  */
-ol.style.Circle.prototype.clone = function() {
-  var style = new ol.style.Circle({
+ol.style.RegularShape.prototype.clone = function() {
+  var style = new ol.style.RegularShape({
     fill: this.getFill() ? this.getFill().clone() : undefined,
-    stroke: this.getStroke() ? this.getStroke().clone() : undefined,
+    points: this.getRadius2() !== this.getRadius() ? this.getPoints() / 2 : this.getPoints(),
     radius: this.getRadius(),
+    radius2: this.getRadius2(),
+    angle: this.getAngle(),
     snapToPixel: this.getSnapToPixel(),
+    stroke: this.getStroke() ?  this.getStroke().clone() : undefined,
+    rotation: this.getRotation(),
+    rotateWithView: this.getRotateWithView(),
     atlasManager: this.atlasManager_
   });
   style.setOpacity(this.getOpacity());
@@ -22608,18 +22917,29 @@ ol.style.Circle.prototype.clone = function() {
 
 /**
  * @inheritDoc
+ * @api
  */
-ol.style.Circle.prototype.getAnchor = function() {
+ol.style.RegularShape.prototype.getAnchor = function() {
   return this.anchor_;
 };
 
 
 /**
- * Get the fill style for the circle.
+ * Get the angle used in generating the shape.
+ * @return {number} Shape's rotation in radians.
+ * @api
+ */
+ol.style.RegularShape.prototype.getAngle = function() {
+  return this.angle_;
+};
+
+
+/**
+ * Get the fill style for the shape.
  * @return {ol.style.Fill} Fill style.
  * @api
  */
-ol.style.Circle.prototype.getFill = function() {
+ol.style.RegularShape.prototype.getFill = function() {
   return this.fill_;
 };
 
@@ -22627,18 +22947,16 @@ ol.style.Circle.prototype.getFill = function() {
 /**
  * @inheritDoc
  */
-ol.style.Circle.prototype.getHitDetectionImage = function(pixelRatio) {
+ol.style.RegularShape.prototype.getHitDetectionImage = function(pixelRatio) {
   return this.hitDetectionCanvas_;
 };
 
 
 /**
- * Get the image used to render the circle.
- * @param {number} pixelRatio Pixel ratio.
- * @return {HTMLCanvasElement} Canvas element.
+ * @inheritDoc
  * @api
  */
-ol.style.Circle.prototype.getImage = function(pixelRatio) {
+ol.style.RegularShape.prototype.getImage = function(pixelRatio) {
   return this.canvas_;
 };
 
@@ -22646,15 +22964,7 @@ ol.style.Circle.prototype.getImage = function(pixelRatio) {
 /**
  * @inheritDoc
  */
-ol.style.Circle.prototype.getImageState = function() {
-  return ol.Image.State.LOADED;
-};
-
-
-/**
- * @inheritDoc
- */
-ol.style.Circle.prototype.getImageSize = function() {
+ol.style.RegularShape.prototype.getImageSize = function() {
   return this.imageSize_;
 };
 
@@ -22662,7 +22972,7 @@ ol.style.Circle.prototype.getImageSize = function() {
 /**
  * @inheritDoc
  */
-ol.style.Circle.prototype.getHitDetectionImageSize = function() {
+ol.style.RegularShape.prototype.getHitDetectionImageSize = function() {
   return this.hitDetectionImageSize_;
 };
 
@@ -22670,75 +22980,96 @@ ol.style.Circle.prototype.getHitDetectionImageSize = function() {
 /**
  * @inheritDoc
  */
-ol.style.Circle.prototype.getOrigin = function() {
+ol.style.RegularShape.prototype.getImageState = function() {
+  return ol.Image.State.LOADED;
+};
+
+
+/**
+ * @inheritDoc
+ * @api
+ */
+ol.style.RegularShape.prototype.getOrigin = function() {
   return this.origin_;
 };
 
 
 /**
- * Get the circle radius.
+ * Get the number of points for generating the shape.
+ * @return {number} Number of points for stars and regular polygons.
+ * @api
+ */
+ol.style.RegularShape.prototype.getPoints = function() {
+  return this.points_;
+};
+
+
+/**
+ * Get the (primary) radius for the shape.
  * @return {number} Radius.
  * @api
  */
-ol.style.Circle.prototype.getRadius = function() {
+ol.style.RegularShape.prototype.getRadius = function() {
   return this.radius_;
 };
 
 
 /**
- * @inheritDoc
+ * Get the secondary radius for the shape.
+ * @return {number} Radius2.
+ * @api
  */
-ol.style.Circle.prototype.getSize = function() {
+ol.style.RegularShape.prototype.getRadius2 = function() {
+  return this.radius2_;
+};
+
+
+/**
+ * @inheritDoc
+ * @api
+ */
+ol.style.RegularShape.prototype.getSize = function() {
   return this.size_;
 };
 
 
 /**
- * Get the stroke style for the circle.
+ * Get the stroke style for the shape.
  * @return {ol.style.Stroke} Stroke style.
  * @api
  */
-ol.style.Circle.prototype.getStroke = function() {
+ol.style.RegularShape.prototype.getStroke = function() {
   return this.stroke_;
 };
 
 
 /**
- * Set the circle radius.
- *
- * @param {number} radius Circle radius.
- * @api
+ * @inheritDoc
  */
-ol.style.Circle.prototype.setRadius = function(radius) {
-  this.radius_ = radius;
-  this.render_(this.atlasManager_);
-};
+ol.style.RegularShape.prototype.listenImageChange = ol.nullFunction;
 
 
 /**
  * @inheritDoc
  */
-ol.style.Circle.prototype.listenImageChange = ol.nullFunction;
+ol.style.RegularShape.prototype.load = ol.nullFunction;
 
 
 /**
  * @inheritDoc
  */
-ol.style.Circle.prototype.load = ol.nullFunction;
+ol.style.RegularShape.prototype.unlistenImageChange = ol.nullFunction;
 
 
 /**
- * @inheritDoc
- */
-ol.style.Circle.prototype.unlistenImageChange = ol.nullFunction;
-
-
-/**
- * @private
+ * @protected
  * @param {ol.style.AtlasManager|undefined} atlasManager An atlas manager.
  */
-ol.style.Circle.prototype.render_ = function(atlasManager) {
+ol.style.RegularShape.prototype.render_ = function(atlasManager) {
   var imageSize;
+  var lineCap = '';
+  var lineJoin = '';
+  var miterLimit = 0;
   var lineDash = null;
   var strokeStyle;
   var strokeWidth = 0;
@@ -22753,17 +23084,31 @@ ol.style.Circle.prototype.render_ = function(atlasManager) {
     if (!ol.has.CANVAS_LINE_DASH) {
       lineDash = null;
     }
+    lineJoin = this.stroke_.getLineJoin();
+    if (lineJoin === undefined) {
+      lineJoin = ol.render.canvas.defaultLineJoin;
+    }
+    lineCap = this.stroke_.getLineCap();
+    if (lineCap === undefined) {
+      lineCap = ol.render.canvas.defaultLineCap;
+    }
+    miterLimit = this.stroke_.getMiterLimit();
+    if (miterLimit === undefined) {
+      miterLimit = ol.render.canvas.defaultMiterLimit;
+    }
   }
-
 
   var size = 2 * (this.radius_ + strokeWidth) + 1;
 
-  /** @type {ol.CircleRenderOptions} */
+  /** @type {ol.RegularShapeRenderOptions} */
   var renderOptions = {
     strokeStyle: strokeStyle,
     strokeWidth: strokeWidth,
     size: size,
-    lineDash: lineDash
+    lineCap: lineCap,
+    lineDash: lineDash,
+    lineJoin: lineJoin,
+    miterLimit: miterLimit
   };
 
   if (atlasManager === undefined) {
@@ -22775,7 +23120,6 @@ ol.style.Circle.prototype.render_ = function(atlasManager) {
     size = this.canvas_.width;
     imageSize = size;
 
-    // draw the circle on the canvas
     this.draw_(renderOptions, context, 0, 0);
 
     this.createHitDetectionCanvas_(renderOptions);
@@ -22795,7 +23139,7 @@ ol.style.Circle.prototype.render_ = function(atlasManager) {
     var info = atlasManager.add(
         id, size, size, this.draw_.bind(this, renderOptions),
         renderHitDetectionCallback);
-    ol.DEBUG && console.assert(info, 'circle radius is too large');
+    ol.DEBUG && console.assert(info, 'shape size is too large');
 
     this.canvas_ = info.image;
     this.origin_ = [info.offsetX, info.offsetY];
@@ -22819,12 +23163,13 @@ ol.style.Circle.prototype.render_ = function(atlasManager) {
 
 /**
  * @private
- * @param {ol.CircleRenderOptions} renderOptions Render options.
+ * @param {ol.RegularShapeRenderOptions} renderOptions Render options.
  * @param {CanvasRenderingContext2D} context The rendering context.
  * @param {number} x The origin for the symbol (x).
  * @param {number} y The origin for the symbol (y).
  */
-ol.style.Circle.prototype.draw_ = function(renderOptions, context, x, y) {
+ol.style.RegularShape.prototype.draw_ = function(renderOptions, context, x, y) {
+  var i, angle0, radiusC;
   // reset transform
   context.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -22832,9 +23177,23 @@ ol.style.Circle.prototype.draw_ = function(renderOptions, context, x, y) {
   context.translate(x, y);
 
   context.beginPath();
-  context.arc(
-      renderOptions.size / 2, renderOptions.size / 2,
-      this.radius_, 0, 2 * Math.PI, true);
+
+  if (this.points_ === Infinity) {
+    context.arc(
+        renderOptions.size / 2, renderOptions.size / 2,
+        this.radius_, 0, 2 * Math.PI, true);
+  } else {
+    if (this.radius2_ !== this.radius_) {
+      this.points_ = 2 * this.points_;
+    }
+    for (i = 0; i <= this.points_; i++) {
+      angle0 = i * 2 * Math.PI / this.points_ - Math.PI / 2 + this.angle_;
+      radiusC = i % 2 === 0 ? this.radius_ : this.radius2_;
+      context.lineTo(renderOptions.size / 2 + radiusC * Math.cos(angle0),
+                     renderOptions.size / 2 + radiusC * Math.sin(angle0));
+    }
+  }
+
 
   if (this.fill_) {
     context.fillStyle = ol.colorlike.asColorLike(this.fill_.getColor());
@@ -22846,6 +23205,9 @@ ol.style.Circle.prototype.draw_ = function(renderOptions, context, x, y) {
     if (renderOptions.lineDash) {
       context.setLineDash(renderOptions.lineDash);
     }
+    context.lineCap = renderOptions.lineCap;
+    context.lineJoin = renderOptions.lineJoin;
+    context.miterLimit = renderOptions.miterLimit;
     context.stroke();
   }
   context.closePath();
@@ -22854,9 +23216,9 @@ ol.style.Circle.prototype.draw_ = function(renderOptions, context, x, y) {
 
 /**
  * @private
- * @param {ol.CircleRenderOptions} renderOptions Render options.
+ * @param {ol.RegularShapeRenderOptions} renderOptions Render options.
  */
-ol.style.Circle.prototype.createHitDetectionCanvas_ = function(renderOptions) {
+ol.style.RegularShape.prototype.createHitDetectionCanvas_ = function(renderOptions) {
   this.hitDetectionImageSize_ = [renderOptions.size, renderOptions.size];
   if (this.fill_) {
     this.hitDetectionCanvas_ = this.canvas_;
@@ -22874,12 +23236,12 @@ ol.style.Circle.prototype.createHitDetectionCanvas_ = function(renderOptions) {
 
 /**
  * @private
- * @param {ol.CircleRenderOptions} renderOptions Render options.
+ * @param {ol.RegularShapeRenderOptions} renderOptions Render options.
  * @param {CanvasRenderingContext2D} context The context.
  * @param {number} x The origin for the symbol (x).
  * @param {number} y The origin for the symbol (y).
  */
-ol.style.Circle.prototype.drawHitDetectionCanvas_ = function(renderOptions, context, x, y) {
+ol.style.RegularShape.prototype.drawHitDetectionCanvas_ = function(renderOptions, context, x, y) {
   // reset transform
   context.setTransform(1, 0, 0, 1, 0, 0);
 
@@ -22887,11 +23249,25 @@ ol.style.Circle.prototype.drawHitDetectionCanvas_ = function(renderOptions, cont
   context.translate(x, y);
 
   context.beginPath();
-  context.arc(
-      renderOptions.size / 2, renderOptions.size / 2,
-      this.radius_, 0, 2 * Math.PI, true);
 
-  context.fillStyle = ol.color.asString(ol.render.canvas.defaultFillStyle);
+  if (this.points_ === Infinity) {
+    context.arc(
+        renderOptions.size / 2, renderOptions.size / 2,
+        this.radius_, 0, 2 * Math.PI, true);
+  } else {
+    if (this.radius2_ !== this.radius_) {
+      this.points_ = 2 * this.points_;
+    }
+    var i, radiusC, angle0;
+    for (i = 0; i <= this.points_; i++) {
+      angle0 = i * 2 * Math.PI / this.points_ - Math.PI / 2 + this.angle_;
+      radiusC = i % 2 === 0 ? this.radius_ : this.radius2_;
+      context.lineTo(renderOptions.size / 2 + radiusC * Math.cos(angle0),
+                     renderOptions.size / 2 + radiusC * Math.sin(angle0));
+    }
+  }
+
+  context.fillStyle = ol.render.canvas.defaultFillStyle;
   context.fill();
   if (this.stroke_) {
     context.strokeStyle = renderOptions.strokeStyle;
@@ -22908,7 +23284,7 @@ ol.style.Circle.prototype.drawHitDetectionCanvas_ = function(renderOptions, cont
 /**
  * @return {string} The checksum.
  */
-ol.style.Circle.prototype.getChecksum = function() {
+ol.style.RegularShape.prototype.getChecksum = function() {
   var strokeChecksum = this.stroke_ ?
       this.stroke_.getChecksum() : '-';
   var fillChecksum = this.fill_ ?
@@ -22917,15 +23293,84 @@ ol.style.Circle.prototype.getChecksum = function() {
   var recalculate = !this.checksums_ ||
       (strokeChecksum != this.checksums_[1] ||
       fillChecksum != this.checksums_[2] ||
-      this.radius_ != this.checksums_[3]);
+      this.radius_ != this.checksums_[3] ||
+      this.radius2_ != this.checksums_[4] ||
+      this.angle_ != this.checksums_[5] ||
+      this.points_ != this.checksums_[6]);
 
   if (recalculate) {
-    var checksum = 'c' + strokeChecksum + fillChecksum +
-        (this.radius_ !== undefined ? this.radius_.toString() : '-');
-    this.checksums_ = [checksum, strokeChecksum, fillChecksum, this.radius_];
+    var checksum = 'r' + strokeChecksum + fillChecksum +
+        (this.radius_ !== undefined ? this.radius_.toString() : '-') +
+        (this.radius2_ !== undefined ? this.radius2_.toString() : '-') +
+        (this.angle_ !== undefined ? this.angle_.toString() : '-') +
+        (this.points_ !== undefined ? this.points_.toString() : '-');
+    this.checksums_ = [checksum, strokeChecksum, fillChecksum,
+      this.radius_, this.radius2_, this.angle_, this.points_];
   }
 
   return this.checksums_[0];
+};
+
+goog.provide('ol.style.Circle');
+
+goog.require('ol');
+goog.require('ol.style.RegularShape');
+
+
+/**
+ * @classdesc
+ * Set circle style for vector features.
+ *
+ * @constructor
+ * @param {olx.style.CircleOptions=} opt_options Options.
+ * @extends {ol.style.RegularShape}
+ * @api
+ */
+ol.style.Circle = function(opt_options) {
+
+  var options = opt_options || {};
+
+  ol.style.RegularShape.call(this, {
+    points: Infinity,
+    fill: options.fill,
+    radius: options.radius,
+    snapToPixel: options.snapToPixel,
+    stroke: options.stroke,
+    atlasManager: options.atlasManager
+  });
+
+};
+ol.inherits(ol.style.Circle, ol.style.RegularShape);
+
+
+/**
+ * Clones the style.  If an atlasmanager was provided to the original style it will be used in the cloned style, too.
+ * @return {ol.style.Circle} The cloned style.
+ * @api
+ */
+ol.style.Circle.prototype.clone = function() {
+  var style = new ol.style.Circle({
+    fill: this.getFill() ? this.getFill().clone() : undefined,
+    stroke: this.getStroke() ? this.getStroke().clone() : undefined,
+    radius: this.getRadius(),
+    snapToPixel: this.getSnapToPixel(),
+    atlasManager: this.atlasManager_
+  });
+  style.setOpacity(this.getOpacity());
+  style.setScale(this.getScale());
+  return style;
+};
+
+
+/**
+ * Set the circle radius.
+ *
+ * @param {number} radius Circle radius.
+ * @api
+ */
+ol.style.Circle.prototype.setRadius = function(radius) {
+  this.radius_ = radius;
+  this.render_(this.atlasManager_);
 };
 
 goog.provide('ol.style.Fill');
@@ -23393,12 +23838,32 @@ ol.style.Style.prototype.getFill = function() {
 
 
 /**
+ * Set the fill style.
+ * @param {ol.style.Fill} fill Fill style.
+ * @api
+ */
+ol.style.Style.prototype.setFill = function(fill) {
+  this.fill_ = fill;
+};
+
+
+/**
  * Get the image style.
  * @return {ol.style.Image} Image style.
  * @api
  */
 ol.style.Style.prototype.getImage = function() {
   return this.image_;
+};
+
+
+/**
+ * Set the image style.
+ * @param {ol.style.Image} image Image style.
+ * @api
+ */
+ol.style.Style.prototype.setImage = function(image) {
+  this.image_ = image;
 };
 
 
@@ -23413,12 +23878,32 @@ ol.style.Style.prototype.getStroke = function() {
 
 
 /**
+ * Set the stroke style.
+ * @param {ol.style.Stroke} stroke Stroke style.
+ * @api
+ */
+ol.style.Style.prototype.setStroke = function(stroke) {
+  this.stroke_ = stroke;
+};
+
+
+/**
  * Get the text style.
  * @return {ol.style.Text} Text style.
  * @api
  */
 ol.style.Style.prototype.getText = function() {
   return this.text_;
+};
+
+
+/**
+ * Set the text style.
+ * @param {ol.style.Text} text Text style.
+ * @api
+ */
+ol.style.Style.prototype.setText = function(text) {
+  this.text_ = text;
 };
 
 
@@ -30998,7 +31483,9 @@ ol.renderer.canvas.VectorTileLayer.prototype.renderTileReplays_ = function(
   var alpha = replayContext.globalAlpha;
   replayContext.globalAlpha = layerState.opacity;
 
+  /** @type {Array.<ol.VectorTile>} */
   var tilesToDraw = this.renderedTiles;
+
   var tileGrid = source.getTileGrid();
 
   var currentZ, i, ii, offsetX, offsetY, origin, pixelSpace, replayState;
@@ -31144,7 +31631,9 @@ ol.renderer.canvas.VectorTileLayer.prototype.forEachFeatureAtCoordinate = functi
   /** @type {Object.<string, boolean>} */
   var features = {};
 
+  /** @type {Array.<ol.VectorTile>} */
   var replayables = this.renderedTiles;
+
   var source = /** @type {ol.source.VectorTile} */ (layer.getSource());
   var tileGrid = source.getTileGrid();
   var found, tileSpaceCoordinate;
@@ -31744,14 +32233,14 @@ ol.inherits(ol.render.webgl.circlereplay.defaultshader.Vertex, ol.webgl.Vertex);
  * @const
  * @type {string}
  */
-ol.render.webgl.circlereplay.defaultshader.Vertex.DEBUG_SOURCE = 'varying vec2 v_center;\nvarying vec2 v_offset;\nvarying float v_halfWidth;\nvarying float v_pixelRatio;\n\n\nattribute vec2 a_position;\nattribute float a_instruction;\nattribute float a_radius;\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\nuniform float u_lineWidth;\nuniform float u_pixelRatio;\n\nvoid main(void) {\n  mat4 offsetMatrix = u_offsetScaleMatrix * u_offsetRotateMatrix;\n  v_center = vec4(u_projectionMatrix * vec4(a_position, 0., 1.)).xy;\n  v_pixelRatio = u_pixelRatio;\n  float newX, newY;\n  float lineWidth = u_lineWidth * u_pixelRatio;\n  v_halfWidth = lineWidth / 2.0;\n  if (lineWidth == 0.0) {\n    lineWidth = 2.0 * u_pixelRatio;\n  }\n  vec2 offset;\n  // Radius with anitaliasing (roughly).\n  float radius = a_radius + 3.0 * u_pixelRatio;\n  // Until we get gl_VertexID in WebGL, we store an instruction.\n  if (a_instruction == 0.0) {\n    newX = a_position.x - radius;\n    newY = a_position.y - radius;\n    // Offsetting the edges of the triangle by lineWidth / 2 is necessary, however\n    // we should also leave some space for the antialiasing, thus we offset by lineWidth.\n    offset = vec2(-lineWidth, -lineWidth);\n  } else {\n    float sqrtVal = sqrt(2.0) + 1.0;\n    if (a_instruction == 1.0) {\n      newX = a_position.x + sqrtVal * radius;\n      newY = a_position.y - radius;\n      offset = vec2(lineWidth * sqrtVal, -lineWidth);\n    } else {\n      newX = a_position.x - radius;\n      newY = a_position.y + sqrtVal * radius;\n      offset = vec2(-lineWidth, lineWidth * sqrtVal);\n    }\n  }\n\n  gl_Position = u_projectionMatrix * vec4(newX, newY, 0., 1.) + offsetMatrix *\n      vec4(offset, 0., 0.);\n  v_offset = vec4(u_projectionMatrix * vec4(a_position.x + a_radius, a_position.y, 0., 1.)).xy;\n}\n\n\n';
+ol.render.webgl.circlereplay.defaultshader.Vertex.DEBUG_SOURCE = 'varying vec2 v_center;\nvarying vec2 v_offset;\nvarying float v_halfWidth;\nvarying float v_pixelRatio;\n\n\nattribute vec2 a_position;\nattribute float a_instruction;\nattribute float a_radius;\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\nuniform float u_lineWidth;\nuniform float u_pixelRatio;\n\nvoid main(void) {\n  mat4 offsetMatrix = u_offsetScaleMatrix * u_offsetRotateMatrix;\n  v_center = vec4(u_projectionMatrix * vec4(a_position, 0.0, 1.0)).xy;\n  v_pixelRatio = u_pixelRatio;\n  float lineWidth = u_lineWidth * u_pixelRatio;\n  v_halfWidth = lineWidth / 2.0;\n  if (lineWidth == 0.0) {\n    lineWidth = 2.0 * u_pixelRatio;\n  }\n  vec2 offset;\n  // Radius with anitaliasing (roughly).\n  float radius = a_radius + 3.0 * u_pixelRatio;\n  // Until we get gl_VertexID in WebGL, we store an instruction.\n  if (a_instruction == 0.0) {\n    // Offsetting the edges of the triangle by lineWidth / 2 is necessary, however\n    // we should also leave some space for the antialiasing, thus we offset by lineWidth.\n    offset = vec2(-1.0, 1.0);\n  } else if (a_instruction == 1.0) {\n    offset = vec2(-1.0, -1.0);\n  } else if (a_instruction == 2.0) {\n    offset = vec2(1.0, -1.0);\n  } else {\n    offset = vec2(1.0, 1.0);\n  }\n\n  gl_Position = u_projectionMatrix * vec4(a_position + offset * radius, 0.0, 1.0) +\n      offsetMatrix * vec4(offset * lineWidth, 0.0, 0.0);\n  v_offset = vec4(u_projectionMatrix * vec4(a_position.x + a_radius, a_position.y,\n      0.0, 1.0)).xy;\n\n  if (distance(v_center, v_offset) > 20000.0) {\n    gl_Position = vec4(v_center, 0.0, 1.0);\n  }\n}\n\n\n';
 
 
 /**
  * @const
  * @type {string}
  */
-ol.render.webgl.circlereplay.defaultshader.Vertex.OPTIMIZED_SOURCE = 'varying vec2 a;varying vec2 b;varying float c;varying float d;attribute vec2 e;attribute float f;attribute float g;uniform mat4 h;uniform mat4 i;uniform mat4 j;uniform float k;uniform float l;void main(void){mat4 offsetMatrix=i*j;a=vec4(h*vec4(e,0.,1.)).xy;d=l;float newX,newY;float lineWidth=k*l;c=lineWidth/2.0;if(lineWidth==0.0){lineWidth=2.0*l;}vec2 offset;float radius=g+3.0*l;if(f==0.0){newX=e.x-radius;newY=e.y-radius;offset=vec2(-lineWidth,-lineWidth);}else{float sqrtVal=sqrt(2.0)+1.0;if(f==1.0){newX=e.x+sqrtVal*radius;newY=e.y-radius;offset=vec2(lineWidth*sqrtVal,-lineWidth);}else{newX=e.x-radius;newY=e.y+sqrtVal*radius;offset=vec2(-lineWidth,lineWidth*sqrtVal);}} gl_Position=h*vec4(newX,newY,0.,1.)+offsetMatrix*vec4(offset,0.,0.);b=vec4(h*vec4(e.x+g,e.y,0.,1.)).xy;}';
+ol.render.webgl.circlereplay.defaultshader.Vertex.OPTIMIZED_SOURCE = 'varying vec2 a;varying vec2 b;varying float c;varying float d;attribute vec2 e;attribute float f;attribute float g;uniform mat4 h;uniform mat4 i;uniform mat4 j;uniform float k;uniform float l;void main(void){mat4 offsetMatrix=i*j;a=vec4(h*vec4(e,0.0,1.0)).xy;d=l;float lineWidth=k*l;c=lineWidth/2.0;if(lineWidth==0.0){lineWidth=2.0*l;}vec2 offset;float radius=g+3.0*l;if(f==0.0){offset=vec2(-1.0,1.0);}else if(f==1.0){offset=vec2(-1.0,-1.0);}else if(f==2.0){offset=vec2(1.0,-1.0);}else{offset=vec2(1.0,1.0);}gl_Position=h*vec4(e+offset*radius,0.0,1.0)+offsetMatrix*vec4(offset*lineWidth,0.0,0.0);b=vec4(h*vec4(e.x+g,e.y,0.0,1.0)).xy;if(distance(a,b)>20000.0){gl_Position=vec4(a,0.0,1.0);}}';
 
 
 /**
@@ -32392,9 +32881,20 @@ ol.render.webgl.CircleReplay.prototype.drawCoordinates_ = function(
     this.vertices[numVertices++] = 2;
     this.vertices[numVertices++] = this.radius_;
 
-    this.indices[numIndices++] = n++;
-    this.indices[numIndices++] = n++;
-    this.indices[numIndices++] = n++;
+    this.vertices[numVertices++] = flatCoordinates[i];
+    this.vertices[numVertices++] = flatCoordinates[i + 1];
+    this.vertices[numVertices++] = 3;
+    this.vertices[numVertices++] = this.radius_;
+
+    this.indices[numIndices++] = n;
+    this.indices[numIndices++] = n + 1;
+    this.indices[numIndices++] = n + 2;
+
+    this.indices[numIndices++] = n + 2;
+    this.indices[numIndices++] = n + 3;
+    this.indices[numIndices++] = n;
+
+    n += 4;
   }
 };
 
@@ -32775,14 +33275,14 @@ ol.inherits(ol.render.webgl.imagereplay.defaultshader.Vertex, ol.webgl.Vertex);
  * @const
  * @type {string}
  */
-ol.render.webgl.imagereplay.defaultshader.Vertex.DEBUG_SOURCE = 'varying vec2 v_texCoord;\nvarying float v_opacity;\n\nattribute vec2 a_position;\nattribute vec2 a_texCoord;\nattribute vec2 a_offsets;\nattribute float a_opacity;\nattribute float a_rotateWithView;\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\n\nvoid main(void) {\n  mat4 offsetMatrix = u_offsetScaleMatrix;\n  if (a_rotateWithView == 1.0) {\n    offsetMatrix = u_offsetScaleMatrix * u_offsetRotateMatrix;\n  }\n  vec4 offsets = offsetMatrix * vec4(a_offsets, 0., 0.);\n  gl_Position = u_projectionMatrix * vec4(a_position, 0., 1.) + offsets;\n  v_texCoord = a_texCoord;\n  v_opacity = a_opacity;\n}\n\n\n';
+ol.render.webgl.imagereplay.defaultshader.Vertex.DEBUG_SOURCE = 'varying vec2 v_texCoord;\nvarying float v_opacity;\n\nattribute vec2 a_position;\nattribute vec2 a_texCoord;\nattribute vec2 a_offsets;\nattribute float a_opacity;\nattribute float a_rotateWithView;\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\n\nvoid main(void) {\n  mat4 offsetMatrix = u_offsetScaleMatrix;\n  if (a_rotateWithView == 1.0) {\n    offsetMatrix = u_offsetScaleMatrix * u_offsetRotateMatrix;\n  }\n  vec4 offsets = offsetMatrix * vec4(a_offsets, 0.0, 0.0);\n  gl_Position = u_projectionMatrix * vec4(a_position, 0.0, 1.0) + offsets;\n  v_texCoord = a_texCoord;\n  v_opacity = a_opacity;\n}\n\n\n';
 
 
 /**
  * @const
  * @type {string}
  */
-ol.render.webgl.imagereplay.defaultshader.Vertex.OPTIMIZED_SOURCE = 'varying vec2 a;varying float b;attribute vec2 c;attribute vec2 d;attribute vec2 e;attribute float f;attribute float g;uniform mat4 h;uniform mat4 i;uniform mat4 j;void main(void){mat4 offsetMatrix=i;if(g==1.0){offsetMatrix=i*j;}vec4 offsets=offsetMatrix*vec4(e,0.,0.);gl_Position=h*vec4(c,0.,1.)+offsets;a=d;b=f;}';
+ol.render.webgl.imagereplay.defaultshader.Vertex.OPTIMIZED_SOURCE = 'varying vec2 a;varying float b;attribute vec2 c;attribute vec2 d;attribute vec2 e;attribute float f;attribute float g;uniform mat4 h;uniform mat4 i;uniform mat4 j;void main(void){mat4 offsetMatrix=i;if(g==1.0){offsetMatrix=i*j;}vec4 offsets=offsetMatrix*vec4(e,0.0,0.0);gl_Position=h*vec4(c,0.0,1.0)+offsets;a=d;b=f;}';
 
 
 /**
@@ -34019,14 +34519,14 @@ ol.inherits(ol.render.webgl.linestringreplay.defaultshader.Vertex, ol.webgl.Vert
  * @const
  * @type {string}
  */
-ol.render.webgl.linestringreplay.defaultshader.Vertex.DEBUG_SOURCE = 'varying float v_round;\nvarying vec2 v_roundVertex;\nvarying float v_halfWidth;\n\n\nattribute vec2 a_lastPos;\nattribute vec2 a_position;\nattribute vec2 a_nextPos;\nattribute float a_direction;\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\nuniform float u_lineWidth;\nuniform float u_miterLimit;\n\nvoid main(void) {\n  bool degenerate = false;\n  v_halfWidth = u_lineWidth / 2.0;\n  float miterLimit = u_miterLimit + u_lineWidth;\n  mat4 offsetMatrix = u_offsetScaleMatrix * u_offsetRotateMatrix;\n  vec2 offset;\n  v_round = 0.0;\n  float direction = a_direction / abs(a_direction);\n  vec4 projPos = u_projectionMatrix * vec4(a_position, 0., 1.);\n  v_roundVertex = projPos.xy;\n  if (mod(a_direction, 3.0) == 0.0 || mod(a_direction, 17.0) == 0.0) {\n    vec2 dirVect = a_nextPos - a_position;\n    vec2 normal = normalize(vec2(-dirVect.y, dirVect.x));\n    offset = v_halfWidth * normal * direction;\n  } else if (mod(a_direction, 5.0) == 0.0 || mod(a_direction, 13.0) == 0.0) {\n    vec2 dirVect = a_lastPos - a_position;\n    vec2 normal = normalize(vec2(dirVect.y, -dirVect.x));\n    offset = v_halfWidth * normal * direction;\n  } else if (mod(a_direction, 19.0) == 0.0 || mod(a_direction, 23.0) == 0.0) {\n    vec2 dirVect = a_nextPos - a_position;\n    vec2 tmpNormal = normalize(vec2(-dirVect.y, dirVect.x));\n    vec2 tangent = normalize(normalize(a_nextPos - a_position) + normalize(a_position - a_lastPos));\n    vec2 normal = vec2(-tangent.y, tangent.x);\n    float miterLength = abs(v_halfWidth / dot(normal, tmpNormal));\n    if (mod(a_direction, 23.0) == 0.0) {\n      offset = normal * direction * miterLength;\n      if (mod(a_direction, 2.0) == 0.0) {\n        v_round = 1.0;\n      } else if (miterLength > miterLimit) {\n        offset = tmpNormal * direction * v_halfWidth;\n      }\n    } else {\n      dirVect = a_lastPos - a_position;\n      vec2 longOffset, shortOffset, longVertex;\n      vec4 shortProjVertex;\n      if (length(a_nextPos - a_position) > length(a_lastPos - a_position)) {\n        longOffset = tmpNormal * direction * v_halfWidth;\n        shortOffset = normalize(vec2(dirVect.y, -dirVect.x)) * direction * v_halfWidth;\n        longVertex = a_nextPos;\n        shortProjVertex = u_projectionMatrix * vec4(a_lastPos, 0., 1.);\n      } else {\n        shortOffset = tmpNormal * direction * v_halfWidth;\n        longOffset = normalize(vec2(dirVect.y, -dirVect.x)) * direction * v_halfWidth;\n        longVertex = a_lastPos;\n        shortProjVertex = u_projectionMatrix * vec4(a_nextPos, 0., 1.);\n      }\n      //Intersection algorithm based on theory by Paul Bourke (http://paulbourke.net/geometry/pointlineplane/).\n      vec4 p1 = u_projectionMatrix * vec4(longVertex, 0., 1.) + offsetMatrix * vec4(longOffset, 0., 0.);\n      vec4 p2 = projPos + offsetMatrix * vec4(longOffset, 0., 0.);\n      vec4 p3 = shortProjVertex + offsetMatrix * vec4(-shortOffset, 0., 0.);\n      vec4 p4 = shortProjVertex + offsetMatrix * vec4(shortOffset, 0., 0.);\n      float denom = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);\n      float epsilon = 0.000000000001;\n      float firstU = ((p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x)) / denom;\n      float secondU = ((p2.x - p1.x) * (p1.y - p3.y) - (p2.y - p1.y) * (p1.x - p3.x)) / denom;\n      if (firstU > epsilon && firstU < 1.0 - epsilon && secondU > epsilon && secondU < 1.0 - epsilon) {\n        gl_Position = shortProjVertex;\n        gl_Position.x = p1.x + firstU * (p2.x - p1.x);\n        gl_Position.y = p1.y + firstU * (p2.y - p1.y);\n        degenerate = true;\n      } else {\n        offset = normal * direction * miterLength;\n      }\n    }\n  } else if (mod(a_direction, 7.0) == 0.0 || mod(a_direction, 11.0) == 0.0) {\n    vec2 normal;\n    if (mod(a_direction, 7.0) == 0.0) {\n      vec2 dirVect = a_position - a_nextPos;\n      vec2 firstNormal = normalize(dirVect);\n      vec2 secondNormal = vec2(firstNormal.y * direction, -firstNormal.x * direction);\n      vec2 hypotenuse = normalize(firstNormal - secondNormal);\n      normal = vec2(hypotenuse.y * direction, -hypotenuse.x * direction);\n    } else {\n      vec2 dirVect = a_position - a_lastPos;\n      vec2 firstNormal = normalize(dirVect);\n      vec2 secondNormal = vec2(-firstNormal.y * direction, firstNormal.x * direction);\n      vec2 hypotenuse = normalize(firstNormal - secondNormal);\n      normal = vec2(-hypotenuse.y * direction, hypotenuse.x * direction);\n    }\n    float length = sqrt(v_halfWidth * v_halfWidth * 2.0);\n    offset = normal * length;\n    if (mod(a_direction, 2.0) == 0.0) {\n      v_round = 1.0;\n    }\n  }\n  if (!degenerate) {\n    vec4 offsets = offsetMatrix * vec4(offset, 0., 0.);\n    gl_Position = projPos + offsets;\n  }\n}\n\n\n';
+ol.render.webgl.linestringreplay.defaultshader.Vertex.DEBUG_SOURCE = 'varying float v_round;\nvarying vec2 v_roundVertex;\nvarying float v_halfWidth;\n\n\nattribute vec2 a_lastPos;\nattribute vec2 a_position;\nattribute vec2 a_nextPos;\nattribute float a_direction;\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\nuniform float u_lineWidth;\nuniform float u_miterLimit;\n\nbool nearlyEquals(in float value, in float ref) {\n  float epsilon = 0.000000000001;\n  return value >= ref - epsilon && value <= ref + epsilon;\n}\n\nvoid alongNormal(out vec2 offset, in vec2 nextP, in float turnDir, in float direction) {\n  vec2 dirVect = nextP - a_position;\n  vec2 normal = normalize(vec2(-turnDir * dirVect.y, turnDir * dirVect.x));\n  offset = u_lineWidth / 2.0 * normal * direction;\n}\n\nvoid miterUp(out vec2 offset, out float round, in bool isRound, in float direction) {\n  float halfWidth = u_lineWidth / 2.0;\n  vec2 tangent = normalize(normalize(a_nextPos - a_position) + normalize(a_position - a_lastPos));\n  vec2 normal = vec2(-tangent.y, tangent.x);\n  vec2 dirVect = a_nextPos - a_position;\n  vec2 tmpNormal = normalize(vec2(-dirVect.y, dirVect.x));\n  float miterLength = abs(halfWidth / dot(normal, tmpNormal));\n  offset = normal * direction * miterLength;\n  round = 0.0;\n  if (isRound) {\n    round = 1.0;\n  } else if (miterLength > u_miterLimit + u_lineWidth) {\n    offset = halfWidth * tmpNormal * direction;\n  }\n}\n\nbool miterDown(out vec2 offset, in vec4 projPos, in mat4 offsetMatrix, in float direction) {\n  bool degenerate = false;\n  vec2 tangent = normalize(normalize(a_nextPos - a_position) + normalize(a_position - a_lastPos));\n  vec2 normal = vec2(-tangent.y, tangent.x);\n  vec2 dirVect = a_lastPos - a_position;\n  vec2 tmpNormal = normalize(vec2(-dirVect.y, dirVect.x));\n  vec2 longOffset, shortOffset, longVertex;\n  vec4 shortProjVertex;\n  float halfWidth = u_lineWidth / 2.0;\n  if (length(a_nextPos - a_position) > length(a_lastPos - a_position)) {\n    longOffset = tmpNormal * direction * halfWidth;\n    shortOffset = normalize(vec2(dirVect.y, -dirVect.x)) * direction * halfWidth;\n    longVertex = a_nextPos;\n    shortProjVertex = u_projectionMatrix * vec4(a_lastPos, 0.0, 1.0);\n  } else {\n    shortOffset = tmpNormal * direction * halfWidth;\n    longOffset = normalize(vec2(dirVect.y, -dirVect.x)) * direction * halfWidth;\n    longVertex = a_lastPos;\n    shortProjVertex = u_projectionMatrix * vec4(a_nextPos, 0.0, 1.0);\n  }\n  //Intersection algorithm based on theory by Paul Bourke (http://paulbourke.net/geometry/pointlineplane/).\n  vec4 p1 = u_projectionMatrix * vec4(longVertex, 0.0, 1.0) + offsetMatrix * vec4(longOffset, 0.0, 0.0);\n  vec4 p2 = projPos + offsetMatrix * vec4(longOffset, 0.0, 0.0);\n  vec4 p3 = shortProjVertex + offsetMatrix * vec4(-shortOffset, 0.0, 0.0);\n  vec4 p4 = shortProjVertex + offsetMatrix * vec4(shortOffset, 0.0, 0.0);\n  float denom = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);\n  float firstU = ((p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x)) / denom;\n  float secondU = ((p2.x - p1.x) * (p1.y - p3.y) - (p2.y - p1.y) * (p1.x - p3.x)) / denom;\n  float epsilon = 0.000000000001;\n  if (firstU > epsilon && firstU < 1.0 - epsilon && secondU > epsilon && secondU < 1.0 - epsilon) {\n    shortProjVertex.x = p1.x + firstU * (p2.x - p1.x);\n    shortProjVertex.y = p1.y + firstU * (p2.y - p1.y);\n    offset = shortProjVertex.xy;\n    degenerate = true;\n  } else {\n    float miterLength = abs(halfWidth / dot(normal, tmpNormal));\n    offset = normal * direction * miterLength;\n  }\n  return degenerate;\n}\n\nvoid squareCap(out vec2 offset, out float round, in bool isRound, in vec2 nextP,\n    in float turnDir, in float direction) {\n  round = 0.0;\n  vec2 dirVect = a_position - nextP;\n  vec2 firstNormal = normalize(dirVect);\n  vec2 secondNormal = vec2(turnDir * firstNormal.y * direction, -turnDir * firstNormal.x * direction);\n  vec2 hypotenuse = normalize(firstNormal - secondNormal);\n  vec2 normal = vec2(turnDir * hypotenuse.y * direction, -turnDir * hypotenuse.x * direction);\n  float length = sqrt(v_halfWidth * v_halfWidth * 2.0);\n  offset = normal * length;\n  if (isRound) {\n    round = 1.0;\n  }\n}\n\nvoid main(void) {\n  bool degenerate = false;\n  float direction = float(sign(a_direction));\n  mat4 offsetMatrix = u_offsetScaleMatrix * u_offsetRotateMatrix;\n  vec2 offset;\n  vec4 projPos = u_projectionMatrix * vec4(a_position, 0.0, 1.0);\n  bool round = nearlyEquals(mod(a_direction, 2.0), 0.0);\n\n  v_round = 0.0;\n  v_halfWidth = u_lineWidth / 2.0;\n  v_roundVertex = projPos.xy;\n\n  if (nearlyEquals(mod(a_direction, 3.0), 0.0) || nearlyEquals(mod(a_direction, 17.0), 0.0)) {\n    alongNormal(offset, a_nextPos, 1.0, direction);\n  } else if (nearlyEquals(mod(a_direction, 5.0), 0.0) || nearlyEquals(mod(a_direction, 13.0), 0.0)) {\n    alongNormal(offset, a_lastPos, -1.0, direction);\n  } else if (nearlyEquals(mod(a_direction, 23.0), 0.0)) {\n    miterUp(offset, v_round, round, direction);\n  } else if (nearlyEquals(mod(a_direction, 19.0), 0.0)) {\n    degenerate = miterDown(offset, projPos, offsetMatrix, direction);\n  } else if (nearlyEquals(mod(a_direction, 7.0), 0.0)) {\n    squareCap(offset, v_round, round, a_nextPos, 1.0, direction);\n  } else if (nearlyEquals(mod(a_direction, 11.0), 0.0)) {\n    squareCap(offset, v_round, round, a_lastPos, -1.0, direction);\n  }\n  if (!degenerate) {\n    vec4 offsets = offsetMatrix * vec4(offset, 0.0, 0.0);\n    gl_Position = projPos + offsets;\n  } else {\n    gl_Position = vec4(offset, 0.0, 1.0);\n  }\n}\n\n\n';
 
 
 /**
  * @const
  * @type {string}
  */
-ol.render.webgl.linestringreplay.defaultshader.Vertex.OPTIMIZED_SOURCE = 'varying float a;varying vec2 b;varying float c;attribute vec2 d;attribute vec2 e;attribute vec2 f;attribute float g;uniform mat4 h;uniform mat4 i;uniform mat4 j;uniform float k;uniform float l;void main(void){bool degenerate=false;c=k/2.0;float miterLimit=l+k;mat4 offsetMatrix=i*j;vec2 offset;a=0.0;float direction=g/abs(g);vec4 projPos=h*vec4(e,0.,1.);b=projPos.xy;if(mod(g,3.0)==0.0||mod(g,17.0)==0.0){vec2 dirVect=f-e;vec2 normal=normalize(vec2(-dirVect.y,dirVect.x));offset=c*normal*direction;}else if(mod(g,5.0)==0.0||mod(g,13.0)==0.0){vec2 dirVect=d-e;vec2 normal=normalize(vec2(dirVect.y,-dirVect.x));offset=c*normal*direction;}else if(mod(g,19.0)==0.0||mod(g,23.0)==0.0){vec2 dirVect=f-e;vec2 tmpNormal=normalize(vec2(-dirVect.y,dirVect.x));vec2 tangent=normalize(normalize(f-e)+normalize(e-d));vec2 normal=vec2(-tangent.y,tangent.x);float miterLength=abs(c/dot(normal,tmpNormal));if(mod(g,23.0)==0.0){offset=normal*direction*miterLength;if(mod(g,2.0)==0.0){a=1.0;}else if(miterLength>miterLimit){offset=tmpNormal*direction*c;}} else{dirVect=d-e;vec2 longOffset,shortOffset,longVertex;vec4 shortProjVertex;if(length(f-e)>length(d-e)){longOffset=tmpNormal*direction*c;shortOffset=normalize(vec2(dirVect.y,-dirVect.x))*direction*c;longVertex=f;shortProjVertex=h*vec4(d,0.,1.);}else{shortOffset=tmpNormal*direction*c;longOffset=normalize(vec2(dirVect.y,-dirVect.x))*direction*c;longVertex=d;shortProjVertex=h*vec4(f,0.,1.);}vec4 p1=h*vec4(longVertex,0.,1.)+offsetMatrix*vec4(longOffset,0.,0.);vec4 p2=projPos+offsetMatrix*vec4(longOffset,0.,0.);vec4 p3=shortProjVertex+offsetMatrix*vec4(-shortOffset,0.,0.);vec4 p4=shortProjVertex+offsetMatrix*vec4(shortOffset,0.,0.);float denom=(p4.y-p3.y)*(p2.x-p1.x)-(p4.x-p3.x)*(p2.y-p1.y);float epsilon=0.000000000001;float firstU=((p4.x-p3.x)*(p1.y-p3.y)-(p4.y-p3.y)*(p1.x-p3.x))/denom;float secondU=((p2.x-p1.x)*(p1.y-p3.y)-(p2.y-p1.y)*(p1.x-p3.x))/denom;if(firstU>epsilon&&firstU<1.0-epsilon&&secondU>epsilon&&secondU<1.0-epsilon){gl_Position=shortProjVertex;gl_Position.x=p1.x+firstU*(p2.x-p1.x);gl_Position.y=p1.y+firstU*(p2.y-p1.y);degenerate=true;}else{offset=normal*direction*miterLength;}}}else if(mod(g,7.0)==0.0||mod(g,11.0)==0.0){vec2 normal;if(mod(g,7.0)==0.0){vec2 dirVect=e-f;vec2 firstNormal=normalize(dirVect);vec2 secondNormal=vec2(firstNormal.y*direction,-firstNormal.x*direction);vec2 hypotenuse=normalize(firstNormal-secondNormal);normal=vec2(hypotenuse.y*direction,-hypotenuse.x*direction);}else{vec2 dirVect=e-d;vec2 firstNormal=normalize(dirVect);vec2 secondNormal=vec2(-firstNormal.y*direction,firstNormal.x*direction);vec2 hypotenuse=normalize(firstNormal-secondNormal);normal=vec2(-hypotenuse.y*direction,hypotenuse.x*direction);}float length=sqrt(c*c*2.0);offset=normal*length;if(mod(g,2.0)==0.0){a=1.0;}} if(!degenerate){vec4 offsets=offsetMatrix*vec4(offset,0.,0.);gl_Position=projPos+offsets;}}';
+ol.render.webgl.linestringreplay.defaultshader.Vertex.OPTIMIZED_SOURCE = 'varying float a;varying vec2 b;varying float c;attribute vec2 d;attribute vec2 e;attribute vec2 f;attribute float g;uniform mat4 h;uniform mat4 i;uniform mat4 j;uniform float k;uniform float l;bool nearlyEquals(in float value,in float ref){float epsilon=0.000000000001;return value>=ref-epsilon&&value<=ref+epsilon;}void alongNormal(out vec2 offset,in vec2 nextP,in float turnDir,in float direction){vec2 dirVect=nextP-e;vec2 normal=normalize(vec2(-turnDir*dirVect.y,turnDir*dirVect.x));offset=k/2.0*normal*direction;}void miterUp(out vec2 offset,out float round,in bool isRound,in float direction){float halfWidth=k/2.0;vec2 tangent=normalize(normalize(f-e)+normalize(e-d));vec2 normal=vec2(-tangent.y,tangent.x);vec2 dirVect=f-e;vec2 tmpNormal=normalize(vec2(-dirVect.y,dirVect.x));float miterLength=abs(halfWidth/dot(normal,tmpNormal));offset=normal*direction*miterLength;round=0.0;if(isRound){round=1.0;}else if(miterLength>l+k){offset=halfWidth*tmpNormal*direction;}} bool miterDown(out vec2 offset,in vec4 projPos,in mat4 offsetMatrix,in float direction){bool degenerate=false;vec2 tangent=normalize(normalize(f-e)+normalize(e-d));vec2 normal=vec2(-tangent.y,tangent.x);vec2 dirVect=d-e;vec2 tmpNormal=normalize(vec2(-dirVect.y,dirVect.x));vec2 longOffset,shortOffset,longVertex;vec4 shortProjVertex;float halfWidth=k/2.0;if(length(f-e)>length(d-e)){longOffset=tmpNormal*direction*halfWidth;shortOffset=normalize(vec2(dirVect.y,-dirVect.x))*direction*halfWidth;longVertex=f;shortProjVertex=h*vec4(d,0.0,1.0);}else{shortOffset=tmpNormal*direction*halfWidth;longOffset=normalize(vec2(dirVect.y,-dirVect.x))*direction*halfWidth;longVertex=d;shortProjVertex=h*vec4(f,0.0,1.0);}vec4 p1=h*vec4(longVertex,0.0,1.0)+offsetMatrix*vec4(longOffset,0.0,0.0);vec4 p2=projPos+offsetMatrix*vec4(longOffset,0.0,0.0);vec4 p3=shortProjVertex+offsetMatrix*vec4(-shortOffset,0.0,0.0);vec4 p4=shortProjVertex+offsetMatrix*vec4(shortOffset,0.0,0.0);float denom=(p4.y-p3.y)*(p2.x-p1.x)-(p4.x-p3.x)*(p2.y-p1.y);float firstU=((p4.x-p3.x)*(p1.y-p3.y)-(p4.y-p3.y)*(p1.x-p3.x))/denom;float secondU=((p2.x-p1.x)*(p1.y-p3.y)-(p2.y-p1.y)*(p1.x-p3.x))/denom;float epsilon=0.000000000001;if(firstU>epsilon&&firstU<1.0-epsilon&&secondU>epsilon&&secondU<1.0-epsilon){shortProjVertex.x=p1.x+firstU*(p2.x-p1.x);shortProjVertex.y=p1.y+firstU*(p2.y-p1.y);offset=shortProjVertex.xy;degenerate=true;}else{float miterLength=abs(halfWidth/dot(normal,tmpNormal));offset=normal*direction*miterLength;}return degenerate;}void squareCap(out vec2 offset,out float round,in bool isRound,in vec2 nextP,in float turnDir,in float direction){round=0.0;vec2 dirVect=e-nextP;vec2 firstNormal=normalize(dirVect);vec2 secondNormal=vec2(turnDir*firstNormal.y*direction,-turnDir*firstNormal.x*direction);vec2 hypotenuse=normalize(firstNormal-secondNormal);vec2 normal=vec2(turnDir*hypotenuse.y*direction,-turnDir*hypotenuse.x*direction);float length=sqrt(c*c*2.0);offset=normal*length;if(isRound){round=1.0;}} void main(void){bool degenerate=false;float direction=float(sign(g));mat4 offsetMatrix=i*j;vec2 offset;vec4 projPos=h*vec4(e,0.0,1.0);bool round=nearlyEquals(mod(g,2.0),0.0);a=0.0;c=k/2.0;b=projPos.xy;if(nearlyEquals(mod(g,3.0),0.0)||nearlyEquals(mod(g,17.0),0.0)){alongNormal(offset,f,1.0,direction);}else if(nearlyEquals(mod(g,5.0),0.0)||nearlyEquals(mod(g,13.0),0.0)){alongNormal(offset,d,-1.0,direction);}else if(nearlyEquals(mod(g,23.0),0.0)){miterUp(offset,a,round,direction);}else if(nearlyEquals(mod(g,19.0),0.0)){degenerate=miterDown(offset,projPos,offsetMatrix,direction);}else if(nearlyEquals(mod(g,7.0),0.0)){squareCap(offset,a,round,f,1.0,direction);}else if(nearlyEquals(mod(g,11.0),0.0)){squareCap(offset,a,round,d,-1.0,direction);}if(!degenerate){vec4 offsets=offsetMatrix*vec4(offset,0.0,0.0);gl_Position=projPos+offsets;}else{gl_Position=vec4(offset,0.0,1.0);}}';
 
 
 /**
@@ -34872,14 +35372,14 @@ ol.inherits(ol.render.webgl.polygonreplay.defaultshader.Vertex, ol.webgl.Vertex)
  * @const
  * @type {string}
  */
-ol.render.webgl.polygonreplay.defaultshader.Vertex.DEBUG_SOURCE = '\n\nattribute vec2 a_position;\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\n\nvoid main(void) {\n  gl_Position = u_projectionMatrix * vec4(a_position, 0., 1.);\n}\n\n\n';
+ol.render.webgl.polygonreplay.defaultshader.Vertex.DEBUG_SOURCE = '\n\nattribute vec2 a_position;\n\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_offsetScaleMatrix;\nuniform mat4 u_offsetRotateMatrix;\n\nvoid main(void) {\n  gl_Position = u_projectionMatrix * vec4(a_position, 0.0, 1.0);\n}\n\n\n';
 
 
 /**
  * @const
  * @type {string}
  */
-ol.render.webgl.polygonreplay.defaultshader.Vertex.OPTIMIZED_SOURCE = 'attribute vec2 a;uniform mat4 b;uniform mat4 c;uniform mat4 d;void main(void){gl_Position=b*vec4(a,0.,1.);}';
+ol.render.webgl.polygonreplay.defaultshader.Vertex.OPTIMIZED_SOURCE = 'attribute vec2 a;uniform mat4 b;uniform mat4 c;uniform mat4 d;void main(void){gl_Position=b*vec4(a,0.0,1.0);}';
 
 
 /**
@@ -37139,6 +37639,72 @@ ol.render.webgl.PolygonReplay.prototype.setFillStrokeStyle = function(fillStyle,
   }
 };
 
+goog.provide('ol.render.webgl.TextReplay');
+
+goog.require('ol');
+
+/**
+ * @constructor
+ * @param {number} tolerance Tolerance.
+ * @param {ol.Extent} maxExtent Max extent.
+ * @struct
+ */
+ol.render.webgl.TextReplay = function(tolerance, maxExtent) {};
+
+/**
+ * @param {ol.style.Text} textStyle Text style.
+ */
+ol.render.webgl.TextReplay.prototype.setTextStyle = function(textStyle) {};
+
+/**
+ * @param {ol.webgl.Context} context Context.
+ * @param {ol.Coordinate} center Center.
+ * @param {number} resolution Resolution.
+ * @param {number} rotation Rotation.
+ * @param {ol.Size} size Size.
+ * @param {number} pixelRatio Pixel ratio.
+ * @param {number} opacity Global opacity.
+ * @param {Object.<string, boolean>} skippedFeaturesHash Ids of features
+ *  to skip.
+ * @param {function((ol.Feature|ol.render.Feature)): T|undefined} featureCallback Feature callback.
+ * @param {boolean} oneByOne Draw features one-by-one for the hit-detecion.
+ * @param {ol.Extent=} opt_hitExtent Hit extent: Only features intersecting
+ *  this extent are checked.
+ * @return {T|undefined} Callback result.
+ * @template T
+ */
+ol.render.webgl.TextReplay.prototype.replay = function(context,
+    center, resolution, rotation, size, pixelRatio,
+    opacity, skippedFeaturesHash,
+    featureCallback, oneByOne, opt_hitExtent) {
+  return undefined;
+};
+
+/**
+ * @param {Array.<number>} flatCoordinates Flat coordinates.
+ * @param {number} offset Offset.
+ * @param {number} end End.
+ * @param {number} stride Stride.
+ * @param {ol.geom.Geometry|ol.render.Feature} geometry Geometry.
+ * @param {ol.Feature|ol.render.Feature} feature Feature.
+ */
+ol.render.webgl.TextReplay.prototype.drawText = function(flatCoordinates, offset,
+    end, stride, geometry, feature) {};
+
+/**
+ * @abstract
+ * @param {ol.webgl.Context} context Context.
+ */
+ol.render.webgl.TextReplay.prototype.finish = function(context) {};
+
+/**
+ * @param {ol.webgl.Context} context WebGL context.
+ * @return {function()} Delete resources function.
+ */
+ol.render.webgl.TextReplay.prototype.getDeleteResourcesFunction = function(context) {
+  return ol.nullFunction;
+};
+
 goog.provide('ol.render.webgl.ReplayGroup');
 
 goog.require('ol');
@@ -37149,6 +37715,7 @@ goog.require('ol.render.webgl.CircleReplay');
 goog.require('ol.render.webgl.ImageReplay');
 goog.require('ol.render.webgl.LineStringReplay');
 goog.require('ol.render.webgl.PolygonReplay');
+goog.require('ol.render.webgl.TextReplay');
 
 /**
  * @constructor
@@ -37453,7 +38020,8 @@ ol.render.webgl.ReplayGroup.BATCH_CONSTRUCTORS_ = {
   'Circle': ol.render.webgl.CircleReplay,
   'Image': ol.render.webgl.ImageReplay,
   'LineString': ol.render.webgl.LineStringReplay,
-  'Polygon': ol.render.webgl.PolygonReplay
+  'Polygon': ol.render.webgl.PolygonReplay,
+  'Text': ol.render.webgl.TextReplay
 };
 
 goog.provide('ol.render.webgl.Immediate');
@@ -39075,11 +39643,17 @@ ol.renderer.webgl.VectorLayer.prototype.composeFrame = function(frameState, laye
   this.layerState_ = layerState;
   var viewState = frameState.viewState;
   var replayGroup = this.replayGroup_;
+  var size = frameState.size;
+  var pixelRatio = frameState.pixelRatio;
+  var gl = this.mapRenderer.getGL();
   if (replayGroup && !replayGroup.isEmpty()) {
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(0, 0, size[0] * pixelRatio, size[1] * pixelRatio);
     replayGroup.replay(context,
         viewState.center, viewState.resolution, viewState.rotation,
-        frameState.size, frameState.pixelRatio, layerState.opacity,
+        size, pixelRatio, layerState.opacity,
         layerState.managed ? frameState.skippedFeatureUids : {});
+    gl.disable(gl.SCISSOR_TEST);
   }
 
 };
@@ -40399,6 +40973,12 @@ ol.Map = function(options) {
 
   /**
    * @private
+   * @type {?ol.EventsKey}
+   */
+  this.viewChangeListenerKey_ = null;
+
+  /**
+   * @private
    * @type {Array.<ol.EventsKey>}
    */
   this.layerGroupPropertyListenerKeys_ = null;
@@ -40693,6 +41273,7 @@ ol.Map.prototype.addOverlayInternal_ = function(overlay) {
 
 
 /**
+ * Deprecated (use {@link ol.View#animate} instead).
  * Add functions to be called before rendering. This can be used for attaching
  * animations before updating the map's view.  The {@link ol.animation}
  * namespace provides several static methods for creating prerender functions.
@@ -40700,6 +41281,7 @@ ol.Map.prototype.addOverlayInternal_ = function(overlay) {
  * @api
  */
 ol.Map.prototype.beforeRender = function(var_args) {
+  ol.DEBUG && console.warn('map.beforeRender() is deprecated.  Use view.animate() instead.');
   this.render();
   Array.prototype.push.apply(this.preRenderFunctions_, arguments);
 };
@@ -40847,7 +41429,7 @@ ol.Map.prototype.hasFeatureAtPixel = function(pixel, opt_layerFilter, opt_this) 
 
 
 /**
- * Returns the geographical coordinate for a browser event.
+ * Returns the coordinate in view projection for a browser event.
  * @param {Event} event Event.
  * @return {ol.Coordinate} Coordinate.
  * @api stable
@@ -41281,10 +41863,17 @@ ol.Map.prototype.handleViewChanged_ = function() {
     ol.events.unlistenByKey(this.viewPropertyListenerKey_);
     this.viewPropertyListenerKey_ = null;
   }
+  if (this.viewChangeListenerKey_) {
+    ol.events.unlistenByKey(this.viewChangeListenerKey_);
+    this.viewChangeListenerKey_ = null;
+  }
   var view = this.getView();
   if (view) {
     this.viewPropertyListenerKey_ = ol.events.listen(
         view, ol.ObjectEventType.PROPERTYCHANGE,
+        this.handleViewPropertyChanged_, this);
+    this.viewChangeListenerKey_ = ol.events.listen(
+        view, ol.events.EventType.CHANGE,
         this.handleViewPropertyChanged_, this);
   }
   this.render();
@@ -41400,7 +41989,6 @@ ol.Map.prototype.removeOverlay = function(overlay) {
  * @private
  */
 ol.Map.prototype.renderFrame_ = function(time) {
-
   var i, ii, viewState;
 
   var size = this.getSize();
@@ -41737,7 +42325,6 @@ goog.provide('ol.Overlay');
 goog.require('ol');
 goog.require('ol.MapEvent');
 goog.require('ol.Object');
-goog.require('ol.animation');
 goog.require('ol.dom');
 goog.require('ol.events');
 goog.require('ol.extent');
@@ -41803,10 +42390,10 @@ ol.Overlay = function(options) {
 
   /**
    * @private
-   * @type {olx.animation.PanOptions}
+   * @type {olx.OverlayPanOptions}
    */
-  this.autoPanAnimation_ = options.autoPanAnimation !== undefined ?
-      options.autoPanAnimation : /** @type {olx.animation.PanOptions} */ ({});
+  this.autoPanAnimation_ = options.autoPanAnimation ||
+      /** @type {olx.OverlayPanOptions} */ ({});
 
   /**
    * @private
@@ -42114,11 +42701,11 @@ ol.Overlay.prototype.panIntoView_ = function() {
         centerPx[1] + delta[1]
       ];
 
-      if (this.autoPanAnimation_) {
-        this.autoPanAnimation_.source = center;
-        map.beforeRender(ol.animation.pan(this.autoPanAnimation_));
-      }
-      map.getView().setCenter(map.getCoordinateFromPixel(newCenterPx));
+      map.getView().animate({
+        center: map.getCoordinateFromPixel(newCenterPx),
+        duration: this.autoPanAnimation_.duration,
+        easing: this.autoPanAnimation_.easing
+      });
     }
   }
 };
@@ -43094,7 +43681,6 @@ goog.provide('ol.control.ZoomSlider');
 
 goog.require('ol');
 goog.require('ol.View');
-goog.require('ol.animation');
 goog.require('ol.control.Control');
 goog.require('ol.css');
 goog.require('ol.easing');
@@ -43323,19 +43909,19 @@ ol.control.ZoomSlider.render = function(mapEvent) {
  * @private
  */
 ol.control.ZoomSlider.prototype.handleContainerClick_ = function(event) {
-  var map = this.getMap();
-  var view = map.getView();
-  var currentResolution = view.getResolution();
-  map.beforeRender(ol.animation.zoom({
-    resolution: /** @type {number} */ (currentResolution),
-    duration: this.duration_,
-    easing: ol.easing.easeOut
-  }));
+  var view = this.getMap().getView();
+
   var relativePosition = this.getRelativePosition_(
       event.offsetX - this.thumbSize_[0] / 2,
       event.offsetY - this.thumbSize_[1] / 2);
+
   var resolution = this.getResolutionForPosition_(relativePosition);
-  view.setResolution(view.constrainResolution(resolution));
+
+  view.animate({
+    resolution: view.constrainResolution(resolution),
+    duration: this.duration_,
+    easing: ol.easing.easeOut
+  });
 };
 
 
@@ -43396,16 +43982,15 @@ ol.control.ZoomSlider.prototype.handleDraggerDrag_ = function(event) {
  */
 ol.control.ZoomSlider.prototype.handleDraggerEnd_ = function(event) {
   if (this.dragging_) {
-    var map = this.getMap();
-    var view = map.getView();
+    var view = this.getMap().getView();
     view.setHint(ol.View.Hint.INTERACTING, -1);
-    map.beforeRender(ol.animation.zoom({
-      resolution: /** @type {number} */ (this.currentResolution_),
+
+    view.animate({
+      resolution: view.constrainResolution(this.currentResolution_),
       duration: this.duration_,
       easing: ol.easing.easeOut
-    }));
-    var resolution = view.constrainResolution(this.currentResolution_);
-    view.setResolution(resolution);
+    });
+
     this.dragging_ = false;
     this.previousX_ = undefined;
     this.previousY_ = undefined;
@@ -44647,7 +45232,6 @@ ol.xml.pushSerializeAndPop = function(object,
 goog.provide('ol.featureloader');
 
 goog.require('ol');
-goog.require('ol.Tile');
 goog.require('ol.format.FormatType');
 goog.require('ol.xml');
 
@@ -44712,35 +45296,6 @@ ol.featureloader.loadFeaturesXhr = function(url, format, success, failure) {
           }
         }.bind(this);
         xhr.send();
-      });
-};
-
-
-/**
- * Create an XHR feature loader for a `url` and `format`. The feature loader
- * loads features (with XHR), parses the features, and adds them to the
- * vector tile.
- * @param {string|ol.FeatureUrlFunction} url Feature URL service.
- * @param {ol.format.Feature} format Feature format.
- * @return {ol.FeatureLoader} The feature loader.
- * @api
- */
-ol.featureloader.tile = function(url, format) {
-  return ol.featureloader.loadFeaturesXhr(url, format,
-      /**
-       * @param {Array.<ol.Feature>} features The loaded features.
-       * @param {ol.proj.Projection} dataProjection Data projection.
-       * @this {ol.VectorTile}
-       */
-      function(features, dataProjection) {
-        this.setProjection(dataProjection);
-        this.setFeatures(features);
-      },
-      /**
-       * @this {ol.VectorTile}
-       */
-      function() {
-        this.setState(ol.Tile.State.ERROR);
       });
 };
 
@@ -51810,12 +52365,13 @@ ol.format.GPX.SCHEMA_LOCATION_ = 'http://www.topografix.com/GPX/1/1 ' +
 
 /**
  * @param {Array.<number>} flatCoordinates Flat coordinates.
+ * @param {ol.LayoutOptions} layoutOptions Layout options.
  * @param {Node} node Node.
  * @param {Object} values Values.
  * @private
  * @return {Array.<number>} Flat coordinates.
  */
-ol.format.GPX.appendCoordinate_ = function(flatCoordinates, node, values) {
+ol.format.GPX.appendCoordinate_ = function(flatCoordinates, layoutOptions, node, values) {
   ol.DEBUG && console.assert(node.nodeType == Node.ELEMENT_NODE,
       'node.nodeType should be ELEMENT');
   flatCoordinates.push(
@@ -51824,16 +52380,63 @@ ol.format.GPX.appendCoordinate_ = function(flatCoordinates, node, values) {
   if ('ele' in values) {
     flatCoordinates.push(/** @type {number} */ (values['ele']));
     delete values['ele'];
+    layoutOptions.hasZ = true;
   } else {
     flatCoordinates.push(0);
   }
   if ('time' in values) {
     flatCoordinates.push(/** @type {number} */ (values['time']));
     delete values['time'];
+    layoutOptions.hasM = true;
   } else {
     flatCoordinates.push(0);
   }
   return flatCoordinates;
+};
+
+
+/**
+ * Choose GeometryLayout based on flags in layoutOptions and adjust flatCoordinates
+ * and ends arrays by shrinking them accordingly (removing unused zero entries).
+ *
+ * @param {ol.LayoutOptions} layoutOptions Layout options.
+ * @param {Array.<number>} flatCoordinates Flat coordinates.
+ * @param {Array.<number>=} ends Ends.
+ * @return {ol.geom.GeometryLayout} Layout.
+ */
+ol.format.GPX.applyLayoutOptions_ = function(layoutOptions, flatCoordinates, ends) {
+  var layout = ol.geom.GeometryLayout.XY;
+  var stride = 2;
+  if (layoutOptions.hasZ && layoutOptions.hasM) {
+    layout = ol.geom.GeometryLayout.XYZM;
+    stride = 4;
+  } else if (layoutOptions.hasZ) {
+    layout = ol.geom.GeometryLayout.XYZ;
+    stride = 3;
+  } else if (layoutOptions.hasM) {
+    layout = ol.geom.GeometryLayout.XYM;
+    stride = 3;
+  }
+  if (stride !== 4) {
+    var i, ii;
+    for (i = 0, ii = flatCoordinates.length / 4; i < ii; i++) {
+      flatCoordinates[i * stride] = flatCoordinates[i * 4];
+      flatCoordinates[i * stride + 1] = flatCoordinates[i * 4 + 1];
+      if (layoutOptions.hasZ) {
+        flatCoordinates[i * stride + 2] = flatCoordinates[i * 4 + 2];
+      }
+      if (layoutOptions.hasM) {
+        flatCoordinates[i * stride + 2] = flatCoordinates[i * 4 + 3];
+      }
+    }
+    flatCoordinates.length = flatCoordinates.length / 4 * stride;
+    if (ends) {
+      for (i = 0, ii = ends.length; i < ii; i++) {
+        ends[i] = ends[i] / 4 * stride;
+      }
+    }
+  }
+  return layout;
 };
 
 
@@ -51885,7 +52488,9 @@ ol.format.GPX.parseRtePt_ = function(node, objectStack) {
     var rteValues = /** @type {Object} */ (objectStack[objectStack.length - 1]);
     var flatCoordinates = /** @type {Array.<number>} */
         (rteValues['flatCoordinates']);
-    ol.format.GPX.appendCoordinate_(flatCoordinates, node, values);
+    var layoutOptions = /** @type {ol.LayoutOptions} */
+        (rteValues['layoutOptions']);
+    ol.format.GPX.appendCoordinate_(flatCoordinates, layoutOptions, node, values);
   }
 };
 
@@ -51905,7 +52510,9 @@ ol.format.GPX.parseTrkPt_ = function(node, objectStack) {
     var trkValues = /** @type {Object} */ (objectStack[objectStack.length - 1]);
     var flatCoordinates = /** @type {Array.<number>} */
         (trkValues['flatCoordinates']);
-    ol.format.GPX.appendCoordinate_(flatCoordinates, node, values);
+    var layoutOptions = /** @type {ol.LayoutOptions} */
+        (trkValues['layoutOptions']);
+    ol.format.GPX.appendCoordinate_(flatCoordinates, layoutOptions, node, values);
   }
 };
 
@@ -51941,7 +52548,8 @@ ol.format.GPX.readRte_ = function(node, objectStack) {
   ol.DEBUG && console.assert(node.localName == 'rte', 'localName should be rte');
   var options = /** @type {olx.format.ReadOptions} */ (objectStack[0]);
   var values = ol.xml.pushParseAndPop({
-    'flatCoordinates': []
+    'flatCoordinates': [],
+    'layoutOptions': {}
   }, ol.format.GPX.RTE_PARSERS_, node, objectStack);
   if (!values) {
     return undefined;
@@ -51949,8 +52557,11 @@ ol.format.GPX.readRte_ = function(node, objectStack) {
   var flatCoordinates = /** @type {Array.<number>} */
       (values['flatCoordinates']);
   delete values['flatCoordinates'];
+  var layoutOptions = /** @type {ol.LayoutOptions} */ (values['layoutOptions']);
+  delete values['layoutOptions'];
+  var layout = ol.format.GPX.applyLayoutOptions_(layoutOptions, flatCoordinates);
   var geometry = new ol.geom.LineString(null);
-  geometry.setFlatCoordinates(ol.geom.GeometryLayout.XYZM, flatCoordinates);
+  geometry.setFlatCoordinates(layout, flatCoordinates);
   ol.format.Feature.transformWithOptions(geometry, false, options);
   var feature = new ol.Feature(geometry);
   feature.setProperties(values);
@@ -51971,7 +52582,8 @@ ol.format.GPX.readTrk_ = function(node, objectStack) {
   var options = /** @type {olx.format.ReadOptions} */ (objectStack[0]);
   var values = ol.xml.pushParseAndPop({
     'flatCoordinates': [],
-    'ends': []
+    'ends': [],
+    'layoutOptions': {}
   }, ol.format.GPX.TRK_PARSERS_, node, objectStack);
   if (!values) {
     return undefined;
@@ -51981,9 +52593,11 @@ ol.format.GPX.readTrk_ = function(node, objectStack) {
   delete values['flatCoordinates'];
   var ends = /** @type {Array.<number>} */ (values['ends']);
   delete values['ends'];
+  var layoutOptions = /** @type {ol.LayoutOptions} */ (values['layoutOptions']);
+  delete values['layoutOptions'];
+  var layout = ol.format.GPX.applyLayoutOptions_(layoutOptions, flatCoordinates, ends);
   var geometry = new ol.geom.MultiLineString(null);
-  geometry.setFlatCoordinates(
-      ol.geom.GeometryLayout.XYZM, flatCoordinates, ends);
+  geometry.setFlatCoordinates(layout, flatCoordinates, ends);
   ol.format.Feature.transformWithOptions(geometry, false, options);
   var feature = new ol.Feature(geometry);
   feature.setProperties(values);
@@ -52007,9 +52621,10 @@ ol.format.GPX.readWpt_ = function(node, objectStack) {
   if (!values) {
     return undefined;
   }
-  var coordinates = ol.format.GPX.appendCoordinate_([], node, values);
-  var geometry = new ol.geom.Point(
-      coordinates, ol.geom.GeometryLayout.XYZM);
+  var layoutOptions = /** @type {ol.LayoutOptions} */ ({});
+  var coordinates = ol.format.GPX.appendCoordinate_([], layoutOptions, node, values);
+  var layout = ol.format.GPX.applyLayoutOptions_(layoutOptions, coordinates);
+  var geometry = new ol.geom.Point(coordinates, layout);
   ol.format.Feature.transformWithOptions(geometry, false, options);
   var feature = new ol.Feature(geometry);
   feature.setProperties(values);
@@ -53611,6 +54226,16 @@ ol.style.Icon.prototype.getAnchor = function() {
   }
   this.normalizedAnchor_ = anchor;
   return this.normalizedAnchor_;
+};
+
+
+/**
+ * Get the icon color.
+ * @return {ol.Color} Color.
+ * @api
+ */
+ol.style.Icon.prototype.getColor = function() {
+  return this.color_;
 };
 
 
@@ -61273,12 +61898,14 @@ goog.require('ol.format.Feature');
 goog.require('ol.format.TextFeature');
 goog.require('ol.geom.GeometryCollection');
 goog.require('ol.geom.GeometryType');
+goog.require('ol.geom.GeometryLayout');
 goog.require('ol.geom.LineString');
 goog.require('ol.geom.MultiLineString');
 goog.require('ol.geom.MultiPoint');
 goog.require('ol.geom.MultiPolygon');
 goog.require('ol.geom.Point');
 goog.require('ol.geom.Polygon');
+goog.require('ol.geom.SimpleGeometry');
 
 
 /**
@@ -61317,6 +61944,27 @@ ol.format.WKT.EMPTY = 'EMPTY';
 
 
 /**
+ * @const
+ * @type {string}
+ */
+ol.format.WKT.Z = 'Z';
+
+
+/**
+ * @const
+ * @type {string}
+ */
+ol.format.WKT.M = 'M';
+
+
+/**
+ * @const
+ * @type {string}
+ */
+ol.format.WKT.ZM = 'ZM';
+
+
+/**
  * @param {ol.geom.Point} geom Point geometry.
  * @return {string} Coordinates part of Point as WKT.
  * @private
@@ -61326,7 +61974,7 @@ ol.format.WKT.encodePointGeometry_ = function(geom) {
   if (coordinates.length === 0) {
     return '';
   }
-  return coordinates[0] + ' ' + coordinates[1];
+  return coordinates.join(' ');
 };
 
 
@@ -61369,7 +62017,7 @@ ol.format.WKT.encodeLineStringGeometry_ = function(geom) {
   var coordinates = geom.getCoordinates();
   var array = [];
   for (var i = 0, ii = coordinates.length; i < ii; ++i) {
-    array.push(coordinates[i][0] + ' ' + coordinates[i][1]);
+    array.push(coordinates[i].join(' '));
   }
   return array.join(',');
 };
@@ -61422,6 +62070,23 @@ ol.format.WKT.encodeMultiPolygonGeometry_ = function(geom) {
   return array.join(',');
 };
 
+/**
+ * @param {ol.geom.SimpleGeometry} geom SimpleGeometry geometry.
+ * @return {string} Potential dimensional information for WKT type.
+ * @private
+ */
+ol.format.WKT.encodeGeometryLayout_ = function(geom) {
+  var layout = geom.getLayout();
+  var dimInfo = '';
+  if (layout === ol.geom.GeometryLayout.XYZ || layout === ol.geom.GeometryLayout.XYZM) {
+    dimInfo += ol.format.WKT.Z;
+  }
+  if (layout === ol.geom.GeometryLayout.XYM || layout === ol.geom.GeometryLayout.XYZM) {
+    dimInfo += ol.format.WKT.M;
+  }
+  return dimInfo;
+};
+
 
 /**
  * Encode a geometry as WKT.
@@ -61435,6 +62100,12 @@ ol.format.WKT.encode_ = function(geom) {
   ol.DEBUG && console.assert(geometryEncoder, 'geometryEncoder should be defined');
   var enc = geometryEncoder(geom);
   type = type.toUpperCase();
+  if (geom instanceof ol.geom.SimpleGeometry) {
+    var dimInfo = ol.format.WKT.encodeGeometryLayout_(geom);
+    if (dimInfo.length > 0) {
+      type += ' ' + dimInfo;
+    }
+  }
   if (enc.length === 0) {
     return type + ' ' + ol.format.WKT.EMPTY;
   }
@@ -61461,7 +62132,7 @@ ol.format.WKT.GeometryEncoder_ = {
 /**
  * Parse a WKT string.
  * @param {string} wkt WKT string.
- * @return {ol.geom.Geometry|ol.geom.GeometryCollection|undefined}
+ * @return {ol.geom.Geometry|undefined}
  *     The geometry created.
  * @private
  */
@@ -61802,10 +62473,10 @@ ol.format.WKT.Parser = function(lexer) {
   this.token_;
 
   /**
-   * @type {number}
+   * @type {ol.geom.GeometryLayout}
    * @private
    */
-  this.dimension_ = 2;
+  this.layout_ = ol.geom.GeometryLayout.XY;
 };
 
 
@@ -61817,6 +62488,16 @@ ol.format.WKT.Parser.prototype.consume_ = function() {
   this.token_ = this.lexer_.nextToken();
 };
 
+/**
+ * Tests if the given type matches the type of the current token.
+ * @param {ol.format.WKT.TokenType} type Token type.
+ * @return {boolean} Whether the token matches the given type.
+ */
+ol.format.WKT.Parser.prototype.isTokenType = function(type) {
+  var isMatch = this.token_.type == type;
+  return isMatch;
+};
+
 
 /**
  * If the given type matches the current token, consume it.
@@ -61824,7 +62505,7 @@ ol.format.WKT.Parser.prototype.consume_ = function() {
  * @return {boolean} Whether the token matches the given type.
  */
 ol.format.WKT.Parser.prototype.match = function(type) {
-  var isMatch = this.token_.type == type;
+  var isMatch = this.isTokenType(type);
   if (isMatch) {
     this.consume_();
   }
@@ -61834,7 +62515,7 @@ ol.format.WKT.Parser.prototype.match = function(type) {
 
 /**
  * Try to parse the tokens provided by the lexer.
- * @return {ol.geom.Geometry|ol.geom.GeometryCollection} The geometry.
+ * @return {ol.geom.Geometry} The geometry.
  */
 ol.format.WKT.Parser.prototype.parse = function() {
   this.consume_();
@@ -61846,13 +62527,39 @@ ol.format.WKT.Parser.prototype.parse = function() {
 
 
 /**
- * @return {!(ol.geom.Geometry|ol.geom.GeometryCollection)} The geometry.
+ * Try to parse the dimensional info.
+ * @return {ol.geom.GeometryLayout} The layout.
+ * @private
+ */
+ol.format.WKT.Parser.prototype.parseGeometryLayout_ = function() {
+  var layout = ol.geom.GeometryLayout.XY;
+  var dimToken = this.token_;
+  if (this.isTokenType(ol.format.WKT.TokenType.TEXT)) {
+    var dimInfo = dimToken.value;
+    if (dimInfo === ol.format.WKT.Z) {
+      layout = ol.geom.GeometryLayout.XYZ;
+    } else if (dimInfo === ol.format.WKT.M) {
+      layout = ol.geom.GeometryLayout.XYM;
+    } else if (dimInfo === ol.format.WKT.ZM) {
+      layout = ol.geom.GeometryLayout.XYZM;
+    }
+    if (layout !== ol.geom.GeometryLayout.XY) {
+      this.consume_();
+    }
+  }
+  return layout;
+};
+
+
+/**
+ * @return {!ol.geom.Geometry} The geometry.
  * @private
  */
 ol.format.WKT.Parser.prototype.parseGeometry_ = function() {
   var token = this.token_;
   if (this.match(ol.format.WKT.TokenType.TEXT)) {
     var geomType = token.value;
+    this.layout_ = this.parseGeometryLayout_();
     if (geomType == ol.geom.GeometryType.GEOMETRY_COLLECTION.toUpperCase()) {
       var geometries = this.parseGeometryCollectionText_();
       return new ol.geom.GeometryCollection(geometries);
@@ -61863,7 +62570,7 @@ ol.format.WKT.Parser.prototype.parseGeometry_ = function() {
         throw new Error('Invalid geometry type: ' + geomType);
       }
       var coordinates = parser.call(this);
-      return new ctor(coordinates);
+      return new ctor(coordinates, this.layout_);
     }
   }
   throw new Error(this.formatErrorMessage_());
@@ -62004,7 +62711,8 @@ ol.format.WKT.Parser.prototype.parseMultiPolygonText_ = function() {
  */
 ol.format.WKT.Parser.prototype.parsePoint_ = function() {
   var coordinates = [];
-  for (var i = 0; i < this.dimension_; ++i) {
+  var dimensions = this.layout_.length;
+  for (var i = 0; i < dimensions; ++i) {
     var token = this.token_;
     if (this.match(ol.format.WKT.TokenType.NUMBER)) {
       coordinates.push(token.value);
@@ -62012,7 +62720,7 @@ ol.format.WKT.Parser.prototype.parsePoint_ = function() {
       break;
     }
   }
-  if (coordinates.length == this.dimension_) {
+  if (coordinates.length == dimensions) {
     return coordinates;
   }
   throw new Error(this.formatErrorMessage_());
@@ -62076,7 +62784,7 @@ ol.format.WKT.Parser.prototype.parsePolygonTextList_ = function() {
  * @private
  */
 ol.format.WKT.Parser.prototype.isEmptyGeometry_ = function() {
-  var isEmpty = this.token_.type == ol.format.WKT.TokenType.TEXT &&
+  var isEmpty = this.isTokenType(ol.format.WKT.TokenType.TEXT) &&
       this.token_.value == ol.format.WKT.EMPTY;
   if (isEmpty) {
     this.consume_();
@@ -66742,6 +67450,7 @@ ol.interaction.Draw.handleUpEvent_ = function(event) {
   var shouldHandle = this.freehand_ ?
       squaredDistance > this.squaredClickTolerance_ :
       squaredDistance <= this.squaredClickTolerance_;
+  var circleMode = this.mode_ === ol.interaction.Draw.Mode.CIRCLE;
   if (shouldHandle) {
     this.handlePointerMove_(event);
     if (!this.finishCoordinate_) {
@@ -66749,7 +67458,7 @@ ol.interaction.Draw.handleUpEvent_ = function(event) {
       if (this.mode_ === ol.interaction.Draw.Mode.POINT) {
         this.finishDrawing();
       }
-    } else if (this.freehand_ || this.mode_ === ol.interaction.Draw.Mode.CIRCLE) {
+    } else if (this.freehand_ || circleMode) {
       this.finishDrawing();
     } else if (this.atFinish_(event)) {
       if (this.finishCondition_(event)) {
@@ -66759,6 +67468,8 @@ ol.interaction.Draw.handleUpEvent_ = function(event) {
       this.addToDrawing_(event);
     }
     pass = false;
+  } else if (circleMode) {
+    this.finishCoordinate_ = null;
   }
   return pass;
 };
@@ -68446,11 +69157,9 @@ ol.interaction.Modify.prototype.handlePointerAtPixel_ = function(pixel, map) {
         ol.coordinate.squaredDistanceToSegment(pixelCoordinate, b.segment);
   };
 
-  var lowerLeft = map.getCoordinateFromPixel(
-      [pixel[0] - this.pixelTolerance_, pixel[1] + this.pixelTolerance_]);
-  var upperRight = map.getCoordinateFromPixel(
-      [pixel[0] + this.pixelTolerance_, pixel[1] - this.pixelTolerance_]);
-  var box = ol.extent.boundingExtent([lowerLeft, upperRight]);
+  var box = ol.extent.buffer(
+      ol.extent.createOrUpdateFromCoordinate(pixelCoordinate),
+      map.getView().getResolution() * this.pixelTolerance_);
 
   var rBush = this.rBush_;
   var nodes = rBush.getInExtent(box);
@@ -69820,6 +70529,7 @@ ol.interaction.Snap.sortByDistance = function(a, b) {
 goog.provide('ol.interaction.Translate');
 
 goog.require('ol');
+goog.require('ol.Collection');
 goog.require('ol.events.Event');
 goog.require('ol.functions');
 goog.require('ol.array');
@@ -69833,10 +70543,10 @@ goog.require('ol.interaction.Pointer');
  * @constructor
  * @extends {ol.interaction.Pointer}
  * @fires ol.interaction.Translate.Event
- * @param {olx.interaction.TranslateOptions} options Options.
+ * @param {olx.interaction.TranslateOptions=} opt_options Options.
  * @api
  */
-ol.interaction.Translate = function(options) {
+ol.interaction.Translate = function(opt_options) {
   ol.interaction.Pointer.call(this, {
     handleDownEvent: ol.interaction.Translate.handleDownEvent_,
     handleDragEvent: ol.interaction.Translate.handleDragEvent_,
@@ -69844,6 +70554,7 @@ ol.interaction.Translate = function(options) {
     handleUpEvent: ol.interaction.Translate.handleUpEvent_
   });
 
+  var options = opt_options ? opt_options : {};
 
   /**
    * @type {string|undefined}
@@ -69907,9 +70618,12 @@ ol.interaction.Translate.handleDownEvent_ = function(event) {
   if (!this.lastCoordinate_ && this.lastFeature_) {
     this.lastCoordinate_ = event.coordinate;
     ol.interaction.Translate.handleMoveEvent_.call(this, event);
+
+    var features = this.features_ || new ol.Collection([this.lastFeature_]);
+
     this.dispatchEvent(
         new ol.interaction.Translate.Event(
-            ol.interaction.Translate.EventType.TRANSLATESTART, this.features_,
+            ol.interaction.Translate.EventType.TRANSLATESTART, features,
             event.coordinate));
     return true;
   }
@@ -69927,9 +70641,12 @@ ol.interaction.Translate.handleUpEvent_ = function(event) {
   if (this.lastCoordinate_) {
     this.lastCoordinate_ = null;
     ol.interaction.Translate.handleMoveEvent_.call(this, event);
+
+    var features = this.features_ || new ol.Collection([this.lastFeature_]);
+
     this.dispatchEvent(
         new ol.interaction.Translate.Event(
-            ol.interaction.Translate.EventType.TRANSLATEEND, this.features_,
+            ol.interaction.Translate.EventType.TRANSLATEEND, features,
             event.coordinate));
     return true;
   }
@@ -69948,22 +70665,18 @@ ol.interaction.Translate.handleDragEvent_ = function(event) {
     var deltaX = newCoordinate[0] - this.lastCoordinate_[0];
     var deltaY = newCoordinate[1] - this.lastCoordinate_[1];
 
-    if (this.features_) {
-      this.features_.forEach(function(feature) {
-        var geom = feature.getGeometry();
-        geom.translate(deltaX, deltaY);
-        feature.setGeometry(geom);
-      });
-    } else if (this.lastFeature_) {
-      var geom = this.lastFeature_.getGeometry();
+    var features = this.features_ || new ol.Collection([this.lastFeature_]);
+
+    features.forEach(function(feature) {
+      var geom = feature.getGeometry();
       geom.translate(deltaX, deltaY);
-      this.lastFeature_.setGeometry(geom);
-    }
+      feature.setGeometry(geom);
+    });
 
     this.lastCoordinate_ = newCoordinate;
     this.dispatchEvent(
         new ol.interaction.Translate.Event(
-            ol.interaction.Translate.EventType.TRANSLATING, this.features_,
+            ol.interaction.Translate.EventType.TRANSLATING, features,
             newCoordinate));
   }
 };
@@ -70006,19 +70719,13 @@ ol.interaction.Translate.handleMoveEvent_ = function(event) {
  * @private
  */
 ol.interaction.Translate.prototype.featuresAtPixel_ = function(pixel, map) {
-  var found = null;
-
-  var intersectingFeature = map.forEachFeatureAtPixel(pixel,
+  return map.forEachFeatureAtPixel(pixel,
       function(feature) {
-        return feature;
+        if (!this.features_ ||
+            ol.array.includes(this.features_.getArray(), feature)) {
+          return feature;
+        }
       }, this, this.layerFilter_);
-
-  if (this.features_ &&
-      ol.array.includes(this.features_.getArray(), intersectingFeature)) {
-    found = intersectingFeature;
-  }
-
-  return found;
 };
 
 
@@ -71920,6 +72627,12 @@ goog.require('ol.tilegrid');
  */
 ol.source.BingMaps = function(options) {
 
+  /**
+   * @private
+   * @type {boolean}
+   */
+  this.hidpi_ = options.hidpi !== undefined ? options.hidpi : false;
+
   ol.source.TileImage.call(this, {
     cacheSize: options.cacheSize,
     crossOrigin: 'anonymous',
@@ -71928,6 +72641,7 @@ ol.source.BingMaps = function(options) {
     reprojectionErrorThreshold: options.reprojectionErrorThreshold,
     state: ol.source.State.LOADING,
     tileLoadFunction: options.tileLoadFunction,
+    tilePixelRatio: this.hidpi_ ? 2 : 1,
     wrapX: options.wrapX !== undefined ? options.wrapX : true
   });
 
@@ -72034,11 +72748,12 @@ ol.source.BingMaps.prototype.handleImageryMetadataResponse = function(response) 
     extent: extent,
     minZoom: resource.zoomMin,
     maxZoom: maxZoom,
-    tileSize: tileSize
+    tileSize: tileSize / this.getTilePixelRatio()
   });
   this.tileGrid = tileGrid;
 
   var culture = this.culture_;
+  var hidpi = this.hidpi_;
   this.tileUrlFunction = ol.TileUrlFunction.createFromTileUrlFunctions(
       resource.imageUrlSubdomains.map(function(subdomain) {
         var quadKeyTileCoord = [0, 0, 0];
@@ -72061,7 +72776,11 @@ ol.source.BingMaps.prototype.handleImageryMetadataResponse = function(response) 
               } else {
                 ol.tilecoord.createOrUpdate(tileCoord[0], tileCoord[1],
                     -tileCoord[2] - 1, quadKeyTileCoord);
-                return imageUrl.replace('{quadkey}', ol.tilecoord.quadKey(
+                var url = imageUrl;
+                if (hidpi) {
+                  url += '&dpi=d1&device=mobile';
+                }
+                return url.replace('{quadkey}', ol.tilecoord.quadKey(
                     quadKeyTileCoord));
               }
             });
@@ -75925,6 +76644,7 @@ goog.provide('ol.VectorTile');
 goog.require('ol');
 goog.require('ol.Tile');
 goog.require('ol.dom');
+goog.require('ol.featureloader');
 
 
 /**
@@ -76072,6 +76792,25 @@ ol.VectorTile.prototype.load = function() {
 
 
 /**
+ * Handler for successful tile load.
+ * @param {Array.<ol.Feature>} features The loaded features.
+ * @param {ol.proj.Projection} dataProjection Data projection.
+ */
+ol.VectorTile.prototype.onLoad_ = function(features, dataProjection) {
+  this.setProjection(dataProjection);
+  this.setFeatures(features);
+};
+
+
+/**
+ * Handler for tile load errors.
+ */
+ol.VectorTile.prototype.onError_ = function() {
+  this.setState(ol.Tile.State.ERROR);
+};
+
+
+/**
  * @param {Array.<ol.Feature>} features Features.
  * @api
  */
@@ -76109,6 +76848,19 @@ ol.VectorTile.prototype.setLoader = function(loader) {
   this.loader_ = loader;
 };
 
+
+/**
+ * Sets the loader for a tile.
+ * @param {ol.VectorTile} tile Vector tile.
+ * @param {string} url URL.
+ */
+ol.VectorTile.defaultLoadFunction = function(tile, url) {
+  var loader = ol.featureloader.loadFeaturesXhr(
+      url, tile.getFormat(), tile.onLoad_.bind(tile), tile.onError_.bind(tile));
+
+  tile.setLoader(loader);
+};
+
 goog.provide('ol.source.VectorTile');
 
 goog.require('ol');
@@ -76116,7 +76868,6 @@ goog.require('ol.Tile');
 goog.require('ol.VectorTile');
 goog.require('ol.events');
 goog.require('ol.events.EventType');
-goog.require('ol.featureloader');
 goog.require('ol.size');
 goog.require('ol.source.UrlTile');
 
@@ -76149,7 +76900,7 @@ ol.source.VectorTile = function(options) {
     state: options.state,
     tileGrid: options.tileGrid,
     tileLoadFunction: options.tileLoadFunction ?
-        options.tileLoadFunction : ol.source.VectorTile.defaultTileLoadFunction,
+        options.tileLoadFunction : ol.VectorTile.defaultLoadFunction,
     tileUrlFunction: options.tileUrlFunction,
     tilePixelRatio: options.tilePixelRatio,
     url: options.url,
@@ -76231,15 +76982,6 @@ ol.source.VectorTile.prototype.getTilePixelRatio = function(opt_pixelRatio) {
 ol.source.VectorTile.prototype.getTilePixelSize = function(z, pixelRatio, projection) {
   var tileSize = ol.size.toSize(this.tileGrid.getTileSize(z));
   return [Math.round(tileSize[0] * pixelRatio), Math.round(tileSize[1] * pixelRatio)];
-};
-
-
-/**
- * @param {ol.VectorTile} vectorTile Vector tile.
- * @param {string} url URL.
- */
-ol.source.VectorTile.defaultTileLoadFunction = function(vectorTile, url) {
-  vectorTile.setLoader(ol.featureloader.tile(url, vectorTile.getFormat()));
 };
 
 goog.provide('ol.tilegrid.WMTS');
@@ -76696,9 +77438,14 @@ ol.source.WMTS.optionsFromCapabilities = function(wmtsCap, config) {
             var tileMatrixSet = ol.array.find(tileMatrixSets, function(el) {
               return el['Identifier'] == elt['TileMatrixSet'];
             });
-            return tileMatrixSet['SupportedCRS'].replace(
-                /urn:ogc:def:crs:(\w+):(.*:)?(\w+)$/, '$1:$3'
-                   ) == config['projection'];
+            var supportedCRS = tileMatrixSet['SupportedCRS'].replace(/urn:ogc:def:crs:(\w+):(.*:)?(\w+)$/, '$1:$3');
+            var proj1 = ol.proj.get(supportedCRS);
+            var proj2 = ol.proj.get(config['projection']);
+            if (proj1 && proj2) {
+              return ol.proj.equivalent(proj1, proj2);
+            } else {
+              return supportedCRS == config['projection'];
+            }
           });
     } else {
       idx = ol.array.findIndex(l['TileMatrixSetLink'],
@@ -77443,557 +78190,6 @@ ol.style.AtlasManager.prototype.add_ = function(isHitAtlas, id, width, height,
   }
   ol.DEBUG && console.assert(false, 'Failed to add to atlasmanager');
   return null;
-};
-
-goog.provide('ol.style.RegularShape');
-
-goog.require('ol');
-goog.require('ol.colorlike');
-goog.require('ol.dom');
-goog.require('ol.has');
-goog.require('ol.Image');
-goog.require('ol.render.canvas');
-goog.require('ol.style.Image');
-
-
-/**
- * @classdesc
- * Set regular shape style for vector features. The resulting shape will be
- * a regular polygon when `radius` is provided, or a star when `radius1` and
- * `radius2` are provided.
- *
- * @constructor
- * @param {olx.style.RegularShapeOptions} options Options.
- * @extends {ol.style.Image}
- * @api
- */
-ol.style.RegularShape = function(options) {
-
-  ol.DEBUG && console.assert(
-      options.radius !== undefined || options.radius1 !== undefined,
-      'must provide either "radius" or "radius1"');
-
-  /**
-   * @private
-   * @type {Array.<string>}
-   */
-  this.checksums_ = null;
-
-  /**
-   * @private
-   * @type {HTMLCanvasElement}
-   */
-  this.canvas_ = null;
-
-  /**
-   * @private
-   * @type {HTMLCanvasElement}
-   */
-  this.hitDetectionCanvas_ = null;
-
-  /**
-   * @private
-   * @type {ol.style.Fill}
-   */
-  this.fill_ = options.fill !== undefined ? options.fill : null;
-
-  /**
-   * @private
-   * @type {Array.<number>}
-   */
-  this.origin_ = [0, 0];
-
-  /**
-   * @private
-   * @type {number}
-   */
-  this.points_ = options.points;
-
-  /**
-   * @private
-   * @type {number}
-   */
-  this.radius_ = /** @type {number} */ (options.radius !== undefined ?
-      options.radius : options.radius1);
-
-  /**
-   * @private
-   * @type {number}
-   */
-  this.radius2_ =
-      options.radius2 !== undefined ? options.radius2 : this.radius_;
-
-  /**
-   * @private
-   * @type {number}
-   */
-  this.angle_ = options.angle !== undefined ? options.angle : 0;
-
-  /**
-   * @private
-   * @type {ol.style.Stroke}
-   */
-  this.stroke_ = options.stroke !== undefined ? options.stroke : null;
-
-  /**
-   * @private
-   * @type {Array.<number>}
-   */
-  this.anchor_ = null;
-
-  /**
-   * @private
-   * @type {ol.Size}
-   */
-  this.size_ = null;
-
-  /**
-   * @private
-   * @type {ol.Size}
-   */
-  this.imageSize_ = null;
-
-  /**
-   * @private
-   * @type {ol.Size}
-   */
-  this.hitDetectionImageSize_ = null;
-
-  /**
-   * @private
-   * @type {ol.style.AtlasManager|undefined}
-   */
-  this.atlasManager_ = options.atlasManager;
-
-  this.render_(this.atlasManager_);
-
-  /**
-   * @type {boolean}
-   */
-  var snapToPixel = options.snapToPixel !== undefined ?
-      options.snapToPixel : true;
-
-  /**
-   * @type {boolean}
-   */
-  var rotateWithView = options.rotateWithView !== undefined ?
-      options.rotateWithView : false;
-
-  ol.style.Image.call(this, {
-    opacity: 1,
-    rotateWithView: rotateWithView,
-    rotation: options.rotation !== undefined ? options.rotation : 0,
-    scale: 1,
-    snapToPixel: snapToPixel
-  });
-
-};
-ol.inherits(ol.style.RegularShape, ol.style.Image);
-
-
-/**
- * Clones the style. If an atlasmanger was provided to the original style it will be used in the cloned style, too.
- * @return {ol.style.RegularShape} The cloned style.
- * @api
- */
-ol.style.RegularShape.prototype.clone = function() {
-  var style = new ol.style.RegularShape({
-    fill: this.getFill() ? this.getFill().clone() : undefined,
-    points: this.getRadius2() !== this.getRadius() ? this.getPoints() / 2 : this.getPoints(),
-    radius: this.getRadius(),
-    radius2: this.getRadius2(),
-    angle: this.getAngle(),
-    snapToPixel: this.getSnapToPixel(),
-    stroke: this.getStroke() ?  this.getStroke().clone() : undefined,
-    rotation: this.getRotation(),
-    rotateWithView: this.getRotateWithView(),
-    atlasManager: this.atlasManager_
-  });
-  style.setOpacity(this.getOpacity());
-  style.setScale(this.getScale());
-  return style;
-};
-
-
-/**
- * @inheritDoc
- * @api
- */
-ol.style.RegularShape.prototype.getAnchor = function() {
-  return this.anchor_;
-};
-
-
-/**
- * Get the angle used in generating the shape.
- * @return {number} Shape's rotation in radians.
- * @api
- */
-ol.style.RegularShape.prototype.getAngle = function() {
-  return this.angle_;
-};
-
-
-/**
- * Get the fill style for the shape.
- * @return {ol.style.Fill} Fill style.
- * @api
- */
-ol.style.RegularShape.prototype.getFill = function() {
-  return this.fill_;
-};
-
-
-/**
- * @inheritDoc
- */
-ol.style.RegularShape.prototype.getHitDetectionImage = function(pixelRatio) {
-  return this.hitDetectionCanvas_;
-};
-
-
-/**
- * @inheritDoc
- * @api
- */
-ol.style.RegularShape.prototype.getImage = function(pixelRatio) {
-  return this.canvas_;
-};
-
-
-/**
- * @inheritDoc
- */
-ol.style.RegularShape.prototype.getImageSize = function() {
-  return this.imageSize_;
-};
-
-
-/**
- * @inheritDoc
- */
-ol.style.RegularShape.prototype.getHitDetectionImageSize = function() {
-  return this.hitDetectionImageSize_;
-};
-
-
-/**
- * @inheritDoc
- */
-ol.style.RegularShape.prototype.getImageState = function() {
-  return ol.Image.State.LOADED;
-};
-
-
-/**
- * @inheritDoc
- * @api
- */
-ol.style.RegularShape.prototype.getOrigin = function() {
-  return this.origin_;
-};
-
-
-/**
- * Get the number of points for generating the shape.
- * @return {number} Number of points for stars and regular polygons.
- * @api
- */
-ol.style.RegularShape.prototype.getPoints = function() {
-  return this.points_;
-};
-
-
-/**
- * Get the (primary) radius for the shape.
- * @return {number} Radius.
- * @api
- */
-ol.style.RegularShape.prototype.getRadius = function() {
-  return this.radius_;
-};
-
-
-/**
- * Get the secondary radius for the shape.
- * @return {number} Radius2.
- * @api
- */
-ol.style.RegularShape.prototype.getRadius2 = function() {
-  return this.radius2_;
-};
-
-
-/**
- * @inheritDoc
- * @api
- */
-ol.style.RegularShape.prototype.getSize = function() {
-  return this.size_;
-};
-
-
-/**
- * Get the stroke style for the shape.
- * @return {ol.style.Stroke} Stroke style.
- * @api
- */
-ol.style.RegularShape.prototype.getStroke = function() {
-  return this.stroke_;
-};
-
-
-/**
- * @inheritDoc
- */
-ol.style.RegularShape.prototype.listenImageChange = ol.nullFunction;
-
-
-/**
- * @inheritDoc
- */
-ol.style.RegularShape.prototype.load = ol.nullFunction;
-
-
-/**
- * @inheritDoc
- */
-ol.style.RegularShape.prototype.unlistenImageChange = ol.nullFunction;
-
-
-/**
- * @private
- * @param {ol.style.AtlasManager|undefined} atlasManager An atlas manager.
- */
-ol.style.RegularShape.prototype.render_ = function(atlasManager) {
-  var imageSize;
-  var lineCap = '';
-  var lineJoin = '';
-  var miterLimit = 0;
-  var lineDash = null;
-  var strokeStyle;
-  var strokeWidth = 0;
-
-  if (this.stroke_) {
-    strokeStyle = ol.colorlike.asColorLike(this.stroke_.getColor());
-    strokeWidth = this.stroke_.getWidth();
-    if (strokeWidth === undefined) {
-      strokeWidth = ol.render.canvas.defaultLineWidth;
-    }
-    lineDash = this.stroke_.getLineDash();
-    if (!ol.has.CANVAS_LINE_DASH) {
-      lineDash = null;
-    }
-    lineJoin = this.stroke_.getLineJoin();
-    if (lineJoin === undefined) {
-      lineJoin = ol.render.canvas.defaultLineJoin;
-    }
-    lineCap = this.stroke_.getLineCap();
-    if (lineCap === undefined) {
-      lineCap = ol.render.canvas.defaultLineCap;
-    }
-    miterLimit = this.stroke_.getMiterLimit();
-    if (miterLimit === undefined) {
-      miterLimit = ol.render.canvas.defaultMiterLimit;
-    }
-  }
-
-  var size = 2 * (this.radius_ + strokeWidth) + 1;
-
-  /** @type {ol.RegularShapeRenderOptions} */
-  var renderOptions = {
-    strokeStyle: strokeStyle,
-    strokeWidth: strokeWidth,
-    size: size,
-    lineCap: lineCap,
-    lineDash: lineDash,
-    lineJoin: lineJoin,
-    miterLimit: miterLimit
-  };
-
-  if (atlasManager === undefined) {
-    // no atlas manager is used, create a new canvas
-    var context = ol.dom.createCanvasContext2D(size, size);
-    this.canvas_ = context.canvas;
-
-    // canvas.width and height are rounded to the closest integer
-    size = this.canvas_.width;
-    imageSize = size;
-
-    this.draw_(renderOptions, context, 0, 0);
-
-    this.createHitDetectionCanvas_(renderOptions);
-  } else {
-    // an atlas manager is used, add the symbol to an atlas
-    size = Math.round(size);
-
-    var hasCustomHitDetectionImage = !this.fill_;
-    var renderHitDetectionCallback;
-    if (hasCustomHitDetectionImage) {
-      // render the hit-detection image into a separate atlas image
-      renderHitDetectionCallback =
-          this.drawHitDetectionCanvas_.bind(this, renderOptions);
-    }
-
-    var id = this.getChecksum();
-    var info = atlasManager.add(
-        id, size, size, this.draw_.bind(this, renderOptions),
-        renderHitDetectionCallback);
-    ol.DEBUG && console.assert(info, 'shape size is too large');
-
-    this.canvas_ = info.image;
-    this.origin_ = [info.offsetX, info.offsetY];
-    imageSize = info.image.width;
-
-    if (hasCustomHitDetectionImage) {
-      this.hitDetectionCanvas_ = info.hitImage;
-      this.hitDetectionImageSize_ =
-          [info.hitImage.width, info.hitImage.height];
-    } else {
-      this.hitDetectionCanvas_ = this.canvas_;
-      this.hitDetectionImageSize_ = [imageSize, imageSize];
-    }
-  }
-
-  this.anchor_ = [size / 2, size / 2];
-  this.size_ = [size, size];
-  this.imageSize_ = [imageSize, imageSize];
-};
-
-
-/**
- * @private
- * @param {ol.RegularShapeRenderOptions} renderOptions Render options.
- * @param {CanvasRenderingContext2D} context The rendering context.
- * @param {number} x The origin for the symbol (x).
- * @param {number} y The origin for the symbol (y).
- */
-ol.style.RegularShape.prototype.draw_ = function(renderOptions, context, x, y) {
-  var i, angle0, radiusC;
-  // reset transform
-  context.setTransform(1, 0, 0, 1, 0, 0);
-
-  // then move to (x, y)
-  context.translate(x, y);
-
-  context.beginPath();
-  if (this.radius2_ !== this.radius_) {
-    this.points_ = 2 * this.points_;
-  }
-  for (i = 0; i <= this.points_; i++) {
-    angle0 = i * 2 * Math.PI / this.points_ - Math.PI / 2 + this.angle_;
-    radiusC = i % 2 === 0 ? this.radius_ : this.radius2_;
-    context.lineTo(renderOptions.size / 2 + radiusC * Math.cos(angle0),
-                   renderOptions.size / 2 + radiusC * Math.sin(angle0));
-  }
-
-  if (this.fill_) {
-    context.fillStyle = ol.colorlike.asColorLike(this.fill_.getColor());
-    context.fill();
-  }
-  if (this.stroke_) {
-    context.strokeStyle = renderOptions.strokeStyle;
-    context.lineWidth = renderOptions.strokeWidth;
-    if (renderOptions.lineDash) {
-      context.setLineDash(renderOptions.lineDash);
-    }
-    context.lineCap = renderOptions.lineCap;
-    context.lineJoin = renderOptions.lineJoin;
-    context.miterLimit = renderOptions.miterLimit;
-    context.stroke();
-  }
-  context.closePath();
-};
-
-
-/**
- * @private
- * @param {ol.RegularShapeRenderOptions} renderOptions Render options.
- */
-ol.style.RegularShape.prototype.createHitDetectionCanvas_ = function(renderOptions) {
-  this.hitDetectionImageSize_ = [renderOptions.size, renderOptions.size];
-  if (this.fill_) {
-    this.hitDetectionCanvas_ = this.canvas_;
-    return;
-  }
-
-  // if no fill style is set, create an extra hit-detection image with a
-  // default fill style
-  var context = ol.dom.createCanvasContext2D(renderOptions.size, renderOptions.size);
-  this.hitDetectionCanvas_ = context.canvas;
-
-  this.drawHitDetectionCanvas_(renderOptions, context, 0, 0);
-};
-
-
-/**
- * @private
- * @param {ol.RegularShapeRenderOptions} renderOptions Render options.
- * @param {CanvasRenderingContext2D} context The context.
- * @param {number} x The origin for the symbol (x).
- * @param {number} y The origin for the symbol (y).
- */
-ol.style.RegularShape.prototype.drawHitDetectionCanvas_ = function(renderOptions, context, x, y) {
-  // reset transform
-  context.setTransform(1, 0, 0, 1, 0, 0);
-
-  // then move to (x, y)
-  context.translate(x, y);
-
-  context.beginPath();
-  if (this.radius2_ !== this.radius_) {
-    this.points_ = 2 * this.points_;
-  }
-  var i, radiusC, angle0;
-  for (i = 0; i <= this.points_; i++) {
-    angle0 = i * 2 * Math.PI / this.points_ - Math.PI / 2 + this.angle_;
-    radiusC = i % 2 === 0 ? this.radius_ : this.radius2_;
-    context.lineTo(renderOptions.size / 2 + radiusC * Math.cos(angle0),
-                   renderOptions.size / 2 + radiusC * Math.sin(angle0));
-  }
-
-  context.fillStyle = ol.render.canvas.defaultFillStyle;
-  context.fill();
-  if (this.stroke_) {
-    context.strokeStyle = renderOptions.strokeStyle;
-    context.lineWidth = renderOptions.strokeWidth;
-    if (renderOptions.lineDash) {
-      context.setLineDash(renderOptions.lineDash);
-    }
-    context.stroke();
-  }
-  context.closePath();
-};
-
-
-/**
- * @return {string} The checksum.
- */
-ol.style.RegularShape.prototype.getChecksum = function() {
-  var strokeChecksum = this.stroke_ ?
-      this.stroke_.getChecksum() : '-';
-  var fillChecksum = this.fill_ ?
-      this.fill_.getChecksum() : '-';
-
-  var recalculate = !this.checksums_ ||
-      (strokeChecksum != this.checksums_[1] ||
-      fillChecksum != this.checksums_[2] ||
-      this.radius_ != this.checksums_[3] ||
-      this.radius2_ != this.checksums_[4] ||
-      this.angle_ != this.checksums_[5] ||
-      this.points_ != this.checksums_[6]);
-
-  if (recalculate) {
-    var checksum = 'r' + strokeChecksum + fillChecksum +
-        (this.radius_ !== undefined ? this.radius_.toString() : '-') +
-        (this.radius2_ !== undefined ? this.radius2_.toString() : '-') +
-        (this.angle_ !== undefined ? this.angle_.toString() : '-') +
-        (this.points_ !== undefined ? this.points_.toString() : '-');
-    this.checksums_ = [checksum, strokeChecksum, fillChecksum,
-      this.radius_, this.radius2_, this.angle_, this.points_];
-  }
-
-  return this.checksums_[0];
 };
 
 goog.provide('ol.ext.earcut');
@@ -79260,11 +79456,6 @@ goog.exportProperty(
     ol.Feature.prototype.setGeometryName);
 
 goog.exportSymbol(
-    'ol.featureloader.tile',
-    ol.featureloader.tile,
-    OPENLAYERS);
-
-goog.exportSymbol(
     'ol.featureloader.xhr',
     ol.featureloader.xhr,
     OPENLAYERS);
@@ -79841,6 +80032,11 @@ goog.exportSymbol(
 
 goog.exportProperty(
     ol.View.prototype,
+    'animate',
+    ol.View.prototype.animate);
+
+goog.exportProperty(
+    ol.View.prototype,
     'constrainCenter',
     ol.View.prototype.constrainCenter);
 
@@ -80051,26 +80247,6 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.style.Circle.prototype,
-    'getFill',
-    ol.style.Circle.prototype.getFill);
-
-goog.exportProperty(
-    ol.style.Circle.prototype,
-    'getImage',
-    ol.style.Circle.prototype.getImage);
-
-goog.exportProperty(
-    ol.style.Circle.prototype,
-    'getRadius',
-    ol.style.Circle.prototype.getRadius);
-
-goog.exportProperty(
-    ol.style.Circle.prototype,
-    'getStroke',
-    ol.style.Circle.prototype.getStroke);
-
-goog.exportProperty(
-    ol.style.Circle.prototype,
     'setRadius',
     ol.style.Circle.prototype.setRadius);
 
@@ -80108,6 +80284,11 @@ goog.exportProperty(
     ol.style.Icon.prototype,
     'getAnchor',
     ol.style.Icon.prototype.getAnchor);
+
+goog.exportProperty(
+    ol.style.Icon.prototype,
+    'getColor',
+    ol.style.Icon.prototype.getColor);
 
 goog.exportProperty(
     ol.style.Icon.prototype,
@@ -80336,8 +80517,18 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.style.Style.prototype,
+    'setFill',
+    ol.style.Style.prototype.setFill);
+
+goog.exportProperty(
+    ol.style.Style.prototype,
     'getImage',
     ol.style.Style.prototype.getImage);
+
+goog.exportProperty(
+    ol.style.Style.prototype,
+    'setImage',
+    ol.style.Style.prototype.setImage);
 
 goog.exportProperty(
     ol.style.Style.prototype,
@@ -80346,8 +80537,18 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.style.Style.prototype,
+    'setStroke',
+    ol.style.Style.prototype.setStroke);
+
+goog.exportProperty(
+    ol.style.Style.prototype,
     'getText',
     ol.style.Style.prototype.getText);
+
+goog.exportProperty(
+    ol.style.Style.prototype,
+    'setText',
+    ol.style.Style.prototype.setText);
 
 goog.exportProperty(
     ol.style.Style.prototype,
@@ -83880,6 +84081,76 @@ goog.exportProperty(
     ol.tilegrid.WMTS.prototype.getZForResolution);
 
 goog.exportProperty(
+    ol.style.RegularShape.prototype,
+    'getOpacity',
+    ol.style.RegularShape.prototype.getOpacity);
+
+goog.exportProperty(
+    ol.style.RegularShape.prototype,
+    'getRotateWithView',
+    ol.style.RegularShape.prototype.getRotateWithView);
+
+goog.exportProperty(
+    ol.style.RegularShape.prototype,
+    'getRotation',
+    ol.style.RegularShape.prototype.getRotation);
+
+goog.exportProperty(
+    ol.style.RegularShape.prototype,
+    'getScale',
+    ol.style.RegularShape.prototype.getScale);
+
+goog.exportProperty(
+    ol.style.RegularShape.prototype,
+    'getSnapToPixel',
+    ol.style.RegularShape.prototype.getSnapToPixel);
+
+goog.exportProperty(
+    ol.style.RegularShape.prototype,
+    'setOpacity',
+    ol.style.RegularShape.prototype.setOpacity);
+
+goog.exportProperty(
+    ol.style.RegularShape.prototype,
+    'setRotation',
+    ol.style.RegularShape.prototype.setRotation);
+
+goog.exportProperty(
+    ol.style.RegularShape.prototype,
+    'setScale',
+    ol.style.RegularShape.prototype.setScale);
+
+goog.exportProperty(
+    ol.style.Circle.prototype,
+    'getAngle',
+    ol.style.Circle.prototype.getAngle);
+
+goog.exportProperty(
+    ol.style.Circle.prototype,
+    'getFill',
+    ol.style.Circle.prototype.getFill);
+
+goog.exportProperty(
+    ol.style.Circle.prototype,
+    'getPoints',
+    ol.style.Circle.prototype.getPoints);
+
+goog.exportProperty(
+    ol.style.Circle.prototype,
+    'getRadius',
+    ol.style.Circle.prototype.getRadius);
+
+goog.exportProperty(
+    ol.style.Circle.prototype,
+    'getRadius2',
+    ol.style.Circle.prototype.getRadius2);
+
+goog.exportProperty(
+    ol.style.Circle.prototype,
+    'getStroke',
+    ol.style.Circle.prototype.getStroke);
+
+goog.exportProperty(
     ol.style.Circle.prototype,
     'getOpacity',
     ol.style.Circle.prototype.getOpacity);
@@ -83958,46 +84229,6 @@ goog.exportProperty(
     ol.style.Icon.prototype,
     'setScale',
     ol.style.Icon.prototype.setScale);
-
-goog.exportProperty(
-    ol.style.RegularShape.prototype,
-    'getOpacity',
-    ol.style.RegularShape.prototype.getOpacity);
-
-goog.exportProperty(
-    ol.style.RegularShape.prototype,
-    'getRotateWithView',
-    ol.style.RegularShape.prototype.getRotateWithView);
-
-goog.exportProperty(
-    ol.style.RegularShape.prototype,
-    'getRotation',
-    ol.style.RegularShape.prototype.getRotation);
-
-goog.exportProperty(
-    ol.style.RegularShape.prototype,
-    'getScale',
-    ol.style.RegularShape.prototype.getScale);
-
-goog.exportProperty(
-    ol.style.RegularShape.prototype,
-    'getSnapToPixel',
-    ol.style.RegularShape.prototype.getSnapToPixel);
-
-goog.exportProperty(
-    ol.style.RegularShape.prototype,
-    'setOpacity',
-    ol.style.RegularShape.prototype.setOpacity);
-
-goog.exportProperty(
-    ol.style.RegularShape.prototype,
-    'setRotation',
-    ol.style.RegularShape.prototype.setRotation);
-
-goog.exportProperty(
-    ol.style.RegularShape.prototype,
-    'setScale',
-    ol.style.RegularShape.prototype.setScale);
 
 goog.exportProperty(
     ol.source.Source.prototype,
@@ -92428,7 +92659,7 @@ goog.exportProperty(
     ol.control.ZoomToExtent.prototype,
     'unByKey',
     ol.control.ZoomToExtent.prototype.unByKey);
-ol.VERSION = 'v3.17.1-922-ge7b312d';
+ol.VERSION = 'v3.17.1-1056-g2ea49db';
 OPENLAYERS.ol = ol;
 
   return OPENLAYERS.ol;
