@@ -40,7 +40,7 @@ BEGIN
         END LOOP;
         result := result || ST_X(p0) || ' ' || ST_Y(p0) || ',' || ST_X(p2) || ' ' || ST_Y(p2) || '))';
     END IF;
-    RETURN result::geometry;
+    RETURN ST_SetSRID(result::geometry, ST_SRID(geom));
 END;
 $$
 LANGUAGE 'plpgsql' IMMUTABLE;
