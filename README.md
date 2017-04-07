@@ -1,1 +1,10 @@
-<img src="https://www.americarisingpac.org/wp-content/uploads/2014/07/barbrady.jpeg">
+<h1>Welcome to my ugly navigation page!</h1>
+<a href="./thesis/index.html">Thesis supplementary materials</a>
+<br>
+<a href="./papers/index.html">Papers</a>
+<br>
+<a href="./FOSS4GHU_2015/index.html">Conference presentation for the annual conference of the Hungarian local OSGeo chapter (2015)</a>
+<br>
+<a href="./FOSS4GHU_2016/index.html">Demo app for the annual conference of the Hungarian local OSGeo chapter (2016)</a>
+<br>
+<a href="./practical_gis/index.html">Supplementary materials for the book Practical GIS</a>
