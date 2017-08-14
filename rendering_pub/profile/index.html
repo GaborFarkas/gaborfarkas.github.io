@@ -1,0 +1,286 @@
+<html>
+	<head>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="js/ol-debug.js"></script>
+        <script type="text/javascript" src="js/ol3-layerswitcher.js"></script>
+        <link href="js/ol.css" rel="stylesheet">
+        <link href="js/ol3-layerswitcher.css" rel="stylesheet">
+		<style>
+            body {
+                margin: 0;
+                border: 0;
+                padding: 0;
+            }
+			.map {
+				width: 100%;
+				height: 100vh;
+			}
+		</style>
+	</head>
+    <body>
+        <div id="map" class="map"></div>
+        <script type="text/javascript">
+            var label = true;
+            var points = true;
+
+            var mapSwitch = function() {
+                var element = document.createElement('div');
+                element.style.bottom = '0.5em';
+                element.style.left = '0.5em';
+                element.style.width = '100px';
+                element.style.height = '100px';
+                element.classList.add('ol-control', 'ol-unselectable');
+                var canvas = document.createElement('input');
+                canvas.type = 'radio';
+                canvas.name = 'renderer';
+                this.canvas = canvas;
+                var _this = this;
+                canvas.addEventListener('click', function() {
+                if (_this.getMap().getRenderer() instanceof ol.renderer.webgl.Map) {
+                    _this.getMap().setTarget(null);
+                    var map = new ol.Map({
+                            target: 'map',
+                            layers: layers,
+                            view: view,
+                            renderer: 'canvas',
+                            controls: controls
+                        });
+                }
+                });
+                element.appendChild(canvas);
+                element.appendChild(document.createTextNode('Canvas'));
+                element.appendChild(document.createElement('br'));
+                var webgl = document.createElement('input');
+                webgl.type = 'radio';
+                webgl.name = 'renderer';
+                this.webgl = webgl;
+                webgl.addEventListener('click', function() {
+                if (_this.getMap().getRenderer() instanceof ol.renderer.canvas.Map) {
+                    _this.getMap().setTarget(null);
+                    var map = new ol.Map({
+                            target: 'map',
+                            layers: layers,
+                            view: view,
+                            renderer: 'webgl',
+                            controls: controls
+                        });
+                }
+                });
+                element.appendChild(webgl);
+                element.appendChild(document.createTextNode('WebGL'));
+                element.appendChild(document.createElement('br'));
+                element.appendChild(document.createTextNode('Point layer:'));
+                element.appendChild(document.createElement('br'));
+                var marker = document.createElement('input');
+                marker.type = 'checkbox';
+                marker.checked = true;
+                marker.addEventListener('change', function(evt) {
+                    points = evt.target.checked;
+                    _this.getMap().render();
+                });
+                element.appendChild(marker);
+                element.appendChild(document.createTextNode('Marker'));
+                element.appendChild(document.createElement('br'));
+                var text = document.createElement('input');
+                text.type = 'checkbox';
+                text.checked = true;
+                text.addEventListener('change', function(evt) {
+                    label = evt.target.checked;
+                    _this.getMap().render();
+                });
+                element.appendChild(text);
+                element.appendChild(document.createTextNode('Label'));
+
+
+                
+                ol.control.Control.call(this, {
+                element: element
+                });
+            };
+            ol.inherits(mapSwitch, ol.control.Control);
+
+            mapSwitch.prototype.setMap = function(map) {
+                ol.control.Control.prototype.setMap.call(this, map);
+                if (map.getRenderer() instanceof ol.renderer.canvas.Map) {
+                    this.canvas.checked = "checked";
+                } else {
+                    this.webgl.checked = "checked";
+                }
+            };
+
+            var view = new ol.View({center: [0,0], zoom: 4});
+    
+            var controls = ol.control.defaults().extend([
+                new ol.control.LayerSwitcher(),
+                new mapSwitch()
+            ]);
+
+            var layers = [
+                new ol.layer.Group({
+                    title: 'GIS workflow',
+                    layers: [
+                        new ol.layer.Vector({
+                            title: 'Counties',
+                            source: new ol.source.Vector({
+                                format: new ol.format.GeoJSON({
+                                    defaultDataProjection: 'EPSG:4326'
+                                }),
+                                url: 'layers/hu_county_osm.geojson',
+                                attributions: [
+                                    new ol.Attribution({
+                                        html: 'OpenStreetMap Data © OpenStreetMap Contributors'
+                                    })
+                                ],
+                                wrapX: false
+                            }),
+                            visible: false
+                        }),
+                        new ol.layer.Vector({
+                            title: 'Settlements',
+                            source: new ol.source.Vector({
+                                format: new ol.format.GeoJSON({
+                                    defaultDataProjection: 'EPSG:4326'
+                                }),
+                                url: 'layers/hu_settlements_osm.geojson',
+                                wrapX: false
+                            }),
+                            visible: false
+                        }),
+                        new ol.layer.Vector({
+                            title: 'Populated places',
+                            source: new ol.source.Vector({
+                                format: new ol.format.GeoJSON({
+                                    defaultDataProjection: 'EPSG:4326'
+                                }),
+                                url: 'layers/hu_places_geonames.geojson',
+                                attributions: [
+                                    new ol.Attribution({
+                                        html: 'Gazetteer Data of Hungary © GeoNames'
+                                    })
+                                ],
+                                wrapX: false
+                            }),
+                            visible: false
+                        })
+                    ]
+                }),
+                new ol.layer.Group({
+                    title: 'Thematic map',
+                    layers: [
+                        new ol.layer.Vector({
+                            title: 'World population',
+                            source: new ol.source.Vector({
+                                format: new ol.format.GeoJSON({
+                                    defaultDataProjection: 'EPSG:4326'
+                                }),
+                                url: 'layers/world_countries.geojson',
+                                attributions: [
+                                    new ol.Attribution({
+                                        html: 'Countries © Natural Earth'
+                                    })
+                                ],
+                                wrapX: false
+                            }),
+                            style: function(feature) {
+                                var pop = feature.get('pop_est');
+                                var color = pop < 16715999 ? '#ffffd4' : pop < 49052489 ? '#fed98e' : pop < 111211789 ? '#fe9929' : pop < 313973000 ? '#d95f0e' : '#993404';
+                                return [new ol.style.Style({
+                                    stroke: new ol.style.Stroke({
+                                        color: '#000000',
+                                        width: 1
+                                    }),
+                                    fill: new ol.style.Fill({
+                                        color: color
+                                    })
+                                })];
+                            }
+                        }),
+                        new ol.layer.Vector({
+                            title: 'Major rivers',
+                            source: new ol.source.Vector({
+                                format: new ol.format.GeoJSON({
+                                    defaultDataProjection: 'EPSG:4326'
+                                }),
+                                url: 'layers/rivers.geojson',
+                                attributions: [
+                                    new ol.Attribution({
+                                        html: 'Rivers © Natural Earth'
+                                    })
+                                ],
+                                wrapX: false
+                            })
+                        }),
+                        new ol.layer.Vector({
+                            title: 'Populated places',
+                            source: new ol.source.Vector({
+                                format: new ol.format.GeoJSON({
+                                    defaultDataProjection: 'EPSG:4326'
+                                }),
+                                url: 'layers/pop_places.geojson',
+                                attributions: [
+                                    new ol.Attribution({
+                                        html: 'Populated places © Natural Earth'
+                                    })
+                                ],
+                                wrapX: false
+                            }),
+                            style: function(feature) {
+                                var text, image;
+
+                                if (label) {
+                                    var capital = feature.get('ADM0CAP');
+                                    text = capital === 1 ? new ol.style.Text({
+                                        text: feature.get('NAME'),
+                                        offsetY: -6
+                                    }) : undefined;
+                                }
+                                if (points) {
+                                    var pop = feature.get('GN_POP');
+                                    if (pop < 100000) {
+                                        image = new ol.style.Circle({
+                                            radius: 3,
+                                            fill: new ol.style.Fill({
+                                                color: '#8d8d8d'
+                                            })
+                                        });
+                                    } else if (pop < 500000) {
+                                        image = new ol.style.RegularShape({
+                                            radius1: 4,
+                                            points: 3,
+                                            fill: new ol.style.Fill({
+                                                color: '#f3ff00'
+                                            })
+                                        });
+                                    } else {
+                                        image = new ol.style.RegularShape({
+                                            radius1: 6,
+                                            points: 4,
+                                            fill: new ol.style.Fill({
+                                                color: '#e72b2b'
+                                            }),
+                                            angle: Math.PI / 4
+                                        });
+                                    }
+                                }
+
+                                return [new ol.style.Style({
+                                    image: image,
+                                    text: text
+                                })];
+                            }
+                        })
+                    ]
+                })
+            ];
+
+            var map = new ol.Map({
+                target: 'map',
+                layers: layers,
+                view: view,
+                renderer: 'webgl',
+                controls: controls
+            });
+
+        </script>
+    </body>
+</html>
