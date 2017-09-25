@@ -15,6 +15,14 @@
 				width: 100%;
 				height: 100vh;
 			}
+            .drawmap {
+                top: 65px;
+                left: .5em;
+            }
+            .panmap {
+                top: 95px;
+                left: .5em;
+            }
 		</style>
 	</head>
     <body>
@@ -22,6 +30,30 @@
         <script type="text/javascript">
             var label = true;
             var points = true;
+
+            var markers = {
+                square: new ol.style.RegularShape({
+                    radius1: 6,
+                    points: 4,
+                    fill: new ol.style.Fill({
+                        color: '#e72b2b'
+                    }),
+                    angle: Math.PI / 4
+                }),
+                triangle: new ol.style.RegularShape({
+                    radius1: 4,
+                    points: 3,
+                    fill: new ol.style.Fill({
+                        color: '#f3ff00'
+                    })
+                }),
+                circle: new ol.style.Circle({
+                    radius: 3,
+                    fill: new ol.style.Fill({
+                        color: '#8d8d8d'
+                    })
+                })
+            };
 
             var mapSwitch = function() {
                 var element = document.createElement('div');
@@ -99,6 +131,85 @@
             };
             ol.inherits(mapSwitch, ol.control.Control);
 
+            var drawMap = function() {
+                var button = document.createElement('button');
+                button.innerHTML = '⇒';
+                var _this = this;
+
+                button.addEventListener('click', function() {
+                    var last = 0;
+                    var direction = 1;
+                    var observer = new PerformanceObserver(function(list) {
+                        var curr = list.getEntries()[0].duration - time;
+                        console.log(curr - last);
+                        last = curr;
+                    });
+                    observer.observe({entryTypes: ['mark', 'measure']});
+                    _this.getMap().on('postcompose', function() {
+                        performance.measure('draw');
+                    });
+                    c = 1;
+                    var moveFunc = function() {
+                        if (c < 10) {
+                            _this.getMap().once('postrender', moveFunc);
+                        }
+                        var center = _this.getMap().getView().getCenter();
+                        var zoomMod = Math.max(10 - _this.getMap().getView().getZoom(), 0.1);
+                        _this.getMap().getView().setCenter([center[0] + 10000 * zoomMod * direction, center[1]]);
+                        c++;
+                        direction *= -1;
+                    }
+                    performance.mark('draw');
+                    var time = performance.now();
+                    moveFunc();
+                });
+
+                var element = document.createElement('div');
+                element.className = 'drawmap ol-unselectable ol-control';
+                element.appendChild(button);
+
+                ol.control.Control.call(this, {
+                    element: element
+                });
+            };
+            ol.inherits(drawMap, ol.control.Control);
+
+            var panMap = function() {
+                var button = document.createElement('button');
+                button.innerHTML = '↺';
+                var _this = this;
+
+                button.addEventListener('click', function() {
+                    var last = 0;
+                    var observer = new PerformanceObserver(function(list) {
+                        var curr = list.getEntries()[0].duration - time;
+                        console.log(curr - last);
+                        last = curr;
+                    });
+                    _this.getMap().on('postcompose', function() {
+                        performance.measure('animation');
+                    });
+                    var zoomMod = Math.max(10 - _this.getMap().getView().getZoom(), 0.1);
+                    var center = _this.getMap().getView().getCenter();
+                    observer.observe({entryTypes: ['mark', 'measure']});
+                    performance.mark('animation');
+                    var time = performance.now();
+                    _this.getMap().getView().animate({center: [center[0] + 100000 * zoomMod, center[1]], duration: 1250},
+                    {center: [center[0] + 100000 * zoomMod, center[1] + 100000 * zoomMod], duration: 1250},
+                    {center: [center[0], center[1] + 100000 * zoomMod], duration: 1250},
+                    {center: [center[0], center[1]], duration: 1250});
+                });
+
+                var element = document.createElement('div');
+                element.className = 'panmap ol-unselectable ol-control';
+                element.appendChild(button);
+
+                ol.control.Control.call(this, {
+                    element: element
+                });
+            };
+            ol.inherits(panMap, ol.control.Control);
+
             mapSwitch.prototype.setMap = function(map) {
                 ol.control.Control.prototype.setMap.call(this, map);
                 if (map.getRenderer() instanceof ol.renderer.canvas.Map) {
@@ -107,12 +218,12 @@
                     this.webgl.checked = "checked";
                 }
             };
-
-            var view = new ol.View({center: [0,0], zoom: 4});
     
             var controls = ol.control.defaults().extend([
                 new ol.control.LayerSwitcher(),
-                new mapSwitch()
+                new mapSwitch(),
+                new drawMap(),
+                new panMap()
             ]);
 
             var layers = [
@@ -237,29 +348,11 @@
                                 if (points) {
                                     var pop = feature.get('GN_POP');
                                     if (pop < 100000) {
-                                        image = new ol.style.Circle({
-                                            radius: 3,
-                                            fill: new ol.style.Fill({
-                                                color: '#8d8d8d'
-                                            })
-                                        });
+                                        image = markers.circle;
                                     } else if (pop < 500000) {
-                                        image = new ol.style.RegularShape({
-                                            radius1: 4,
-                                            points: 3,
-                                            fill: new ol.style.Fill({
-                                                color: '#f3ff00'
-                                            })
-                                        });
+                                        image = markers.triangle;
                                     } else {
-                                        image = new ol.style.RegularShape({
-                                            radius1: 6,
-                                            points: 4,
-                                            fill: new ol.style.Fill({
-                                                color: '#e72b2b'
-                                            }),
-                                            angle: Math.PI / 4
-                                        });
+                                        image = markers.square;
                                     }
                                 }
 
@@ -272,6 +365,8 @@
                     ]
                 })
             ];
+
+            var view = new ol.View({center: [0,0], zoom: 1});
 
             var map = new ol.Map({
                 target: 'map',
