@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Gábor Farkas | Map server basics</title>
+  <meta name="description" content="My personal site.
+">
+
+  <link rel="shortcut icon" href="/assets/img/favicon.ico">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="/blog/2014/map-server-basics/">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    
+    <span class="site-title">
+        
+        Gábor Farkas
+    </span>
+    
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        <!-- About -->
+        <a class="page-link" href="/">about</a>
+
+        <!-- Blog -->
+        <a class="page-link" href="/blog/">blog</a>
+
+        <!-- Pages -->
+        
+          
+        
+          
+            <a class="page-link" href="/cv/">CV</a>
+          
+        
+          
+        
+          
+        
+          
+            <a class="page-link" href="/publications/">publications</a>
+          
+        
+          
+            <a class="page-link" href="/research/">stuff</a>
+          
+        
+          
+        
+          
+        
+          
+        
+
+        <!-- CV link -->
+        <!-- <a class="page-link" href="/assets/pdf/CV.pdf">vitae</a> -->
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Map server basics</h1>
+    <p class="post-meta">September 14, 2014</p>
+  </header>
+
+  <article class="post-content">
+    <p>If you would like to build your own map server, you have to think it through carefully first. Do you need a complete map server or you can stack with an existing one? Is Google Maps good for you or you need more control on your maps? There are several options on the internet and with some of them, you just have to write a brief JavaScript code and voilà, you have a well-visualized map. In the next few articles I will show some options which won’t need an independent map server, but learning at least one of them will be inevitable if you have to build one.</p>
+
+<h3 id="the-meaning-of-wms-and-wfs">The meaning of WMS and WFS</h3>
+
+<p>In web GIS, it doesn’t enough if one just uploads some kind of geospatial data. The datasets will be used by clients and must be prepared to be accessed by some kind of visualization and/or data management frameworks. There are a wild palette of geospatial formats out there and it wouldn’t be effective if the frameworks had to do all the work. The OGC (Open Geospatial Consortium) came with the solution with writing standards on how to serve geospatial data. They have a broad list of standards, but only the WMS, the WFS and maybe a little later the WPS standards fit in the scope of this blog.</p>
+
+<p>The <a href="http://www.opengeospatial.org/standards/wms">WMS (Web Map Service)</a> is the standard for publishing raster datasets. The two basic tasks a WMS server must handle, is answering a GetMap and a GetCapabilities HTTP request. The GetCapabilities function handles the properties of the map server and handles them out in an xml format. You map server states the layers, the rendering options, the query options, the extent, the predefined zoom levels (if you have any) and all kind of other optional options your server can handle. You can manually ask any map server’s capabilities with the URL: www.somemapserver.com?request=GetCapabilities. The GetMap function gives out the tiles you have requested with your favourite visualization framework. Your framework will make the proper request for you with your- or with the default options. An average GetMap request is a few lines long, so there isn’t any sense in typing it manually.</p>
+
+<p><a href="http://www.opengeospatial.org/standards/wfs">WFS (Web Feature Service)</a> is a little bit more complicated. A WFS server must provide feature data in some kind of ASCII format (some of the popular formats are GML, KML, GeoJSON, WKT). It must respond to the basic GetCapabilities request and besides of that, the feature database must be queryable with XML or KVP (key-value pair) requests.</p>
+
+<p>All things considered, WMS is the standard for publishing raster data, while WFS is the standard for publishing vector data. Fortunately map servers are created to handle all these data and provide them properly for the users. You can define which version of these standards you want your map server to work with, then it will do the rest of the work.</p>
+
+<p>Structure of a map server</p>
+
+<p>There are three vital and one optional part of every map server. These parts are layered on each other. The outermost part is where the user communicates with the server. This is called GUI (graphical user interface). There are several frameworks to create user readable maps from datasets of map servers. The GUI’s main task is visualization and with a simple GUI, you can do most of the work. You can draw base maps, overlays, markers and some features. You can use custom styles and events to make beautiful and dynamic visualizations. There are only a few exceptions where you need a separate map server storing geospatial data locally. Some of the most popular GUIs are Google Maps, OpenLayers, Leaflet, Mapbox, GeoExt. In the next few articles I will show how to use the API of these GUIs and make some basic maps.
+The next part is the optional layer, called tile cache. Tile caches are tend to be used with raster datasets and they have two main functions. The more obvious function is to cache the most widely used tiles or extents (future link here to future post explaining) so you can make free system resources and your server won’t overload so easily. The less obvious function is to hide your geospatial data from accessing directly. This can be a great security consideration to make sure, no one will overload your server with an endless loop in their code or just for fun. Most of the map servers are capable of caching tiles, but there are standalone programs for this purpose, too, like TileCache or MapProxy.
+The third layer is the map server. They can render raster and feature data to various formats satisfying the WMS and WFS requirements. They can handle a wide variety of inputs from GeoTiff to Shapefiles and convert them to GUI compatible outputs like png or GML. They have a capability to assign styles and filters to their outputs. The smoothness of the outputs depends on the map server used by the process. Some of the most popular ones are MapServer, GeoServer and Mapnik.
+The last layer in a map server is the geospatial data itself. Their format depends on the usage of the map server. It is a healthy consideration to use consequent data types and not to mix them. There are conversion tools available, like ogr2ogr, gdal2tiles, imagemagick, etc. This layer is a must have and you have to take care of it particularly, when you use a DBMS (database management system) to store your data, like PostGIS or SpatiaLite.</p>
+
+<p>For further details please read the following resources:</p>
+
+<p>P. Smith: <a href="http://alistapart.com/article/takecontrolofyourmaps">Take Control of Your Maps</a>, 2008.</p>
+
+<p>L. Hsu - R. Obe: <a href="https://www.slideshare.net/pgconf/integrating-postgis-in-web-applications">Integrating PostGIS in Web Applications</a>, 2010.</p>
+
+  </article>
+
+  
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+      var disqus_shortname  = 'gaborfarkas-github-io';
+      var disqus_identifier = '/blog/2014/map-server-basics';
+      var disqus_title      = "Map server basics";
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  
+
+</div>
+
+      </div>
+    </div>
+
+    <footer>
+
+  <div class="wrapper">
+    &copy; Copyright 2017 Gábor Farkas.
+    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
+
+    
+  </div>
+
+</footer>
+
+
+    <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js"></script>
+<script src="/assets/js/katex.js"></script>
+
+
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+<link rel="stylesheet" href="/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+
+</html>

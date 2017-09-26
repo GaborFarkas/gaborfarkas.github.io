@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Gábor Farkas</title>
+  <meta name="description" content="My personal site.
+">
+
+  <link rel="shortcut icon" href="/assets/img/favicon.ico">
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="/blog/">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    
+    <span class="site-title">
+        
+        Gábor Farkas
+    </span>
+    
+
+    <nav class="site-nav">
+
+      <div class="trigger">
+        <!-- About -->
+        <a class="page-link" href="/">about</a>
+
+        <!-- Blog -->
+        <a class="page-link" href="/blog/">blog</a>
+
+        <!-- Pages -->
+        
+          
+        
+          
+            <a class="page-link" href="/cv/">CV</a>
+          
+        
+          
+        
+          
+        
+          
+            <a class="page-link" href="/publications/">publications</a>
+          
+        
+          
+            <a class="page-link" href="/research/">stuff</a>
+          
+        
+          
+        
+          
+        
+          
+        
+
+        <!-- CV link -->
+        <!-- <a class="page-link" href="/assets/pdf/CV.pdf">vitae</a> -->
+
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="header-bar">
+  <h1>webmappingtutorial</h1>
+  <h2>Web mapping from the beginning</h2>
+</div>
+
+
+<ul class="post-list">
+  
+    <li>
+      <h2><a class="post-title" href="/blog/2016/geojson-lite/">GeoJSON Lite</a></h2>
+      <p class="post-meta">February 7, 2016 — 00:00</p>
+      <p>GeoJSON is one of the most widely used vector formats in the web mapping, and WebGIS world. It has a nice, robust way of storing various feature types along with their coordinates, and properties. On the top of that, it can be parsed as an ordinary JSON object, thus JavaScript has a native support for it. This is the format supported by every client side web mapping library (I have come across so far), thus it is the perfect candidate for testing the feature parsing, and rendering performance of them. However, what is the best way of generating random features in arbitrary numbers?</p>
+    </li>
+  
+    <li>
+      <h2><a class="post-title" href="/blog/2015/switch-coordinate-order/">Switching coordinate order in OpenLayers 3</a></h2>
+      <p class="post-meta">August 8, 2015 — 00:00</p>
+      <p>In this post we will discuss a small, but quite annoying bug/lack of feature in OpenLayers 3. Working with WFS was never one of the strengths of the library. It offers some base classes, but you have to build a complete program on it, with tons of considerations. On the top of that, you can't easily declare the axis orientation you would like to use with your WFS request. If you have tested your WFS app with the OpenGeo demo services, you may have already bumped into this problem. Maybe, you are reading this post, because you would like to fix the issue. Well, the good news are, you can fix it manually with some JavaScript magic, but the are also some bad news. You can't implement a simple validating system on it, as it is not version specific. From some GeoServers the coordinates in EPSG:4326 come in reverse order, while in others they are perfect with the same WFS version.</p>
+    </li>
+  
+    <li>
+      <h2><a class="post-title" href="/blog/2015/openlayers-webgis-3/">WebGIS application with OpenLayers 2 - Part 3: Data management</a></h2>
+      <p class="post-meta">March 17, 2015 — 00:00</p>
+      <p>In the last part of the series, we will cover data management in OpenLayers 2. It is a quite difficult part, as browsers mostly don't have native support for relational databases. The only exceptions are browsers powered by WebKit. This way, we have to make sure manually, that our data is stored in a consistent way. ASCII geodata formats, which are mainly used in web mapping environments don't support databases. We can store different attributes for every geometry in a layer/dataset. This doesn't seem to be an issue on the first glance, as web mapping libraries can handle object-oriented databases very well. However, if you declare attributes arbitrary, in an inconsistent way, you will have a hard time when you try to process it with a RDBMS. As the server side processing GIS softwares (e.g. QGIS, GRASS, PostGIS) will put these datasets into a relational database, it might be a wise consideration to handle features like they were in a relational table on the frontend.</p>
+    </li>
+  
+    <li>
+      <h2><a class="post-title" href="/blog/2015/openlayers-webgis-2/">WebGIS application with OpenLayers 2 - Part 2: Map controls</a></h2>
+      <p class="post-meta">March 4, 2015 — 00:00</p>
+      <p>So far we have created the basic container for a web mapping application GUI. The key aspect in a good application is user experience. This mostly depends on how easily a user can utilize the application, and how smoothly can accomplish a workflow. For a decent user experience, one should think as a user when designing the appearance and mechanics of the application. To make things go right in a WebGIS application powered by OpenLayers 2, the library offers a wide variety of controls. As developers, the responsibility is on us, if we get the most out of it, or not. This is the part where OpenLayers 2 shows its advantages even against its successor. The following post will demonstrate how we can extend our application with minimal programming, and mostly controls offered by OpenLayers 2.</p>
+    </li>
+  
+</ul>
+
+
+<div class="pagination clearfix mb1 mt4">
+  <div class="left">
+    
+      <span class="pagination-item disabled">Newer</span>
+    
+  </div>
+  <div class="right">
+    
+      <a class="pagination-item" href="/blog/page2/">Older</a>
+    
+  </div>
+  <div class="pagination-meta">Page 1 of 4</div>
+</div>
+
+
+
+      </div>
+    </div>
+
+    <footer>
+
+  <div class="wrapper">
+    &copy; Copyright 2017 Gábor Farkas.
+    Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
+
+    
+  </div>
+
+</footer>
+
+
+    <!-- Load jQuery -->
+<script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+
+<!-- Load Common JS -->
+<script src="/assets/js/common.js"></script>
+
+
+<!-- Load KaTeX -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js"></script>
+<script src="/assets/js/katex.js"></script>
+
+
+
+
+<!-- Include custom icon fonts -->
+<link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+<link rel="stylesheet" href="/assets/css/academicons.min.css">
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-XXXXXXXX-X', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+  </body>
+
+</html>
