@@ -1,0 +1,239 @@
+---
+layout: post
+title: Just for fun - ArnoldC
+date: 2014-03-08
+description: "In these days programming skills became one of the most useful and well payed skills in the labor market. People working in the area know, that learning some popular programming languages can ease your life. You will benefit from it in your work, but you can make some of your everyday task easier, too. For example when you have a bunch of digital music albums in FLAC format and the name of the tracks are Track1, Track2, and so on, you can spend half of your day renaming them one at a time or you can just write a little script to do it for you in a few seconds. There are a vast amount of programming languages out there. Some of them are specialized, good or just lucky enough to get in the spotlight. There are useful programming languages for writing binary or script codes, developing websites, learning the basics, and there are the languages written just for fun. They are typically useless, harder to program with and are messing with your brain, but they have one common feature: they are fun to program with. I've bumped into one of these languages recently: the ArnoldC."
+comments: true
+---
+In these days programming skills became one of the most useful and well payed skills in the labor market. People working in the area know, that learning some popular programming languages can ease your life. You will benefit from it in your work, but you can make some of your everyday task easier, too. For example when you have a bunch of digital music albums in FLAC format and the name of the tracks are Track1, Track2, and so on, you can spend half of your day renaming them one at a time or you can just write a little script to do it for you in a few seconds.
+
+There are a vast amount of programming languages out there. Some of them are specialized, good or just lucky enough to get in the spotlight. There are useful programming languages for writing binary or script codes, developing websites, learning the basics, and there are the languages written just for fun. They are typically useless, harder to program with and are messing with your brain, but they have one common feature: they are fun to program with. I’ve bumped into one of these languages recently: the ArnoldC.
+
+ArnoldC is a parsing library written in Scala. It is a simple translator which compiles basic syntaxes into Java code. The twist is that these syntaxes are famous quotes from Arnold Schwarzenegger. Lauri Hartikka wrote this library and on his page the following can be read about his motivation:
+
+> Although the one-liners of Arnold Schwarzenegger are fairly well known the true semantics of the uttering is yet to be understood. This project tries to discover new meanings from the Arnold movies with the means of computer science.
+
+The ArnoldC language takes only basic systaxes, whereof most of them can be found in the C language, creating an imperative and semantically raw language. However you can type in famous one-liners of Arnold Schwarzenegger and they make a working program, which is very fun. You can download the ArnoldC Java library with the command `wget http://lhartikk.github.io/ArnoldC.jar` ran from terminal.
+
+It’s so simple, the most basic programming examples are defined in hundreds of lines. You have to declare every function, since the ArnoldC can only understand the plus, minus, multiplication, division, greater than, and and or operators. I tried to program a solution for a very simple problem: calculate the perimeter and the area of a triangle based on the length of its sides.
+
+The first problem is, that with keywords as long as these, it is very easy to make grammatical mistakes. To avoid such annoying problems, I like to use gedit with its built-in language recognition and highlighting. The only problem is, that it doesn’t have a vocabulary for ArnoldC (why would it have?). To overcome this problem, I quickly edited the `c.lang` xml vocabulary to recognize this language. You can download it here. You have to copy it in the **/usr/share/gtksourceview-currentversion/language-specs** directory. The “currentversion” for me is 3.0.
+
+With this language extension, I could concentrate on the semantics. I planned a very simple structure, it starts with the length of the sides (yes, there isn’t a read function in the current version), checks if the triangle is valid (the sum of every two sides must be greater than the third side), then calculates the perimeter and the area. However, it came to light in an early stage, that besides the checking and the calculating functions, I have to define a square root function, too. Now there comes an other annoying feature of this language: you can only declare integer and boolean variables. So the square root function will only calculate an approximate value. I don’t want to write down every step in making the final code, see the result for yourself.
+
+```
+ IT'S SHOWTIME  
+ HEY CHRISTMAS TREE A  
+ YOU SET US UP 11  
+ HEY CHRISTMAS TREE B  
+ YOU SET US UP 25  
+ HEY CHRISTMAS TREE C  
+ YOU SET US UP 30  
+ HEY CHRISTMAS TREE CHECK  
+ YOU SET US UP @NO PROBLEMO  
+ HEY CHRISTMAS TREE CHECKSUM  
+ YOU SET US UP 0  
+ GET YOUR ASS TO MARS CHECKSUM  
+ DO IT NOW CHECKING A B  
+ GET TO THE CHOPPER CHECK  
+ HERE IS MY INVITATION C  
+ LET OFF SOME STEAM BENNET CHECKSUM  
+ ENOUGH TALK  
+ BECAUSE I'M GOING TO SAY PLEASE CHECK  
+   TALK TO THE HAND "Invalid triangle."  
+ BULLSHIT  
+   GET YOUR ASS TO MARS CHECKSUM  
+   DO IT NOW CHECKING A C  
+   GET TO THE CHOPPER CHECK  
+   HERE IS MY INVITATION B  
+   LET OFF SOME STEAM BENNET CHECKSUM  
+   ENOUGH TALK  
+   BECAUSE I'M GOING TO SAY PLEASE CHECK  
+     TALK TO THE HAND "Invalid triangle."  
+   BULLSHIT  
+     GET YOUR ASS TO MARS CHECKSUM  
+     DO IT NOW CHECKING C B  
+     GET TO THE CHOPPER CHECK  
+     HERE IS MY INVITATION A  
+     LET OFF SOME STEAM BENNET CHECKSUM  
+     ENOUGH TALK  
+     BECAUSE I'M GOING TO SAY PLEASE CHECK  
+       TALK TO THE HAND "Invalid triangle."  
+     BULLSHIT  
+       HEY CHRISTMAS TREE PERI  
+       YOU SET US UP 0  
+       HEY CHRISTMAS TREE AREA  
+       YOU SET US UP 0  
+       GET YOUR ASS TO MARS PERI  
+       DO IT NOW RESULTPERI A B C  
+       TALK TO THE HAND "The perimeter of the triangle is:"  
+       TALK TO THE HAND PERI  
+       GET YOUR ASS TO MARS AREA  
+       DO IT NOW RESULTAREA A B C PERI  
+       TALK TO THE HAND "The approx. area of the triangle is:"  
+       TALK TO THE HAND AREA  
+     YOU HAVE NO RESPECT FOR LOGIC  
+   YOU HAVE NO RESPECT FOR LOGIC  
+ YOU HAVE NO RESPECT FOR LOGIC  
+ YOU HAVE BEEN TERMINATED  
+   
+ LISTEN TO ME VERY CAREFULLY RESULTPERI  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE A  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE B  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE C  
+ GIVE THESE PEOPLE AIR  
+ HEY CHRISTMAS TREE PERIMETER  
+ YOU SET US UP 0  
+ GET TO THE CHOPPER PERIMETER  
+ HERE IS MY INVITATION A  
+ GET UP B  
+ GET UP C  
+ ENOUGH TALK  
+ I'LL BE BACK PERIMETER  
+ HASTA LA VISTA, BABY  
+   
+ LISTEN TO ME VERY CAREFULLY RESULTAREA  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE A  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE B  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE C  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE PERIMETER  
+ GIVE THESE PEOPLE AIR  
+ HEY CHRISTMAS TREE AREA  
+ YOU SET US UP 1  
+ HEY CHRISTMAS TREE AREATEMP  
+ YOU SET US UP 0  
+ HEY CHRISTMAS TREE SEMIPERI  
+ YOU SET US UP 0  
+ GET TO THE CHOPPER SEMIPERI  
+ HERE IS MY INVITATION PERIMETER  
+ HE HAD TO SPLIT 2  
+ ENOUGH TALK  
+ GET TO THE CHOPPER AREATEMP  
+ HERE IS MY INVITATION SEMIPERI  
+ GET DOWN A  
+ ENOUGH TALK  
+ GET TO THE CHOPPER AREA  
+ HERE IS MY INVITATION AREA  
+ YOU'RE FIRED AREATEMP  
+ ENOUGH TALK  
+ GET TO THE CHOPPER AREATEMP  
+ HERE IS MY INVITATION SEMIPERI  
+ GET DOWN B  
+ ENOUGH TALK  
+ GET TO THE CHOPPER AREA  
+ HERE IS MY INVITATION AREA  
+ YOU'RE FIRED AREATEMP  
+ ENOUGH TALK  
+ GET TO THE CHOPPER AREATEMP  
+ HERE IS MY INVITATION SEMIPERI  
+ GET DOWN C  
+ ENOUGH TALK  
+ GET TO THE CHOPPER AREA  
+ HERE IS MY INVITATION AREA  
+ YOU'RE FIRED AREATEMP  
+ ENOUGH TALK  
+ GET TO THE CHOPPER AREA  
+ HERE IS MY INVITATION AREA  
+ YOU'RE FIRED SEMIPERI  
+ ENOUGH TALK  
+ GET YOUR ASS TO MARS AREA  
+ DO IT NOW SQRT AREA  
+ I'LL BE BACK AREA  
+ HASTA LA VISTA, BABY  
+   
+ LISTEN TO ME VERY CAREFULLY CHECKING  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE SIDE1  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE SIDE2  
+ GIVE THESE PEOPLE AIR  
+ HEY CHRISTMAS TREE CHECKSUM  
+ YOU SET US UP 0  
+ GET TO THE CHOPPER CHECKSUM  
+ HERE IS MY INVITATION SIDE1  
+ GET UP SIDE2  
+ ENOUGH TALK  
+ I'LL BE BACK CHECKSUM  
+ HASTA LA VISTA, BABY  
+   
+ LISTEN TO ME VERY CAREFULLY SQRT  
+ I NEED YOUR CLOTHES YOUR BOOTS AND YOUR MOTORCYCLE NUM  
+ GIVE THESE PEOPLE AIR  
+ HEY CHRISTMAS TREE COUNTER  
+ YOU SET US UP 0  
+ HEY CHRISTMAS TREE I  
+ YOU SET US UP 0  
+ HEY CHRISTMAS TREE BOOL  
+ YOU SET US UP @NO PROBLEMO  
+ HEY CHRISTMAS TREE D  
+ YOU SET US UP 0  
+ HEY CHRISTMAS TREE A  
+ YOU SET US UP 0  
+ HEY CHRISTMAS TREE P  
+ YOU SET US UP 0  
+ HEY CHRISTMAS TREE SQRTRESULT  
+ YOU SET US UP 0  
+ GET TO THE CHOPPER NUM  
+ HERE IS MY INVITATION NUM  
+ GET UP 1  
+ ENOUGH TALK  
+ STICK AROUND BOOL  
+   GET TO THE CHOPPER I  
+   HERE IS MY INVITATION COUNTER  
+   YOU'RE FIRED COUNTER  
+   ENOUGH TALK  
+   GET TO THE CHOPPER BOOL  
+   HERE IS MY INVITATION NUM  
+   LET OFF SOME STEAM BENNET I  
+   ENOUGH TALK  
+   GET TO THE CHOPPER COUNTER  
+   HERE IS MY INVITATION COUNTER  
+   GET UP 1  
+   ENOUGH TALK  
+ CHILL  
+ GET TO THE CHOPPER NUM  
+ HERE IS MY INVITATION NUM  
+ GET DOWN 1  
+ ENOUGH TALK  
+ GET TO THE CHOPPER D  
+ HERE IS MY INVITATION NUM  
+ GET DOWN I  
+ ENOUGH TALK  
+ GET TO THE CHOPPER COUNTER  
+ HERE IS MY INVITATION COUNTER  
+ YOU'RE FIRED 2  
+ ENOUGH TALK  
+ GET TO THE CHOPPER P  
+ HERE IS MY INVITATION D  
+ HE HAD TO SPLIT COUNTER  
+ ENOUGH TALK  
+ GET TO THE CHOPPER COUNTER  
+ HERE IS MY INVITATION COUNTER  
+ HE HAD TO SPLIT 2  
+ ENOUGH TALK  
+ GET TO THE CHOPPER A  
+ HERE IS MY INVITATION COUNTER  
+ GET UP P  
+ ENOUGH TALK  
+ GET TO THE CHOPPER P  
+ HERE IS MY INVITATION P  
+ YOU'RE FIRED P  
+ ENOUGH TALK  
+ GET TO THE CHOPPER D  
+ HERE IS MY INVITATION A  
+ YOU'RE FIRED 2  
+ ENOUGH TALK  
+ GET TO THE CHOPPER D  
+ HERE IS MY INVITATION P  
+ HE HAD TO SPLIT D  
+ ENOUGH TALK  
+ GET TO THE CHOPPER SQRTRESULT  
+ HERE IS MY INVITATION A  
+ GET DOWN D  
+ ENOUGH TALK  
+ I'LL BE BACK SQRTRESULT  
+ HASTA LA VISTA, BABY  
+```
+
+There were one last thing that didn’t let me rest. To run a code from a **.arnoldc** file, you have to compile it first then run it from a Java environment. After these steps, the compiled .**class** file will remain on your computer, so you have to remove it manually. Maybe it only disturbs me, but I wrote a script that can handle this procedure with one command line. For instructions of its usage, please `cd` a terminal to the script and type `./arnoldc.sh -u`. Note that you can only run the script if it has executable permission. You can download the script from [here](https://gaborfarkas.github.io/blog/2014/arnoldc/).
+
+As a conclusion ArnoldC is a very exciting experiment. It’s in an early stage (version 0.1) and I’m looking forward to future implementations of various C like syntaxes. It’s simple, it’s slow, it’s hard to master and it is very annoying. On the other side, you can get an insight into the most basic functions you’re using in your codes everyday. It is a great way to practice and understand and if you didn’t notice it yet: you can program with Arnold Schwarzenegger quotes. I can only encourage everyone who like programming to give it a try.
+
