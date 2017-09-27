@@ -1,56 +1,15 @@
 ---
 layout: page
-title: Project 3
-description: a project that redirects to another website
-img:
-redirect: https://unsplash.com
+title: WebGL engine for OpenLayers
+description: A basic, but working WebGL-based vector rendering engine.
 ---
 
-Every project has a beautiful feature shocase page. It's easy to include images, in a flexible 3-column grid format. Make your photos 1/3, 2/3, or full width.
+I started to work on a WebGL rendering engine for rendering vector layers in OpenLayers. The main reason behind this is research. As OpenLayers has a nice, clear, and extendable architecture, a full-fledged Canvas renderer, and a skeleton for a WebGL engine, it was trivial to choose this library for a comparison. With a correct implementation, the benefits of choosing a WebGL engine over a hardware-accelerated Canvas for 2D maps could be measured.
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
+There is a pretty application created to support the upcoming paper about this study. Feel free to check it out here, and try out the renderer. Furthermore, if you find this feature useful, and find a bug in the engine, you can create an issue about it at the OpenLayers project’s GitHub page.
 
-    ---
-    layout: page
-    title: Project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
+Hungarian presentation about the renderer at the annual conference of the local OsGeo chapter:
 
+<iframe width="100%" height="500px" src="https://www.youtube.com/embed/HoYizFv1kZM">
+</iframe>
 
-<div class="img_row">
-    <img class="col one" src="{{ site.baseurl }}/assets/img/1.jpg" alt="" title="example image"/>
-    <img class="col one" src="{{ site.baseurl }}/assets/img/2.jpg" alt="" title="example image"/>
-    <img class="col one" src="{{ site.baseurl }}/assets/img/3.jpg" alt="" title="example image"/>
-</div>
-<div class="col three caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="img_row">
-    <img class="col three" src="{{ site.baseurl }}/assets/img/5.jpg" alt="" title="example image"/>
-</div>
-<div class="col three caption">
-    This image can also have a caption. It's like magic.
-</div>
-
-You can also put regular text between your rows of images. Say you wanted to write a little bit about your project before you posted the rest of the images. You describe how you toiled, sweated, *bled* for your project, and then.... you reveal it's glory in the next row of images.
-
-
-<div class="img_row">
-    <img class="col two" src="{{ site.baseurl }}/assets/img/6.jpg" alt="" title="example image"/>
-    <img class="col one" src="{{ site.baseurl }}/assets/img/11.jpg" alt="" title="example image"/>
-</div>
-<div class="col three caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
-</div>
-
-
-<br/><br/><br/>
-
-
-The code is simple. Just add a col class to your image, and another class specifying the width: one, two, or three columns wide. Here's the code for the last row of images above:
-
-    <div class="img_row">
-      <img class="col two" src="/img/6.jpg"/>
-      <img class="col one" src="/img/11.jpg"/>
-    </div>
