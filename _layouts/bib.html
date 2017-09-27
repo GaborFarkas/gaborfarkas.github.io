@@ -27,7 +27,9 @@
             {% endif %}
           {% endif %}
         {% else %}
+          {% if forloop.length > 1 %}
           and
+          {% endif %}
           {% if author.last == site.scholar.last_name %}
             <em>{{author.last}}, {{author.first}}</em>
           {% else %}
@@ -39,6 +41,9 @@
           {% endif %}
         {% endunless %}
       {% endfor %}
+      {% if entry.year %}
+        ({{entry.year}})
+      {% endif %}
     </span>
 
     <span class="periodical">
@@ -47,8 +52,17 @@
     {% elsif entry.type == "inproceedings" %}
       <em>In {{entry.booktitle}}</em>
     {% endif %}
-    {% if entry.year %}
-      {{entry.year}}
+    {% if entry.volume %}
+      {{ entry.volume }}
+      {% if entry.number %}
+        ({{ entry.number }})
+      {% elsif entry.issue %}
+        ({{ entry.issue }})
+      {% endif %}
+      .
+    {% endif %}
+    {% if entry.pages %}
+      pp. {{entry.pages}}.
     {% endif %}
     </span>
   {% endif %}

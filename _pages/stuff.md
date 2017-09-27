@@ -5,7 +5,7 @@ permalink: /stuff/
 description: Projects, presentations, supplementary materials, and other scientific–, and not-so-scientific, but useful stuff.
 ---
 
-{% for project in site.projects %}
+{% for project in site.stuff %}
 
 {% if project.redirect %}
 <div class="project">
