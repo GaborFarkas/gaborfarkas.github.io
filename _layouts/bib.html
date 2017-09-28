@@ -62,7 +62,11 @@
       .
     {% endif %}
     {% if entry.pages %}
-      pp. {{entry.pages}}.
+      {% if entry.pages contains '–' %}
+        pp. {{entry.pages}}.
+      {% else %}
+        {{entry.pages}} p.
+      {% endif %}
     {% endif %}
     </span>
   {% endif %}
