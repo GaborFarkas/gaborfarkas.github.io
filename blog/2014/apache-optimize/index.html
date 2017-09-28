@@ -7,13 +7,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
   <title>Gábor Farkas | Apache optimization for a map server</title>
-  <meta name="description" content="My personal site.
-">
+  <meta name="description" content="My personal site.">
 
-  <link rel="shortcut icon" href="/assets/img/favicon.ico">
+  <link rel="shortcut icon" href="https://gaborfarkas.github.io/assets/img/favicon.ico">
 
-  <link rel="stylesheet" href="/assets/css/main.css">
-  <link rel="canonical" href="/blog/2014/apache-optimize/">
+  <link rel="stylesheet" href="https://gaborfarkas.github.io/assets/css/main.css">
+  <link rel="canonical" href="https://gaborfarkas.github.io/blog/2014/apache-optimize/">
 </head>
 
 
@@ -34,17 +33,17 @@
 
       <div class="trigger">
         <!-- About -->
-        <a class="page-link" href="/">about</a>
+        <a class="page-link" href="https://gaborfarkas.github.io/">about</a>
 
         <!-- Blog -->
-        <a class="page-link" href="/blog/">blog</a>
+        <a class="page-link" href="https://gaborfarkas.github.io/blog/">blog</a>
 
         <!-- Pages -->
         
           
         
           
-            <a class="page-link" href="/cv/">CV</a>
+            <a class="page-link" href="https://gaborfarkas.github.io/cv/">CV</a>
           
         
           
@@ -52,22 +51,19 @@
           
         
           
-            <a class="page-link" href="/publications/">publications</a>
+            <a class="page-link" href="https://gaborfarkas.github.io/publications/">publications</a>
           
         
           
-            <a class="page-link" href="/research/">stuff</a>
-          
-        
-          
-        
+            <a class="page-link" href="https://gaborfarkas.github.io/stuff/">stuff</a>
           
         
           
         
-
-        <!-- CV link -->
-        <!-- <a class="page-link" href="/assets/pdf/CV.pdf">vitae</a> -->
+          
+        
+          
+        
 
       </div>
     </nav>
@@ -92,15 +88,15 @@
 
 <h3 id="choosing-and-optimizing-the-mpm">Choosing and optimizing the MPM</h3>
 
-<p>MPM stands for Multi-Processing Module in Apache. It is a special module, which function is to manage the processes started by the Apache daemon. The active MPM defines the behaviour of the web server, so you have to choose wisely. There were two main MPMs back in the day: prefork and worker. Prefork was the stable and secure one with thread-safe child processes, but it took more system resources than worker. Now worker is secure, too, but it uses threads instead of child processes, which can utilize system resources better via sharing objects among threads. You only have to watch out for non thread-safe modules, like <code class="highlighter-rouge">mod_php</code>, which can be replaced with <code class="highlighter-rouge">mod_fcgi</code> and <code class="highlighter-rouge">php5_cli</code> on Debian or <code class="highlighter-rouge">php_cli</code> on Fedora.</p>
+<p>MPM stands for Multi-Processing Module in Apache. It is a special module, which function is to manage the processes started by the Apache daemon. The active MPM defines the behaviour of the web server, so you have to choose wisely. There were two main MPMs back in the day: prefork and worker. Prefork was the stable and secure one with thread-safe child processes, but it took more system resources than worker. Now worker is secure, too, but it uses threads instead of child processes, which can utilize system resources better via sharing objects among threads. You only have to watch out for non thread-safe modules, like <code class="highlighter-rouge">mod_php</code>, which can be replaced with <code class="highlighter-rouge">mod_fcgi</code> and <code class="highlighter-rouge">php5_cli</code> on Debian or php_cli on Fedora.</p>
 
 <p>If you want to be able to choose wisely between MPMs, you may want to understand the concept behind some of them. When the MPM worker starts up, it creates some child process servers and some spare threads. One of the thread is the listener, its purpose is to listen for requests. When it gets one, it passes it down to one of the spare threads. The threads work is only done, when it returns the result of the request or the request times out. One child server can only spawn a given number of server threads, defined in the configuration file. When a child servers threads are all dead, the Apache daemon terminates the child server and creates a new one. When the server has some idle time, it creates spare threads to speed up the serving time of the upcoming requests.</p>
 
 <p>That was the operation of the worker MPM in a nutshell. There is a little brother of the worker, called event, you may take into consideration. The event MPM is a thread based module, too. The only difference is, that while the worker always creates some spare child servers and threads in advance, the event only activates when there is an active request. If you plan a server with low traffic, but high load, then event might suit you better than worker. In all other cases, worker is a good choice.</p>
 
-<p>Now that you have your preferred MPM, you have to configure it. For MPMs are modules, it can be configured in the corresponding IfModule section. In Debian, most of the module configurations come in separate .conf files in the <code class="highlighter-rouge">/etc/apache2/modules-available/</code> directory. However because there can be only one MPM present at a time, the MPM configurations are in the main configuration file in Debian, too. In Fedora some IfModule directives can be found in the main configuration file and the others can be accessed via <code class="highlighter-rouge">/etc/httpd/conf.modules.d/</code> Let’s see the default layout of the worker configuration in Debian 7:</p>
+<p>Now that you have your preferred MPM, you have to configure it. For MPMs are modules, it can be configured in the corresponding <code class="highlighter-rouge">IfModule</code> section. In Debian, most of the module configurations come in separate .conf files in the <strong>/etc/apache2/modules-available/</strong> directory. However because there can be only one MPM present at a time, the MPM configurations are in the main configuration file in Debian, too. In Fedora some <code class="highlighter-rouge">IfModule</code> directives can be found in the main configuration file and the others can be accessed via <strong>/etc/httpd/conf.modules.d/</strong> Let’s see the default layout of the worker configuration in Debian 7:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code> &lt;IfModule mpm_worker_module&gt;  
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code> &lt;IfModule mpm_worker_module&gt;  
    StartServers     2  
    MinSpareThreads   25  
    MaxSpareThreads   75   
@@ -112,7 +108,7 @@
 </code></pre>
 </div>
 
-<p>It says that the Apache daemon will create two child servers at startup. The child servers will spawn 25-75 idle threads at all, but there can be only 64 thread at a moment. Every child can create up to 25 threads before terminated and 150 clients can send request to the server at any time. There isn’t any limit to the maximum request a child can process. As you can see, there is a clash in the two hard limits of ThreadLimit and MaxClients. Luckily, ThreadLimit isn’t necessary in the configuration, so let’s just delete it. There is one directive you may want to change, the MaxClients. There are two main limits in every server configuration you don’t want to overpass, the size of the memory and the bandwidth. You can say that the memory is the lesser limit, but no, if the server changes to swap memory, the responses will be so slow, the clients won’t wait for it or eventually time out.</p>
+<p>It says that the Apache daemon will create two child servers at startup. The child servers will spawn 25-75 idle threads at all, but there can be only 64 thread at a moment. Every child can create up to 25 threads before terminated and 150 clients can send request to the server at any time. There isn’t any limit to the maximum request a child can process. As you can see, there is a clash in the two hard limits of <code class="highlighter-rouge">ThreadLimit</code> and <code class="highlighter-rouge">MaxClients</code>. Luckily, <code class="highlighter-rouge">ThreadLimit</code> isn’t necessary in the configuration, so let’s just delete it. There is one directive you may want to change, the <code class="highlighter-rouge">MaxClients</code>. There are two main limits in every server configuration you don’t want to overpass, the size of the memory and the bandwidth. You can say that the memory is the lesser limit, but no, if the server changes to swap memory, the responses will be so slow, the clients won’t wait for it or eventually time out.</p>
 
 <p>When calculating the ideal number of maximum clients, you should consider the bandwidth divided by the size of an average map tile or if you want to avoid any chance of server lag, the bandwidth divided by the size of the biggest map tile multiplied by the number of tiles an extend consists (bw/(size*num)), but I think that would be a waste of resources. The other consideration you may make is the available physical memory after startup divided by the size of a child server. You can look up these information with the following commands:</p>
 
@@ -131,13 +127,13 @@
 </code></pre>
 </div>
 
-<p>I’ve got 3564 MB available memory space and my average server size is 3 MB. That means, I could server 1000+ requests at once. However if I count with 10 MB/s bandwidth and my average tile size of 100 KB, I could only serve 100 requests at once, so the value of my MaxClients directive will be only 100.</p>
+<p>I’ve got 3564 MB available memory space and my average server size is 3 MB. That means, I could server 1000+ requests at once. However if I count with 10 MB/s bandwidth and my average tile size of 100 KB, I could only serve 100 requests at once, so the value of my <code class="highlighter-rouge">MaxClients</code> directive will be only 100.</p>
 
 <h3 id="choosing-the-right-modules">Choosing the right modules</h3>
 
 <p>Initially Apache is quite a heavy web server. It supports a bunch of programming styles, formats and frameworks via modules. The bad thing is, it has to load all of its active modules into memory. So if you activate modules you won’t actually use, you waste a lot of memory space needlessly. You have to choose the modules you need and strip down the server as you can. Most of the modules are Dynamically Shared Objects (DSOs), so if you will need some of them in the future, you can enable the corresponding ones and activate them with a server restart.</p>
 
-<p>If you don’t have a specific module in Debian, you can download it from a repository. They can be found as libapache2-mod-xy. You can take a look at your currently active modules with the command <code class="highlighter-rouge">apache2ctl -M</code>. If you want to enable a module, you can do it with <code class="highlighter-rouge">a2enmod</code>, and you can disable modules with a2dismod. The command a2enmod creates a symlink to <code class="highlighter-rouge">/etc/apache2/mods-enabled/</code> pointing at the original module file. With every server restart, the Apache daemon loads the modules which are present in the mods-enabled folder. The currently enabled modules in my server are the following:</p>
+<p>If you don’t have a specific module in Debian, you can download it from a repository. They can be found as libapache2-mod-xy. You can take a look at your currently active modules with the command <code class="highlighter-rouge">apache2ctl -M</code>. If you want to enable a module, you can do it with <code class="highlighter-rouge">a2enmod</code>, and you can disable modules with a2dismod. The command a2enmod creates a symlink to <strong>/etc/apache2/mods-enabled/</strong> pointing at the original module file. With every server restart, the Apache daemon loads the modules which are present in the mods-enabled folder. The currently enabled modules in my server are the following:</p>
 
 <div class="language-bash highlighter-rouge"><pre class="highlight"><code> root@mapserver:~# apache2ctl -M  
  Loaded Modules:  
@@ -170,7 +166,7 @@
 </code></pre>
 </div>
 
-<p>In a Fedora system, loading modules is slightly different. You can check the currently active modules with the command <code class="highlighter-rouge">httpd -M</code>, but you don’t have any for enabling or disabling modules. You have to do it manually by commenting out and uncommenting LoadModule directives in configuration files. Most of the module related configuration files can be found in <code class="highlighter-rouge">/etc/httpd/conf.modules.d/</code>. If you want to install a new module, you can download it from a repository as mod_xy. Just be sure it is a module for the Apache server (you can check it in the package description).</p>
+<p>In a Fedora system, loading modules is slightly different. You can check the currently active modules with the command <code class="highlighter-rouge">httpd -M</code>, but you don’t have any for enabling or disabling modules. You have to do it manually by commenting out and uncommenting LoadModule directives in configuration files. Most of the module related configuration files can be found in <strong>/etc/httpd/conf.modules.d/</strong>. If you want to install a new module, you can download it from a repository as mod_xy. Just be sure it is a module for the Apache server (you can check it in the package description).</p>
 
 <p>For more information about module choosing considerations there are various very useful articles on the internet, like <a href="https://haydenjames.io/strip-apache-improve-performance-memory-efficiency/">this one</a> by Hayden James. Of course you can look up every module you are not sure about in the official <a href="https://httpd.apache.org/docs/2.2/">Apache documentation</a>, they have great examples, too.</p>
 
@@ -178,7 +174,7 @@
 
 <p>Now that you have your modules configured correctly, you can proceed on setting up a virtual server. Virtual servers contain configuration options relevant to your servers attributes and file hierarchy. It can be in a separate configuration file or in the main configuration based on your distribution. Note that the Apache 2.2 and 2.4 virtual host configurations are slightly different. A layout in a Debian system can look like this:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code> &lt;VirtualHost *:80&gt;  
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code> &lt;VirtualHost <span class="k">*</span>:80&gt;  
      ServerAdmin webmaster@localhost  
      ServerName localhost  
    
@@ -196,7 +192,7 @@
          allow from all  
      &lt;/Directory&gt;  
      ScriptAlias /cgi-bin /var/www/cgi-bin/  
-     &lt;Directory "/var/www/cgi-bin/"&gt;  
+     &lt;Directory <span class="s2">"/var/www/cgi-bin/"</span>&gt;  
          AddHandler fcgid-script .php  
          FCGIWrapper /usr/lib/cgi-bin/php5 .php  
          AllowOverride None  
@@ -205,26 +201,26 @@
          Allow from all  
      &lt;/Directory&gt;  
    
-     ErrorLog ${APACHE_LOG_DIR}/error.log  
+     ErrorLog <span class="k">${</span><span class="nv">APACHE_LOG_DIR</span><span class="k">}</span>/error.log  
    
-     # Possible values include: debug, info, notice, warn, error, crit,  
-     # alert, emerg.  
+     <span class="c"># Possible values include: debug, info, notice, warn, error, crit,  </span>
+     <span class="c"># alert, emerg.  </span>
      LogLevel warn  
    
-     CustomLog ${APACHE_LOG_DIR}/access.log combined  
+     CustomLog <span class="k">${</span><span class="nv">APACHE_LOG_DIR</span><span class="k">}</span>/access.log combined  
  &lt;/VirtualHost&gt;  
 </code></pre>
 </div>
 
-<p>I’ve covered most of the directives in the previous article, so I’ll just write about the Directory part. You have to define every directory in the virtual server section you want Apache to handle differently. Every definition is recursive and enforced until the next directive, so if you deny all access from root, but you allow accessing /usr, then Apache can’t access <code class="highlighter-rouge">/home</code>, but can access <code class="highlighter-rouge">/usr/bin</code> for example. The default directories are <code class="highlighter-rouge">/</code>, <code class="highlighter-rouge">/var/www</code> and <code class="highlighter-rouge">/usr/lib/cgi-bin</code>. As default in Debian, Apache wants to put all the cgis in <code class="highlighter-rouge">/usr/lib/cgi-bin</code>, so I modified the <code class="highlighter-rouge">ScriptAlias</code> directive to point at <code class="highlighter-rouge">/var/www/cgi-bin</code>. Note that in ScriptAlias you must put a slash after cgi-bin, while in a Directory declaration you don’t have to. The first Directory section (from now on section) is the root directory. You have to prohibit Apache to access your system configuration and directories and you can do so, by denying all access to root. The next section is <code class="highlighter-rouge">www</code>. This will be the actual place of your website. You have to grant access to it. The last section is the <code class="highlighter-rouge">cgi-bin</code> directory. The most important option here is the <code class="highlighter-rouge">ExecCGI</code>. Without it, the Apache daemon won’t know that the contained files are scripts, so it just prints out their content. You can add additional handlers and wrappers for third party frameworks, like in my case, PHP.</p>
+<p>I’ve covered most of the directives in the previous article, so I’ll just write about the <code class="highlighter-rouge">Directory</code> part. You have to define every directory in the virtual server section you want Apache to handle differently. Every definition is recursive and enforced until the next directive, so if you deny all access from root, but you allow accessing <strong>/usr</strong>, then Apache can’t access <strong>/home</strong>, but can access <strong>/usr/bin</strong> for example. The default directories are <strong>/</strong>, <strong>/var/www</strong> and <strong>/usr/lib/cgi-bin</strong>. As default in Debian, Apache wants to put all the cgis in <strong>/usr/lib/cgi-bin</strong>, so I modified the ScriptAlias directive to point at <strong>/var/www/cgi-bin</strong>. Note that in ScriptAlias you must put a slash after cgi-bin, while in a Directory declaration you don’t have to. The first Directory section (from now on section) is the root directory. You have to prohibit Apache to access your system configuration and directories and you can do so, by denying all access to root. The next section is <strong>www</strong>. This will be the actual place of your website. You have to grant access to it. The last section is the <strong>cgi-bin</strong> directory. The most important option here is the <code class="highlighter-rouge">ExecCGI</code>. Without it, the Apache daemon won’t know that the contained files are scripts, so it just prints out their content. You can add additional handlers and wrappers for third party frameworks, like in my case, PHP.</p>
 
-<p>In Fedora by default there aren’t any virtual host sections. The settings of the default virtual host are scattered through the main configuration file. If you don’t want to make a server listening to various ports, or make differently behaving virtual servers, this setup will do good enough. In Apache 2.4 <code class="highlighter-rouge">Order</code> and <code class="highlighter-rouge">Allow</code> directives have been replaced with a single one: <code class="highlighter-rouge">Require</code>. It can be Require all granted, Require all denied or Require host x.y. Note that in Fedora, the default DocumentRoot folder is <code class="highlighter-rouge">/var/www/httpd</code>, so there are four sections by default.</p>
+<p>In Fedora by default there aren’t any virtual host sections. The settings of the default virtual host are scattered through the main configuration file. If you don’t want to make a server listening to various ports, or make differently behaving virtual servers, this setup will do good enough. In Apache 2.4 <code class="highlighter-rouge">Order</code> and <code class="highlighter-rouge">Allow</code> directives have been replaced with a single one: <code class="highlighter-rouge">Require</code>. It can be <code class="highlighter-rouge">Require all granted</code>, <code class="highlighter-rouge">Require all denied</code> or <code class="highlighter-rouge">Require host x.y</code>. Note that in Fedora, the default DocumentRoot folder is <strong>/var/www/httpd</strong>, so there are four sections by default.</p>
 
 <h3 id="configuring-selinux-for-apache-24-in-fedora-20">Configuring SELinux for Apache 2.4 in Fedora 20</h3>
 
 <p>In the newer Fedora systems there is a built-in feature, SELinux. It stands for Security Enhanced Linux and is developed by the NSA. Its main purpose to give an additional security layer by controlling daemon behaviors with politics and file contexts. Every file gets another metadata, the file context, and it defines if a specific daemon, like httpd can access it or not.</p>
 
-<p>The easiest way to get around SELinux is to disable it. I don’t recommend it however, because I assume you didn’t choose Fedora for its mere beauty. Completely disabling a security layer compiled in the kernel can be dangerous. If you want to disable it anyway, you can do it by editing its config file which can be accessed via <code class="highlighter-rouge">/etc/selinux/config</code>. You have to replace the value enforcing with permissive or disabled.</p>
+<p>The easiest way to get around SELinux is to disable it. I don’t recommend it however, because I assume you didn’t choose Fedora for its mere beauty. Completely disabling a security layer compiled in the kernel can be dangerous. If you want to disable it anyway, you can do it by editing its config file which can be accessed via <strong>/etc/selinux/config</strong>. You have to replace the value enforcing with permissive or disabled.</p>
 
 <p>If you want to configure SELinux properly, first you may want to check the values of the SELinux boolean settings:</p>
 
@@ -270,16 +266,16 @@
 </code></pre>
 </div>
 
-<p>There are several options you can make your life easier with SELinux. Check the <code class="highlighter-rouge">httpd_enable_cgi</code> option, if it is disabled, then you must enable it before you can execute cgi scripts. There is another interesting option, the <code class="highlighter-rouge">httpd_unified</code> one. If you turn it on, then SELinux won’t make difference in script, content, access and write contexts. You can turn it on with the <code class="highlighter-rouge">setsebool -P httpd_unified 1</code> command. Be cautious, because with unifying the httpd contexts, you lose a security layer. The only thing left to do is to mark all the directories as httpd contents that haven’t been marked by default. In my case this folder is <code class="highlighter-rouge">/var/www</code> and the procedure is the following:</p>
+<p>There are several options you can make your life easier with SELinux. Check the <code class="highlighter-rouge">httpd_enable_cgi</code> option, if it is disabled, then you must enable it before you can execute cgi scripts. There is another interesting option, the <code class="highlighter-rouge">httpd_unified</code> one. If you turn it on, then SELinux won’t make difference in script, content, access and write contexts. You can turn it on with the <code class="highlighter-rouge">setsebool -P httpd_unified 1</code> command. Be cautious, because with unifying the httpd contexts, you lose a security layer. The only thing left to do is to mark all the directories as <code class="highlighter-rouge">httpd</code> contents that haven’t been marked by default. In my case this folder is <strong>/var/www</strong> and the procedure is the following:</p>
 
 <div class="language-bash highlighter-rouge"><pre class="highlight"><code> <span class="o">[</span>root@mapserver ~]# semanage fcontext -a -t httpd_sys_content_t <span class="s2">"/var/www"</span>
  <span class="o">[</span>root@mapserver ~]# restorecon /var/www  
 </code></pre>
 </div>
 
-<p>If you want to take the harder way and keep all the SELinux security possibilities, then you have edit the file context of the directories you want Apache to get access to with their contents. There are four main contexts you have to know about. The first is the default <code class="highlighter-rouge">httpd_sys_content_t</code>. Files labelled with it, can be accessed by httpd, but cannot be written or executed. The second is <code class="highlighter-rouge">httpd_sys_script_exec_t</code>. It labels the executable scripts and their containing folder(s). The other two are special contexts. The <code class="highlighter-rouge">httpd_sys_ra_content_t</code> label marks files and folders the httpd daemon have access and append rights to, while the <code class="highlighter-rouge">httpd_sys_rw_content_t</code> label grants full writing access for httpd.</p>
+<p>If you want to take the harder way and keep all the SELinux security possibilities, then you have edit the file context of the directories you want Apache to get access to with their contents. There are four main contexts you have to know about. The first is the default <code class="highlighter-rouge">httpd_sys_content_t</code>. Files labelled with it, can be accessed by <code class="highlighter-rouge">httpd</code>, but cannot be written or executed. The second is <code class="highlighter-rouge">httpd_sys_script_exec_t</code>. It labels the executable scripts and their containing folder(s). The other two are special contexts. The <code class="highlighter-rouge">httpd_sys_ra_content_t</code> label marks files and folders the httpd daemon have access and append rights to, while the <code class="highlighter-rouge">httpd_sys_rw_content_t</code> label grants full writing access for httpd.</p>
 
-<p>There are two ways to relabel your web content. If you are not sure what label should be given to the files and folders, you can use the <code class="highlighter-rouge">chcon</code> command (<code class="highlighter-rouge">chcon -t httpd_sys_content_t /var/www</code> for example). Then the original context can be restored with the restorecon command. If you are 100% sure about what are you doing, you can change the context of the web content permanently with the <code class="highlighter-rouge">semanage</code> tool. After using it, you have to run the <code class="highlighter-rouge">restorecon</code> command to finalize the changes. Let’s see an example where is a <code class="highlighter-rouge">/var/www</code> <code class="highlighter-rouge">DocumentRoot</code>, a <code class="highlighter-rouge">/var/www/cgi-bin</code> script folder, a <code class="highlighter-rouge">/var/www/httpd</code> folder with appending rights and a <code class="highlighter-rouge">/var/www/img</code> folder with full access:</p>
+<p>There are two ways to relabel your web content. If you are not sure what label should be given to the files and folders, you can use the <code class="highlighter-rouge">chcon</code> command (<code class="highlighter-rouge">chcon -t httpd_sys_content_t /var/www</code> for example). Then the original context can be restored with the restorecon command. If you are 100% sure about what are you doing, you can change the context of the web content permanently with the semanage tool. After using it, you have to run the restorecon command to finalize the changes. Let’s see an example where is a <strong>/var/www</strong> <code class="highlighter-rouge">DocumentRoot</code>, a <strong>/var/www/cgi-bin</strong> script folder, a <strong>/var/www/httpd</strong> folder with appending rights and a <strong>/var/www/img</strong> folder with full access:</p>
 
 <div class="language-bash highlighter-rouge"><pre class="highlight"><code> <span class="o">[</span>root@mapserver ~]# semanage fcontext -a -t httpd_sys_content_t <span class="s2">"/var/www(/.*)?"</span>  
  <span class="o">[</span>root@mapserver ~]# semanage fcontext -a -t httpd_sys_script_exec_t <span class="s2">"/var/www/cgi-bin"</span>  
@@ -291,7 +287,7 @@
 
 <p>You can check the options and flags for these commands at the corresponding man pages (<code class="highlighter-rouge">man restorecon</code>, <code class="highlighter-rouge">man 8 semanage-fcontext</code>).</p>
 
-<p>Congratulations! Now that you have configured your web server, you can check it with an index.html in the DocumentRoot and maybe some scripts in the cgi-bin. This is a simple “Hello World” shell script:</p>
+<p>Congratulations! Now that you have configured your web server, you can check it with an <strong>index.html</strong> in the <code class="highlighter-rouge">DocumentRoot</code> and maybe some scripts in the <strong>cgi-bin</strong>. This is a simple “Hello World” shell script:</p>
 
 <div class="language-bash highlighter-rouge"><pre class="highlight"><code> <span class="c">#! /bin/bash  </span>
     
@@ -350,30 +346,31 @@
 <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
 
 <!-- Load Common JS -->
-<script src="/assets/js/common.js"></script>
+<script src="https://gaborfarkas.github.io/assets/js/common.js"></script>
 
 
 <!-- Load KaTeX -->
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js"></script>
-<script src="/assets/js/katex.js"></script>
+<script src="https://gaborfarkas.github.io/assets/js/katex.js"></script>
 
 
 
 
 <!-- Include custom icon fonts -->
-<link rel="stylesheet" href="/assets/css/font-awesome.min.css">
-<link rel="stylesheet" href="/assets/css/academicons.min.css">
+<link rel="stylesheet" href="https://gaborfarkas.github.io/assets/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://gaborfarkas.github.io/assets/css/academicons.min.css">
 
 <!-- Google Analytics -->
 <script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-ga('create', 'UA-XXXXXXXX-X', 'auto');
-ga('send', 'pageview');
+  ga('create', 'UA-107151753-1', 'auto');
+  ga('send', 'pageview');
+
 </script>
 
 

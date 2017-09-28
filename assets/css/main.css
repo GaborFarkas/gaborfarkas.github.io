@@ -40,8 +40,6 @@ button, input, select, textarea { font-family: inherit; font-size: 100%; }
 
 img { max-width: 100%; }
 
-svg { max-height: 100%; }
-
 /* Basscss Base Typography */
 body { font-family: Helvetica, Arial, sans-serif; line-height: 1.5; font-size: 100%; }
 
