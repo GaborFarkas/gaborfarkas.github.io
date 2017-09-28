@@ -60,12 +60,16 @@
         ({{ entry.issue }})
       {% endif %}
       .
+    {% elsif entry.type == "book" %}
+      <em>{{ entry.publisher }}</em>
+    {% elsif entry.type contains "thesis" %}
+      <em>{{ entry.school }}</em>
     {% endif %}
     {% if entry.pages %}
       {% if entry.pages contains '–' %}
-        pp. {{entry.pages}}.
+        pp. {{ entry.pages }}.
       {% else %}
-        {{entry.pages}} p.
+        {{ entry.pages }} p.
       {% endif %}
     {% endif %}
     </span>
