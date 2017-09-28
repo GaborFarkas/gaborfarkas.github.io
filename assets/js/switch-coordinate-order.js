@@ -4,7 +4,7 @@ var map = new ol.Map({
     layers: [
         new ol.layer.Tile({
             source: new ol.source.TileWMS({
-                url: 'http://demo.geo-solutions.it/geoserver/wms',
+                url: 'https://demo.geo-solutions.it/geoserver/wms',
                 params: {
                     layers: 'black_marble'
                 }
@@ -21,7 +21,7 @@ var map = new ol.Map({
                             source.addFeatures(wfsParser.readFeatures(request.responseText));
                         }
                     };
-                    request.open('GET', 'http://demo.geo-solutions.it/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&TYPENAME=topp:states&VERSION=1.1.0&SRSNAME=' + proj.getCode() + '&BBOX=' + extent.join(','));
+                    request.open('GET', 'https://demo.geo-solutions.it/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&TYPENAME=topp:states&VERSION=1.1.0&SRSNAME=' + proj.getCode() + '&BBOX=' + extent.join(','));
                     request.send();
                 }
             })
@@ -38,7 +38,7 @@ var map2 = new ol.Map({
     layers: [
         new ol.layer.Tile({
             source: new ol.source.TileWMS({
-                url: 'http://demo.geo-solutions.it/geoserver/wms',
+                url: 'https://demo.geo-solutions.it/geoserver/wms',
                 params: {
                     layers: 'black_marble'
                 }
@@ -66,7 +66,7 @@ var map2 = new ol.Map({
                             source.addFeatures(features);
                         }
                     };
-                    request.open('GET', 'http://demo.geo-solutions.it/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&TYPENAME=topp:states&VERSION=1.1.0&SRSNAME=' + proj.getCode() + '&BBOX=' + extent.join(','));
+                    request.open('GET', 'https://demo.geo-solutions.it/geoserver/wfs?SERVICE=WFS&REQUEST=GetFeature&TYPENAME=topp:states&VERSION=1.1.0&SRSNAME=' + proj.getCode() + '&BBOX=' + extent.join(','));
                     request.send();
                 }
             })
