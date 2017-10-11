@@ -2,7 +2,7 @@
 # Site settings
 # -----------------------------------------------------------------------------
 name: Gábor Farkas
-email: randal73@gamma.ttk.pte.hu
+email: gfarkas@gamma.ttk.pte.hu
 description: My personal site.
 footer_text: >
   Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
