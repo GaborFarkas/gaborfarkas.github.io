@@ -8,7 +8,7 @@ I started to work on a WebGL rendering engine for rendering vector layers in Ope
 
 There is a pretty application created to support the upcoming paper about this study. Feel free to check it out [here](https://gaborfarkas.github.io/rendering_pub/profile), and try out the renderer. Furthermore, if you find this feature useful, and find a new bug in the engine, you can create an issue about it at the OpenLayers project’s [GitHub page](https://github.com/openlayers/openlayers/issues).
 
-Hungarian presentation about the renderer at the annual conference of the local OsGeo chapter:
+Hungarian presentation about the renderer at the annual conference of the local OSGeo chapter:
 
 <iframe width="100%" height="500px" src="https://www.youtube.com/embed/HoYizFv1kZM">
 </iframe>
