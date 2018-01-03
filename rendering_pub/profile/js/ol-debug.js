@@ -3197,6 +3197,7 @@ goog.provide('ol');
  */
 ol.ASSUME_TOUCH = false;
 
+ol.TRIANGULATE = true;
 
 /**
  * TODO: rename this to something having to do with tile grids
@@ -28323,57 +28324,59 @@ if (ol.ENABLE_WEBGL) {
    */
   ol.render.webgl.PolygonReplay.prototype.drawCoordinates_ = function(
       flatCoordinates, holeFlatCoordinates, stride) {
-    // Triangulate the polygon
-    var outerRing = new ol.structs.LinkedList();
-    var rtree = new ol.structs.RBush();
-    // Initialize the outer ring
-    this.processFlatCoordinates_(flatCoordinates, stride, outerRing, rtree, true);
-    var maxCoords = this.getMaxCoords_(outerRing);
+    if (ol.TRIANGULATE) {
+      // Triangulate the polygon
+      var outerRing = new ol.structs.LinkedList();
+      var rtree = new ol.structs.RBush();
+      // Initialize the outer ring
+      this.processFlatCoordinates_(flatCoordinates, stride, outerRing, rtree, true);
+      var maxCoords = this.getMaxCoords_(outerRing);
 
-    // Eliminate holes, if there are any
-    if (holeFlatCoordinates.length) {
-      var i, ii;
-      var holeLists = [];
-      for (i = 0, ii = holeFlatCoordinates.length; i < ii; ++i) {
-        var holeList = {
-          list: new ol.structs.LinkedList(),
-          maxCoords: undefined,
-          rtree: new ol.structs.RBush()
-        };
-        holeLists.push(holeList);
-        this.processFlatCoordinates_(holeFlatCoordinates[i],
-            stride, holeList.list, holeList.rtree, false);
-        this.classifyPoints_(holeList.list, holeList.rtree, true);
-        holeList.maxCoords = this.getMaxCoords_(holeList.list);
-      }
-      holeLists.sort(function(a, b) {
-        return b.maxCoords[0] === a.maxCoords[0] ?
-          a.maxCoords[1] - b.maxCoords[1] : b.maxCoords[0] - a.maxCoords[0];
-      });
-      for (i = 0; i < holeLists.length; ++i) {
-        var currList = holeLists[i].list;
-        var start = currList.firstItem();
-        var currItem = start;
-        var intersection;
-        do {
-          //TODO: Triangulate holes when they intersect the outer ring.
-          if (this.getIntersections_(currItem, rtree).length) {
-            intersection = true;
-            break;
-          }
-          currItem = currList.nextItem();
-        } while (start !== currItem);
-        if (!intersection) {
-          if (this.bridgeHole_(currList, holeLists[i].maxCoords[0], outerRing, maxCoords[0], rtree)) {
-            rtree.concat(holeLists[i].rtree);
-            this.classifyPoints_(outerRing, rtree, false);
+      // Eliminate holes, if there are any
+      if (holeFlatCoordinates.length) {
+        var i, ii;
+        var holeLists = [];
+        for (i = 0, ii = holeFlatCoordinates.length; i < ii; ++i) {
+          var holeList = {
+            list: new ol.structs.LinkedList(),
+            maxCoords: undefined,
+            rtree: new ol.structs.RBush()
+          };
+          holeLists.push(holeList);
+          this.processFlatCoordinates_(holeFlatCoordinates[i],
+              stride, holeList.list, holeList.rtree, false);
+          this.classifyPoints_(holeList.list, holeList.rtree, true);
+          holeList.maxCoords = this.getMaxCoords_(holeList.list);
+        }
+        holeLists.sort(function(a, b) {
+          return b.maxCoords[0] === a.maxCoords[0] ?
+            a.maxCoords[1] - b.maxCoords[1] : b.maxCoords[0] - a.maxCoords[0];
+        });
+        for (i = 0; i < holeLists.length; ++i) {
+          var currList = holeLists[i].list;
+          var start = currList.firstItem();
+          var currItem = start;
+          var intersection;
+          do {
+            //TODO: Triangulate holes when they intersect the outer ring.
+            if (this.getIntersections_(currItem, rtree).length) {
+              intersection = true;
+              break;
+            }
+            currItem = currList.nextItem();
+          } while (start !== currItem);
+          if (!intersection) {
+            if (this.bridgeHole_(currList, holeLists[i].maxCoords[0], outerRing, maxCoords[0], rtree)) {
+              rtree.concat(holeLists[i].rtree);
+              this.classifyPoints_(outerRing, rtree, false);
+            }
           }
         }
+      } else {
+        this.classifyPoints_(outerRing, rtree, false);
       }
-    } else {
-      this.classifyPoints_(outerRing, rtree, false);
+      this.triangulate_(outerRing, rtree);
     }
-    this.triangulate_(outerRing, rtree);
   };
 
 
