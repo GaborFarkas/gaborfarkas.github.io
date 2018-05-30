@@ -67,3 +67,20 @@
     abstract = {In this paper we present an alternative, vector based coverage model, which could extend the traditional raster model. As the coverage model only changes the representation model behind rasters, it needs minimal effort to implement, mitigates current raster limitations, and has minimal performance impact due to modern computers' increased computing capacities. Moreover, coverages could still get the benefits of the traditional raster model. As the data model remains the same, traditional raster based operations can still be applied on rectangular coverages, while other patterns can still benefit at least from matrix algebra. Finally, not only current raster operations could be kept, but there would not be any limitations of developing new ones optimized for different coverage patterns (e.g. hexagonal operations).}
 }
 
+@InProceedings{towards_cov,
+    author = {G. Farkas},
+    title = {Towards visualizing coverage data on the Web},
+    year = {2018},
+    booktitle = {{Az elmélet és a gyakorlat találkozása a térinformatikában IX.: Theory meets practice in GIS.}},
+    pages = {107--113},
+    pdf = {towards_visualizing_coverages_on_the_web.pdf},
+    abstract = {This paper presents a Web-based implementation of the coverage model, which was proposed
+to extend the traditional raster model. While the coverage model is able to overcome the most severe
+disadvantages of the raster model (e.g. reprojection, sampling bias), its vector-based display model needs
+more computational power. In order to create a proof of concept, the web mapping library OpenLayers
+was used as a basis for the implementation. After several failed attempts, the final program was able to
+render the Spearfish60 DEM from GRASS GIS’s example data feasibly. While both the rendering speed
+(20.8 fps) and the memory footprint (112 MiB) can be improved in the future, the results are promising
+for the first viable implementation.}
+}
+
