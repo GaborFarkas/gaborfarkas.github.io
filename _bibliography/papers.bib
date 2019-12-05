@@ -85,3 +85,14 @@ render the Spearfish60 DEM from GRASS GIS’s example data feasibly. While both 
 for the first viable implementation.}
 }
 
+@Article{hardware-accel,
+    author = {G. Farkas},
+    title = {Hardware-Accelerating 2D Web Maps: A Case Study},
+    year = {2019},
+    journal = {Cartographica The International Journal for Geographic Information and Geovisualization},
+	volume = {54},
+	number =  {4},
+    pages = {245--260},
+    abstract = {Recent trends show that developers behind some of the most popular web mapping libraries put excessive work into creating custom hardware-accelerated rendering engines. Other libraries focus on functionality rather than visualization. From the perspective of the developer using these libraries an important question arises: is it necessary to use a WebGL-powered library for 2D web mapping? The answer was found through the implementation and evaluation of a simple WebGL ren-derer for the open source Web mapping library OpenLayers. It extends the previous, texture-based implementation with line-string, polygon, and label-rendering capabilities. Through various benchmarks, the benefits of using a WebGL rendering engine over the traditional, but nowadays widely supported and-in most cases-hardware-accelerated HTML5 Canvas renderer are assessed. Contrary to the current trends in Web mapping, results suggest that using the Canvas Application Programming Interface (API) is sufficient for smaller Web maps (up to around 2000 features and 60,000 vertices) using static vector data. WebGL only gives a noticeable performance boost with maps using large vector layers, such as Web GIS clients.}
+}
+

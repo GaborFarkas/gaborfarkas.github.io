@@ -15,5 +15,5 @@ profile:
 social: true
 ---
 
-I received my BSc and MSc degrees in geography in the University of Pécs, Institute of Geography. I’m currently a lecturer with the same institute. My tasks involve teaching, operating two computer labs, and researching. My main reseach interests are Web GIS and GIS development on an open source basis. In parallel, I’m also working towards my PhD degree in Earth Sciences.
+I received my BSc and MSc degrees in geography from University of Pécs, Institute of Geography. Currently working as a lecturer with the same institute, my tasks involve teaching, operating two computer labs, and researching. My main reseach interests are Web GIS and GIS development on an open source basis. In parallel, I’m also working towards my PhD degree in Earth Sciences. This site is intended as a research profile, and therefore, it is mainly about my research and other academic stuff.
 
