@@ -1,0 +1,6 @@
+<div (mouseover)="expanded = true" (mouseout)="expanded = false">
+    <label class="max-md:hidden">{{label}}</label>
+    <ul class="overflow-hidden md:absolute" [ngClass]="{ 'md:h-0': !expanded }">
+        <li *ngFor="let navItem of items"><a [href]="navItem.url">{{navItem.label}}</a></li>
+    </ul>
+</div>

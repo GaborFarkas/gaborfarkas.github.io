@@ -1,0 +1,10 @@
+<div class="h-full flex items-center">
+    <img src="assets/icon-raw.svg" class="h-full px-3 py-2">
+    <span>Farkas Gábor e.v.</span>
+</div>
+
+<div class="overflow-hidden md:flex" [ngClass]="{'max-md:h-0': !expanded}">
+    <nav-dropdown *ngFor="let item of navItems | keyvalue" [label]="item.key" [items]="item.value"></nav-dropdown>
+</div>
+
+<fa-icon [icon]="togglerIcon" size="xl" class="absolute right-3 vertical-center md:hidden" (click)="toggle()"></fa-icon>
