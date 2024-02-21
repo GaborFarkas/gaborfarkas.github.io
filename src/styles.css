@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --background-color: #dfefff;
+    --background-accent: #5fa2e4;
+}
+
 html,
 body {
     height: 100%;
@@ -18,5 +23,13 @@ body {
     .vertical-center {
         top: 50%;
         transform: translateY(-50%);
+    }
+
+    .bg-primary {
+        background-color: var(--background-color);
+    }
+
+    .border-bg-accent {
+        border-color: var(--background-accent);
     }
 }
