@@ -1,5 +1,10 @@
 svg {
     color: var(--primary-accent);
+    transition: color 100ms linear;
+}
+
+svg:hover {
+    color: var(--secondary-accent);
 }
 
 /* Navbar menu skewed-box styling. Closely couples the nav-dropdown component, but the styling needs to be contextual. */
@@ -8,6 +13,7 @@ svg {
        Note that we have to apply inverse skewing on every readable child. */
     nav-dropdown {
         transform: skewX(-25deg);
+        transition: background-color 50ms linear;
     }
 
     nav-dropdown:hover {
@@ -22,6 +28,7 @@ svg {
         background-color: var(--primary-accent);
         width: 4px;
         position: relative;
+        transition: background-color 50ms linear;
     }
 
     nav-dropdown:after {

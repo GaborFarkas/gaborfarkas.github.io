@@ -7,16 +7,21 @@
 
     /* Adjust the menus to the bottom-right of the skewed box, which has a constant offset, but only if
        the parent has straight axes. Adjust the min-width with that constant as well. */
-    .menu-target:hover .menu-container ul {
-        text-align: center;
+    .menu-target .menu-container ul {
         background-color: var(--secondary-color);
+        text-align: center;
         border-radius: 5px;
         min-width: calc(100% + 0.75rem);
         right: 0.75rem;
         z-index: 2;
+        transition: max-height 150ms linear;
     }
 
     .menu-target {
         height: calc(100% + 10px);
+    }
+
+    li:first-of-type {
+        padding-top: 1.25rem;
     }
 }

@@ -1,12 +1,14 @@
 <div class="h-full flex items-center">
-    <!-- Include raw SVG to easily change its color -->
-    <svg class="h-full px-3 py-2 w-24">
-        <use href="assets/icon-raw.svg#logo"></use>
-    </svg>
+    <a href="/" class="h-full">
+        <!-- Include raw SVG to easily change its color -->
+        <svg class="h-full px-3 py-2 w-24 cursor-pointer">
+            <use href="assets/icon-raw.svg#logo"></use>
+        </svg>
+    </a>
     <span>Farkas Gábor e.v.</span>
 </div>
 
-<div class="nav-container max-md:overflow-hidden md:flex md:h-full md:px-12" [ngClass]="{'max-md:h-0': !expanded}">
+<div class="nav-container max-md:overflow-hidden md:flex md:h-full md:px-20" [ngClass]="{ 'max-md:h-0': !expanded }">
     <nav-dropdown class="md:h-full md:flex items-center" *ngFor="let item of navItems | keyvalue" [label]="item.key" [items]="item.value"></nav-dropdown>
 </div>
 
