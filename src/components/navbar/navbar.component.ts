@@ -19,19 +19,19 @@ export class NavbarComponent {
     /**
      * Gets or sets if the navigation bar is expanded. Small screens only.
      */
-    public expanded: boolean = false;
+    protected expanded: boolean = false;
 
     /**
      * Gets the FA icon for the toggler button.
      */
-    public get togglerIcon() {
+    protected get togglerIcon() {
         return this.expanded ? faXmark : faBars;
     }
 
     /**
      * Gets or sets the navigation links for the website.
      */
-    public navItems: Record<string, NavDropdownItem[]> = {
+    protected navItems: Record<string, NavDropdownItem[]> = {
         'Counseling': [
             { label: 'Short-term counseling', url: '' },
             { label: 'Long-term partnership', url: '' }
@@ -48,7 +48,7 @@ export class NavbarComponent {
     /**
      * Toggles the navigation bar. Small screens only.
      */
-    public toggle() {
+    protected toggle() {
         this.expanded = !this.expanded;
     }
 }

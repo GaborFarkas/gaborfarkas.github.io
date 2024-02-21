@@ -26,5 +26,5 @@ export class NavDropdownComponent {
     /**
      * Gets or sets if the dropdown menu is expanded. Large screens only.
      */
-    public expanded: boolean = false;
+    protected expanded: boolean = false;
 }
