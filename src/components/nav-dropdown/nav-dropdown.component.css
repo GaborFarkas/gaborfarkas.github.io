@@ -1,0 +1,22 @@
+@media (min-width: 768px) {
+    /* Apply inverse skewing to a container as it is easier to position the menu that way.
+       Otherwise, the offseted child is moved on a slanted Y axis. */
+    .menu-container {
+        transform: skewX(25deg);
+    }
+
+    /* Adjust the menus to the bottom-right of the skewed box, which has a constant offset, but only if
+       the parent has straight axes. Adjust the min-width with that constant as well. */
+    .menu-target:hover .menu-container ul {
+        text-align: center;
+        background-color: var(--secondary-color);
+        border-radius: 5px;
+        min-width: calc(100% + 0.75rem);
+        right: 0.75rem;
+        z-index: 2;
+    }
+
+    .menu-target {
+        height: calc(100% + 10px);
+    }
+}

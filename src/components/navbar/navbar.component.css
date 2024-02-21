@@ -1,4 +1,51 @@
 svg {
-    vertical-align: top;
-    color: var(--background-accent);
+    color: var(--primary-accent);
+}
+
+/* Navbar menu skewed-box styling. Closely couples the nav-dropdown component, but the styling needs to be contextual. */
+@media (min-width: 768px) {
+    /* Skew the whole menu selector to have a pointer target for the whole trapezoid.
+       Note that we have to apply inverse skewing on every readable child. */
+    nav-dropdown {
+        transform: skewX(-25deg);
+    }
+
+    nav-dropdown:hover {
+        background-color: var(--secondary-color);
+    }
+
+    /* It is easier to style horizontal separators as pseudo-elements than as regular borders. */
+    nav-dropdown:after,
+    nav-dropdown:before {
+        content: '';
+        height: 100%;
+        background-color: var(--primary-accent);
+        width: 4px;
+        position: relative;
+    }
+
+    nav-dropdown:after {
+        left: 2px;
+    }
+
+    nav-dropdown:before {
+        right: 2px;
+    }
+
+    nav-dropdown:hover:after,
+    nav-dropdown:hover:before {
+        background-color: var(--secondary-accent);
+    }
+
+    /* Make the overlapping "borders" of the hovered elem's neighbors disappear as CSS transformations do not respect z-index. */
+    nav-dropdown:hover + nav-dropdown:before,
+    nav-dropdown:has(+ nav-dropdown:hover):after {
+        background-color: transparent;
+    }
+
+    /* Skewing is not pixel-perfect in browsers, adjust the first menu item. */
+    nav-dropdown:first-of-type {
+        position: relative;
+        left: 1px;
+    }
 }

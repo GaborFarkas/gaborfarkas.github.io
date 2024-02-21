@@ -5,8 +5,10 @@
 @tailwind utilities;
 
 :root {
-    --background-color: #dfefff;
-    --background-accent: #5fa2e4;
+    --primary-color: #dfefff;
+    --primary-accent: #5fa2e4;
+    --secondary-color: #fffbdcaf;
+    --secondary-accent: #ffc40d;
 }
 
 html,
@@ -26,10 +28,6 @@ body {
     }
 
     .bg-primary {
-        background-color: var(--background-color);
-    }
-
-    .border-bg-accent {
-        border-color: var(--background-accent);
+        background-color: var(--primary-color);
     }
 }
