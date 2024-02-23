@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { NavDropdownItem } from '../../models/nav-dropdown-item.model';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../navbar/navbar.component';
@@ -14,7 +14,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
     templateUrl: './nav-dropdown.component.html',
     styleUrl: './nav-dropdown.component.css'
 })
-export class NavDropdownComponent {
+export class NavDropdownComponent implements AfterViewInit {
     /**
      * Label of the dropdown menu.
      */

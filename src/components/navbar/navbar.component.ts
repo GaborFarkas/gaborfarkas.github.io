@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavDropdownComponent } from '../nav-dropdown/nav-dropdown.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NavDropdownItem } from '../../models/nav-dropdown-item.model';
 import { CommonModule } from '@angular/common';
 
@@ -24,7 +24,7 @@ export class NavbarComponent {
     /**
      * Gets the FA icon for the toggler button.
      */
-    protected get togglerIcon() {
+    protected get togglerIcon(): IconDefinition {
         return this.expanded ? faXmark : faBars;
     }
 
