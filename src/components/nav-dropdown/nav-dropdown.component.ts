@@ -1,9 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { NavDropdownItem } from '../../models/nav-dropdown-item.model';
 import { CommonModule } from '@angular/common';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 /**
  * Dropdown component for the navigation bar.
+ * Only use inside {@link NavbarComponent}.
  */
 @Component({
     selector: 'nav-dropdown',
@@ -24,7 +26,20 @@ export class NavDropdownComponent {
     @Input() items: NavDropdownItem[] = [];
 
     /**
+     * The accessibility target element of the dropdown menu for keyboard users.
+     */
+    @ViewChild('ariaTarget') private ariaTarget?: ElementRef<HTMLDivElement>;
+
+    /**
      * Gets or sets if the dropdown menu is expanded. Large screens only.
      */
     protected expanded: boolean = false;
+
+    public ngAfterViewInit() {
+        this.ariaTarget?.nativeElement.addEventListener('keypress', function (this: NavDropdownComponent, evt: KeyboardEvent) {
+            if (evt.key === ' ') {
+                this.expanded = !this.expanded;
+            }
+        }.bind(this));
+    }
 }
