@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faLocationDot, faEnvelope, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
-import { Map as MaplibreMap } from 'maplibre-gl';
+import { FullscreenControl, Map as MaplibreMap } from 'maplibre-gl';
 
 /**
  * Footer component.
@@ -33,7 +33,7 @@ export class FooterComponent implements AfterViewInit {
                 style: 'https://tiles.stadiamaps.com/styles/stamen_watercolor.json',
                 center: { lat: 46.075613520277756, lng: 18.22102546962799 },
                 zoom: 12
-            });
+            }).addControl(new FullscreenControl({container: this.mapElem.nativeElement}));
         }
     }
 }
