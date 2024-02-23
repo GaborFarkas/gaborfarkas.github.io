@@ -1,15 +1,15 @@
-<div class="h-full flex items-center">
+<div class="h-16 md:h-full flex items-center relative">
     <a href="/" class="h-full">
         <!-- Include raw SVG to easily change its color -->
-        <svg class="h-full px-3 py-2 w-24 cursor-pointer">
+        <svg class="h-full px-3 py-2 w-20 cursor-pointer">
             <use href="assets/icon-raw.svg#logo"></use>
         </svg>
     </a>
     <span>Farkas Gábor e.v.</span>
+
+    <fa-icon [icon]="togglerIcon" size="xl" class="absolute right-3 vertical-center md:hidden" (click)="toggle()"></fa-icon>
 </div>
 
 <div class="nav-container max-md:overflow-hidden md:flex md:h-full md:px-20" [ngClass]="{ 'max-md:h-0': !expanded }">
     <nav-dropdown class="md:h-full md:flex items-center" *ngFor="let item of navItems | keyvalue" [label]="item.key" [items]="item.value"></nav-dropdown>
 </div>
-
-<fa-icon [icon]="togglerIcon" size="xl" class="absolute right-3 vertical-center md:hidden" (click)="toggle()"></fa-icon>

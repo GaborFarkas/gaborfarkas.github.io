@@ -2,7 +2,7 @@
     <div #ariaTarget class="menu-container h-full relative" tabindex="0" role="menuitem" [attr.aria-haspopup]="items.length > 0" [attr.aria-expanded]="expanded" [attr.aria-label]="label">
         <label class="max-md:hidden h-full flex items-center md:px-10"><span>{{label}}</span></label>
         <ul class="overflow-hidden md:absolute" [ngClass]="{ 'md:max-h-0': !expanded, 'md:max-h-40': expanded }">
-            <li class="md:pb-5" *ngFor="let navItem of items"><a class="px-5 md:whitespace-nowrap" [tabindex]="expanded ? '0' : '-1'" [href]="navItem.url">{{navItem.label}}</a></li>
+            <li class="md:pb-5" *ngFor="let navItem of items"><a class="px-5 md:whitespace-nowrap" [href]="navItem.url">{{navItem.label}}</a></li>
         </ul>
     </div>
 </div>
