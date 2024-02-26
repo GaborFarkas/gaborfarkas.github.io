@@ -58,7 +58,7 @@ export class FooterMapComponent implements AfterViewInit {
             const fsControl = new FullscreenControl({ container: this.mapElem.nativeElement });
             fsControl.on('fullscreenstart', function (this: FooterMapComponent) {
                 // Add some extra features when full screen is first toggled.
-                if (this.extrasLoaded && !this.extrasLoading) {
+                if (!this.extrasLoaded && !this.extrasLoading) {
                     this.extrasLoading = true;
 
                     this.loadExtras();
@@ -76,6 +76,7 @@ export class FooterMapComponent implements AfterViewInit {
      * Loads extra features and layers on toggling the map to full screen.
      */
     private loadExtras(): void {
+        console.log(this.map);
         if (!this.map) {
             return;
         }
@@ -133,7 +134,6 @@ export class FooterMapComponent implements AfterViewInit {
         // Prepare a new topographic style to choose as base map.
         this.map.setStyle(`https://api.maptiler.com/maps/basic-v2/style.json?key=${environment.mapTilerApiKey}`, {
             transformStyle: function (this: FooterMapComponent, prevStyle: StyleSpecification|undefined, nextStyle: StyleSpecification) {
-                console.log(nextStyle?.layers);
                 return {
                     ...nextStyle,
                     sources: {
@@ -159,7 +159,6 @@ export class FooterMapComponent implements AfterViewInit {
                 }
             }.bind(this)
         });
-
     }
 }
 
