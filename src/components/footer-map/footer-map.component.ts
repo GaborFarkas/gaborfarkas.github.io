@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FullscreenControl, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
 import { environment } from '../../environments/environment';
+import BuildingControl from '../../utils/maplibregl/BuildingControl';
 
 /**
  * Footer map module component.
@@ -76,7 +77,6 @@ export class FooterMapComponent implements AfterViewInit {
      * Loads extra features and layers on toggling the map to full screen.
      */
     private loadExtras(): void {
-        console.log(this.map);
         if (!this.map) {
             return;
         }
@@ -159,6 +159,10 @@ export class FooterMapComponent implements AfterViewInit {
                 }
             }.bind(this)
         });
+
+        this.map.addControl(new BuildingControl({
+            layer: '3d-buildings'
+        }));
     }
 }
 
