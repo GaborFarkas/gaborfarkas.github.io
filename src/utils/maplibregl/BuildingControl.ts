@@ -74,7 +74,7 @@ export default class BuildingControl implements IControl {
         const containerElem = document.createElement('div');
         containerElem.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 
-        const btnElem = document.createElement('button')
+        const btnElem = document.createElement('button');
         containerElem.appendChild(btnElem);
         btnElem.title = 'Enable buildings';
         btnElem.className = 'maplibregl-ctrl-building';

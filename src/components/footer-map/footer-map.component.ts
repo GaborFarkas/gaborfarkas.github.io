@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { FullscreenControl, GetResourceResponse, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
+import { AttributionControl, FullscreenControl, GetResourceResponse, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
 import { environment } from '../../environments/environment';
 import BuildingControl from '../../utils/maplibregl/BuildingControl';
+import LayerToggleControl from '../../utils/maplibregl/LayerToggleControl';
 
 /**
  * Footer map module component.
@@ -33,11 +34,6 @@ export class FooterMapComponent implements AfterViewInit {
     private map?: MaplibreMap;
 
     /**
-     * Gets or sets the current base map style.
-     */
-    private currentStyle: BaseMapStyle = BaseMapStyle.ARTISTIC;
-
-    /**
      * Gets or sets the base map layers associated with a single style.
      */
     private baseMapLayers: Map<BaseMapStyle, string[]> = new Map();
@@ -52,8 +48,15 @@ export class FooterMapComponent implements AfterViewInit {
                 container: this.mapElem.nativeElement,
                 style: 'https://tiles.stadiamaps.com/styles/stamen_watercolor.json',
                 center: { lat: 46.0756, lng: 18.2210 },
-                zoom: 12
+                zoom: 12,
+                attributionControl: false
             });
+
+            const attribCtrl = new AttributionControl({
+                customAttribution: 'Expand the map to see some magic!',
+                compact: true
+            });
+            this.map.addControl(attribCtrl);
 
             // Add full screen control.
             const fsControl = new FullscreenControl({ container: this.mapElem.nativeElement });
@@ -62,6 +65,7 @@ export class FooterMapComponent implements AfterViewInit {
                 if (!this.extrasLoaded && !this.extrasLoading) {
                     this.extrasLoading = true;
 
+                    this.map?.removeControl(attribCtrl);
                     this.loadExtras();
 
                     this.extrasLoaded = true;
@@ -80,6 +84,11 @@ export class FooterMapComponent implements AfterViewInit {
         if (!this.map) {
             return;
         }
+
+        this.map.addControl(new AttributionControl({
+            customAttribution: 'Tilt the map with the right mouse button. Zoom into and toggle the controls to see more magic.',
+            compact: true
+        }));
 
         // Add sources and layers for DEM and 3D building extrusions (NOTE: flat roofs only).
         this.map.addSource('buildings-vector', {
@@ -170,6 +179,20 @@ export class FooterMapComponent implements AfterViewInit {
         this.map.addControl(new BuildingControl({
             layer: '3d-buildings'
         }));
+
+        // Add layer toggler
+        const togglerControl = new LayerToggleControl({
+            layers: [BaseMapStyle.ARTISTIC, BaseMapStyle.PRECISE]
+        });
+        togglerControl.on('layerswitch', function (this: FooterMapComponent, evt: LayerToggleEvent) {
+            for (let lyrGroup of this.baseMapLayers) {
+                // Set visibility for every layer in the layer group
+                for (let lyr of lyrGroup[1]) {
+                    this.map?.setLayoutProperty(lyr, 'visibility', lyrGroup[0] === evt.layer ? 'visible' : 'none');
+                }
+            }
+        }.bind(this));
+        this.map.addControl(togglerControl, 'top-left');
     }
 }
 
@@ -181,4 +204,14 @@ enum BaseMapStyle {
     ARTISTIC = 'watercolor',
     /** MapTiler vector tiles */
     PRECISE = 'topographic'
+}
+
+/**
+ * Event object for the layer toggler's toggle event.
+ */
+interface LayerToggleEvent {
+    /**
+     * The currently selected layer.
+     */
+    layer: string
 }
