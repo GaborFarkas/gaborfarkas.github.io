@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { FullscreenControl, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
+import { FullscreenControl, GetResourceResponse, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
 import { environment } from '../../environments/environment';
 import BuildingControl from '../../utils/maplibregl/BuildingControl';
 
@@ -91,6 +91,13 @@ export class FooterMapComponent implements AfterViewInit {
             url: `https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=${environment.mapTilerApiKey}`,
             tileSize: 256
         });
+        this.map.loadImage('assets/building-texture-blueprint.png').then(
+            function (this: FooterMapComponent, response: GetResourceResponse<HTMLImageElement | ImageBitmap>) {
+                this.map?.addImage('building-blueprint', response.data, {
+                    pixelRatio: 2
+                });
+            }.bind(this)
+        );
 
         this.map.setTerrain({
             source: 'terrainSrc',
@@ -104,7 +111,7 @@ export class FooterMapComponent implements AfterViewInit {
             'type': 'fill-extrusion',
             'minzoom': 15,
             'paint': {
-                'fill-extrusion-color': '#4988cb',
+                'fill-extrusion-pattern': 'building-blueprint',
                 'fill-extrusion-height': [
                     'interpolate',
                     ['linear'],
