@@ -1,0 +1,16 @@
+<div #carousel class="carousel-slide-container flex overflow-x-hidden w-full h-full relative"
+    [style.transform]="'translateX(' + currSlide * 100 + '%)'">
+    <ng-content></ng-content>
+</div>
+<div *ngIf="pageSwitcher" class="absolute w-full h-full top-0 left-0 flex justify-between">
+    <div *ngIf="pageSwitcher" class="h-full flex justify-center items-center">
+        <fa-icon [icon]="angleLeft" size="2x" class="pl-5"
+            [ngClass]="{'md:cursor-pointer': currSlide > 0, 'disabled': currSlide === 0}"
+            (click)="previousSlide()"></fa-icon>
+    </div>
+    <div *ngIf="pageSwitcher" class="h-full flex justify-center items-center">
+        <fa-icon [icon]="angleRight" size="2x" class="pr-5 md:cursor-pointer"
+            [ngClass]="{'md:cursor-pointer': currSlide < numSlides - 1, 'disabled': currSlide === numSlides - 1}"
+            (click)="nextSlide()"></fa-icon>
+    </div>
+</div>

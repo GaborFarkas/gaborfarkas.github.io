@@ -1,0 +1,12 @@
+::ng-deep .carousel {
+    overflow-x: hidden;
+}
+
+::ng-deep .carousel-slide-container .carousel-slide {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.carousel-slide-container {
+    transition: transform 500ms linear;
+}
