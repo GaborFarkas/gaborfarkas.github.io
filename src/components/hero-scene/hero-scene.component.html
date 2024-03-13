@@ -11,7 +11,7 @@
     <img class="absolute top-0 left-12 h-2/4 max-w-2/5" src="assets/blackboard.png">
     <img class="absolute bottom-0 left-0 h-3/5" src="assets/scientist.png">
     <div class="h-3/5 w-2/4 absolute top-0 right-0 hero-background flex items-center justify-center">
-        <img class="max-h-3/5" src="assets/hero-f.png">
+        <img class="max-h-3/5 cursor-pointer" [src]="'assets/' + heroImg + '.png'" (click)="toggleHero()">
     </div>
-    <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0"></div>
+    <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0 pointer-events-none"></div>
 </div>

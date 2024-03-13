@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -12,5 +12,20 @@ import { CommonModule } from '@angular/common';
     styleUrl: './hero-scene.component.css'
 })
 export class HeroSceneComponent {
+    /**
+     * The hero image used in the animation.
+     */
+    @Input() heroImg: string = '';
 
+    /**
+     * Event emitter used for a hero change.
+     */
+    @Output() heroChanged: EventEmitter<any> = new EventEmitter();
+
+    /**
+     * Toggles the hero image.
+     */
+    toggleHero() {
+        this.heroChanged.emit();
+    }
 }
