@@ -10,6 +10,6 @@
     <fa-icon [icon]="togglerIcon" size="xl" class="absolute right-3 vertical-center md:hidden" (click)="toggle()"></fa-icon>
 </div>
 
-<div class="nav-container max-md:overflow-hidden md:flex md:h-full md:px-20" [ngClass]="{ 'max-md:h-0': !expanded }">
+<div class="nav-container max-md:overflow-hidden md:flex md:h-full md:px-20 md:z-10" [ngClass]="{ 'max-md:h-0': !expanded }">
     <nav-dropdown class="md:h-full md:flex items-center" *ngFor="let item of navItems | keyvalue" [label]="item.key" [items]="item.value"></nav-dropdown>
 </div>

@@ -38,6 +38,14 @@ body {
     .text-primary-accent {
         color: var(--primary-accent);
     }
+
+    .max-h-3\/5 {
+        max-height: 60%;
+    }
+
+    .max-w-2\/5 {
+        max-width: 40%;
+    }
 }
 
 .maplibregl-ctrl button.maplibregl-ctrl-building .maplibregl-ctrl-icon {
@@ -90,4 +98,14 @@ body {
     background-size: 1.5em;
     background-position: 6px;
     background-repeat: no-repeat;
+}
+
+.attribution {
+    font-size: 0.75rem;
+    background-color: #ffffff99;
+    border-radius: 10px;
+}
+
+.attribution a {
+    margin: 0.25rem;
 }

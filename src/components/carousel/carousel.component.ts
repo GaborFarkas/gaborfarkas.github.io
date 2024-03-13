@@ -16,8 +16,14 @@ import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
     styleUrl: './carousel.component.css'
 })
 export class CarouselComponent {
+    /**
+     * Left nav button icon.
+     */
     protected angleLeft: IconDefinition = faAngleLeft;
 
+    /**
+     * Right nav button icon.
+     */
     protected angleRight: IconDefinition = faAngleRight;
 
     /**
