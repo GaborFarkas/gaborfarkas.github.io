@@ -18,14 +18,25 @@ export class HeroSceneComponent {
     @Input() heroImg: string = '';
 
     /**
-     * Event emitter used for a hero change.
+     * Fires an event when a hero change is requested.
      */
     @Output() heroChanged: EventEmitter<any> = new EventEmitter();
+
+    /**
+     * Gets or sets if the current hero is animating and cannot be clicked.
+     */
+    protected animating = false;
 
     /**
      * Toggles the hero image.
      */
     toggleHero() {
-        this.heroChanged.emit();
+        if (!this.animating) {
+            this.animating = true;
+            setTimeout(function (this: HeroSceneComponent) {
+                this.heroChanged.emit();
+                this.animating = false;
+            }.bind(this), 500);
+        }
     }
 }

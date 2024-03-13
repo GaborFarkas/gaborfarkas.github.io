@@ -1,15 +1,26 @@
+.hero {
+    transition: transform 500ms linear;
+}
+
+.hero.animate-shrink {
+    transform: scale(0);
+}
+
 .hero-background {
     background-image: url('/assets/superheroes-bg.jpg');
     background-repeat: repeat;
     background-size: auto 100%;
     background-position: 0 0;
     animation: scrollBg 5s linear infinite;
-    border-radius: 10px;
+    top: 5px;
+    right: 5px;
 }
 
 .bg-frame {
     border: 5px solid black;
+    border-bottom-width: 15px;
     border-radius: 5px;
+    box-sizing: content-box;
 }
 
 .wall {
@@ -34,6 +45,26 @@
         background-position: 0 0;
     }
     100% {
-        background-position: 143% 0;
+        background-position: 155% 0;
+    }
+}
+
+/* Scene-specific CSS */
+/* Long-term partnership */
+.scene-long {
+    transform-origin: top right;
+    animation: zoomOut 7s linear;
+    overflow: hidden;
+}
+
+@keyframes zoomOut {
+    0% {
+        transform: scale(210%) translate(1%, -8%);
+    }
+    80% {
+        transform: scale(210%) translate(1%, -8%);
+    }
+    100% {
+        transform: scale(1) translate(1);
     }
 }
