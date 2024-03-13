@@ -21,6 +21,12 @@ body {
     font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+.cabin-sketch {
+    font-family: "Cabin Sketch", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
 @layer utilities {
     .vertical-center {
         top: 50%;
@@ -104,6 +110,7 @@ body {
     font-size: 0.75rem;
     background-color: #ffffff99;
     border-radius: 10px;
+    z-index: 2;
 }
 
 .attribution a {

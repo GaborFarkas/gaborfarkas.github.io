@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TypewriterComponent } from '../typewriter/typewriter.component';
 
 /**
  * An animated hero scene used on the home page.
@@ -7,7 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
     selector: 'div.hero-scene',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TypewriterComponent],
     templateUrl: './hero-scene.component.html',
     styleUrl: './hero-scene.component.css'
 })

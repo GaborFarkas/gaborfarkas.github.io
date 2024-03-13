@@ -10,10 +10,21 @@
             </div>
         </div>
         <img class="absolute top-0 left-12 h-2/4 max-w-2/5" src="assets/blackboard.png">
-        <img class="absolute bottom-0 left-0 h-3/5" src="assets/scientist.png">
+        <div class="absolute bottom-0 left-0 h-3/5">
+            <img class="h-full" src="assets/scientist.png">
+            <div class="scientist-text absolute">
+                <img class="w-2 absolute bottom-6" src="assets/pointing-arrow.png">
+                <span class="cabin-sketch">This is me, making sure you're able to do your best</span>
+            </div>
+        </div>
+
         <div class="h-3/5 w-2/4 absolute hero-background flex items-center justify-center">
             <img class="hero max-h-3/5 cursor-pointer" [ngClass]="{'animate-shrink': animating}" [src]="'assets/' + heroImg + '.png'"
                 (click)="toggleHero()">
+            <div class="hero-text absolute">
+                <img class="w-2 absolute hero-arrow" src="assets/pointing-arrow.png">
+                <div class="cabin-sketch typewriter" [duration]="2000" [textContent]="'This is you, making the world a better place'"></div>
+            </div>
         </div>
         <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0 pointer-events-none"></div>
     </div>
