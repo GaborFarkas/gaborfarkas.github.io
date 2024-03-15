@@ -1,6 +1,6 @@
 <div #carousel class="max-lg:hidden">
     @defer (on viewport(carousel)) {
-        <div class="carousel relative">
+        <div class="carousel relative" (slideChange)="resetSlideAnimations($event)">
             <div class="flex flex-row">
                 <div class="w-2/4 p-6">
                     <h1>Your destiny awaits</h1>

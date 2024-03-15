@@ -1,4 +1,4 @@
-<div class="relative w-full h-full overflow-hidden">
+<div #sceneContainer class="relative w-full h-full overflow-hidden">
     <div class="w-full h-full scene-long">
         <div class="flex flex-col w-full h-full">
             <div class="wall w-full"></div>
@@ -21,9 +21,11 @@
         <div class="h-3/5 w-2/4 absolute hero-background flex items-center justify-center">
             <img class="hero max-h-3/5 cursor-pointer" [ngClass]="{'animate-shrink': animating}" [src]="'assets/' + heroImg + '.png'"
                 (click)="toggleHero()">
-            <div class="hero-text absolute">
-                <img class="w-2 absolute hero-arrow" src="assets/pointing-arrow.png">
-                <div class="cabin-sketch typewriter" [duration]="2000" [textContent]="'This is you, making the world a better place'"></div>
+            <div class="hero-text absolute" #heroText>
+                @defer (on viewport(heroText)) {
+                    <img class="w-2 absolute hero-arrow" src="assets/pointing-arrow.png">
+                    <div class="cabin-sketch typewriter" [duration]="2000" [textContent]="'This is you, making the world a better place'"></div>
+                }
             </div>
         </div>
         <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0 pointer-events-none"></div>

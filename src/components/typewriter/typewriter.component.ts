@@ -49,7 +49,7 @@ export class TypewriterComponent implements OnInit {
     /**
      * Calculates, sets up, and starts the animation.
      */
-    private startAnimation() {
+    startAnimation() {
         // Clean up previous run.
         if (this.intervalKey) {
             clearInterval(this.intervalKey);

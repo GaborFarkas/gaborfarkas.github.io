@@ -1,9 +1,10 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RangePipe } from '../../pipes/range.pipe';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
 
 /**
  * Generic carousel component.
@@ -53,6 +54,11 @@ export class CarouselComponent {
             if (slideElem?.firstChild instanceof HTMLElement) {
                 slideElem.firstChild.style.display = '';
             }
+
+            this.slideChange.emit({
+                index: index,
+                slide: slideElem
+            });
 
             this._currSlide = index;
         }
@@ -118,6 +124,11 @@ export class CarouselComponent {
      * Timeout index for hiding invisible slides after a transition so animations can reset.
      */
     private hideSlideTimeout?: number;
+
+    /**
+     * Triggered before a slide change occurs. Passes the slide's index and DOM element.
+     */
+    @Output() slideChange: EventEmitter<CarouselChangeEvent> = new EventEmitter();
 
     ngAfterViewInit() {
         const carouselDomElem = this.carouselElem?.nativeElement;
