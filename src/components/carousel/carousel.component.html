@@ -1,5 +1,5 @@
 <div #carousel class="carousel-slide-container flex overflow-x-hidden w-full h-full relative"
-    [style.transform]="'translateX(' + currSlide * 100 + '%)'">
+    [style.transform]="'translateX(-' + currSlide * 100 + '%)'">
     <ng-content></ng-content>
 </div>
 <div *ngIf="pageSwitcher" class="absolute w-full h-full top-0 left-0 flex justify-between pointer-events-none">

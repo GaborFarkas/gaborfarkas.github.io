@@ -32,9 +32,31 @@ export class CarouselComponent {
     protected numSlides: number = 0;
 
     /**
+     * Gets or sets the current slide of this carousel. Backing field.
+     */
+    private _currSlide: number = 0;
+
+    /**
      * Gets or sets the current slide of this carousel.
      */
-    protected currSlide: number = 0;
+    protected get currSlide(): number {
+        return this._currSlide;
+    }
+
+    /**
+     * Gets or sets the current slide of this carousel.
+     */
+    protected set currSlide(index: number) {
+        if (index !== this._currSlide) {
+            // Make the navigated slide appear visually before scrolling to it.
+            const slideElem = this.carouselElem?.nativeElement.children[index];
+            if (slideElem?.firstChild instanceof HTMLElement) {
+                slideElem.firstChild.style.display = '';
+            }
+
+            this._currSlide = index;
+        }
+    }
 
     /**
      * The key for the automatic slide switch interval.
@@ -92,15 +114,25 @@ export class CarouselComponent {
      */
     @ViewChild('carousel') private carouselElem?: ElementRef<HTMLDivElement>;
 
+    /**
+     * Timeout index for hiding invisible slides after a transition so animations can reset.
+     */
+    private hideSlideTimeout?: number;
+
     ngAfterViewInit() {
         const carouselDomElem = this.carouselElem?.nativeElement;
         if (carouselDomElem) {
             setTimeout(function (this: CarouselComponent) {
-                this.numSlides = carouselDomElem.children.length
+                this.numSlides = carouselDomElem.children.length;
             }.bind(this), 0);
 
-            for (let i = 0; i < carouselDomElem.children.length; ++i) {
-                carouselDomElem.children[i].classList.add('carousel-slide');
+            const slides: Element[] = [...carouselDomElem.children];
+
+            for (let i = 0; i < slides.length; ++i) {
+                const containerElem = document.createElement('div');
+                containerElem.className = 'carousel-slide';
+                containerElem.appendChild(slides[i]);
+                carouselDomElem.appendChild(containerElem);
             }
         }
     }
@@ -111,6 +143,7 @@ export class CarouselComponent {
     nextSlide() {
         if (this.currSlide < this.numSlides - 1) {
             this.currSlide++;
+            this.hideSlides(this.currSlide);
         }
     }
 
@@ -120,6 +153,7 @@ export class CarouselComponent {
     previousSlide() {
         if (this.currSlide > 0) {
             this.currSlide--;
+            this.hideSlides(this.currSlide);
         }
     }
 
@@ -130,6 +164,31 @@ export class CarouselComponent {
     navigateSlide(index: number) {
         if (index >= 0 && index < this.numSlides - 1) {
             this.currSlide = index;
+            this.hideSlides(index);
         }
+    }
+
+    /**
+     * Hides every slide exluding the currently visible after the slide transition animation.
+     * @param index The current slide's index.
+     */
+    private hideSlides(index: number) {
+        if (this.hideSlideTimeout) {
+            clearTimeout(this.hideSlideTimeout);
+            this.hideSlideTimeout = undefined;
+        }
+
+        // Hide every other slide to reset their animations when they appear next time.
+        this.hideSlideTimeout = setTimeout(function (this: CarouselComponent) {
+            if (this.carouselElem?.nativeElement) {
+                for (let i = 0; i < this.carouselElem.nativeElement.children.length; ++i) {
+                    const slideElem = this.carouselElem.nativeElement.children[i];
+                    if (i !== index && slideElem.firstChild && slideElem.firstChild instanceof HTMLElement) {
+                        slideElem.firstChild.style.display = 'none';
+                    }
+                }
+            }
+            this.hideSlideTimeout = undefined;
+        }.bind(this), 500) as unknown as number;
     }
 }
