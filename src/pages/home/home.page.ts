@@ -3,6 +3,7 @@ import { CarouselComponent } from '../../components/carousel/carousel.component'
 import { HeroSceneComponent } from '../../components/hero-scene/hero-scene.component';
 import { Hero } from '../../models/hero.model';
 import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
+import { HeroScene } from '../../models/hero-scene.model';
 
 /**
  * Main content of the home (landing) page.
@@ -15,6 +16,11 @@ import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
     styleUrl: './home.page.css'
 })
 export class HomePage {
+    /**
+     * Available hero scenes.
+     */
+    protected HeroScene = HeroScene;
+
     /**
      * The file name of the hero's image.
      */

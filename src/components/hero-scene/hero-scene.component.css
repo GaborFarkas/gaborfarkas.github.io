@@ -6,6 +6,10 @@
     transform: scale(0);
 }
 
+.hero.animate-fly {
+    transform: translateY(-500%);
+}
+
 .hero-background {
     background-image: url('/assets/superheroes-bg.jpg');
     background-repeat: repeat;
@@ -94,4 +98,68 @@
     bottom: 20%;
     left: calc(100% - 4rem);
     white-space: pre;
+}
+
+/* Counseling */
+.counsel-bg {
+    background-image: url('/assets/data-center.jpg');
+    background-size: 100% 100%;
+}
+
+.scene-counsel .hero {
+    right: 40%;
+    animation: punch 10s infinite;
+    opacity: 0;
+}
+
+.scene-counsel .hero-punch {
+    animation: punch 10s 5s infinite;
+}
+
+@keyframes punch {
+    0% {
+        opacity: 0;
+    }
+    1% {
+        opacity: 1;
+    }
+    49% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    99% {
+        opacity: 0;
+    }
+}
+
+.bug {
+    left: 60%;
+    top: 0;
+    height: 40%;
+    transform: rotate(-45deg);
+}
+
+.bug-eye {
+    opacity: 0;
+    animation: blink 10s infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    60% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }

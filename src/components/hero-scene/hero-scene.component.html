@@ -1,5 +1,5 @@
 <div #sceneContainer class="relative w-full h-full overflow-hidden">
-    <div class="w-full h-full scene-long">
+    <div *ngIf="heroScene === HeroScene.LONGTERM" class="w-full h-full scene-long">
         <div class="flex flex-col w-full h-full">
             <div class="wall w-full"></div>
             <div class="skirt w-full"></div>
@@ -29,5 +29,21 @@
             </div>
         </div>
         <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0 pointer-events-none"></div>
+    </div>
+
+    <div *ngIf="heroScene === HeroScene.COUNSEL" class="w-full h-full relative scene-counsel">
+        <div class="counsel-bg w-full h-full">
+            <div class="attribution absolute right-0 bottom-0">
+                <a href="http://www.freepik.com">Adapted from designs by upklyak / brgfx / Freepik</a>
+            </div>
+        </div>
+
+        <img class="absolute bug" src="assets/bug.png">
+        <img class="absolute bug bug-eye" src="assets/bug-eye.png">
+
+        <img class="hero absolute h-4/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating}" [src]="'assets/' + heroImg + '-stand.png'"
+            (click)="toggleHero()">
+        <img class="hero hero-punch absolute h-5/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating}" [src]="'assets/' + heroImg + '-punch.png'"
+            (click)="toggleHero()">
     </div>
 </div>

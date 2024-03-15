@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TypewriterComponent } from '../typewriter/typewriter.component';
+import { HeroScene } from '../../models/hero-scene.model';
 
 /**
  * An animated hero scene used on the home page.
@@ -14,9 +15,19 @@ import { TypewriterComponent } from '../typewriter/typewriter.component';
 })
 export class HeroSceneComponent {
     /**
+     * Available hero scenes.
+     */
+    protected HeroScene = HeroScene;
+
+    /**
      * The hero image used in the animation.
      */
     @Input() heroImg: string = '';
+
+    /**
+     * The scene of this animation.
+     */
+    @Input() heroScene: HeroScene = HeroScene.LONGTERM;
 
     /**
      * Fires an event when a hero change is requested.
