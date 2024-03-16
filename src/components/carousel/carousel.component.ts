@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RangePipe } from '../../pipes/range.pipe';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -16,7 +16,7 @@ import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
     templateUrl: './carousel.component.html',
     styleUrl: './carousel.component.css'
 })
-export class CarouselComponent {
+export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Left nav button icon.
      */
@@ -129,6 +129,12 @@ export class CarouselComponent {
      * Triggered before a slide change occurs. Passes the slide's index and DOM element.
      */
     @Output() slideChange: EventEmitter<CarouselChangeEvent> = new EventEmitter();
+
+    ngOnDestroy(): void {
+        if (this.autoSlideIntervalKey) {
+            clearInterval(this.autoSlideIntervalKey);
+        }
+    }
 
     ngAfterViewInit() {
         const carouselDomElem = this.carouselElem?.nativeElement;

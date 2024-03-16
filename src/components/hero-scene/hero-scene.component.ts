@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TypewriterComponent } from '../typewriter/typewriter.component';
 import { HeroScene } from '../../models/hero-scene.model';
@@ -13,7 +13,7 @@ import { HeroScene } from '../../models/hero-scene.model';
     templateUrl: './hero-scene.component.html',
     styleUrl: './hero-scene.component.css'
 })
-export class HeroSceneComponent implements AfterViewInit {
+export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     /**
      * Available hero scenes.
      */
@@ -28,6 +28,11 @@ export class HeroSceneComponent implements AfterViewInit {
      * The scene of this animation.
      */
     @Input() heroScene: HeroScene = HeroScene.LONGTERM;
+
+    /**
+     * The frequency the animation should be restarted automatically in ms.
+     */
+    @Input() autoRestartInterval: number = 0;
 
     /**
      * Fires an event when a hero change is requested.
@@ -54,8 +59,15 @@ export class HeroSceneComponent implements AfterViewInit {
      */
     @ViewChild('wallOfFame') wallOfFame?: ElementRef<HTMLCanvasElement>;
 
-    /** Backing cache field for the companyMonths getter. */
+    /**
+     * Backing cache field for the companyMonths getter.
+     */
     private companyMonths_: string[] = [];
+
+    /**
+     * Key of the animation restart interval.
+     */
+    private restartIntervalKey_?: number;
 
     /**
      * Calculates month labels from the start of the company and returns them in an array.
@@ -101,6 +113,21 @@ export class HeroSceneComponent implements AfterViewInit {
      */
     private static gap: number = 0.75;
 
+    ngOnInit(): void {
+        if (this.autoRestartInterval) {
+            this.restartIntervalKey_ = setInterval(function (this: HeroSceneComponent) {
+                // Use a small delay for the auto restart, as mobiles can choke on the animations.
+                this.restart(50);
+            }.bind(this), this.autoRestartInterval) as unknown as number;
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this.restartIntervalKey_) {
+            clearInterval(this.restartIntervalKey_);
+        }
+    }
+
     ngAfterViewInit(): void {
         if (this.wallOfFame?.nativeElement) {
             // Draw wall of fame with canvas methods.
@@ -123,21 +150,22 @@ export class HeroSceneComponent implements AfterViewInit {
 
     /**
      * Restarts all animations of the current hero scene.
+     * @param [timeout=0] Restart delay, increase this if the browser cannot restart the CSS animations on small devices.
      */
-    restart() {
+    restart(timeout: number = 0) {
         if (this.sceneContainer?.nativeElement) {
             // Restart CSS animations
             this.sceneContainer.nativeElement.style.display = 'none';
             setTimeout(function (this: HeroSceneComponent) {
                 this.sceneContainer!.nativeElement.style.display = '';
-            }.bind(this), 0);
 
-            // Restart typewriter (JS) animations
-            if (this.typewriters) {
-                for (let typewriter of this.typewriters) {
-                    typewriter.startAnimation();
+                // Restart typewriter (JS) animations
+                if (this.typewriters) {
+                    for (let typewriter of this.typewriters) {
+                        typewriter.startAnimation();
+                    }
                 }
-            }
+            }.bind(this), timeout);
         }
     }
 

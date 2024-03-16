@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     templateUrl: './typewriter.component.html'
 })
-export class TypewriterComponent implements OnInit {
+export class TypewriterComponent implements OnInit, OnDestroy {
     /**
      * The text to write. If changed, the animation starts again.
      */
@@ -48,6 +48,15 @@ export class TypewriterComponent implements OnInit {
 
     ngOnInit(): void {
         this.startAnimation();
+    }
+
+    ngOnDestroy(): void {
+        if (this.delayKey) {
+            clearTimeout(this.delayKey);
+        }
+        if (this.intervalKey) {
+            clearInterval(this.intervalKey);
+        }
     }
 
     ngOnChanges(changes: SimpleChanges) {

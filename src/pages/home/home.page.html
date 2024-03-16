@@ -1,6 +1,6 @@
 <div #carousel class="max-lg:hidden">
     @defer (on viewport(carousel)) {
-        <div class="carousel relative" (slideChange)="resetSlideAnimations($event)">
+        <div class="carousel relative" (slideChange)="resetSlideAnimations($event)" [autoSlideInterval]="20000">
             <div class="flex flex-row">
                 <div class="w-2/4 p-6">
                     <h1>Your destiny awaits</h1>
@@ -22,6 +22,36 @@
                 </div>
                 <div class="w-2/4 relative h-80 hero-scene" [heroScene]="HeroScene.RESEARCH"></div>
             </div>
+        </div>
+    }
+</div>
+
+<div #longTermMobile class="lg:hidden">
+    @defer (on viewport(longTermMobile)) {
+        <div class="w-full relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.LONGTERM" (heroChanged)="toggleHero()" [autoRestartInterval]="20000"></div>
+        <div class="w-full p-6">
+            <h1>Your destiny awaits</h1>
+            <p>As leader of a high-tech SME, you are on the verge of joining the big leagues. You realize the competencies your company will need to scale and wonder, how should you build your team up. Let me help you in making this process as pleasant as it should always be.</p>
+        </div>
+    }
+</div>
+
+<div #counselMobile class="lg:hidden">
+    @defer (on viewport(counselMobile)) {
+        <div class="w-full relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.COUNSEL" (heroChanged)="toggleHero()"></div>
+        <div class="w-full p-6">
+            <h1>Just a stretch</h1>
+            <p>Sometimes, all of us need a little help, no matter if you are directing a multinational company, a small family business, or a particle collider.</p>
+        </div>
+    }
+</div>
+
+<div #longTermMobile class="lg:hidden">
+    @defer (on viewport(longTermMobile)) {
+        <div class="w-full relative h-80 hero-scene" [heroScene]="HeroScene.RESEARCH" [autoRestartInterval]="20000"></div>
+        <div class="w-full p-6">
+            <h1>STEMming from academia</h1>
+            <p>Most of the complex IT problems have unique optimal solutions with slightly different design patterns. However, there is a single common rule for every problem: the best method is the scientific method.</p>
         </div>
     }
 </div>
