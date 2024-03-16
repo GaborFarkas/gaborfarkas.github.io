@@ -5,5 +5,7 @@ export enum HeroScene {
     /** Long-term partnership scene */
     LONGTERM,
     /** Counseling scene */
-    COUNSEL
+    COUNSEL,
+    /** Research scene */
+    RESEARCH
 }

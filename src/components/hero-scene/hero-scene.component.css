@@ -163,3 +163,38 @@
         opacity: 0;
     }
 }
+
+/* Research scene */
+.frame-wall {
+    animation: panRight 5s forwards, zoomIn 5s 5s forwards;
+}
+
+.research-text {
+    top: 50%;
+    left: 45%;
+}
+
+.research-text img {
+    left: -1.2rem;
+    top: -1rem;
+    opacity: 0;
+    animation: appear 1s 10s forwards;
+}
+
+@keyframes panRight {
+    0% {
+        right: -100%;
+    }
+    100% {
+        right: calc(100% - 4.7rem);
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        transform: scale(1) translate(1);
+    }
+    100% {
+        transform: scale(3.5) translate(-32.5%, 4.5%);
+    }
+}

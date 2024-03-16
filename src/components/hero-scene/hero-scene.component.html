@@ -46,4 +46,14 @@
         <img class="hero hero-punch absolute h-5/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating}" [src]="'assets/' + heroImg + '-punch.png'"
             (click)="toggleHero()">
     </div>
+
+    <div *ngIf="heroScene === HeroScene.RESEARCH" class="w-full h-full relative" #researchScene>
+        <canvas #wallOfFame class="absolute top-0 h-full frame-wall" [style]="{'width': wallOfFameWidth + 'rem'}"></canvas>
+        <div class="research-text absolute w-1/2">
+            @defer (on viewport(researchScene)) {
+                <img class="w-4 absolute" src="assets/pointing-arrow.png">
+                <div class="cabin-sketch typewriter text-xl" [duration]="2000" [delay]="10000" [textContent]="'The guy with the research experience'"></div>
+            }
+        </div>
+    </div>
 </div>
