@@ -22,6 +22,11 @@ export class TypewriterComponent implements OnInit {
     @Input() duration: number = 0;
 
     /**
+     * The delay the animation should start after in ms.
+     */
+    @Input() delay: number = 0;
+
+    /**
      * The current state of the output text.
      */
     protected currentText: string = '';
@@ -35,6 +40,11 @@ export class TypewriterComponent implements OnInit {
      * The interval's key outputting new characters.
      */
     private intervalKey?: number;
+
+    /**
+     * The delay timeout's key.
+     */
+    private delayKey?: number;
 
     ngOnInit(): void {
         this.startAnimation();
@@ -55,28 +65,36 @@ export class TypewriterComponent implements OnInit {
             clearInterval(this.intervalKey);
             this.intervalKey = undefined;
         }
+        if (this.delayKey) {
+            clearTimeout(this.delayKey);
+            this.delayKey = undefined;
+        }
         this.charArr = [];
         this.currentText = '';
 
         if (this.textContent) {
-            if (this.duration > 0) {
-                // Calculate frequency.
-                const msPerChar = Math.floor(this.duration / this.textContent.length);
-                // Create an array with characters to add to the current state.
-                this.charArr = this.textContent.split('').reverse();
-                this.intervalKey = setInterval(function (this: TypewriterComponent) {
-                    if (this.charArr.length) {
-                        // Add a new character.
-                        this.currentText += this.charArr.pop();
-                    } else {
-                        // Clean up interval, we don't need it anymore.
-                        clearInterval(this.intervalKey);
-                        this.intervalKey = undefined;
-                    }
-                }.bind(this), msPerChar) as unknown as number;
-            } else {
-                this.currentText = this.textContent;
-            }
+            this.delayKey = setTimeout(function (this: TypewriterComponent) {
+                this.delayKey = undefined;
+
+                if (this.duration > 0) {
+                    // Calculate frequency.
+                    const msPerChar = Math.floor(this.duration / this.textContent.length);
+                    // Create an array with characters to add to the current state.
+                    this.charArr = this.textContent.split('').reverse();
+                    this.intervalKey = setInterval(function (this: TypewriterComponent) {
+                        if (this.charArr.length) {
+                            // Add a new character.
+                            this.currentText += this.charArr.pop();
+                        } else {
+                            // Clean up interval, we don't need it anymore.
+                            clearInterval(this.intervalKey);
+                            this.intervalKey = undefined;
+                        }
+                    }.bind(this), msPerChar) as unknown as number;
+                } else {
+                    this.currentText = this.textContent;
+                }
+            }.bind(this), this.delay) as unknown as number;
         }
     }
 }
