@@ -63,10 +63,10 @@
 
 @keyframes zoomOut {
     0% {
-        transform: scale(210%) translate(1%, -8%);
+        transform: scale(210%) translate(2%, -8%);
     }
     80% {
-        transform: scale(210%) translate(1%, -8%);
+        transform: scale(210%) translate(2%, -8%);
     }
     100% {
         transform: scale(1) translate(1);
@@ -96,8 +96,13 @@
 
 .scientist-text {
     bottom: 20%;
-    left: calc(100% - 4rem);
-    white-space: pre;
+    left: 80%;
+}
+
+@media not all and (min-width: 640px) {
+    .scientist-text {
+        width: 130%;
+    }
 }
 
 /* Counseling */
@@ -175,10 +180,17 @@
 }
 
 .research-text img {
-    left: -1.2rem;
-    top: -1rem;
+    left: 6rem;
+    top: -2rem;
     opacity: 0;
     animation: appear 1s 10s forwards;
+}
+
+@media (min-width: 640px) {
+    .research-text img {
+        left: -1.2rem;
+        top: -1rem;
+    }
 }
 
 @keyframes panRight {

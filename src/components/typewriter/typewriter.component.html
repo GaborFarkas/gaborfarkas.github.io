@@ -1,6 +1,6 @@
 <div class="relative">
     <!-- Measure and allocate content width by creating an invisible container with the full text and overlaying the typing. -->
-    <span class="opacity-0">{{textContent}}</span>
-    <span class="absolute left-0 top-0">{{currentText}}</span>
+    <span [class]="'opacity-0 ' + textClass">{{textContent}}</span>
+    <span [class]="'absolute left-0 top-0 ' + textClass">{{currentText}}</span>
 </div>
 

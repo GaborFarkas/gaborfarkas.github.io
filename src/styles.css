@@ -108,11 +108,14 @@ body {
 
 .attribution {
     font-size: 0.75rem;
-    background-color: #ffffff99;
-    border-radius: 10px;
     z-index: 2;
 }
 
 .attribution a {
     margin: 0.25rem;
+}
+
+.opaque-bg {
+    background-color: #ffffff99;
+    border-radius: 10px;
 }

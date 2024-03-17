@@ -27,6 +27,11 @@ export class TypewriterComponent implements OnInit, OnDestroy {
     @Input() delay: number = 0;
 
     /**
+     * Sets custom class names to the dynamic text element.
+     */
+    @Input() textClass: string = '';
+
+    /**
      * The current state of the output text.
      */
     protected currentText: string = '';
