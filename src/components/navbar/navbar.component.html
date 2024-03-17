@@ -11,5 +11,5 @@
 </div>
 
 <div class="nav-container max-md:overflow-hidden md:flex md:h-full md:px-20 md:z-10" [ngClass]="{ 'max-md:h-0': !expanded }">
-    <nav-dropdown class="md:h-full md:flex items-center" *ngFor="let item of navItems | keyvalue" [label]="item.key" [items]="item.value"></nav-dropdown>
+    <nav-dropdown class="md:h-full md:flex items-center" *ngFor="let item of navItems" [label]="item.label" [items]="item.items"></nav-dropdown>
 </div>

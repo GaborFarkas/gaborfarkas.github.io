@@ -49,10 +49,4 @@ svg:hover {
     nav-dropdown:has(+ nav-dropdown:hover):after {
         background-color: transparent;
     }
-
-    /* Skewing is not pixel-perfect in browsers, adjust the first menu item. */
-    nav-dropdown:first-of-type {
-        position: relative;
-        left: 1px;
-    }
 }

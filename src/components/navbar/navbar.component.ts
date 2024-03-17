@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavDropdownComponent } from '../nav-dropdown/nav-dropdown.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NavDropdownItem } from '../../models/nav-dropdown-item.model';
+import { NavDropdownGroup, NavDropdownItem } from '../../models/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -31,19 +31,28 @@ export class NavbarComponent {
     /**
      * Gets or sets the navigation links for the website.
      */
-    protected navItems: Record<string, NavDropdownItem[]> = {
-        'Counseling': [
-            { label: 'Short-term counseling', url: '' },
-            { label: 'Long-term partnership', url: '' }
-        ],
-        'Expertise': [
-            { label: 'Research', url: '' },
-            { label: 'Technologies', url: '' }
-        ],
-        'Playground': [
-            { label: 'Web maps', url: '' }
-        ]
-    }
+    protected navItems: NavDropdownGroup[] = [
+        {
+            label: 'Counseling',
+            items: [
+                { label: 'Short-term counseling', url: '' },
+                { label: 'Long-term partnership', url: '' }
+            ]
+        },
+        {
+            label: 'Expertise',
+            items: [
+                { label: 'Research', url: '' },
+                { label: 'Technologies', url: '' }
+            ]
+        },
+        {
+            label: 'About',
+            items: [
+                { label: 'About', url: '' }
+            ]
+        }
+    ]
 
     /**
      * Toggles the navigation bar. Small screens only.

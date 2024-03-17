@@ -11,3 +11,17 @@ export interface NavDropdownItem {
      */
     url: string
 }
+
+/**
+ * A navigation dropdown menu descriptor.
+ */
+export interface NavDropdownGroup {
+    /**
+     * The label of the menu group.
+     */
+    label: string,
+    /**
+     * The items in the menu group.
+     */
+    items: NavDropdownItem[]
+}

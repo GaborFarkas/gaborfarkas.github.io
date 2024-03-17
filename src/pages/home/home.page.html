@@ -1,3 +1,24 @@
+<div class="hidden lg:flex w-full h-96 justify-center items-center">
+    <div class="flex w-full h-full flex-row">
+        <div class="w-2/5 h-full text-3xl text-center leading-loose flex items-center justify-end cabin-sketch">
+            <div>
+                <p>Software architecture</p>
+                <p>Web development</p>
+                <p>UI/UX</p>
+                <p>Infrastructure</p>
+                <p>Project management</p>
+            </div>
+        </div>
+        <div class="h-full w-1/5 flex items-center justify-center text-giant pb-5 font-thin">{{'}'}}</div>
+        <div class="w-2/5 h-full text-4xl flex items-center justify-start leading-loose">
+            <div>
+                <p>Team building</p>
+                <p>Counseling</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div #carousel class="max-lg:hidden">
     @defer (on viewport(carousel)) {
         <div class="carousel relative" (slideChange)="resetSlideAnimations($event)" [autoSlideInterval]="20000">
