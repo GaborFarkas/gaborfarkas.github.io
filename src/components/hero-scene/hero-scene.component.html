@@ -12,8 +12,8 @@
         <img class="absolute top-8 sm:top-0 left-2 sm:left-12 max-w-2/5 md:h-2/4" src="assets/blackboard.png">
         <div class="absolute bottom-0 left-0 h-2/5 sm:h-3/5">
             <img class="h-full" src="assets/scientist.png">
-            <div class="scientist-text absolute sm:whitespace-pre">
-                <img class="w-2 absolute bottom-12 sm:bottom-6" src="assets/pointing-arrow.png">
+            <div class="scientist-text absolute xl:whitespace-pre">
+                <img class="w-2 absolute bottom-12 xl:bottom-6" src="assets/pointing-arrow.png">
                 <span class="cabin-sketch text-sm sm:text-base text-center">This is me, making sure you're able to do your best</span>
             </div>
         </div>
@@ -48,11 +48,11 @@
     </div>
 
     <div *ngIf="heroScene === HeroScene.RESEARCH" class="w-full h-full relative" #researchScene>
-        <canvas #wallOfFame class="absolute top-0 h-full frame-wall" [style]="{'width': wallOfFameWidth + 'rem'}"></canvas>
+        <canvas #wallOfFame class="absolute top-0 h-full frame-wall" [style]="{'width': wallOfFameWidth + 'rem', 'right': 'calc(-' + wallOfFameWidth + 'rem + 100%)'}"></canvas>
         <div class="research-text absolute w-1/2">
             @defer (on viewport(researchScene)) {
                 <img class="w-4 absolute bottom-4 sm:bottom-0 left-4 sm:left-0" src="assets/pointing-arrow.png">
-                <div class="cabin-sketch typewriter text-xl text-center" [textClass]="'opaque-bg sm:bg-transparent'" [duration]="2000" [delay]="10000" [textContent]="'The guy with the research experience'"></div>
+                <div class="cabin-sketch typewriter text-xl text-center" [textClass]="'opaque-bg sm:bg-transparent'" [duration]="2000" [delay]="10000" [textContent]="'The guy with the experience'"></div>
             }
         </div>
         <div class="attribution opaque-bg absolute right-0 bottom-0">

@@ -4,6 +4,7 @@ import { HeroSceneComponent } from '../../components/hero-scene/hero-scene.compo
 import { Hero } from '../../models/hero.model';
 import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
 import { HeroScene } from '../../models/hero-scene.model';
+import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 
 /**
  * Main content of the home (landing) page.
@@ -12,7 +13,7 @@ import { HeroScene } from '../../models/hero-scene.model';
     selector: 'home-page',
     standalone: true,
     templateUrl: './home.page.html',
-    imports: [CarouselComponent, HeroSceneComponent],
+    imports: [CarouselComponent, HeroSceneComponent, HeroSectionComponent],
     styleUrl: './home.page.css'
 })
 export class HomePage {

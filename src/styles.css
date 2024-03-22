@@ -18,13 +18,30 @@ body {
 
 body {
     margin: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: "Spectral", "Times New Roman", "Helvetica Neue", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .cabin-sketch {
     font-family: "Cabin Sketch", sans-serif;
     font-weight: 400;
     font-style: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Chivo", "Arial", sans-serif;
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    padding-bottom: 1rem;
+}
+
+p, ul {
+    text-align: justify;
 }
 
 @layer utilities {
@@ -51,6 +68,10 @@ body {
 
     .max-w-2\/5 {
         max-width: 40%;
+    }
+
+    .remove-bg {
+        background-image: none !important;
     }
 }
 
@@ -111,11 +132,22 @@ body {
     z-index: 2;
 }
 
-.attribution a {
+.attribution > * {
     margin: 0.25rem;
 }
 
 .opaque-bg {
     background-color: #ffffff99;
     border-radius: 10px;
+}
+
+.btn {
+    border-radius: 5px;
+    background-color: var(--secondary-accent);
+    padding: 0.3rem 1.5rem;
+    transition: filter 100ms linear;
+}
+
+.btn:hover {
+    filter: brightness(1.1);
 }

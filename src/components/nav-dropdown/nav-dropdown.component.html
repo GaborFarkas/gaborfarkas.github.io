@@ -1,4 +1,4 @@
-<div class="menu-target h-full" (mouseover)="expanded = true" (mouseout)="expanded = false">
+<div class="menu-target h-full xl:text-lg" (mouseover)="expanded = true" (mouseout)="expanded = false">
     <div #ariaTarget class="menu-container h-full relative" tabindex="0" role="menuitem" [attr.aria-haspopup]="items.length > 0" [attr.aria-expanded]="expanded" [attr.aria-label]="label">
         <label class="max-md:hidden h-full flex items-center md:px-10"><span>{{label}}</span></label>
         <ul class="overflow-hidden md:absolute md:z-10" [ngClass]="{ 'md:max-h-0': !expanded, 'md:max-h-40': expanded }">

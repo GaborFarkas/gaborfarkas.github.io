@@ -1,4 +1,4 @@
-<div class="hidden lg:flex w-full h-96 justify-center items-center">
+<div class="hidden md:flex w-full h-96 justify-center items-center">
     <div class="flex w-full h-full flex-row">
         <div class="w-2/5 h-full text-3xl text-center leading-loose flex items-center justify-end cabin-sketch">
             <div>
@@ -9,7 +9,7 @@
                 <p>Project management</p>
             </div>
         </div>
-        <div class="h-full w-1/5 flex items-center justify-center text-giant pb-5 font-thin">{{'}'}}</div>
+        <div class="h-full w-1/5 flex items-center justify-center text-giant pb-1 font-thin">{{'}'}}</div>
         <div class="w-2/5 h-full text-4xl flex items-center justify-start leading-loose">
             <div>
                 <p>Team building</p>
@@ -21,25 +21,28 @@
 
 <div #carousel class="max-lg:hidden">
     @defer (on viewport(carousel)) {
-        <div class="carousel relative" (slideChange)="resetSlideAnimations($event)" [autoSlideInterval]="20000">
+        <div class="carousel relative" (slideChange)="resetSlideAnimations($event)" [autoSlideInterval]="20000" [pageSwitcher]="false">
             <div class="flex flex-row">
                 <div class="w-2/4 p-6">
-                    <h1>Your destiny awaits</h1>
-                    <p>As leader of a high-tech SME, you are on the verge of joining the big leagues. You realize the competencies your company will need to scale and wonder, how should you build your team up. Let me help you in making this process as pleasant as it should always be.</p>
+                    <h1 class="text-3xl xl:text-4xl">Your destiny awaits</h1>
+                    <p class="text-lg xl:text-xl mb-10">As leader of a high-tech SME, you are on the verge of joining the big leagues. You realize the competencies your company will need to scale and wonder, how should you build your team up. Let me help you in making this process as pleasant as it should always be.</p>
+                    <a class="btn text-lg xl:text-xl" href="#">How it works?</a>
                 </div>
                 <div class="w-2/4 relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.LONGTERM" (heroChanged)="toggleHero()"></div>
             </div>
             <div class="flex flex-row">
                 <div class="w-2/4 p-6">
-                    <h1>Just a stretch</h1>
-                    <p>Sometimes, all of us need a little help, no matter if you are directing a multinational company, a small family business, or a particle collider.</p>
+                    <h1 class="text-3xl xl:text-4xl">Just a stretch</h1>
+                    <p class="text-lg xl:text-xl mb-10">Sometimes, all of us need a little help, no matter if you are directing a multinational company, a small family business, or a particle collider. If you need a quick look on a software issue from an expert, make sure to reach out.</p>
+                    <a class="btn text-lg xl:text-xl" href="#">Need a counsel?</a>
                 </div>
                 <div class="w-2/4 relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.COUNSEL" (heroChanged)="toggleHero()"></div>
             </div>
             <div class="flex flex-row">
                 <div class="w-2/4 p-6">
-                    <h1>STEMming from academia</h1>
-                    <p>Most of the complex IT problems have unique optimal solutions with slightly different design patterns. However, there is a single common rule for every problem: the best method is the scientific method.</p>
+                    <h1 class="text-3xl xl:text-4xl">STEMming from academia</h1>
+                    <p class="text-lg xl:text-xl mb-10">Most of the complex IT problems have unique optimal solutions with slightly different design patterns. However, there is a single common rule for every problem: the best method is the scientific method.</p>
+                    <a class="btn text-lg xl:text-xl" href="#">Read more</a>
                 </div>
                 <div class="w-2/4 relative h-80 hero-scene" [heroScene]="HeroScene.RESEARCH"></div>
             </div>
@@ -50,9 +53,10 @@
 <div #longTermMobile class="lg:hidden">
     @defer (on viewport(longTermMobile)) {
         <div class="w-full relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.LONGTERM" (heroChanged)="toggleHero()" [autoRestartInterval]="20000"></div>
-        <div class="w-full p-6">
-            <h1>Your destiny awaits</h1>
-            <p>As leader of a high-tech SME, you are on the verge of joining the big leagues. You realize the competencies your company will need to scale and wonder, how should you build your team up. Let me help you in making this process as pleasant as it should always be.</p>
+        <div class="w-full p-6 text-center">
+            <h1 class="text-2xl md:text-3xl text-left">Your destiny awaits</h1>
+            <p class="text-justify mb-6 md:text-lg">As leader of a high-tech SME, you are on the verge of joining the big leagues. You realize the competencies your company will need to scale and wonder, how should you build your team up. Let me help you in making this process as pleasant as it should always be.</p>
+            <a class="btn md:text-lg" href="#">How it works?</a>
         </div>
     }
 </div>
@@ -60,9 +64,10 @@
 <div #counselMobile class="lg:hidden">
     @defer (on viewport(counselMobile)) {
         <div class="w-full relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.COUNSEL" (heroChanged)="toggleHero()"></div>
-        <div class="w-full p-6">
-            <h1>Just a stretch</h1>
-            <p>Sometimes, all of us need a little help, no matter if you are directing a multinational company, a small family business, or a particle collider.</p>
+        <div class="w-full p-6 text-center">
+            <h1 class="text-2xl md:text-3xl text-left">Just a stretch</h1>
+            <p class="text-justify mb-6 md:text-lg">Sometimes, all of us need a little help, no matter if you are directing a multinational company, a small family business, or a particle collider. If you need a quick look on a software issue from an expert, make sure to reach out.</p>
+            <a class="btn md:text-lg" href="#">Need a counsel?</a>
         </div>
     }
 </div>
@@ -70,9 +75,52 @@
 <div #longTermMobile class="lg:hidden">
     @defer (on viewport(longTermMobile)) {
         <div class="w-full relative h-80 hero-scene" [heroScene]="HeroScene.RESEARCH" [autoRestartInterval]="20000"></div>
-        <div class="w-full p-6">
-            <h1>STEMming from academia</h1>
-            <p>Most of the complex IT problems have unique optimal solutions with slightly different design patterns. However, there is a single common rule for every problem: the best method is the scientific method.</p>
+        <div class="w-full p-6 text-center">
+            <h1 class="text-2xl md:text-3xl text-left">STEMming from academia</h1>
+            <p class="text-justify mb-6 md:text-lg">Most of the complex IT problems have unique optimal solutions with slightly different design patterns. However, there is a single common rule for every problem: the best method is the scientific method.</p>
+            <a class="btn md:text-lg" href="#">Read more</a>
         </div>
     }
+</div>
+
+<div class="hero-section w-full mt-10 text-center md:text-left" [background]="'assets/bg-planning.jpg'">
+    <h1 class="text-2xl md:text-3xl">Planning first</h1>
+    <p class="md:text-lg xl:text-xl">Every long lasting product has a well-designed, solid plan behind it. Software are not exceptions. My workflow always starts with proper preparations and planning, resulting in:</p>
+    <ul class="md:text-lg xl:text-xl list-disc ps-8">
+        <li>Decision support documentations</li>
+        <li>Design documentations</li>
+        <li>System plans</li>
+        <li>Sequence diagrams</li>
+        <li>Class diagrams</li>
+        <li>Entity relationship diagrams</li>
+        <li>Control flow diagrams (if needed)</li>
+    </ul>
+
+    <span attribution>Photo by <a href="https://unsplash.com/@d_mccullough?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Daniel McCullough</a> on <a href="https://unsplash.com/photos/person-drafting-on-blueprint--FPFq_trr2Y?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a></span>
+</div>
+
+<div class="hero-section w-full mt-10 text-center md:text-left" [background]="'assets/bg-spatial.jpg'" [flip]="true">
+    <h1 class="text-2xl md:text-3xl">Spatially enabled</h1>
+    <p class="md:text-lg xl:text-xl pb-4">Have you thought about how much more we are relying on digital maps and navigation systems over the past few decades? With the world-breaking advent of digitalization and informatics ceasing into basic literacy in business and everyday life, new trends are emerging. As spatial algorithms and systems becoming more common, our location awareness is also firmly increasing. Spatiality is slowly becoming an essential part of decision making and business intelligence.</p>
+    <p class="md:text-lg xl:text-xl">Having a PhD done around Web-based GIS (Geographic Information System), having spatial problems won't cause any roadblocks. From creating traditional GIS models to planning complete Web GIS solutions, I'm capable and happy to help.</p>
+    <span attribution>Photo by <a href="https://unsplash.com/@geojango_maps?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">GeoJango Maps</a> on <a href="https://unsplash.com/photos/person-holding-red-round-medication-pill-Z8UgB80_46w?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a></span>
+</div>
+
+<div class="hero-section w-full my-10 text-center md:text-left" [background]="'assets/bg-science.jpg'">
+    <h1 class="text-2xl md:text-3xl">Based in science</h1>
+    <p class="md:text-lg xl:text-xl">What my research days really taught me is every complicated problem has a unique optimal solution. While optimal is usually unfeasible to pursue in business scenarios, it is always good to try and approximate with critical thinking and holistic evaluation. Computer science students usually ask me what good can a MSc in geography do to you; well, for example, the ability to think critically and evaluate problems with a holistic view.</p>
+    <ul class="md:text-lg xl:text-xl list-disc ps-8">
+        <li>It's no use to swing around with patterns and methods just to look smart (even with Scrum... especially with Scrum). Always understand the problem and its context first.</li>
+        <li>Modern problems are usually too complicated for pure solutions. Don't be afraid to apply hybrid ones even by mixing patterns from different disciplines.</li>
+        <li>Always try to look at the full picture. Sometimes it's better to start with a less complicated stack than making a fresh team choke on quality.</li>
+    </ul>
+    <span attribution>Photo by <a href="https://unsplash.com/@omilaev?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Igor Omilaev</a> on <a href="https://unsplash.com/photos/a-red-and-black-pattern-with-a-yellow-line-going-through-it-aqNdl7mlMHg?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a></span>
+</div>
+
+<div class="hero-section w-full mt-10 text-center md:text-left" [background]="'assets/bg-lecture.jpg'" [flip]="true">
+    <h1 class="text-2xl md:text-3xl">Love to share</h1>
+    <p class="md:text-lg xl:text-xl pb-4">With a teaching history of almost a decade mostly pivoting around teaching cutting-edge software development and architecture to international computer science bachelor candidates, quality mentoring is always in the picture.</p>
+    <p class="md:text-lg xl:text-xl">Finding teching methods providing the best value in such a practice-oriented fast evolving field is a big challenge. My teaching habits both in and out of the university are based on experience rather than textbooks. Material is created and adjusted on the go, and tries to encompass both most recent trends and my most recent experience in patterns and best practices.</p>
+    <span attribution>Photo by <a href="https://unsplash.com/@dylandgillis?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Dylan Gillis</a> on <a href="https://unsplash.com/photos/people-sitting-on-chair-in-front-of-table-while-holding-pens-during-daytime-KdeqA3aTnBY?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
+    </span>
 </div>

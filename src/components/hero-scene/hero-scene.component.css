@@ -99,7 +99,7 @@
     left: 80%;
 }
 
-@media not all and (min-width: 640px) {
+@media not all and (min-width: 1280px) {
     .scientist-text {
         width: 130%;
     }
@@ -171,7 +171,7 @@
 
 /* Research scene */
 .frame-wall {
-    animation: panRight 5s forwards, zoomIn 5s 5s forwards;
+    animation: panRight 5s 1s forwards, zoomIn 5s 5s forwards;
 }
 
 .research-text {
@@ -193,10 +193,13 @@
     }
 }
 
-@keyframes panRight {
-    0% {
-        right: -100%;
+@media (min-width: 1280px) {
+    .research-text {
+        left: 35%;
     }
+}
+
+@keyframes panRight {
     100% {
         right: calc(100% - 4.7rem);
     }

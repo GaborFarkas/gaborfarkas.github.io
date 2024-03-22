@@ -1,0 +1,68 @@
+* {
+    z-index: 1;
+}
+
+.mobile-bg, .slant > .bg {
+    background-position: center;
+    background-size: cover;
+}
+
+.mobile-bg {
+    z-index: 0;
+    opacity: 0.7;
+}
+
+.mobile-text-container {
+    z-index: 0;
+    width: 96%;
+    height: 96%;
+    left: 2%;
+    top: 2%;
+}
+
+.slant {
+    width: 50%;
+    left: 70%;
+    transform: skewX(-20deg);
+}
+
+.slant > .bg {
+    transform: skewX(20deg);
+    right: 35%;
+}
+
+.slant.flip {
+    left: unset;
+    right: 70%;
+    transform: skewX(20deg);
+}
+
+.slant.flip > .bg {
+    transform: skewX(-20deg);
+    left: 35%;
+}
+
+.flex.flip {
+    justify-content: flex-end;
+}
+
+.decoration {
+    top: 50%;
+    left: 0;
+    transform-origin: center;
+    transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.flip .decoration {
+    left: unset;
+    right: 0;
+    transform: translate(50%, -50%) rotate(90deg);
+}
+
+.decoration p {
+    transform: skewX(-20deg);
+}
+
+.flip .decoration p {
+    transform: skewX(20deg);
+}
