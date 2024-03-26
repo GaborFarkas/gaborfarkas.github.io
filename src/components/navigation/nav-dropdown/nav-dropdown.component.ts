@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { NavDropdownItem } from '../../models/nav-dropdown.model';
+import { NavDropdownItem } from '../../../models/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../navbar/navbar.component';
 

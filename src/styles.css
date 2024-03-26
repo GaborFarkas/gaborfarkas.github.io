@@ -25,7 +25,6 @@ body {
 
 .cabin-sketch {
     font-family: "Cabin Sketch", sans-serif;
-    font-weight: 400;
     font-style: normal;
 }
 
@@ -52,6 +51,10 @@ p, ul {
 
     .bg-primary {
         background-color: var(--primary-color);
+    }
+
+    .bg-primary-accent {
+        background-color: var(--primary-accent);
     }
 
     .text-primary {

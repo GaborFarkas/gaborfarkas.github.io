@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavDropdownComponent } from '../nav-dropdown/nav-dropdown.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NavDropdownGroup, NavDropdownItem } from '../../models/nav-dropdown.model';
+import { NavDropdownGroup } from '../../../models/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -49,7 +49,7 @@ export class NavbarComponent {
         {
             label: 'About',
             items: [
-                { label: 'About', url: '' }
+                { label: 'About', url: '/about' }
             ]
         }
     ]

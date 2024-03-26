@@ -1,0 +1,27 @@
+.prefix-container {
+    border-bottom: 2px dashed var(--primary-color);
+}
+
+.header {
+    border-radius: 0;
+}
+
+p {
+    height: 0;
+    overflow-y: hidden;
+}
+
+p.expanded {
+    height: unset;
+}
+
+.prefix {
+    transform: scale(0);
+    transform-origin: center;
+    transition: transform 200ms linear;
+}
+
+.prefix.expanded {
+    transform: none;
+    transition: transform 200ms 300ms linear;
+}

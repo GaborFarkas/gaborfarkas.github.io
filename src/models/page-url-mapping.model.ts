@@ -5,5 +5,10 @@ export enum PageUrlMapping {
     /**
      * Home (landing) page
      */
-    HOME = ''
+    HOME = '',
+
+    /**
+     * About page
+     */
+    ABOUT = 'about'
 }
