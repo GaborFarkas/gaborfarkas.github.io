@@ -1,0 +1,13 @@
+<a [href]="url" class="anchor">
+    <span class="text-6xl text-primary-accent relative">&#x2B22;</span>
+</a>
+<div *ngIf="flyoutText"
+    [class]="'pointer-events-none flyout-container absolute h-full top-0 left-0 invisible ' + flyoutOrientation"
+    [ngClass]="{'flip': flyoutFlip}">
+    <span class="text-6xl text-primary-accent">&#x2B22;</span>
+    <span class="pointer-events-auto relative flex items-center flyout-text bg-primary-accent text-xs xl:text-sm overflow-hidden text-primary">{{flyoutText}}</span>
+    <span class="relative flyout-right text-6xl text-primary-accent">&#x2B22;</span>
+</div>
+<div class="pointer-events-none absolute w-full h-full top-0 left-0 flex justify-center items-center">
+    <ng-content select="[referenceIcon]"></ng-content>
+</div>

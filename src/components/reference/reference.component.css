@@ -1,0 +1,63 @@
+.flyout-container {
+    display: flex;
+    align-items: center;
+    --ref-translate-x: 3.2rem;
+    --ref-translate-y: 0;
+    --ref-rotate: 0;
+    --ref-text-rotate: 0;
+}
+
+.flyout-container.flip {
+    --ref-text-rotate: 180deg;
+}
+
+.flyout-container.orient-top-right {
+    --ref-rotate: -61deg;
+    --ref-translate-x: 3.5rem;
+}
+
+.flyout-container.orient-top-left {
+    --ref-rotate: -121deg;
+    --ref-translate-x: 3.5rem;
+    --ref-translate-y: -0.2rem;
+}
+
+.flyout-container.orient-left {
+    --ref-rotate: 180deg;
+    --ref-translate-y: -0.2rem;
+}
+
+.flyout-container.orient-bottom-right {
+    --ref-rotate: 121deg;
+}
+
+.flyout-container.orient-bottom-left {
+    --ref-rotate: 61deg;
+    --ref-translate-x: 3.3rem;
+}
+
+.flyout-text {
+    left: -1.6rem;
+    height: 3.2rem;
+    z-index: 2;
+    overflow-x: hidden;
+    bottom: 0.1rem;
+    max-width: 0;
+    width: 20vw;
+    transform: rotate(var(--ref-text-rotate));
+}
+
+.flyout-right {
+    right: 3.2rem;
+}
+
+.anchor:hover ~ .flyout-container {
+    transform-origin: calc(var(--ref-translate-x) / 2 * -1) 50%;
+    transform: translate(var(--ref-translate-x), var(--ref-translate-y)) rotate(var(--ref-rotate));
+    visibility: visible;
+}
+
+.anchor:hover ~ .flyout-container .flyout-text {
+    max-width: 20rem;
+    transition: max-width 200ms linear;
+}
