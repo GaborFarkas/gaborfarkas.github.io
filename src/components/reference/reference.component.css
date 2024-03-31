@@ -5,6 +5,7 @@
     --ref-translate-y: 0;
     --ref-rotate: 0;
     --ref-text-rotate: 0;
+    width: 25vw;
 }
 
 .flyout-container.flip {
@@ -43,7 +44,6 @@
     overflow-x: hidden;
     bottom: 0.1rem;
     max-width: 0;
-    width: 20vw;
     transform: rotate(var(--ref-text-rotate));
 }
 
@@ -58,6 +58,6 @@
 }
 
 .anchor:hover ~ .flyout-container .flyout-text {
-    max-width: 20rem;
+    max-width: 20vw;
     transition: max-width 200ms linear;
 }

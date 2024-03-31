@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TypewriterComponent } from '../typewriter/typewriter.component';
-import { HeroScene } from '../../models/hero-scene.model';
+import { HeroScene } from '../../models/hero.model';
 
 /**
  * An animated hero scene used on the home page.

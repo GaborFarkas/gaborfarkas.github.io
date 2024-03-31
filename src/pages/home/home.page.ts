@@ -1,10 +1,12 @@
 import { Component, QueryList, ViewChildren } from '@angular/core';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
 import { HeroSceneComponent } from '../../components/hero-scene/hero-scene.component';
-import { Hero } from '../../models/hero.model';
+import { Hero, HeroScene } from '../../models/hero.model';
 import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
-import { HeroScene } from '../../models/hero-scene.model';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
+import { faDiagramProject, faFileLines, faMap } from '@fortawesome/free-solid-svg-icons';
+import { ReferenceDescriptor } from '../../models/reference.model';
+import { HeroSection } from '../../models/home.model';
 
 /**
  * Main content of the home (landing) page.
@@ -26,6 +28,39 @@ export class HomePage {
      * The file name of the hero's image.
      */
     protected heroImg: string;
+
+    /**
+     * Available hero sections.
+     */
+    protected HeroSection = HeroSection;
+
+    /**
+     * References for the hero sections.
+     */
+    protected references: Record<string, [ReferenceDescriptor|null, ReferenceDescriptor|null, ReferenceDescriptor|null]> = {
+        [HeroSection.PLANNING]: [
+            {
+                url: 'https://c4model.com/',
+                text: 'Quality work needs quality tools',
+                icon: faDiagramProject
+            },
+            null,
+            {
+                url: '',
+                text: 'A case study on project documentation',
+                icon: faFileLines
+            }
+        ],
+        [HeroSection.SPATIAL]: [
+            {
+                url: '#footer',
+                text: 'Take a closer look at the footer map',
+                icon: faMap
+            },
+            null,
+            null
+        ]
+    }
 
     /**
      * The hero scenes inside the home page.

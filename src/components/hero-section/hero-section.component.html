@@ -1,5 +1,6 @@
 <div class="relative w-full h-full flex flex-row pb-4 sm:pb-0 md:remove-bg overflow-hidden" [ngClass]="{flip}">
-    <div class="mobile-bg absolute w-full h-full top-0 left-0 md:hidden" [style]="{'background-image': 'url(' + background + ')'}"></div>
+    <div class="mobile-bg absolute w-full h-full top-0 left-0 md:hidden"
+        [style]="{'background-image': 'url(' + background + ')'}"></div>
     <div class="mobile-text-container absolute md:hidden opaque-bg"></div>
     <div class="w-full md:w-3/5 h-full p-5">
         <ng-content></ng-content>
@@ -9,14 +10,17 @@
     </div>
     <div class="absolute top-0 h-full hidden md:block slant" [ngClass]="{flip}">
         <div class="absolute decoration w-fit h-fit flex select-none">
-            <p class="w-full h-full">
-                <span class="text-6xl text-primary-accent">&#x2B22;</span>
+            <p class="reference w-full h-full" [flyoutText]="references[0]?.text" [url]="references[0]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.TOPLEFT" [flyoutFlip]="flip">
+                <fa-icon *ngIf="references[0]?.icon" size="xl" class="text-primary" [icon]="references[0]!.icon!"
+                    referenceIcon></fa-icon>
             </p>
-            <p class="w-full h-full">
-                <span class="text-6xl text-primary-accent">&#x2B22;</span>
+            <p class="reference w-full h-full" [flyoutText]="references[1]?.text" [url]="references[1]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.TOPLEFT" [flyoutFlip]="flip">
+                <fa-icon *ngIf="references[1]?.icon" size="xl" class="text-primary" [icon]="references[1]!.icon!"
+                    referenceIcon></fa-icon>
             </p>
-            <p class="w-full h-full">
-                <span class="text-6xl text-primary-accent">&#x2B22;</span>
+            <p class="reference w-full h-full" [flyoutText]="references[2]?.text" [url]="references[2]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.TOPLEFT" [flyoutFlip]="flip">
+                <fa-icon *ngIf="references[2]?.icon" size="xl" class="text-primary" [icon]="references[2]!.icon!"
+                    referenceIcon></fa-icon>
             </p>
         </div>
     </div>

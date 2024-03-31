@@ -53,7 +53,7 @@ export class AboutPage {
                 },
                 {
                     question: ' are your references?',
-                    answer: 'Some of the ones I\'m allowed to show, are carefully hidden on the home page under some hexagons, if you are browsing this site using a large enough screen. If you would like to hear about the others, please contact me.'
+                    answer: 'Some of the ones I\'m allowed to show, are carefully hidden throughout the website under some hexagons, if you are browsing this site using a large enough screen. If you would like to hear about the others, please contact me.'
                 }
             ]
         }

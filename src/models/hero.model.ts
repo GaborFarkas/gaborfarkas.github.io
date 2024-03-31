@@ -7,3 +7,15 @@ export enum Hero {
     /** The female hero's image name */
     FEMALE = 'hero-f'
 }
+
+/**
+ * Enum for various hero scenes.
+ */
+export enum HeroScene {
+    /** Long-term partnership scene */
+    LONGTERM,
+    /** Counseling scene */
+    COUNSEL,
+    /** Research scene */
+    RESEARCH
+}
