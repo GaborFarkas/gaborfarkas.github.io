@@ -50,7 +50,7 @@
     top: 50%;
     left: 0;
     transform-origin: center;
-    transform: translate(-50%, -50%) rotate(90deg);
+    transform: translate(-50%, -50%) rotate(270deg);
 }
 
 .flip .decoration {

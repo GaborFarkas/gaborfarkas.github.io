@@ -24,35 +24,17 @@
     <div class="carousel relative" (slideChange)="resetSlideAnimations($event)" [autoSlideInterval]="20000"
         [pageSwitcher]="false">
         <div class="flex flex-row">
-            <div class="w-2/4 p-6">
-                <h1 class="text-3xl xl:text-4xl">Your destiny awaits</h1>
-                <p class="text-lg xl:text-xl mb-10">As leader of a high-tech SME, you are on the verge of joining the
-                    big leagues. You realize the competencies your company will need to scale and wonder, how should you
-                    build your team up. Let me help you in making this process as pleasant as it should always be.</p>
-                <a class="btn text-lg xl:text-xl" href="#">How it works?</a>
-            </div>
+            <ng-container *ngTemplateOutlet="longTermScene"></ng-container>
             <div class="w-2/4 relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.LONGTERM"
                 (heroChanged)="toggleHero()"></div>
         </div>
         <div class="flex flex-row">
-            <div class="w-2/4 p-6">
-                <h1 class="text-3xl xl:text-4xl">Just a stretch</h1>
-                <p class="text-lg xl:text-xl mb-10">Sometimes, all of us need a little help, no matter if you are
-                    directing a multinational company, a small family business, or a particle collider. If you need a
-                    quick look on a software issue from an expert, make sure to reach out.</p>
-                <a class="btn text-lg xl:text-xl" href="#">Need a counsel?</a>
-            </div>
+            <ng-container *ngTemplateOutlet="shortTermScene"></ng-container>
             <div class="w-2/4 relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.COUNSEL"
                 (heroChanged)="toggleHero()"></div>
         </div>
         <div class="flex flex-row">
-            <div class="w-2/4 p-6">
-                <h1 class="text-3xl xl:text-4xl">STEMming from academia</h1>
-                <p class="text-lg xl:text-xl mb-10">Most of the complex IT problems have unique optimal solutions with
-                    slightly different design patterns. However, there is a single common rule for every problem: the
-                    best method is the scientific method.</p>
-                <a class="btn text-lg xl:text-xl" href="#">Read more</a>
-            </div>
+            <ng-container *ngTemplateOutlet="researchScene"></ng-container>
             <div class="w-2/4 relative h-80 hero-scene" [heroScene]="HeroScene.RESEARCH"></div>
         </div>
     </div>
@@ -63,13 +45,7 @@
     @defer (on viewport(longTermMobile)) {
     <div class="w-full relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.LONGTERM"
         (heroChanged)="toggleHero()" [autoRestartInterval]="20000"></div>
-    <div class="w-full p-6 text-center">
-        <h1 class="text-2xl md:text-3xl text-left">Your destiny awaits</h1>
-        <p class="text-justify mb-6 md:text-lg">As leader of a high-tech SME, you are on the verge of joining the big
-            leagues. You realize the competencies your company will need to scale and wonder, how should you build your
-            team up. Let me help you in making this process as pleasant as it should always be.</p>
-        <a class="btn md:text-lg" href="#">How it works?</a>
-    </div>
+    <ng-container *ngTemplateOutlet="longTermScene"></ng-container>
     }
 </div>
 
@@ -77,26 +53,14 @@
     @defer (on viewport(counselMobile)) {
     <div class="w-full relative h-80 hero-scene" [heroImg]="heroImg" [heroScene]="HeroScene.COUNSEL"
         (heroChanged)="toggleHero()"></div>
-    <div class="w-full p-6 text-center">
-        <h1 class="text-2xl md:text-3xl text-left">Just a stretch</h1>
-        <p class="text-justify mb-6 md:text-lg">Sometimes, all of us need a little help, no matter if you are directing
-            a multinational company, a small family business, or a particle collider. If you need a quick look on a
-            software issue from an expert, make sure to reach out.</p>
-        <a class="btn md:text-lg" href="#">Need a counsel?</a>
-    </div>
+    <ng-container *ngTemplateOutlet="shortTermScene"></ng-container>
     }
 </div>
 
 <div #longTermMobile class="lg:hidden">
     @defer (on viewport(longTermMobile)) {
     <div class="w-full relative h-80 hero-scene" [heroScene]="HeroScene.RESEARCH" [autoRestartInterval]="20000"></div>
-    <div class="w-full p-6 text-center">
-        <h1 class="text-2xl md:text-3xl text-left">STEMming from academia</h1>
-        <p class="text-justify mb-6 md:text-lg">Most of the complex IT problems have unique optimal solutions with
-            slightly different design patterns. However, there is a single common rule for every problem: the best
-            method is the scientific method.</p>
-        <a class="btn md:text-lg" href="#">Read more</a>
-    </div>
+    <ng-container *ngTemplateOutlet="researchScene"></ng-container>
     }
 </div>
 
@@ -137,7 +101,7 @@
             href="https://unsplash.com/photos/person-holding-red-round-medication-pill-Z8UgB80_46w?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a></span>
 </div>
 
-<div class="hero-section w-full my-10 text-center md:text-left" [background]="'assets/bg-science.jpg'">
+<div class="hero-section w-full my-10 text-center md:text-left" [background]="'assets/bg-science.jpg'" [references]="references[HeroSection.SCIENCE]">
     <h1 class="text-2xl md:text-3xl">Based in science</h1>
     <p class="md:text-lg xl:text-xl">What my research days really taught me is every complicated problem has a unique
         optimal solution. While optimal is usually unfeasible to pursue in business scenarios, it is always good to try
@@ -158,7 +122,7 @@
             href="https://unsplash.com/photos/a-red-and-black-pattern-with-a-yellow-line-going-through-it-aqNdl7mlMHg?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a></span>
 </div>
 
-<div class="hero-section w-full mt-10 text-center md:text-left" [background]="'assets/bg-lecture.jpg'" [flip]="true">
+<div class="hero-section w-full mt-10 text-center md:text-left" [background]="'assets/bg-lecture.jpg'" [flip]="true" [references]="references[HeroSection.TEACHING]">
     <h1 class="text-2xl md:text-3xl">Love to share</h1>
     <p class="md:text-lg xl:text-xl pb-4">With a teaching history of almost a decade mostly pivoting around teaching
         cutting-edge software development and architecture to international computer science bachelor candidates,
@@ -173,3 +137,33 @@
             href="https://unsplash.com/photos/people-sitting-on-chair-in-front-of-table-while-holding-pens-during-daytime-KdeqA3aTnBY?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
     </span>
 </div>
+
+<ng-template #longTermScene>
+    <div class="w-full lg:w-2/4 p-6 text-center lg:text-left">
+        <h1 class="text-2xl md:text-3xl xl:text-4xl lg:text-left">Your destiny awaits</h1>
+        <p class="text-justify lg:text-left md:text-lg xl:text-xl mb-6 lg:mb-10">As leader of a high-tech SME, you are on the verge of joining the
+            big leagues. You realize the competencies your company will need to scale and wonder, how should you
+            build your team up. Let me help you in making this process as pleasant as it should always be.</p>
+        <a class="btn md:text-lg xl:text-xl" href="#">How it works?</a>
+    </div>
+</ng-template>
+
+<ng-template #shortTermScene>
+    <div class="w-full lg:w-2/4 p-6 text-center lg:text-left">
+        <h1 class="text-2xl md:text-3xl xl:text-4xl lg:text-left">Just a stretch</h1>
+        <p class="text-justify lg:text-left md:text-lg xl:text-xl mb-6 lg:mb-10">Sometimes, all of us need a little help, no matter if you are
+            directing a multinational company, a small family business, or a particle collider. If you need a
+            quick look on a software issue from an outside expert, make sure to reach out.</p>
+        <a class="btn md:text-lg xl:text-xl" href="#">Need a counsel?</a>
+    </div>
+</ng-template>
+
+<ng-template #researchScene>
+    <div class="w-full lg:w-2/4 p-6 text-center lg:text-left">
+        <h1 class="text-2xl md:text-3xl xl:text-4xl lg:text-left">STEMming from academia</h1>
+        <p class="text-justify lg:text-left md:text-lg xl:text-xl mb-6 lg:mb-10">Most of the complex IT problems have unique optimal solutions with
+            slightly different design patterns. However, there is a single common rule for every problem: the
+            best method is the scientific method.</p>
+        <a class="btn md:text-lg xl:text-xl" href="#">Read more</a>
+    </div>
+</ng-template>

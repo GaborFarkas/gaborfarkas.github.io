@@ -7,8 +7,8 @@
 :root {
     --primary-color: #eaf8fe;
     --primary-accent: #0284c7;
-    --secondary-color: #fffbdcaf;
-    --secondary-accent: #ffc40d;
+    --secondary-color: rgb(254 252 232);
+    --secondary-accent: rgb(253 224 71);
 }
 
 html,
@@ -152,5 +152,5 @@ p, ul {
 }
 
 .btn:hover {
-    filter: brightness(1.1);
+    filter: brightness(0.9);
 }

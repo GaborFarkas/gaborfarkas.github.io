@@ -27,7 +27,7 @@ export class AboutPage {
                 },
                 {
                     question: ' the company name?',
-                    answer: 'It\'s Gábor Farkas s.p. in English, shorthand for Gábor Farkas sole proprietorship. A conventional naming in Hungary, which you will see on the invoice as well. Since honesty and transparency are cornerstones in my business policy, I\'m not comfortable with complicating the situation with a better-sounding fake name.'
+                    answer: 'It\'s Gábor Farkas s.p. in English, shorthand for Gábor Farkas sole proprietorship. A conventional naming in Hungary, which you will see on every invoice as well. Since honesty and transparency are cornerstones in my business policy, I\'m not comfortable with complicating things with a better-sounding fake name.'
                 }
             ]
         },

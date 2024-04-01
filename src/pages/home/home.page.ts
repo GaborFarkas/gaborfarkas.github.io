@@ -4,9 +4,11 @@ import { HeroSceneComponent } from '../../components/hero-scene/hero-scene.compo
 import { Hero, HeroScene } from '../../models/hero.model';
 import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
-import { faDiagramProject, faFileLines, faMap } from '@fortawesome/free-solid-svg-icons';
+import { faCircleNodes, faDiagramProject, faFileLines, faLaptopCode, faLayerGroup, faMap } from '@fortawesome/free-solid-svg-icons';
 import { ReferenceDescriptor } from '../../models/reference.model';
 import { HeroSection } from '../../models/home.model';
+import { faGitAlt } from '@fortawesome/free-brands-svg-icons';
+import { CommonModule } from '@angular/common';
 
 /**
  * Main content of the home (landing) page.
@@ -15,7 +17,7 @@ import { HeroSection } from '../../models/home.model';
     selector: 'home-page',
     standalone: true,
     templateUrl: './home.page.html',
-    imports: [CarouselComponent, HeroSceneComponent, HeroSectionComponent],
+    imports: [CommonModule, CarouselComponent, HeroSceneComponent, HeroSectionComponent],
     styleUrl: './home.page.css'
 })
 export class HomePage {
@@ -47,7 +49,7 @@ export class HomePage {
             null,
             {
                 url: '',
-                text: 'A case study on project documentation',
+                text: 'A case study on project documentation (coming soon)',
                 icon: faFileLines
             }
         ],
@@ -58,7 +60,33 @@ export class HomePage {
                 icon: faMap
             },
             null,
+            {
+                url: '',
+                text: 'A case study on spatial technologies (coming soon)',
+                icon: faLayerGroup
+            }
+        ],
+        [HeroSection.SCIENCE]: [
+            null,
+            {
+                url: '',
+                text: 'Want to see my main research topic? (coming soon)',
+                icon: faCircleNodes
+            },
             null
+        ],
+        [HeroSection.TEACHING]: [
+            {
+                url: '',
+                text: 'Take a look into a Web Programming II. class (coming soon)',
+                icon: faLaptopCode
+            },
+            null,
+            {
+                url: '',
+                text: 'Take a look into a Software Development Technologies class (coming soon)',
+                icon: faGitAlt
+            }
         ]
     }
 

@@ -10,16 +10,16 @@
     </div>
     <div class="absolute top-0 h-full hidden md:block slant" [ngClass]="{flip}">
         <div class="absolute decoration w-fit h-fit flex select-none">
-            <p class="reference w-full h-full" [flyoutText]="references[0]?.text" [url]="references[0]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.TOPLEFT" [flyoutFlip]="flip">
-                <fa-icon *ngIf="references[0]?.icon" size="xl" class="text-primary" [icon]="references[0]!.icon!"
+            <p class="reference w-full h-full" [flyoutText]="references[flip ? 0 : 2]?.text" [url]="references[flip ? 0 : 2]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.BOTTOMLEFT" [flyoutFlip]="flip">
+                <fa-icon *ngIf="references[flip ? 0 : 2]?.icon" size="xl" class="text-primary" [icon]="references[flip ? 0 : 2]!.icon!"
                     referenceIcon></fa-icon>
             </p>
-            <p class="reference w-full h-full" [flyoutText]="references[1]?.text" [url]="references[1]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.TOPLEFT" [flyoutFlip]="flip">
+            <p class="reference w-full h-full" [flyoutText]="references[1]?.text" [url]="references[1]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.BOTTOMLEFT" [flyoutFlip]="flip">
                 <fa-icon *ngIf="references[1]?.icon" size="xl" class="text-primary" [icon]="references[1]!.icon!"
                     referenceIcon></fa-icon>
             </p>
-            <p class="reference w-full h-full" [flyoutText]="references[2]?.text" [url]="references[2]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.TOPLEFT" [flyoutFlip]="flip">
-                <fa-icon *ngIf="references[2]?.icon" size="xl" class="text-primary" [icon]="references[2]!.icon!"
+            <p class="reference w-full h-full" [flyoutText]="references[flip ? 2 : 0]?.text" [url]="references[flip ? 2 : 0]?.url" [flyoutOrientation]="flip? Orientation.BOTTOMRIGHT : Orientation.BOTTOMLEFT" [flyoutFlip]="flip">
+                <fa-icon *ngIf="references[flip ? 2 : 0]?.icon" size="xl" class="text-primary" [icon]="references[flip ? 2 : 0]!.icon!"
                     referenceIcon></fa-icon>
             </p>
         </div>
