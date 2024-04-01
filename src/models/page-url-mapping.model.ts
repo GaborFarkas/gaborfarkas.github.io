@@ -10,5 +10,10 @@ export enum PageUrlMapping {
     /**
      * About page
      */
-    ABOUT = 'about'
+    ABOUT = 'about',
+
+    /**
+     * Partnership page
+     */
+    PARTNERSHIP = 'partnership'
 }

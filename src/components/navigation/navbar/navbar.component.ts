@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NavDropdownGroup } from '../../../models/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
+import { PageUrlMapping } from '../../../models/page-url-mapping.model';
 
 /**
  * Navbar component.
@@ -35,21 +36,21 @@ export class NavbarComponent {
         {
             label: 'Counseling',
             items: [
-                { label: 'Short-term counseling', url: '' },
-                { label: 'Long-term partnership', url: '' }
+                { label: 'Long-term partnership', url: `/${PageUrlMapping.PARTNERSHIP}` },
+                { label: 'Short-term counseling', url: '' }
             ]
         },
         {
             label: 'Expertise',
             items: [
-                { label: 'Research', url: '' },
-                { label: 'Technologies', url: '' }
+                { label: 'Technologies', url: '' },
+                { label: 'Research', url: '' }
             ]
         },
         {
             label: 'About',
             items: [
-                { label: 'About', url: '/about' }
+                { label: 'About', url: `/${PageUrlMapping.ABOUT}` }
             ]
         }
     ]

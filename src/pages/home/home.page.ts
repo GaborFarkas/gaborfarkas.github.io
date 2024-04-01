@@ -9,6 +9,7 @@ import { ReferenceDescriptor } from '../../models/reference.model';
 import { HeroSection } from '../../models/home.model';
 import { faGitAlt } from '@fortawesome/free-brands-svg-icons';
 import { CommonModule } from '@angular/common';
+import { PageUrlMapping } from '../../models/page-url-mapping.model';
 
 /**
  * Main content of the home (landing) page.
@@ -35,6 +36,11 @@ export class HomePage {
      * Available hero sections.
      */
     protected HeroSection = HeroSection;
+
+    /**
+     * Page URLs.
+     */
+    protected PageUrlMapping = PageUrlMapping;
 
     /**
      * References for the hero sections.

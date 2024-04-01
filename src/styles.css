@@ -16,6 +16,24 @@ body {
     height: 100%;
 }
 
+@media (min-width: 2000px) {
+    html {
+        font-size: 120%;
+    }
+}
+
+@media (min-width: 2500px) {
+    html {
+        font-size: 150%;
+    }
+}
+
+@media (min-width: 3000px) {
+    html {
+        font-size: 180%;
+    }
+}
+
 body {
     margin: 0;
     font-family: "Spectral", "Times New Roman", "Helvetica Neue", serif;
