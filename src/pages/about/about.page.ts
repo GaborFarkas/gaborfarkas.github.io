@@ -36,7 +36,7 @@ export class AboutPage {
             sections: [
                 {
                     question: ' will you be available?',
-                    answer: 'It depends. Long-term partnerships are taken extremely seriously. Estimation on the next avaiable vacancy can change on the fly based on the non-foreseeable future needs of my partners. Counseling and small side projects can be scheduled more promptly, especially during the summer, when I don\'t have any teaching duties at the university.'
+                    answer: 'It depends. Long-term partnerships are taken extremely seriously. Estimation on the next avaiable vacancy can change on the fly based on the non-foreseeable future needs of my current partners. Counseling and small side projects can be scheduled more promptly, especially during the summer, when I don\'t have any teaching duties at the university.'
                 },
                 {
                     question: ' will you expand?',
@@ -54,6 +54,19 @@ export class AboutPage {
                 {
                     question: ' are your references?',
                     answer: 'Some of the ones I\'m allowed to show, are carefully hidden throughout the website under some hexagons, if you are browsing this site using a large enough screen. If you would like to hear about the others, please contact me.'
+                }
+            ]
+        },
+        {
+            prefix: 'How',
+            sections: [
+                {
+                    question: ' do you prioritize your time?',
+                    answer: 'University is the first. I reduced my duties to 10 hours per week teaching only, but classes have fixed time and students are entitled to uncompromised knowledge. With respect to this, long-term partners always get a fixed weekly budget of my time. Counsels and short-term side projects are managed from the rest.'
+                },
+                {
+                    question: ' are you selecting your partners?',
+                    answer: 'I\'m quite widely available for small projects and counsels, but long-term partnerships are always considered very carefully. To start a cooperation spanning over several years, I must strongly agree with the values and the intentions of the project (i.e. the potential good it can bring to the industry, or even better, to humanity).'
                 }
             ]
         }
