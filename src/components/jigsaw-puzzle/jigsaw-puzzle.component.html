@@ -1,0 +1,15 @@
+<svg #svg [attr.viewBox]="'0 0 ' + width * 1.3 + ' ' + height * 1.3" (mouseup)="onDragEnd()" (mouseleave)="onDragEnd()"
+    (touchend)="onDragEnd()" (touchleave)="onDragEnd()" (touchcancel)="onDragEnd()">
+    <defs>
+        <pattern id="bg" patternUnits="userSpaceOnUse" [attr.width]="width" [attr.height]="height">
+            <image [attr.href]="image" [attr.width]="width" [attr.height]="height"></image>
+        </pattern>
+        <pattern *ngFor="let piece of puzzlePieces" [id]="'bg-' + piece.row + '-' + piece.column" href="#bg"
+            [attr.patternTransform]="'translate(' + piece.column * puzzleWidth * -1 + ' ' + piece.row * puzzleHeight * -1 + ')'">
+        </pattern>
+    </defs>
+    <path *ngFor="let piece of puzzlePieces" transform-origin="center center"
+        [ngClass]="{'cursor-move z-10': !piece.locked}" (mousedown)="onDragStart($event)"
+        (touchstart)="onDragStart($event)" (mousemove)="onDragMove($event)" (touchmove)="onDragMove($event)"
+        [attr.fill]="'url(#bg-' + piece.row + '-' + piece.column + ')'"></path>
+</svg>
