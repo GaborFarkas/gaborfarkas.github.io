@@ -84,7 +84,7 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         // Generate puzzle pieces and fix down the necessary ones.
-        this.puzzlePieces = [...generatePuzzle(this.columns, this.rows, 1)];
+        this.puzzlePieces = [...generatePuzzle(this.columns, this.rows, 3)];
         this.puzzlePieces.forEach((value, index) => {
             if (this.fixedPieces.includes(index)) {
                 value.locked = true;
@@ -282,10 +282,20 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
 
     /**
      * Path traversal recipes for puzzle edges in [major axis, minor axis] format.
+     * Coordinate pairs should be interpreted as relative distances from the last ones in forward and right relative directions from the major axis' bearing.
+     * Example: [1, 0.3] -> go forward 1 units and go right 0.3 units.
+     * Coordinates are normalized -> they must be multiplied with the puzzle piece's length.
+     * Negative indices must hold the reversed variant of the same edge type.
+     * Recipes work best with square pieces (aestethically).
+     * TODO: Replace 2nd variant with something more smooth.
      */
     private edgeRecipes: Record<number, [number, number][]> = {
         1: [[0.160, -0.028], [0.365, -0.046], [0.353, -0.008], [-0.093, 0.226], [0.019, 0.287], [0.159, 0.276], [0.170, -0.013], [0.158, -0.101], [0.109, -0.276], [-0.016, -0.033], [0.262, -0.013], [0.379, 0.008]],
-        [-1]: [[0.117, -0.020], [0.395, -0.040], [0.379, -0.008], [-0.049, 0.176], [-0.061, 0.263], [0.109, 0.276], [0.139, 0.011], [0.251, -0.051], [0.159, -0.276], [-0.012, -0.038], [0.193, -0.021], [0.353, 0.008]]
+        [-1]: [[0.117, -0.020], [0.395, -0.040], [0.379, -0.008], [-0.049, 0.176], [-0.061, 0.263], [0.109, 0.276], [0.139, 0.011], [0.251, -0.051], [0.159, -0.276], [-0.012, -0.038], [0.193, -0.021], [0.353, 0.008]],
+        2: [[0.1387, 0.0423], [0.3439, 0.0878], [0.3353, 0.0611], [-0.0041, -0.134], [-0.0119, -0.2087], [0.0275, -0.2497], [0.0252, -0.0339], [0.2263, -0.0586], [0.2782, 0.0055], [0.0503, 0.0671], [-0.0462, 0.235], [-0.0256, 0.2403], [0.0839, 0.0265], [0.2453, -0.0298], [0.3825, -0.0602]],
+        [-2]: [[0.1371, 0.0303], [0.2986, 0.0867], [0.3825, 0.0602], [0.0207, -0.0053], [-0.0759, -0.1732], [-0.0256, -0.2403], [0.0519, -0.0641], [0.253, -0.0394], [0.2782, -0.0055], [0.0394, 0.041], [0.0316, 0.1157], [0.0275, 0.2497], [-0.0086, 0.0267], [0.1966, -0.0188], [0.3353, -0.0611]],
+        3: [[0.138, -0.012], [0.297, -0.046], [0.4, -0.023], [0.017, 0.004], [-0.047, 0.117], [-0.048, 0.183], [0.002, 0.048], [0.044, 0.077], [0.121, 0.073], [0.056, -0.004], [0.108, -0.002], [0.122, -0.07], [0.006, -0.033], [-0.025, -0.188], [0, -0.194], [0.081, -0.018], [0.265, 0.018], [0.405, 0.032]],
+        [-3]: [[0.14, -0.014], [0.323, -0.05], [0.405, -0.032], [0.025, 0.007], [-0.006, 0.162], [0, 0.194], [0.014, 0.068], [0.066, 0.067], [0.122, 0.07], [0.077, 0.004], [0.119, -0.025], [0.121, -0.073], [-0.001, -0.066], [-0.065, -0.179], [-0.048, -0.183], [0.103, -0.023], [0.262, 0.011], [0.4, 0.023]]
     }
 
     /**
