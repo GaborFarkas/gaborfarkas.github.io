@@ -69,7 +69,7 @@ export function* generatePuzzle(width: number, height: number, edgeVariants: num
     for (let i = 0; i < numPieces; ++i) {
         const currCol = i % width;
         const top = invertEdge(lastRowBottomEdges[currCol] ?? 0);
-        const bottom = i > numPieces - width ? 0 : getRandomEdge(edgeVariants);
+        const bottom = i >= numPieces - width ? 0 : getRandomEdge(edgeVariants);
         const left = invertEdge(lastColRightEdge);
         const right = i % width === width - 1 ? 0 : getRandomEdge(edgeVariants);
         lastColRightEdge = right === 0 ? 0 : right;

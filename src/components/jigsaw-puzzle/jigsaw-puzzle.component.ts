@@ -215,7 +215,6 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
                     }
                 }
             }
-            console.log(this.puzzlePieces);
         }
     }
 
@@ -272,42 +271,65 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
                 return `${horizontal ? 'h' : 'v'} ${forward ? '' : '-'}${dimension}`;
             default:
                 // Bezier curve
-                const recipe = this.edgeRecipes[Math.abs(edgeVariant)];
+                const recipe = this.edgeRecipes[edgeVariant];
                 if (!recipe) {
                     throw new Error(`Unsupported edge variant ${edgeVariant}. Cannot generate puzzle SVG.`);
                 }
-                const scaledRecipe = recipe.map(seg => seg.map(coord => coord.map(ord => ord * dimension))) as [[number, number], [number, number], [number, number]][];
+                const scaledRecipe = recipe.map(seg => seg.map(coord => coord * dimension)) as [number, number][];
                 return `c ${this.generateCoordinates(horizontal, forward, positive, scaledRecipe)}`;
         }
     }
 
-    private edgeRecipes: Record<number, [[number, number], [number, number], [number, number]][]> = {
-        1: [[[0.160, -0.028], [0.365, -0.046], [0.353, -0.008]], [[-0.093, 0.226], [0.019, 0.287], [0.159, 0.276]], [[0.170,-0.013], [0.158, -0.010], [0.109, -0.276]], [[-0.016, -0.032], [0.262, -0.013], [0.379, 0.008]]]
+    /**
+     * Path traversal recipes for puzzle edges in [major axis, minor axis] format.
+     */
+    private edgeRecipes: Record<number, [number, number][]> = {
+        1: [[0.160, -0.028], [0.365, -0.046], [0.353, -0.008], [-0.093, 0.226], [0.019, 0.287], [0.159, 0.276], [0.170, -0.013], [0.158, -0.101], [0.109, -0.276], [-0.016, -0.033], [0.262, -0.013], [0.379, 0.008]],
+        [-1]: [[0.117, -0.020], [0.395, -0.040], [0.379, -0.008], [-0.049, 0.176], [-0.061, 0.263], [0.109, 0.276], [0.139, 0.011], [0.251, -0.051], [0.159, -0.276], [-0.012, -0.038], [0.193, -0.021], [0.353, 0.008]]
     }
 
-    private generateCoordinates(horizontal: boolean, forward: boolean, positive: boolean, recipe: [[number, number], [number, number], [number, number]][]) {
+    /**
+     * Transforms edge recipes to SVG coordinates.
+     * @param horizontal Edge is horizontal (true -> xy, false -> yx).
+     * @param forward Edge direction is foward, coordinates are in increasing order.
+     * @param positive The puzzle connector is looking outwards.
+     * @param recipe The coordinates of the edge.
+     * @returns The transformed coordinates as an SVG string.
+     */
+    private generateCoordinates(horizontal: boolean, forward: boolean, positive: boolean, recipe: [number, number][]) {
         if (!forward) {
-            recipe.forEach(seg => seg.forEach(coord => coord[0] *= -1));
+            recipe.forEach(coord => coord[0] *= -1);
             if (positive) {
-                recipe.forEach(seg => seg.forEach(coord => coord[1] *= -1));
+                recipe.forEach(coord => coord[1] *= -1);
             }
-        }
-        else if (!positive) {
-            recipe.forEach(seg => seg.forEach(coord => coord[1] *= -1));
+        } else if (!positive) {
+            recipe.forEach(coord => coord[1] *= -1);
         }
         const xIndex = horizontal ? 0 : 1;
         const yIndex = 1 - xIndex;
-        let coordStr = '';
-        for (let segment of recipe) {
-            coordStr += segment.reduce((acc, coord) => acc += `${coord[xIndex]} ${coord[yIndex]}, `, '');
-        }
+        const coordStr = recipe.reduce((acc, coord) => acc += `${coord[xIndex]} ${coord[yIndex]}, `, '');
         return coordStr.trim();
     }
 }
 
+/**
+ * Puzzle edge directions.
+ */
 enum Direction {
+    /**
+     * The edge is going from right to left.
+     */
     LEFT,
+    /**
+     * The edge is going from left to right.
+     */
     RIGHT,
+    /**
+     * The edge is going from top to bottom.
+     */
     DOWN,
+    /**
+     * The edge is going from bottom to top.
+     */
     UP
 }
