@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { PuzzlePiece, generatePuzzle } from '../../models/puzzle.model';
 import { CommonModule } from '@angular/common';
 
@@ -81,6 +81,11 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
      * Gets the element reference of the puzzle board SVG.
      */
     @ViewChild('svg') svg?: ElementRef<SVGSVGElement>;
+
+    /**
+     * Fired when the puzzle is solved.
+     */
+    @Output() completed = new EventEmitter();
 
     ngOnInit(): void {
         // Generate puzzle pieces and fix down the necessary ones.
@@ -172,6 +177,10 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
                     const firstPuzzleSvg = this.svg.nativeElement.querySelector('path');
                     if (firstPuzzleSvg) {
                         this.svg.nativeElement.insertBefore(this.draggedItem, firstPuzzleSvg);
+                    }
+
+                    if (this.puzzlePieces.every(piece => piece.locked)) {
+                        this.completed.emit();
                     }
                 }
 
@@ -283,7 +292,7 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
     /**
      * Path traversal recipes for puzzle edges in [major axis, minor axis] format.
      * Coordinate pairs should be interpreted as relative distances from the last ones in forward and right relative directions from the major axis' bearing.
-     * Example: [1, 0.3] -> go forward 1 units and go right 0.3 units.
+     * Example: [1, 0.3] -> go forward 1 unit and go right 0.3 units.
      * Coordinates are normalized -> they must be multiplied with the puzzle piece's length.
      * Negative indices must hold the reversed variant of the same edge type.
      * Recipes work best with square pieces (aestethically).

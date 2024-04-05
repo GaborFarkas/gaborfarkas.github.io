@@ -1,1 +1,7 @@
-<div class="jigsaw" image="/assets/bg-planning.jpg" [columns]="4" [rows]="3" [fixedPieces]="[4, 8, 9]"></div>
+<div class="jigsaw-container relative flex justify-center items-center">
+    <img class="h-96" src="/assets/longterm-puzzle-bg.svg" [ngClass]="{'invisible': !puzzleComplete}">
+    <div class="absolute h-full w-full top-0 left-0 flex justify-center items-center" [ngClass]="{'opacity-0': puzzleComplete}">
+        <div class="jigsaw h-full" image="/assets/longterm-puzzle-active.svg" [columns]="4" [rows]="3"
+            [fixedPieces]="[4, 8, 9]" (completed)="completePuzzle()"></div>
+    </div>
+</div>
