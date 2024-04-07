@@ -1,7 +1,14 @@
-<div class="jigsaw-container relative flex justify-center items-center">
-    <img class="h-96" src="/assets/longterm-puzzle-bg.svg" [ngClass]="{'invisible': !puzzleComplete}">
-    <div class="absolute h-full w-full top-0 left-0 flex justify-center items-center" [ngClass]="{'opacity-0': puzzleComplete}">
-        <div class="jigsaw h-full" image="/assets/longterm-puzzle-active.svg" [columns]="4" [rows]="3"
-            [fixedPieces]="[4, 8, 9]" (completed)="completePuzzle()"></div>
+<div class="max-w-8xl m-auto">
+    <p class="text-lg md:text-2xl text-center mt-16">With hard work, after countless restless hours, you built a company. You have the fundamental building blocks in place. You have working management, a network of possible partners, sources for funding. What next?</p>
+    <div class="jigsaw-container relative flex justify-center items-center">
+        <img class="h-96" src="/assets/longterm-puzzle-bg.svg" [ngClass]="{'invisible': !puzzleComplete}">
+        <div class="absolute h-full w-full top-0 left-0 flex justify-center items-center" [ngClass]="{'opacity-0': puzzleComplete}">
+            <div class="jigsaw h-full" image="/assets/longterm-puzzle-active.svg" [columns]="4" [rows]="3"
+                [fixedPieces]="[4, 8, 9]" (completed)="completePuzzle()"></div>
+        </div>
     </div>
+
+    <p class="text-lg pb-12">If you happen to find yourself in a situation, where you would like to extend your company with an IT-focused branch (e.g. a SaaS product), but you don't know how, I can lend you my experience. Let's be realistic: this is a niche service with few opportunities, but this is where I value myself the best. I can put together the pieces for a basic scalable service portfolio, which can be extended dynamically by either your very own team or any software development company. This is not a software development counseling service. This is a complete package including software architecture, development, infrastructure, building a team, mentoring, and project management techniques.</p>
+
+    <h1>How it works?</h1>
 </div>

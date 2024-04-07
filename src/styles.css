@@ -91,6 +91,10 @@ p, ul {
         max-width: 40%;
     }
 
+    .max-w-8xl {
+        max-width: 90rem;
+    }
+
     .remove-bg {
         background-image: none !important;
     }
