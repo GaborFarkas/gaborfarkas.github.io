@@ -16,3 +16,21 @@
     transform: scale(0);
     transition: transform 200ms linear;
 }
+
+::ng-deep .faq-section:last-of-type .header {
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    transition: border-radius 0ms 300ms linear;
+}
+
+::ng-deep .faq-section:last-of-type .header.expanded {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    transition: none;
+}
+
+::ng-deep .faq-section:last-of-type p.expanded {
+    border-bottom: 3px solid var(--primary-accent);
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}

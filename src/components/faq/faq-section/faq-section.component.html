@@ -1,5 +1,5 @@
 <div class="header w-full flex justify-between items-center bg-primary-accent text-primary rounded-t-lg px-5 py-3 cursor-pointer"
-    (click)="toggleSection()">
+    [ngClass]="{'expanded': expanded}" (click)="toggleSection()">
     <h1 class="p-0">
         <span class="prefix-container">
             <span class="prefix inline-block" [ngClass]="{'expanded': expanded}">{{groupPrefix}}</span>
