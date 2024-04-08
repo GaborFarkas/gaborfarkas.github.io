@@ -1,0 +1,11 @@
+.timeline-btn {
+    box-shadow: 5px 5px 10px 1px var(--shadow);
+}
+
+.timeline-btn:active {
+    box-shadow: inset 5px 5px 10px 1px var(--shadow);
+}
+
+.round-hack {
+    transform: translateY(101%);
+}

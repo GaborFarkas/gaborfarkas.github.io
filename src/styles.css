@@ -9,6 +9,7 @@
     --primary-accent: #0284c7;
     --secondary-color: rgb(254 252 232);
     --secondary-accent: rgb(253 224 71);
+    --shadow: rgb(120 113 108);
 }
 
 html,
@@ -71,8 +72,16 @@ p, ul {
         background-color: var(--primary-color);
     }
 
+    .bg-secondary {
+        background-color: var(--secondary-color);
+    }
+
     .bg-primary-accent {
         background-color: var(--primary-accent);
+    }
+
+    .bg-secondary-accent {
+        background-color: var(--secondary-accent);
     }
 
     .text-primary {
@@ -81,6 +90,10 @@ p, ul {
 
     .text-primary-accent {
         color: var(--primary-accent);
+    }
+
+    .text-secondary {
+        color: var(--secondary-color);
     }
 
     .max-h-3\/5 {
