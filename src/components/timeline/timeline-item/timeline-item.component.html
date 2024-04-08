@@ -1,5 +1,5 @@
 <div class="relative text-primary">
-    <div class="bg-lime-600 rounded-full relative">
+    <div class="rounded-full relative item-bg">
         <div class="w-full flex items-center justify-between p-6 relative z-10">
             <ng-container *ngIf="reverse">
                 <ng-container *ngTemplateOutlet="btn"></ng-container>
@@ -12,17 +12,17 @@
                 <ng-container *ngTemplateOutlet="btn"></ng-container>
             </ng-container>
         </div>
-        <div class="absolute round-hack h-1/2 w-full bg-lime-600 top-0 z-0" [ngClass]="{'hidden': !extended}"></div>
+        <div class="absolute round-hack h-1/2 w-full item-bg top-0 z-0" [ngClass]="{'hidden': !extended}"></div>
     </div>
 
-    <div class="overflow-hidden w-full bg-lime-600 px-6" [ngClass]="{'max-h-0': !extended}">
+    <div class="overflow-hidden w-full item-bg px-6" [ngClass]="{'max-h-0': !extended}">
         <ng-content select="[text]"></ng-content>
     </div>
 </div>
 
 <ng-template #btn>
     <div class="bg-primary w-36 h-36 rounded-full flex items-center justify-center flex-shrink-0">
-        <div class="timeline-btn text-primary-accent hover:text-lime-600 w-24 h-24 rounded-full flex items-center justify-center"
+        <div class="timeline-btn text-primary-accent w-24 h-24 rounded-full flex items-center justify-center"
             (click)="toggle()">
             <fa-icon [icon]="icon" size="2xl"></fa-icon>
         </div>

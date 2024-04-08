@@ -31,6 +31,11 @@ export class TimelineItemComponent {
     @Input() reverse: boolean = false;
 
     /**
+     * The color class of this item.
+     */
+    @Input() color: string = '#ffffff';
+
+    /**
      * Fired when the current item is extended.
      */
     @Output() extend: EventEmitter<TimelineItemComponent> = new EventEmitter();
@@ -38,8 +43,15 @@ export class TimelineItemComponent {
     /**
      * The host element's class attribute.
      */
-    @HostBinding('class') get class(): string {
+    @HostBinding('class') protected get class(): string {
         return this.reverse ? 'justify-self-end lg:mr-24' : 'justify-self-start lg:ml-24';
+    }
+
+    /**
+     * The host element's item color CSS variable.
+     */
+    @HostBinding('style.--item-color') protected get itemColor(): string {
+        return this.color;
     }
 
     /**
