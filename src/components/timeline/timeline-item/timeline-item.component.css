@@ -17,3 +17,15 @@
 .item-bg {
     background-color: var(--item-color);
 }
+
+.timeline-item-text {
+    transition: max-height 300ms linear;
+}
+
+.timeline-item-text.max-h-custom {
+    max-height: 35rem;
+}
+
+.opacity-delay.opacity-0 {
+    transition: opacity 0ms 300ms linear;
+}

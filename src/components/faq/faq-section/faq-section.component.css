@@ -15,7 +15,7 @@ p {
 }
 
 p.expanded {
-    max-height: 20rem;
+    max-height: 40rem;
 }
 
 .prefix {
