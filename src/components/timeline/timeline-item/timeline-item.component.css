@@ -19,13 +19,13 @@
 }
 
 .timeline-item-text {
-    transition: max-height 300ms linear;
+    transition: max-height 500ms linear;
 }
 
 .timeline-item-text.max-h-custom {
-    max-height: 35rem;
+    max-height: 60rem;
 }
 
 .opacity-delay.opacity-0 {
-    transition: opacity 0ms 300ms linear;
+    transition: opacity 0ms 500ms linear;
 }
