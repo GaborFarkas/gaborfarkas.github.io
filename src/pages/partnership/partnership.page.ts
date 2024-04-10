@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { JigsawPuzzleComponent } from '../../components/jigsaw-puzzle/jigsaw-puzzle.component';
 import { CommonModule } from '@angular/common';
+import { TimelineComponent } from '../../components/timeline/timeline/timeline.component';
+import { TimelineItemComponent } from '../../components/timeline/timeline-item/timeline-item.component';
+import { faCode, faFileContract, faFileLines, faHandHoldingHand, faLightbulb, faMagnifyingGlassChart, faMoneyBillWave, faMoneyBillWaveAlt, faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faHandshake } from '@fortawesome/free-regular-svg-icons';
 
 /**
  * Main content of the partnership page.
@@ -8,11 +13,27 @@ import { CommonModule } from '@angular/common';
 @Component({
     selector: 'partnership-page',
     standalone: true,
-    imports: [CommonModule, JigsawPuzzleComponent],
+    imports: [CommonModule, JigsawPuzzleComponent, TimelineComponent, TimelineItemComponent, FontAwesomeModule],
     templateUrl: './partnership.page.html',
     styleUrl: './partnership.page.css'
 })
 export class PartnershipPage {
+    protected faLightbulb = faLightbulb;
+
+    protected faFileLines = faFileLines;
+
+    protected faCode = faCode;
+
+    protected faSitemap = faSitemap;
+
+    protected faMagnifyingGlassChart = faMagnifyingGlassChart;
+
+    protected faHandshake = faHandshake;
+
+    protected faFileContract = faFileContract;
+
+    protected faMoneyBillWave = faMoneyBillWaveAlt;
+
     /**
      * The page puzzle has been completed.
      */
