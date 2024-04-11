@@ -1,0 +1,17 @@
+.flip {
+    transform-style: preserve-3d;
+    transition: all 700ms ease-in-out;
+}
+
+.flip div {
+    backface-visibility: hidden;
+    background-color: var(--item-color);
+}
+
+.flip .back {
+    transform: rotateY(180deg);
+}
+
+.flip.flipped {
+    transform: rotateY(180deg);
+}
