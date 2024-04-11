@@ -4,7 +4,7 @@ import { HeroSceneComponent } from '../../components/hero-scene/hero-scene.compo
 import { Hero, HeroScene } from '../../models/hero.model';
 import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
-import { faCircleNodes, faDiagramProject, faFileLines, faLaptopCode, faLayerGroup, faMap } from '@fortawesome/free-solid-svg-icons';
+import { faCircleNodes, faDiagramProject, faFileLines, faLaptopCode, faLayerGroup, faMap, faTree } from '@fortawesome/free-solid-svg-icons';
 import { ReferenceDescriptor } from '../../models/reference.model';
 import { HeroSection } from '../../models/home.model';
 import { faGitAlt } from '@fortawesome/free-brands-svg-icons';
@@ -65,7 +65,11 @@ export class HomePage {
                 text: 'Take a closer look at the footer map',
                 icon: faMap
             },
-            null,
+            {
+                url: 'https://www.ddnp.hu/igazgatosag/terkep/terkep',
+                text: 'A small multilingual map for a national park',
+                icon: faTree
+            },
             {
                 url: '',
                 text: 'A case study on spatial technologies (coming soon)',
