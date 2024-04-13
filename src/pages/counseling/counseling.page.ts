@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CardComponent } from '../../components/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCartShopping, faDiagramProject, faDisplay, faGlobe, faIceCream, faLayerGroup, faListCheck, faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faDiagramProject, faDisplay, faGlobe, faIceCream, faLayerGroup, faListCheck, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { randomizer } from '../../utils/array';
 import { DecoratedColumnComponent } from '../../components/decorated-column/decorated-column.component';
 import { ReferenceDescriptor } from '../../models/reference.model';
@@ -49,7 +49,7 @@ export class CounselingPage implements OnInit {
             {
                 url: 'https://cadify.no/',
                 icon: faCartShopping,
-                text: 'A nopCommerce site with a CAD-based general product configurator'
+                text: 'A nopCommerce site with a CAD-based general product configurator (WIP)'
             }
         ],
         [Section.UIUX]: [
@@ -57,6 +57,11 @@ export class CounselingPage implements OnInit {
                 url: 'http://fagyivarazs.hu/',
                 icon: faIceCream,
                 text: 'A mobile-first UI design for an ice cream and pastry shop'
+            },
+            {
+                url: 'https://datelite.hu/',
+                icon: faMoon,
+                text: 'A minimalistic dark design for a remote sensing company'
             }
         ],
         [Section.INFRASTRUCTURE]: [
