@@ -1,0 +1,16 @@
+.decoration > div {
+    bottom: calc(0.9rem * var(--index));
+}
+
+.decoration.left > div:nth-child(even) {
+    left: 1.65rem;
+}
+
+.decoration.right > div:nth-child(even) {
+    right: 1.65rem;
+}
+
+.decoration.right > div {
+    text-align: right;
+    flex-direction: row-reverse;
+}
