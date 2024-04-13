@@ -37,20 +37,13 @@ export class NavbarComponent {
             label: 'Counseling',
             items: [
                 { label: 'Long-term partnership', url: `/${PageUrlMapping.PARTNERSHIP}` },
-                { label: 'Short-term counseling', url: '' }
-            ]
-        },
-        {
-            label: 'Expertise',
-            items: [
-                { label: 'Technologies', url: '' },
-                { label: 'Research', url: '' }
+                { label: 'Short-term counseling', url: `/${PageUrlMapping.COUNSELING}` }
             ]
         },
         {
             label: 'About',
             items: [
-                { label: 'About', url: `/${PageUrlMapping.ABOUT}` }
+                { label: 'About me', url: `/${PageUrlMapping.ABOUT}` }
             ]
         }
     ]
