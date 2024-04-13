@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 
 /**
  * A reference hexagon holding a short description and a link.
@@ -31,6 +31,11 @@ export class ReferenceComponent {
      * The URL this reference is referring to.
      */
     @Input() url?: string = '';
+
+    /**
+     * The class of the host element. As flyout has absolute position, it must be relative.
+     */
+    @HostBinding('class') class = 'relative overflow-hidden hover:overflow-visible';
 }
 
 /**
