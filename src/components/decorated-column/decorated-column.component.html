@@ -1,7 +1,7 @@
 <div class="decoration left hidden md:block md:w-1/6 relative" [style]="{'top': decorationRows * 0.9 / 2 + 'rem'}">
     <ng-container *ngTemplateOutlet="decorationItems; context: {side: 'left'}"></ng-container>
 </div>
-<div #content class="w-full md:w-4/6" (resize)="onResize()">
+<div #content class="w-full md:w-4/6 h-fit" (resize)="onResize()">
     <ng-content></ng-content>
 </div>
 <div class="decoration right hidden md:block md:w-1/6 relative" [style]="{'top': decorationRows * 0.9 / 2 + 'rem'}">
