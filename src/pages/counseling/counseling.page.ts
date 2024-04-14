@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CardComponent } from '../../components/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCartShopping, faDiagramProject, faDisplay, faGlobe, faIceCream, faLayerGroup, faListCheck, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faCompassDrafting, faDiagramProject, faDisplay, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { randomizer } from '../../utils/array';
 import { DecoratedColumnComponent } from '../../components/decorated-column/decorated-column.component';
 import { ReferenceDescriptor } from '../../models/reference.model';
@@ -17,7 +17,7 @@ import { faAngular, faLinux } from '@fortawesome/free-brands-svg-icons';
     templateUrl: './counseling.page.html'
 })
 export class CounselingPage implements OnInit {
-    protected faDiagramProject = faDiagramProject;
+    protected faCompassDrafting = faCompassDrafting;
 
     protected faGlobe = faGlobe;
 
@@ -69,6 +69,13 @@ export class CounselingPage implements OnInit {
                 url: '',
                 icon: faLinux,
                 text: 'Linux as a programming language: a case study (coming soon)'
+            }
+        ],
+        [Section.PM]: [
+            {
+                url: 'https://agilemanifesto.org/',
+                icon: faGroupArrowsRotate,
+                text: 'I teach this kind of Agile, not Scrum'
             }
         ]
     }

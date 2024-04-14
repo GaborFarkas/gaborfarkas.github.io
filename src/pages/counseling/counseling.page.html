@@ -5,7 +5,7 @@
         <div class="card h-64 w-56 justify-self-center" [color]="cardColors[0]">
             <div faceUp class="flex flex-col items-center text-center justify-between h-full">
                 <h1 class="text-xl uppercase pt-10">Software architecture</h1>
-                <fa-icon class="pb-20" size="2xl" [icon]="faDiagramProject"></fa-icon>
+                <fa-icon class="pb-20" size="2xl" [icon]="faCompassDrafting"></fa-icon>
             </div>
             <div faceDown class="h-full text-xl flex items-center">
                 <ul class="leading-loose text-center w-full">
@@ -85,7 +85,6 @@
             <li>Planning new software components.</li>
             <li>Creating, modifying, extending plan documentation.</li>
             <li>Redesigning software architecture into a scalable form.</li>
-            <li>Traditional and spatial database documentation and design.</li>
             <li>Writing and reviewing specifications.</li>
         </ul>
     </div>
@@ -118,13 +117,27 @@
 
     <div class="col-decorated text-lg pb-12" [references]="references[Section.INFRASTRUCTURE]">
         <h1 class="text-center">Infrastructure</h1>
-        <p class="pb-6"></p>
+        <p class="pb-6">Infrastructure is not my strongest suit. Not because I'm bad at it, I'm only not so interested in it. I got introduced to it through the stereotypic setup; there are no system administrators available, let the software developer take care of everything. I did, and I learned a lot about administering Linux systems on the way.</p>
+        <p class="pb-6">Lately, I'm more focused on the DevSecOps aspect of this area, especially on facets close to the architecture and development process, such as web security, CI/CD, automated testing, or containerization. While my experience in infrastructure is typically used for complementing other areas of expertise, if you need direct help from this area, I can help you with:</p>
+        <ul class="list-disc pl-12">
+            <li>Installing and managing operating systems (preferably Linux) locally or remotely.</li>
+            <li>Traditional and spatial database documentation and design.</li>
+            <li>Creating CI/CD workflows and automated software tests.</li>
+            <li>Simple containerization with Docker.</li>
+        </ul>
     </div>
 
-    <div class="col-decorated text-lg pb-12">
+    <div class="col-decorated text-lg pb-12" [references]="references[Section.PM]">
         <h1 class="text-center">Project management</h1>
-        <p class="pb-6"></p>
+        <p class="pb-6">I really like Agile. I like how early it recognized the importance of breaking up with traitional business-to-customer behavior in software development in favor of a client-centric one. Shortly after it came out, the Agile principles spread like wildfire. The IT industry showed how much it anticipated this change. What I especially like in this story is the lesson in it. It taught us, that money people, no matter how trained they are in economics, cannot control every aspect of every business. IT project management should be done with an IT background.</p>
+        <p class="pb-6">While project management is not something I would like to ever do full-time, I find value and satisfaction in teaching how to use version control properly with git. This not only includes proper collaboration techniques (like rebasing) but also using git-flow, semantic versioning, and creating a maintainable product lifecycle. In this area, I can help you with the following:</p>
+        <ul class="list-disc pl-12">
+            <li>Implementing Agile in an unobtrusive way.</li>
+            <li>Using version control efficiently with git.</li>
+            <li>Creating a client-friendly product lifecycle and release cycle.</li>
+            <li>Choosing the right tools and methods, from experience.</li>
+        </ul>
     </div>
 
-    <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-12">Things good to know</h1>
+    <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-12">Things to know</h1>
 </div>
