@@ -5,7 +5,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
     runs-on: ubuntu-latest
 
     steps:
@@ -38,8 +42,12 @@ jobs:
             .
           echo ::endgroup::
   
-      - name: Deploy page
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           path: ${{ runner.temp }}/artifact.tar
           if-no-files-found: error
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
