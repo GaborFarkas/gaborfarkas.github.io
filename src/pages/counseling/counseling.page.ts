@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CardComponent } from '../../components/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCartShopping, faCompassDrafting, faDiagramProject, faDisplay, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faCompassDrafting, faDisplay, faFileContract, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoneyBill1Wave, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { randomizer } from '../../utils/array';
 import { DecoratedColumnComponent } from '../../components/decorated-column/decorated-column.component';
 import { ReferenceDescriptor } from '../../models/reference.model';
@@ -26,6 +26,10 @@ export class CounselingPage implements OnInit {
     protected faSitemap = faSitemap;
 
     protected faListCheck = faListCheck;
+
+    protected faFileContract = faFileContract;
+
+    protected faMoneyBillWave = faMoneyBill1Wave;
 
     protected Section = Section;
 
