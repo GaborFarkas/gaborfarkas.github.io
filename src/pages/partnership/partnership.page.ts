@@ -6,6 +6,7 @@ import { TimelineItemComponent } from '../../components/timeline/timeline-item/t
 import { faCode, faFileContract, faFileLines, faLightbulb, faMagnifyingGlassChart, faMoneyBillWaveAlt, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faHandshake } from '@fortawesome/free-regular-svg-icons';
+import { Meta } from '@angular/platform-browser';
 
 /**
  * Main content of the partnership page.
@@ -35,6 +36,10 @@ export class PartnershipPage {
 
     protected faMoneyBillWave = faMoneyBillWaveAlt;
     //#endregion
+
+    constructor(private meta: Meta) {
+        this.meta.updateTag({ property: 'og:description', content: 'As the leader of a high-tech SME, you are on the verge of joining the big leagues. You realize the competencies your company will need to scale and wonder how you should build your team up. Let me help you make this process as pleasant as it can be.' });
+    }
 
     /**
      * The page puzzle has been completed.
