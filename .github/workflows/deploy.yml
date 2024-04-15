@@ -44,22 +44,11 @@ jobs:
           npm install
           npm run build
   
-      - name: Archive artifact
-        shell: sh
-        run: |
-          echo ::group::Archive artifact
-          tar \
-            --dereference --hard-dereference \
-            --directory "dist/project-w/browser" \
-            -cvf "$RUNNER_TEMP/artifact.tar" \
-            .
-          echo ::endgroup::
-  
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           name: github-pages
-          path: ${{ runner.temp }}/artifact.tar
+          path: dist/project-w/browser
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
