@@ -1,6 +1,6 @@
 <div class="flex">
     <div class="w-full w-4/5 sm:w-full lg:w-3/6 text-sm sm:text-lg flex justify-center text-primary">
-        <div class="grid grid-rows-3 grid-cols-2 gap-2 sm:gap-5 pb-10 pt-14 items-center justify-items-center">
+        <div class="grid grid-rows-3 md:grid-cols-2 gap-2 sm:gap-5 pb-10 pt-14 items-center justify-items-center">
             <svg class="px-3 w-20 h-16">
                 <use href="assets/icon-raw.svg#logo"></use>
             </svg>
@@ -8,8 +8,10 @@
             <fa-icon [icon]="marker" size="lg"></fa-icon>
             <span class="justify-self-start">Pécs, Hungary</span>
             <fa-icon [icon]="email" size="lg"></fa-icon>
-            <span class="email justify-self-start cursor-pointer" title="Click to copy to clipboard, double click to open a new email"
-                (click)="copyToClipboard()" (dblclick)="openEmail()">&#64;</span>
+            <span class="email justify-self-start cursor-pointer"
+                title="Click to copy to clipboard, double click to write an email" (click)="copyToClipboard()"
+                (dblclick)="openEmail()">&#64;</span>
+            <span class="lg:hidden col-span-2 px-2 text-center">(Click to copy to clipboard, double click to write an email)</span>
         </div>
 
     </div>
@@ -19,4 +21,4 @@
         }
     </div>
 </div>
-<p class="text-primary text-sm pt-2 text-center">Copyright © 2024 Gábor Farkas | Hosted by GitHub Pages</p>
+<p class="text-primary text-sm pt-2 text-center px-2">Copyright © 2024 Gábor Farkas | Hosted by GitHub Pages</p>
