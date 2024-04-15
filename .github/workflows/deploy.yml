@@ -53,6 +53,9 @@ jobs:
             -cvf "$RUNNER_TEMP/artifact.tar" \
             .
           echo ::endgroup::
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
   
       - name: Upload artifact
         uses: actions/upload-artifact@v4
