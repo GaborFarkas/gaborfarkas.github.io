@@ -1,0 +1,7 @@
+.email::before {
+    content: var(--local);
+}
+
+.email::after {
+    content: var(--domain);
+}

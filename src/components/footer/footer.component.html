@@ -8,13 +8,14 @@
             <fa-icon [icon]="marker" size="lg"></fa-icon>
             <span class="justify-self-start">Pécs, Hungary</span>
             <fa-icon [icon]="email" size="lg"></fa-icon>
-            <span class="justify-self-start">farkasgaborev&#64;valami.hu</span>
+            <span class="email justify-self-start cursor-pointer" title="Click to copy to clipboard, double click to open a new email"
+                (click)="copyToClipboard()" (dblclick)="openEmail()">&#64;</span>
         </div>
 
     </div>
     <div #mapContainer class="hidden lg:block lg:w-3/6 max-h-full">
         @defer (on viewport(mapContainer)) {
-            <footer-map class="h-full"></footer-map>
+        <footer-map class="h-full"></footer-map>
         }
     </div>
 </div>
