@@ -189,3 +189,15 @@ p, ul {
 .btn:hover {
     filter: brightness(0.9);
 }
+
+/* Angular bug rules */
+
+/* Hero scene (research) 2nd animation is not scoped properly */
+@keyframes heroSceneResearchZoomIn {
+    0% {
+        transform: scale(1) translate(1);
+    }
+    100% {
+        transform: scale(3.5) translate(-32.5%, 4.5%);
+    }
+}

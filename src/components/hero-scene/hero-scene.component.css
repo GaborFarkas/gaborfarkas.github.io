@@ -171,7 +171,7 @@
 
 /* Research scene */
 .frame-wall {
-    animation: panRight 5s 1s forwards, zoomIn 5s 5s forwards;
+    animation: panRight 5s 1s forwards, heroSceneResearchZoomIn 5s 5s forwards;
 }
 
 .research-text {
@@ -202,14 +202,5 @@
 @keyframes panRight {
     100% {
         right: calc(100% - 4.7rem);
-    }
-}
-
-@keyframes zoomIn {
-    0% {
-        transform: scale(1) translate(1);
-    }
-    100% {
-        transform: scale(3.5) translate(-32.5%, 4.5%);
     }
 }
