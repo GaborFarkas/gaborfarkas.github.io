@@ -31,7 +31,7 @@ jobs:
   
       - name: Add tokens
         shell: sh
-        run: sed -i "s/{MAPTILER_API_KEY}/${{ secrets.MAPTILER_API_KEY }}/g" src/environments/environment.ts
+        run: sed -i "s/{MAPTILER_API_KEY}/${{ secrets.MAPTILER_API_KEY }}/g" src/environments/environment.ts   
       
       - name: Setup Node JS
         uses: actions/setup-node@v3
@@ -43,6 +43,10 @@ jobs:
         run: |
           npm install
           npm run build
+
+      - name: Use index.html as custom 404.html
+        shell: sh
+        run: cp dist/project-w/browser/index.html dist/project-w/browser/404.html
   
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
