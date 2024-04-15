@@ -58,7 +58,7 @@ jobs:
         uses: actions/configure-pages@v4
   
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/artifact@v4
         with:
           path: ${{ runner.temp }}/artifact.tar
           if-no-files-found: error
