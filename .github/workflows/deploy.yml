@@ -9,33 +9,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-    - uses: actions/checkout@v3
-
-    - name: Add tokens
-      shell: sh
-      run: sed -i "s/{MAPTILER_API_KEY}/${{ secrets.MAPTILER_API_KEY }}/g" src/environments/environment.ts
-    
-    - name: Build application
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.x
-        cache: 'npm'
-    - run: npm run build
-
-    - name: Build artifact
-      shell: sh
-      run: |
-        echo ::group::Archive artifact
-        tar \
-          --dereference --hard-dereference \
-          --directory "dist/project-w/browser" \
-          -cvf "$RUNNER_TEMP/artifact.tar" \
-          .
-        echo ::endgroup::
-
-    - name: Deploy page
-      uses: actions/upload-artifact@v4
-      with:
-        path: ${{ runner.temp }}/artifact.tar
-        if-no-files-found: error
+      - name: Checkout repo
+        uses: actions/checkout@v3
+  
+      - name: Add tokens
+        shell: sh
+        run: sed -i "s/{MAPTILER_API_KEY}/${{ secrets.MAPTILER_API_KEY }}/g" src/environments/environment.ts
+      
+      - name: Setup Node JS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+          
+      - name: Build application
+        run: npm run build
+  
+      - name: Archive artifact
+        shell: sh
+        run: |
+          echo ::group::Archive artifact
+          tar \
+            --dereference --hard-dereference \
+            --directory "dist/project-w/browser" \
+            -cvf "$RUNNER_TEMP/artifact.tar" \
+            .
+          echo ::endgroup::
+  
+      - name: Deploy page
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ runner.temp }}/artifact.tar
+          if-no-files-found: error
