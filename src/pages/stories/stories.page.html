@@ -1,0 +1,10 @@
+<div class="max-w-8xl m-auto pt-6">
+    <div class="w-full" [ngSwitch]="type">
+        <h1 *ngSwitchCase="StoryType.INSIGHT">Insights</h1>
+        <h1 *ngSwitchCase="StoryType.CASESTUDY">Case studies</h1>
+        <h1 *ngSwitchCase="StoryType.UNKNOWN">Y̵̢̹̓͝ö̴̬́̿ǘ̴̡ ̸̧̙̈́j̸̹̱̚u̸͎̤͝͠s̵͈͛t̵͐̈́͜ ̵͖͂͗b̷̬̅̈r̷͖̀o̷̼̽͑k̶̠̀e̷͍͌̿ ̶͕̬͆̽t̸̻̮̕h̴̦͛ĕ̸̲ ̶̺̅s̶̺̏y̷̲͛s̸̖̿̇ṯ̶̃͛e̶̱̓m̸̡͋̒</h1>
+    </div>
+    <div *ngFor="let story of stories" class="card">
+        <a [href]="baseUrl + '/' + story.slug">{{story.description}}</a>
+    </div>
+</div>

@@ -2,23 +2,16 @@
  * URL segments pointing to different parts of the MPA, mainly used by the routing module.
  */
 export enum PageUrlMapping {
-    /**
-     * Home (landing) page
-     */
     HOME = '',
-
-    /**
-     * About page
-     */
     ABOUT = 'about',
-
-    /**
-     * Partnership page
-     */
     PARTNERSHIP = 'partnership',
+    COUNSELING = 'counseling',
+    INSIGHTS = 'insights'
+}
 
-    /**
-     * Counseling page
-     */
-    COUNSELING = 'counseling'
+/**
+ * URL slugs pointing to story pages.
+ */
+export enum StoryUrlMapping {
+    WEBPROG2 = 'web-programming-2'
 }
