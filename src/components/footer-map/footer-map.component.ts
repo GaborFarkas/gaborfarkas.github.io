@@ -74,6 +74,23 @@ export class FooterMapComponent implements AfterViewInit {
             }.bind(this));
 
             this.map.addControl(fsControl);
+
+            // Load the building texture on-demand as preloading makes it inaccessible.
+            //TODO: investigate, maybe a MapLibre bug, maybe I'm stupid.
+            let imgLoading = false;
+            this.map.on('styleimagemissing', async function (evt) {
+                if (evt.id === 'building-blueprint' && !imgLoading) {
+                    // Use a simple bool lock to avoid requesting the same image multiple times.
+                    imgLoading = true;
+                    const response = await evt.target.loadImage('assets/building-texture-blueprint.png');
+                    if (!evt.target.hasImage('building-blueprint')) {
+                        evt.target.addImage('building-blueprint', response.data, {
+                            pixelRatio: 2
+                        });
+                    }
+                    imgLoading = false;
+                }
+            });
         }
     }
 
@@ -100,13 +117,6 @@ export class FooterMapComponent implements AfterViewInit {
             url: `https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=${environment.mapTilerApiKey}`,
             tileSize: 256
         });
-        this.map.loadImage('assets/building-texture-blueprint.png').then(
-            function (this: FooterMapComponent, response: GetResourceResponse<HTMLImageElement | ImageBitmap>) {
-                this.map?.addImage('building-blueprint', response.data, {
-                    pixelRatio: 2
-                });
-            }.bind(this)
-        );
 
         this.map.setTerrain({
             source: 'terrainSrc',
