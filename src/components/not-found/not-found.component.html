@@ -1,1 +1,17 @@
-404
+<div class="xl:grid xl:grid-col-2 w-full my-12 items-center">
+    <div class="w-full text-center text-lg px-6 pb-6">
+        <h1 class="cabin-sketch text-6xl">404</h1>
+        <p class="text-center pb-6">{{text}}</p>
+        <p class="text-center">If you think this is a mistake, feel free to contact me at the email address below.</p>
+    </div>
+    <div class="xl:col-start-2 px-6 flex justify-center relative">
+        <img [src]="image.url" />
+        <div *ngIf="image.attributionText" class="attribution opaque-bg absolute right-0 bottom-0">
+            <a *ngIf="image.attributionUrl; else attribution" [href]="image.attributionUrl">
+                <ng-container *ngTemplateOutlet="attribution"></ng-container>
+            </a>
+        </div>
+    </div>
+</div>
+
+<ng-template #attribution>{{image.attributionText}}</ng-template>
