@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { StoryUrlMapping } from "../models/page-url-mapping.model";
-import { StoryModel } from "../models/story.model";
+import { StoryModel, StoryType } from "../models/story.model";
+import { ConfigService } from "./config.service";
 
 /**
  * A service with lists of insight and case study stories with their query and access methods.
@@ -8,24 +8,30 @@ import { StoryModel } from "../models/story.model";
 @Injectable()
 export class StoryService {
     /**
-     * Insights available with slugs as keys.
+     * Stories available with slugs as keys.
      */
-    private insights: Map<string, StoryModel> = new Map([
-        [StoryUrlMapping.WEBPROG2, {
-            title: 'Web Programming II.',
-            description: 'Take a look into a Web Programming II. class with sample codes and some fascinating per-lesson insights from the professor\'s perspective.',
-            loadComponent: () => import('../components/insights/web-programming-2/web-programming-2.component').then(m => m.WebProgramming2Component),
-            slug: StoryUrlMapping.WEBPROG2,
-            created: new Date('2024-04-27T14:47:00Z'),
-            lastModified: new Date('2024-04-27T14:47:00Z')
-        }]
-    ]);
+    private stories: Map<string, StoryModel> = new Map();
+
+    /**
+     * The story fetching operation, if it is still running.
+     */
+    private fetchLock?: Promise<void>;
+
+    constructor(private configService: ConfigService) {
+        this.fetchLock = this.fetchStoriesAsync().then(function (this: StoryService) {
+            this.fetchLock = undefined;
+        }.bind(this));
+    }
 
     /**
      * Returns every insight as an iterable.
      */
-    public listInsights(): IterableIterator<StoryModel> {
-        return this.insights.values();
+    public async listInsightsAsync(): Promise<StoryModel[]> {
+        if (this.fetchLock) {
+            await this.fetchLock;
+        }
+
+        return [...this.stories.values()].filter(story => story.category === StoryType.INSIGHT);
     }
 
     /**
@@ -33,9 +39,13 @@ export class StoryService {
      * @param slug The URL slug.
      * @returns The insight, if found. Undefined, otherwise.
      */
-    public getInsight(slug: string): StoryModel|undefined {
-        if (this.insights.has(slug)) {
-            return this.insights.get(slug)!;
+    public async getInsightAsync(slug: string): Promise<StoryModel | undefined> {
+        if (this.fetchLock) {
+            await this.fetchLock;
+        }
+
+        if (this.stories.has(slug)) {
+            return this.stories.get(slug)!;
         }
 
         return undefined;
@@ -52,7 +62,19 @@ export class StoryService {
             description: '',
             created: new Date(),
             lastModified: new Date(),
-            slug: ''
+            slug: '',
+            category: StoryType.UNKNOWN
+        }
+    }
+
+    /**
+     * Fetches the stories from a global configuration file and restructures for this service.
+     */
+    private async fetchStoriesAsync() {
+        const stories = await this.configService.getConfigAsync<StoryModel[]>('stories.json');
+        for (let story of stories) {
+            // Store stories with their slugs as keys.
+            this.stories.set(story.slug, story);
         }
     }
 }

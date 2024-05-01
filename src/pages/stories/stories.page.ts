@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StoryModel, StoryType } from '../../models/story.model';
 import { PageUrlMapping } from '../../models/page-url-mapping.model';
 import { StoryService } from '../../services/story.service';
 import { CommonModule } from '@angular/common';
+import { ConfigService } from '../../services/config.service';
 
 /**
  * Frame component of the insights and case studies lists.
@@ -12,10 +13,10 @@ import { CommonModule } from '@angular/common';
     selector: 'stories-page',
     standalone: true,
     imports: [CommonModule],
-    providers: [StoryService],
+    providers: [StoryService, ConfigService],
     templateUrl: './stories.page.html'
 })
-export class StoriesPage {
+export class StoriesPage implements OnInit {
     /**
      * Story types exposed to the template.
      */
@@ -45,10 +46,12 @@ export class StoriesPage {
 
     constructor(private router: Router,
                 private storyService: StoryService
-    ) {
+    ) { }
+
+    async ngOnInit() {
         if (this.router.url.endsWith(PageUrlMapping.INSIGHTS)) {
             this.type = StoryType.INSIGHT;
-            this.stories = [...this.storyService.listInsights()].reverse();
+            this.stories = [...await this.storyService.listInsightsAsync()].reverse();
         }
 
         if (this.type === StoryType.UNKNOWN) {

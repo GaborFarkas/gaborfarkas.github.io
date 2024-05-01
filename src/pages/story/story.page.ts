@@ -4,6 +4,9 @@ import { StoryModel, StoryType } from '../../models/story.model';
 import { PageUrlMapping } from '../../models/page-url-mapping.model';
 import { StoryService } from '../../services/story.service';
 import { CommonModule } from '@angular/common';
+import { ConfigService } from '../../services/config.service';
+import { getComponentById } from '../../utils/angular';
+import { StoryModule } from '../../components/story/story.module';
 
 /**
  * Frame component of a single insight or case study page.
@@ -12,7 +15,7 @@ import { CommonModule } from '@angular/common';
     selector: 'story-page',
     standalone: true,
     imports: [CommonModule],
-    providers: [StoryService],
+    providers: [StoryService, ConfigService, StoryModule],
     templateUrl: './story.page.html'
 })
 export class StoryPage {
@@ -63,16 +66,26 @@ export class StoryPage {
 
         switch (type) {
             case StoryType.INSIGHT:
-                story = this.storyService.getInsight(slug);
+                story = await this.storyService.getInsightAsync(slug);
                 break;
         }
 
-        if (story) {
-            this.story = story;
-            // Only set the type if there is a story, so we can handle 404 pages as UNKNOWN.
-            this.type = type;
+        // Either loadComponent or componentId must be set for the component to be loadable.
+        if (story && (story.loadComponent || story.componentId)) {
+            // Load the component into a property to avoid an infinite refresh cycle from the template.
+            try {
+                this.component = story.loadComponent ? await story.loadComponent() : getComponentById(story.componentId!);
+
+                this.story = story;
+                // Only set the type if there is a story, so we can handle 404 pages as UNKNOWN.
+                this.type = type;
+            } catch (ex) {
+                // Module could not be loaded, revert to the notfound component.
+                this.component = await this.story.loadComponent!();
+                throw ex;
+            }
+        } else {
+            this.component = await this.story.loadComponent!();
         }
-        // Load the component into a property to avoid an infinite refresh cycle from the template.
-        this.component = await this.story.loadComponent();
     }
 }

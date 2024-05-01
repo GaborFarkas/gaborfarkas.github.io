@@ -25,9 +25,17 @@ export interface StoryModel {
      */
     lastModified: Date,
     /**
+     * The story's category. Currently either insight or casestudy.
+     */
+    category: string,
+    /**
      * The component access of the story's component for lazy loading.
      */
-    loadComponent: (() => Promise<Type<unknown>>)
+    loadComponent?: (() => Promise<Type<unknown>>),
+    /**
+     * The ID of the component for lazy loading.
+     */
+    componentId?: string
 }
 
 /**
@@ -37,7 +45,7 @@ export enum StoryType {
     /**
      * Unknown category used for graceful error handling.
      */
-    UNKNOWN,
-    INSIGHT,
-    CASESTUDY
+    UNKNOWN = 'unknown',
+    INSIGHT = 'insight',
+    CASESTUDY = 'casestudy'
 }
