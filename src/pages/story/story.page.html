@@ -1,6 +1,4 @@
 <div *ngIf="type !== StoryType.UNKNOWN">
 Here be story header
 </div>
-<ng-container *ngIf="component">
-    <ng-container *ngComponentOutlet="component; inputs: type === StoryType.UNKNOWN ? {text: 'Uh oh! This story must have been left for a journey.'} : {}"></ng-container>
-</ng-container>
+<router-outlet />
