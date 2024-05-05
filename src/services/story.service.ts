@@ -57,7 +57,6 @@ export class StoryService {
      */
     public notFound(): StoryModel {
         return {
-            loadComponent: () => import('../components/not-found/not-found.component').then(m => m.NotFoundComponent),
             title: '',
             description: '',
             created: new Date(),

@@ -1,5 +1,3 @@
-import { Type } from "@angular/core";
-
 /**
  * Story descriptor model.
  */
@@ -27,15 +25,7 @@ export interface StoryModel {
     /**
      * The story's category. Currently either insight or casestudy.
      */
-    category: string,
-    /**
-     * The component access of the story's component for lazy loading.
-     */
-    loadComponent?: (() => Promise<Type<unknown>>),
-    /**
-     * The ID of the component for lazy loading.
-     */
-    componentId?: string
+    category: string
 }
 
 /**
