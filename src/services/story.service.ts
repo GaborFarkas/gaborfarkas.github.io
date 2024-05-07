@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { StoryModel, StoryType } from "../models/story.model";
 import { ConfigService } from "./config.service";
+import { ListOptions } from "../models/list.model";
 
 /**
  * A service with lists of insight and case study stories with their query and access methods.
@@ -24,22 +25,29 @@ export class StoryService {
     }
 
     /**
-     * Returns every insight as an iterable.
+     * Returns every matching story.
      */
-    public async listInsightsAsync(): Promise<StoryModel[]> {
+    public async listStoriesAsync(type: StoryType, options: ListOptions): Promise<StoryModel[]> {
         if (this.fetchLock) {
             await this.fetchLock;
         }
 
-        return [...this.stories.values()].filter(story => story.category === StoryType.INSIGHT);
+        const typedItems = [...this.stories.values()].filter(story => story.category === type);
+        if (options.skip > typedItems.length) {
+            return [];
+        }
+        return typedItems
+            .sort((a, b) => (options.ascending ? a : b as any)[options.orderBy] -
+                (options.ascending ? b : a as any)[options.orderBy])
+            .slice(options.skip, options.skip + options.take);
     }
 
     /**
-     * Returns a single insight based on its URL slug.
+     * Returns a single story based on its URL slug.
      * @param slug The URL slug.
-     * @returns The insight, if found. Undefined, otherwise.
+     * @returns The story, if found. Undefined, otherwise.
      */
-    public async getInsightAsync(slug: string): Promise<StoryModel | undefined> {
+    public async getStoryAsync(slug: string): Promise<StoryModel | undefined> {
         if (this.fetchLock) {
             await this.fetchLock;
         }

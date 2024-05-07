@@ -64,7 +64,7 @@ export class StoryPage {
 
         switch (type) {
             case StoryType.INSIGHT:
-                story = await this.storyService.getInsightAsync(slug);
+                story = await this.storyService.getStoryAsync(slug);
                 break;
         }
 
