@@ -19,7 +19,7 @@ export class AboutPage {
             sections: [
                 {
                     question: ' are you doing this?',
-                    answer: 'Simply put, I\'m not compatible with big companies. Not a fan of bureaucracy, neither of their money making game. I\'m more about creating value in efficient and sustainable ways. I could force myself into a 9 to 5 desk job, but why should I?'
+                    answer: 'Simply put, I\'m not compatible with big companies. Not a fan of modern bureaucracy (there is a rule for everything, yet nothing really works), neither of their money making game. I\'m more about creating value in efficient and sustainable ways. I could force myself into a 9 to 5 desk job, but why should I?'
                 },
                 {
                     question: ' did you create this website?',

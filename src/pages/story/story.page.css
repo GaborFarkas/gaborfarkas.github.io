@@ -1,0 +1,8 @@
+ul.breadcrumbs li {
+    display: inline;
+}
+
+ul.breadcrumbs li+li:before {
+    content: '>';
+    padding: 0 0.5rem;
+}

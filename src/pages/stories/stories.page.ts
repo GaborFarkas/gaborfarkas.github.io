@@ -75,11 +75,11 @@ export class StoriesPage implements OnInit, OnDestroy {
             this.router.navigate([PageUrlMapping.HOME]);
         }
 
-        window.addEventListener('scroll', this.onScroll);
+        document.addEventListener('scroll', this.onScroll);
     }
 
     ngOnDestroy() {
-        window.removeEventListener('scroll', this.onScroll);
+        document.removeEventListener('scroll', this.onScroll);
     }
 
     /**
@@ -92,7 +92,7 @@ export class StoriesPage implements OnInit, OnDestroy {
             skip: this.page * 10,
             take: 10
         });
-        this.stories = this.stories.concat(newStories);
+        this.stories = this.page === 0 ? newStories : this.stories.concat(newStories);
 
         this.page++;
         if (newStories.length < 10) {

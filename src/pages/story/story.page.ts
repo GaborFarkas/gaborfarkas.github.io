@@ -1,4 +1,4 @@
-import { Component, Type } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { StoryModel, StoryType } from '../../models/story.model';
 import { PageUrlMapping } from '../../models/page-url-mapping.model';
@@ -14,7 +14,8 @@ import { ConfigService } from '../../services/config.service';
     standalone: true,
     imports: [CommonModule, RouterModule],
     providers: [StoryService, ConfigService],
-    templateUrl: './story.page.html'
+    templateUrl: './story.page.html',
+    styleUrl: './story.page.css'
 })
 export class StoryPage {
     /**
@@ -33,9 +34,14 @@ export class StoryPage {
     protected story: StoryModel;
 
     /**
-     * The resolved component of the displayed story.
+     * The base URL fragment for the category page.
      */
-    protected component?: Type<unknown>;
+    protected baseUrl: string = '';
+
+    /**
+     * The category label used in the beadcrumbs.
+     */
+    protected categoryLabel: string = '';
 
     constructor(private router: Router,
         private storyService: StoryService
@@ -45,12 +51,13 @@ export class StoryPage {
 
         // Process the path. It should be host/category/slug, but start from the end just in case.
         const paths = this.router.url.split('/');
-        const category = paths[paths.length - 2];
+        this.baseUrl = paths[paths.length - 2];
         const slug = paths[paths.length - 1];
 
-        if (category === PageUrlMapping.INSIGHTS) {
+        if (this.baseUrl === PageUrlMapping.INSIGHTS) {
             // No need to await, we can call this from the ctor.
             this.fetchStoryAsync(StoryType.INSIGHT, slug);
+            this.categoryLabel = 'Insights';
         }
     }
 
@@ -62,11 +69,7 @@ export class StoryPage {
     private async fetchStoryAsync(type: StoryType, slug: string) {
         let story: StoryModel | undefined;
 
-        switch (type) {
-            case StoryType.INSIGHT:
-                story = await this.storyService.getStoryAsync(slug);
-                break;
-        }
+        story = await this.storyService.getStoryAsync(slug);
 
         if (story) {
             this.story = story;
