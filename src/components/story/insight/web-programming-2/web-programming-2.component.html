@@ -1,1 +1,75 @@
-Web Prog II.
+<h1>Synopsis</h1>
+
+<p class="pb-4">Web Programming II. is an elective course in the Computer Science BSc program of the University of Pécs, Institute of Mathematics and Informatics. The typical distribution of students is about 30-70% between 3rd (final) year and 2nd year students, respectively. Most of these students already took Web Programming I., thus they have some basic knowledge in Web development. However, plain JavaScript is new to almost all of them. Luckily, the composition of this course is homogenously advanced enough to allow me to a high-effort, advanced curriculum.</p>
+
+<p class="pb-8">My idea for the class material is strongly affected by recent market trends. I see an increasing number of recently graduated junior Web developers who learned to use modern front-end frameworks. They can use Angular, for instance, and that's all. Their conceptual knowledge about the inner workings of a complicated framework, how JavaScript operates on its single thread and call stack, what are the typical pitfalls, and so on, are usually incomplete at best and primitive at worst. Therefore, this class concentrates on native, vanilla, modern, object-oriented JavaScript patterns. This is an intensive, high-level JavaScript training course aiming to fill as many mental gaps as it can during the semester.</p>
+
+<h1>The setup</h1>
+
+<p class="pb-4">To stay as close to modern front-end development as possible, we devise our micro-framework during the first few weeks. That is one of the few fixed points I'm unwilling to change. Everything else we decide on the fly. Students are encouraged to come up with their ideas of small applications developable in 6 hours at most. Before venturing into the design of our micro-framework, we get some practice in basic syntax through a prime calculator, another fixed point in the curriculum. I know it's boring and overused, but the students are very familiar with its mathematical background at this point in their studies, and it's great for simulating expensive calls, which will come in handy later.</p>
+
+<p class="pb-2">The following few lessons are about HTML and CSS. This part is heavier on theory than the average lessons in this course. We talk about a lot of significant concepts in front-end development, such as:</p>
+<ul class="list-disc pl-10 pb-6">
+    <li>The DOM, HTML interpretation, synchronization, and tree structures.</li>
+    <li>Browsers, how different browser engines, versions, and devices can affect a website.</li>
+    <li>The render tree, how elements can break out of the static layout flow.</li>
+    <li>Implementing a design plan, row-column order.</li>
+    <li>The importance of semantics in HTML design. Choosing the right tags for making a website easier to browse automatically. The ARIA (Accessible Rich Internet Applications) standard.</li>
+    <li>Basic architectural concepts, single-page applications, multi-page applications.</li>
+    <li>Modern terminology, responsiveness, reactiveness, the mobile-first approach.</li>
+    <li>The permutation-based nature of CSS. We must not believe we can learn it, we are just finding more and better patterns.</li>
+    <li>General rules of CSS: inheritance (paint rules are usually inherited, layout rules are usually not), specificity, positioning (especially, the absolute-relative relationship), and stacking context.</li>
+    <li>Credible and useful sources for front-end development: <a class="underline" href="https://developer.mozilla.org/en-US/">MDN</a>, <a class="underline" href="https://caniuse.com/">caniuse.com</a>.</li>
+</ul>
+
+<img class="w-full pb-2" src="/assets/stories/web-programming-2/layout.png" />
+<p class="pb-8 text-center text-sm">After practicing some of those concepts a bit, creating an initial design, and playing with flexboxes, we usually develop a simple layout for our SPA.</p>
+
+<h1>The framework</h1>
+
+<p class="pb-4">With the HTML and CSS revision behind us, we can design our micro-framework. However, before diving into modern JavaScript architecture head-first, we must talk about the most important features of the language itself. We take some time to understand how every browser tab is single-threaded, the implications of using just-in-time interpretation with a single ahead-of-time optimization pass, and how to approach a weakly typed, prototype-based language professionally.</p>
+
+<p class="pb-6">Designing and implementing the micro-framework is also a fixed point in the curriculum. I consider this approach relatively unique, while also very strong in understanding clean code and modular architecture, even if we don't have enough time to set up a more popular development environment based on Node JS and Webpack. Every application we create extends the same Application base class, which holds all the logic related to the application lifecycle. There are methods for initializing, running, and destroying an application, extensible on demand. Applications are designed to have optional HTML template files, which are parsed and loaded during the initialization stage. The only non-modular part of the framework is the entry script. It is a simple JavaScript file, designated to bind buttons to application modules.</p>
+
+<img class="w-full pb-2" src="/assets/stories/web-programming-2/micro-framework.png" />
+<p class="pb-8 text-center text-sm">The micro-framework running a memory game application with the Application base class' lifecycle methods on the right.</p>
+
+<p class="pb-4">During the development phase of the micro-framework, I like to concentrate on practical high-level software development concepts that can help students work more efficiently on their own. One to highlight is using the developer tools in browsers efficiently. Not only the Elements tab for finding and modifying elements on the fly, but also the Network tab for checking resources, the Console tab for interacting with the exposed parts of the code, and most importantly, the Sources tab for debugging every module file line-by-line. Another practical skill I like to practice with my students at this point is how to follow the control flow of the whole application. Without knowing the exact order of calls, it is very hard to argue about architectural fallacies or bugs in more advanced designs.</p>
+
+<div class="w-full flex flex-col items-center text-center pb-8">
+    <img class="pb-2" src="/assets/stories/web-programming-2/control-flow.jpeg" />
+    <p class="text-sm">We practice following the control flow by taking turns, finding the next call without the debugger, then visualizing it on a timeline.</p>
+</div>
+
+<h1>The applications</h1>
+
+<p class="pb-4">Most of the semester is spent developing small applications according to student preferences. We try to choose every application from a list of student ideas democratically, although with some constraints. Applications must be simple enough to implement in two weeks (6 hours) at most and different enough to learn new patterns from. As we have a plethora of front-end patterns to choose from, I don't steer decisions in any direction but try to get the most out of every application in the allocated time frame. Typical choices are games (canvas API, game loops, animation frames), and data visualization (fetch API, charting libraries, data manipulation). Sometimes, however, we get to visit more exciting concepts like generators or the IndexedDB API.</p>
+
+<p class="pb-4">We start realizing each application by creating some plans. This is a collaborative process, where every student can affect the outcome with their ideas. We don't specify too much, just the class structure, the GUI, and the more complicated logical parts. The rest are implementation details. When the plan is solid, we get into development. While this phase is also collaborative, usually, due to time constraints, it is more about me showing new patterns and students finishing the applications by themselves at home.</p>
+
+<img class="w-full pb-2" src="/assets/stories/web-programming-2/arkanoid.png" />
+<p class="pb-8 text-center text-sm">The initial plans for an Arkanoid game. The class structure is on the left and the GUI and some of the calculations are on the right.</p>
+
+<h1>Parallel programming</h1>
+
+<p class="pb-4">There is a single fixed point in the set of applications: the progress bar. This application is special, as students are introduced to front-end parallel programming techniques through it. It is simple enough not to distract students from the core concepts but graphical enough to see the differences between various techniques and alterations. The progress bar uses the prime calculator from the first lessons in a parametric form. At this point in the semester, we already used some asynchronous constructs with the async/await keyword pair, but this is when we really understand what is happening under the hood.</p>
+
+<p class="pb-4">The reason I highlight this part here and give such a big emphasis on these techniques in the curriculum also stems from personal business experience. As asynchronous patterns are solidifying in every aspect of programming, the demand for adequate understanding of them is ever higher. Unfortunately, an alarming amount of junior and medior level developers do not possess even traces of this knowledge.</p>
+
+<p class="pb-4">First, we understand the differences between threaded and asynchronous execution. JavaScript is an ideal subject for this, as it operates on a single thread, therefore, asynchronous operations are not able to escape the main thread with some tricky calls. At least ours. We talk about thread safety in general, how JavaScript solved it in its unique way, and the implications of the solution in development overhead. We also discuss how scheduling asynchronous operations alters the call stack.</p>
+
+<div class="w-full flex flex-col items-center text-center pb-8">
+    <img class="pb-2" src="/assets/stories/web-programming-2/parallel.jpeg" />
+    <p class="text-sm">I try to illustrate the typical behavior of threaded and asynchronous operations. The label "refresh" on the right side is for drawing a new animation frame.</p>
+</div>
+
+<p class="pb-4">Parallel programming is strange. It is not hard to understand, but it is incompatible with traditional thinking about control flow. When asynchronous calls are mixed into the equation, the whole picture becomes even fuzzier. To ease up the difficulty of understanding these new concepts, I try to break up the development of the progress bar into multiple, incremental steps with a lot of console logging. The goal is to avoid blocking the event loop in the long-running process of calculating primes and let the browser update the progress bar during the calculation. First, we have some expectations, but nothing works. Then we adjust the code step by step, examine the order of calls in the logs, and slowly get to a state where the progress bar is updating gradually, but the process slows down dramatically. From this point, we have a balancing issue between responsivity and performance, however, we learned a lot about asynchronous calls. Finally, we turn the whole process into a worker thread and compare it with the previous results.</p>
+
+<img class="w-full pb-2" src="/assets/stories/web-programming-2/async.jpeg" />
+<p class="pb-8 text-center text-sm">Red is the original prime calculator, green is the goal. The blue stack is where nothing works as expected in the middle of the refactor.</p>
+
+<p class="pb-8">Of course, this is not the only, not even the most popular use of promises in JavaScript, but this is where I draw the line if we don't have more time left in the semester. If we are lucky, though, we can still implement one or two more applications, where we can practice reorganizing traditional deep-nested callback chains into clean, awaitable promises.</p>
+
+<h1>Source code</h1>
+
+<p class="pb-4">The source code for a sample Web Programming II. course can be found in the following respository: <a href="https://github.com/GaborFarkas/web-programming-2-sample">https://github.com/GaborFarkas/web-programming-2-sample</a>. Most of the applications are incomplete by design, as finishing them was homework.</p>

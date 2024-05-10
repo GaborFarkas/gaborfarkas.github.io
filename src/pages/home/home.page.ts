@@ -9,7 +9,7 @@ import { ReferenceDescriptor } from '../../models/reference.model';
 import { HeroSection } from '../../models/home.model';
 import { faGitAlt } from '@fortawesome/free-brands-svg-icons';
 import { CommonModule } from '@angular/common';
-import { PageUrlMapping } from '../../models/page-url-mapping.model';
+import { PageUrlMapping, StoryUrlMapping } from '../../models/page-url-mapping.model';
 
 /**
  * Main content of the home (landing) page.
@@ -87,8 +87,8 @@ export class HomePage {
         ],
         [HeroSection.TEACHING]: [
             {
-                url: '',
-                text: 'Take a look into a Web Programming II. class (coming soon)',
+                url: `/${PageUrlMapping.INSIGHTS}/${StoryUrlMapping.WEBPROG2}`,
+                text: 'Take a look into a Web Programming II. class',
                 icon: faLaptopCode
             },
             null,

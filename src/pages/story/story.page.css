@@ -6,3 +6,7 @@ ul.breadcrumbs li+li:before {
     content: '>';
     padding: 0 0.5rem;
 }
+
+img {
+    max-height: 36rem;
+}
