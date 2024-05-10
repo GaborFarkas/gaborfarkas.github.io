@@ -111,6 +111,10 @@ p, ul {
     .remove-bg {
         background-image: none !important;
     }
+
+    .blur-xs {
+        filter: blur(2px);
+    }
 }
 
 .maplibregl-ctrl button.maplibregl-ctrl-building .maplibregl-ctrl-icon {

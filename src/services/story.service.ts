@@ -70,7 +70,8 @@ export class StoryService {
             created: new Date(),
             lastModified: new Date(),
             slug: '',
-            category: StoryType.UNKNOWN
+            category: StoryType.UNKNOWN,
+            thumbUrl: ''
         }
     }
 

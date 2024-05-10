@@ -11,6 +11,10 @@ export interface StoryModel {
      */
     description: string,
     /**
+     * URL of the story's thumb image.
+     */
+    thumbUrl: string,
+    /**
      * The URL slug of the story.
      */
     slug: string,

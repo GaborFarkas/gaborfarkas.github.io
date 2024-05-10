@@ -58,7 +58,7 @@ function getConfigurationsAsync(sourceDir) {
  */
 async function parseStoryConfigAsync(configPath) {
     const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    const required = ['title', 'description'];
+    const required = ['title', 'description', 'thumbUrl'];
     const allowed = required.concat(['created', 'lastModified', 'category', 'slug']);
 
     required.forEach(prop => {

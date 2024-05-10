@@ -8,10 +8,17 @@
     </div>
     <div #storyGrid class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12 pb-12">
         <div *ngFor="let story of stories" class="card h-96">
-            <div class="w-full h-full flex items-center justify-center" faceUp>
-                <h1>{{story.title}}</h1>
+            <div class="w-full h-full relative" faceUp>
+                <div class="absolute w-full h-full top-0 left-0 bg-cover blur-xs" [style]="{'background-image': 'url(' + story.thumbUrl + ')'}"></div>
+                <div class="flex items-center justify-center absolute w-full h-full top-0 left-0">
+                    <h1 class="text-center">{{story.title}}</h1>
+                </div>
             </div>
-            <a class="w-full h-full flex items-center justify-center text-lg" faceDown [href]="baseUrl + '/' + story.slug">{{story.description}}</a>
+            <div class="w-full h-full flex flex-col items-center justify-center text-lg bg-secondary" faceDown>
+                <p class="text-center">{{story.description}}</p>
+                <a class="btn mt-6" [href]="baseUrl + '/' + story.slug">Read more</a>
+            </div>
+
         </div>
     </div>
 </div>
