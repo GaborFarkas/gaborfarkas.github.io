@@ -1,15 +1,15 @@
 import { Component, QueryList, ViewChildren } from '@angular/core';
-import { CarouselComponent } from '../../components/carousel/carousel.component';
-import { HeroSceneComponent } from '../../components/hero-scene/hero-scene.component';
-import { Hero, HeroScene } from '../../models/hero.model';
-import { CarouselChangeEvent } from '../../models/carousel-change-event.model';
-import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
+import { CarouselComponent } from '@/components/carousel/carousel.component';
+import { HeroSceneComponent } from '@/components/hero-scene/hero-scene.component';
+import { Hero, HeroScene } from '@/models/hero.model';
+import { CarouselChangeEvent } from '@/models/carousel-change-event.model';
+import { HeroSectionComponent } from '@/components/hero-section/hero-section.component';
 import { faCircleNodes, faDiagramProject, faFileLines, faLaptopCode, faLayerGroup, faMap, faTree } from '@fortawesome/free-solid-svg-icons';
-import { ReferenceDescriptor } from '../../models/reference.model';
-import { HeroSection } from '../../models/home.model';
+import { ReferenceDescriptor } from '@/models/reference.model';
+import { HeroSection } from '@/models/home.model';
 import { faGitAlt } from '@fortawesome/free-brands-svg-icons';
 import { CommonModule } from '@angular/common';
-import { PageUrlMapping, StoryUrlMapping } from '../../models/page-url-mapping.model';
+import { PageUrlMapping, StoryUrlMapping } from '@/models/page-url-mapping.model';
 
 /**
  * Main content of the home (landing) page.

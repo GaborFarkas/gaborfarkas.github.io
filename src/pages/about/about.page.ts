@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { FaqBlockComponent } from '../../components/faq/faq-block/faq-block.component';
-import { FaqGroupModel } from '../../models/faq.model';
+import { FaqBlockComponent } from '@/components/faq/faq-block/faq-block.component';
+import { FaqGroupModel } from '@/models/faq.model';
 
 /**
  * Main content of the about page.

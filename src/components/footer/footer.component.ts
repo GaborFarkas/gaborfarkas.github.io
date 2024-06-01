@@ -2,7 +2,7 @@ import { Component, HostBinding } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faLocationDot, faEnvelope, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
-import { FooterMapComponent } from '../footer-map/footer-map.component';
+import { FooterMapComponent } from '@/components/footer-map/footer-map.component';
 
 /**
  * Footer component.

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { PuzzlePiece, generatePuzzle } from '../../models/puzzle.model';
+import { PuzzlePiece, generatePuzzle } from '@/models/puzzle.model';
 import { CommonModule } from '@angular/common';
 
 /**

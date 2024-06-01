@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { StoryModel, StoryType } from '../../models/story.model';
-import { PageUrlMapping } from '../../models/page-url-mapping.model';
-import { StoryService } from '../../services/story.service';
+import { StoryModel, StoryType } from '@/models/story.model';
+import { PageUrlMapping } from '@/models/page-url-mapping.model';
+import { StoryService } from '@/services/story.service';
 import { CommonModule } from '@angular/common';
-import { ConfigService } from '../../services/config.service';
+import { ConfigService } from '@/services/config.service';
 
 /**
  * Frame component of a single insight or case study page.

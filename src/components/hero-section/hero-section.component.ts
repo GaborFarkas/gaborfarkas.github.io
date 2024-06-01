@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Orientation, ReferenceComponent } from '../reference/reference.component';
-import { ReferenceDescriptor } from '../../models/reference.model';
+import { Orientation, ReferenceComponent } from '@/components/reference/reference.component';
+import { ReferenceDescriptor } from '@/models/reference.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 /**

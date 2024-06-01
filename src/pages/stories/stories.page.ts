@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { StoryModel, StoryType } from '../../models/story.model';
-import { PageUrlMapping } from '../../models/page-url-mapping.model';
-import { StoryService } from '../../services/story.service';
-import { ConfigService } from '../../services/config.service';
-import { CardComponent } from '../../components/card/card.component';
+import { StoryModel, StoryType } from '@/models/story.model';
+import { PageUrlMapping } from '@/models/page-url-mapping.model';
+import { StoryService } from '@/services/story.service';
+import { ConfigService } from '@/services/config.service';
+import { CardComponent } from '@/components/card/card.component';
 
 /**
  * Frame component of the insights and case studies lists.

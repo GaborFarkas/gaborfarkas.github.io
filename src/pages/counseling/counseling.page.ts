@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CardComponent } from '../../components/card/card.component';
+import { CardComponent } from '@/components/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCartShopping, faCompassDrafting, faDisplay, faFileContract, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoneyBill1Wave, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
-import { randomizer } from '../../utils/array';
-import { DecoratedColumnComponent } from '../../components/decorated-column/decorated-column.component';
-import { ReferenceDescriptor } from '../../models/reference.model';
+import { randomizer } from '@/utils/array';
+import { DecoratedColumnComponent } from '@/components/decorated-column/decorated-column.component';
+import { ReferenceDescriptor } from '@/models/reference.model';
 import { faAngular, faLinux } from '@fortawesome/free-brands-svg-icons';
 
 /**

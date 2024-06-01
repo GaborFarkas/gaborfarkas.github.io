@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FaqSectionModel } from '../../../models/faq.model';
+import { FaqSectionModel } from '@/models/faq.model';
 import { CommonModule } from '@angular/common';
 
 /**

@@ -23,7 +23,11 @@
       "ES2022",
       "dom",
       "dom.iterable"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+        "@/*": ["./src/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

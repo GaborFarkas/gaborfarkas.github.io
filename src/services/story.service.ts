@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { StoryModel, StoryType } from "../models/story.model";
-import { ConfigService } from "./config.service";
-import { ListOptions } from "../models/list.model";
+import { StoryModel, StoryType } from "@/models/story.model";
+import { ConfigService } from "@/services/config.service";
+import { ListOptions } from "@/models/list.model";
 
 /**
  * A service with lists of insight and case study stories with their query and access methods.

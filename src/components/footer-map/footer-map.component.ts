@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { AttributionControl, FullscreenControl, GetResourceResponse, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
-import { environment } from '../../environments/environment';
-import BuildingControl from '../../utils/maplibregl/BuildingControl';
-import LayerToggleControl from '../../utils/maplibregl/LayerToggleControl';
+import { AttributionControl, FullscreenControl, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
+import { environment } from '@/environments/environment';
+import BuildingControl from '@/utils/maplibregl/BuildingControl';
+import LayerToggleControl from '@/utils/maplibregl/LayerToggleControl';
 
 /**
  * Footer map module component.
