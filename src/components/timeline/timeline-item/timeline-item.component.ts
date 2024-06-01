@@ -59,6 +59,11 @@ export class TimelineItemComponent {
      */
     protected extended: boolean = false;
 
+    /**
+     * Presumably unique ID used by ARIA attributes.
+     */
+    protected id: string = Math.random().toString(36).replace('0.', '');
+
     protected toggle(): void {
         if (this.extended) {
             this.close();

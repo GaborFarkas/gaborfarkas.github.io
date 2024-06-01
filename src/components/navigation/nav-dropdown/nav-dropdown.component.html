@@ -1,5 +1,5 @@
-<div class="menu-target h-full xl:text-lg" (mouseover)="expanded = true" (mouseout)="expanded = false">
-    <div #ariaTarget class="menu-container h-full relative" tabindex="0" role="menuitem" [attr.aria-haspopup]="items.length > 0" [attr.aria-expanded]="expanded" [attr.aria-label]="label">
+<div class="menu-target h-full xl:text-lg" (mouseover)="expanded = true" (mouseout)="expanded = false" role="menu">
+    <div #ariaTarget class="menu-container h-full relative" tabindex="0" role="menuitem" [attr.aria-haspopup]="items.length > 0" [ariaExpanded]="expanded" [ariaLabel]="label">
         <label class="max-md:hidden h-full flex items-center md:px-10"><span>{{label}}</span></label>
         <ul class="overflow-hidden md:absolute md:z-10" [ngClass]="{ 'md:max-h-0': !expanded, 'md:max-h-40': expanded }">
             <li class="pb-5" *ngFor="let navItem of items"><a class="px-5 md:whitespace-nowrap" [href]="navItem.url">{{navItem.label}}</a></li>

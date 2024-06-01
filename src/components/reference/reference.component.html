@@ -16,7 +16,7 @@
 </ng-template>
 
 <ng-template #anchor>
-    <a [href]="url" class="anchor">
+    <a [href]="url" class="anchor" [ariaLabel]="flyoutText">
         <ng-container *ngTemplateOutlet="hexagon"></ng-container>
     </a>
 </ng-template>
