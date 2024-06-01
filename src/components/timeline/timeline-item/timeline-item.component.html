@@ -1,16 +1,16 @@
 <div class="relative text-primary" [id]="id" [ariaLabel]="itemTitle">
     <div class="rounded-lg md:rounded-full relative item-bg">
         <div class="w-full flex items-center justify-between p-6 relative z-10">
-            <ng-container *ngIf="reverse">
-                <ng-container *ngTemplateOutlet="btn"></ng-container>
-            </ng-container>
+            @if(reverse) {
+            <ng-container *ngTemplateOutlet="btn"></ng-container>
+            }
             <div class="px-4">
                 <h1 class="uppercase text-base lg:text-lg">{{itemTitle}}</h1>
                 <ng-content select="[prompt]"></ng-content>
             </div>
-            <ng-container *ngIf="!reverse">
-                <ng-container *ngTemplateOutlet="btn"></ng-container>
-            </ng-container>
+            @if(!reverse) {
+            <ng-container *ngTemplateOutlet="btn"></ng-container>
+            }
         </div>
         <div class="opacity-delay absolute round-hack h-1/2 w-full item-bg top-0 z-0"
             [ngClass]="{'opacity-0': !extended}"></div>
@@ -24,7 +24,8 @@
 
 <ng-template #btn>
     <div class="bg-primary w-24 lg:w-36 h-24 lg:h-36 rounded-full flex items-center justify-center flex-shrink-0">
-        <button class="timeline-btn text-primary-accent w-16 lg:w-24 h-16 lg:h-24 rounded-full flex items-center justify-center cursor-pointer"
+        <button
+            class="timeline-btn text-primary-accent w-16 lg:w-24 h-16 lg:h-24 rounded-full flex items-center justify-center cursor-pointer"
             (click)="toggle()" [ariaExpanded]="extended" [attr.aria-controls]="id" aria-label="Expand timeline section">
             <fa-icon [icon]="icon" size="2xl" aria-hidden="true"></fa-icon>
         </button>

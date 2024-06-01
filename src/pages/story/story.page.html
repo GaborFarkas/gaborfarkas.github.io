@@ -10,9 +10,15 @@
             <li>{{story.title}}</li>
         </ul>
         <h1 class="text-3xl pb-0">{{story.title}}</h1>
-        <div class="pb-2 text-xl" [ngSwitch]="type">
-            <i *ngSwitchCase="StoryType.INSIGHT">An insight story</i>
-            <i *ngSwitchCase="StoryType.CASESTUDY">A case study</i>
+        <div class="pb-2 text-xl">
+            @switch(type) {
+            @case(StoryType.INSIGHT) {
+            <i>An insight story</i>
+            }
+            @case(StoryType.CASESTUDY) {
+            <i>A case study</i>
+            }
+            }
         </div>
         <p>Published at {{story.created.toLocaleString()}}</p>
         <p class="pb-12">Last updated at {{story.lastModified.toLocaleString()}}</p>

@@ -9,7 +9,8 @@
 </div>
 
 <ng-template #decorationItems let-side="side">
-    <div *ngFor="let _ of decorationRows | range; index as rowIdx" class="relative flex" [style]="{'--index': rowIdx}">
+    @for(_ of decorationRows | range; track $index; let rowIdx = $index) {
+    <div class="relative flex" [style]="{'--index': rowIdx}">
         <ng-container *ngFor="let _ of decorationColumns | range; index as elemIdx">
             <p *ngIf="elemIdx === decorationColumns - 1 && (side === 'left' ? leftColRefs : rightColRefs)[rowIdx]; else hexagon"
                 class="reference w-fit h-fit" [url]="(side === 'left' ? leftColRefs : rightColRefs)[rowIdx].url"
@@ -22,6 +23,7 @@
             </p>
         </ng-container>
     </div>
+    }
 </ng-template>
 
 <ng-template #hexagon>

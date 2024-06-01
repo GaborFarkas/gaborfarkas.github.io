@@ -9,4 +9,6 @@
         <span class="inline-block">?</span>
     </div>
 </div>
-<div *ngFor="let section of sections" class="faq-section" [groupPrefix]="prefix" [sectionModel]="section" (toggled)="toggle($event)"></div>
+@for(section of sections; track section) {
+<div class="faq-section" [groupPrefix]="prefix" [sectionModel]="section" (toggled)="toggle($event)"></div>
+}

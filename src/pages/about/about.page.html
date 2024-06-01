@@ -1,6 +1,9 @@
 <div class="max-w-8xl m-auto pt-6">
-    <p class="px-6 text-lg">Hi! My name is Gábor Farkas (in Hungary, we use a surname - forename order). I'm a software architect, senior software developer, geographer, scientist, and GIS expert. Some of the typical questions I deemed important or interesting are answered below. If you would like to ask anything else, contact me via the email address at the bottom of the page. Happy browsing!</p>
-    <div *ngFor="let group of sectionGroups" class="faq w-full p-5 lg:px-10" [prefix]="group.prefix"
-        [sections]="group.sections">
-    </div>
+    <p class="px-6 text-lg">Hi! My name is Gábor Farkas (in Hungary, we use a surname - forename order). I'm a software
+        architect, senior software developer, geographer, scientist, and GIS expert. Some of the typical questions I
+        deemed important or interesting are answered below. If you would like to ask anything else, contact me via the
+        email address at the bottom of the page. Happy browsing!</p>
+    @for(group of sectionGroups; track group) {
+    <div class="faq w-full p-5 lg:px-10" [prefix]="group.prefix" [sections]="group.sections"></div>
+    }
 </div>

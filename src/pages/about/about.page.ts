@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FaqBlockComponent } from '../../components/faq/faq-block/faq-block.component';
 import { FaqGroupModel } from '../../models/faq.model';
-import { CommonModule } from '@angular/common';
 
 /**
  * Main content of the about page.
@@ -10,7 +9,7 @@ import { CommonModule } from '@angular/common';
     selector: 'about-page',
     standalone: true,
     templateUrl: './about.page.html',
-    imports: [CommonModule, FaqBlockComponent]
+    imports: [FaqBlockComponent]
 })
 export class AboutPage {
     protected sectionGroups: FaqGroupModel[] = [
