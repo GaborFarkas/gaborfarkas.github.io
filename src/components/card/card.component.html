@@ -1,9 +1,11 @@
-<div class="w-full h-full" (mouseenter)="onMouseEnter()" (mouseleave)="flipped = false" (click)="onClick()">
+<div class="w-full h-full" (mouseenter)="onMouseEnter()" (mouseleave)="flipped = false" (click)="onClick()"
+    role="switch" [ariaChecked]="flipped" (keypress)="onKeypress($event)" aria-roledescription="flipping card"
+    tabindex="0">
     <div class="flip w-full h-full relative" [ngClass]="{'flipped': flipped}">
-        <div class="rounded-lg w-full h-full absolute top-0 left-0">
+        <div class="rounded-lg w-full h-full absolute top-0 left-0" [ariaHidden]="flipped">
             <ng-content select="[faceUp]"></ng-content>
         </div>
-        <div class="back rounded-lg w-full h-full absolute top-0 left-0">
+        <div class="back rounded-lg w-full h-full absolute top-0 left-0" [ariaHidden]="!flipped">
             <ng-content select="[faceDown]"></ng-content>
         </div>
     </div>

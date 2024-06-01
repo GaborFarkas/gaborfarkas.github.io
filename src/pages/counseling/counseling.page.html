@@ -1,153 +1,225 @@
 <div class="max-w-8xl m-auto md:px-6">
-    <p class="text-lg md:text-2xl text-center mt-16 pb-12">Not sure if you are using the right technology? Would you feel safer with an extra opinion? Are you feeling lost? Don't worry, as even great projects need a nudge sometimes.</p>
+    <section>
+        <p class="text-lg md:text-2xl text-center mt-16 pb-12">Not sure if you are using the right technology? Would you
+            feel safer with an extra opinion? Are you feeling lost? Don't worry, as even great projects need a nudge
+            sometimes.</p>
 
-    <div class="grid grid-rows-5 grid-cols-1 sm:grid-cols-2 sm:grid-rows-3 lg:grid-cols-3 lg:grid-rows-2 xl:grid-cols-5 xl:grid-rows-1 text-primary gap-y-12 pb-12">
-        <div class="card h-64 w-56 justify-self-center" [color]="cardColors[0]">
-            <div faceUp class="flex flex-col items-center text-center justify-between h-full">
-                <h1 class="text-xl uppercase pt-10">Software architecture</h1>
-                <fa-icon class="pb-20" size="2xl" [icon]="faCompassDrafting"></fa-icon>
+        <div
+            class="grid grid-rows-5 grid-cols-1 sm:grid-cols-2 sm:grid-rows-3 lg:grid-cols-3 lg:grid-rows-2 xl:grid-cols-5 xl:grid-rows-1 text-primary gap-y-12 pb-12">
+            <div class="card h-64 w-56 justify-self-center" [color]="cardColors[0]">
+                <div faceUp class="flex flex-col items-center text-center justify-between h-full">
+                    <h1 class="text-xl uppercase pt-10">Software architecture</h1>
+                    <fa-icon class="pb-20" size="2xl" [icon]="faCompassDrafting"></fa-icon>
+                </div>
+                <div faceDown class="h-full text-xl flex items-center">
+                    <ul class="leading-loose text-center w-full">
+                        <li>Software design</li>
+                        <li>System planning</li>
+                        <li>Documentation</li>
+                    </ul>
+                </div>
             </div>
-            <div faceDown class="h-full text-xl flex items-center">
-                <ul class="leading-loose text-center w-full">
-                    <li>Software design</li>
-                    <li>System planning</li>
-                    <li>Documentation</li>
-                </ul>
+
+            <div class="card h-64 w-56 justify-self-center" [color]="cardColors[1]">
+                <div faceUp class="flex flex-col items-center text-center justify-between h-full">
+                    <h1 class="text-xl uppercase pt-10">Web development</h1>
+                    <fa-icon class="pb-20" size="2xl" [icon]="faGlobe"></fa-icon>
+                </div>
+                <div faceDown class="h-full text-xl flex items-center">
+                    <ul class="leading-loose text-center w-full">
+                        <li>JavaScript libraries</li>
+                        <li>MVC & API systems</li>
+                        <li>Web GIS</li>
+                        <li>eCommerce</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card h-64 w-56 justify-self-center" [color]="cardColors[2]">
+                <div faceUp class="flex flex-col items-center text-center justify-between h-full">
+                    <h1 class="text-xl uppercase pt-10">UI/UX</h1>
+                    <fa-icon class="pb-20" size="2xl" [icon]="faDisplay"></fa-icon>
+                </div>
+                <div faceDown class="h-full text-xl flex items-center">
+                    <ul class="leading-loose text-center w-full">
+                        <li>Web design</li>
+                        <li>Responsive applications</li>
+                        <li>Data visualization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card h-64 w-56 justify-self-center" [color]="cardColors[3]">
+                <div faceUp class="flex flex-col items-center text-center justify-between h-full">
+                    <h1 class="text-xl uppercase pt-10">Infrastructure</h1>
+                    <fa-icon class="pb-20" size="2xl" [icon]="faSitemap"></fa-icon>
+                </div>
+                <div faceDown class="h-full text-xl flex items-center">
+                    <ul class="leading-loose text-center w-full">
+                        <li>System administration</li>
+                        <li>Security</li>
+                        <li>Automation</li>
+                        <li>Containerization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card h-64 w-56 sm:col-span-2 lg:col-span-1 justify-self-center" [color]="cardColors[4]">
+                <div faceUp class="flex flex-col items-center text-center justify-between h-full">
+                    <h1 class="text-xl uppercase pt-10">Project management</h1>
+                    <fa-icon class="pb-20" size="2xl" [icon]="faListCheck"></fa-icon>
+                </div>
+                <div faceDown class="h-full text-xl flex items-center">
+                    <ul class="leading-loose text-center w-full">
+                        <li>Agile workflow</li>
+                        <li>Version control</li>
+                        <li>Tools & best practices</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div class="card h-64 w-56 justify-self-center" [color]="cardColors[1]">
-            <div faceUp class="flex flex-col items-center text-center justify-between h-full">
-                <h1 class="text-xl uppercase pt-10">Web development</h1>
-                <fa-icon class="pb-20" size="2xl" [icon]="faGlobe"></fa-icon>
-            </div>
-            <div faceDown class="h-full text-xl flex items-center">
-                <ul class="leading-loose text-center w-full">
-                    <li>JavaScript libraries</li>
-                    <li>MVC & API systems</li>
-                    <li>Web GIS</li>
-                    <li>eCommerce</li>
-                </ul>
-            </div>
+        <p class="md:text-lg pb-12 px-6 md:px-0">Counseling is a great and cost-efficient way to have an extra push. You
+            gain access to all my knowledge and experience without making any commitments. Counseling is generally
+            available, covering all my fields of expertise. It is an ideal starting point as you can begin with a few
+            counsels, and if you are satisfied, come back later for more.</p>
+    </section>
+
+    <section>
+        <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-12">Fields of expertise</h1>
+        <div class="col-decorated text-lg pb-12">
+            <h1 class="text-center">Software architecture</h1>
+            <p class="pb-2">Albeit the most recent, this is my most popular and treasured skill to my business partners.
+                I'm
+                not considering myself a senior software architect yet. However, this is the field where most of my
+                daily
+                work pivots around, and therefore, experience builds up rapidly. In this field, I can help you with:</p>
+            <ul class="list-disc pl-12">
+                <li>Planning new software components.</li>
+                <li>Creating, modifying, extending plan documentation.</li>
+                <li>Redesigning software architecture into a scalable form.</li>
+                <li>Writing and reviewing specifications.</li>
+                <li>Spatial algorithms and GIS software structure.</li>
+            </ul>
         </div>
 
-        <div class="card h-64 w-56 justify-self-center" [color]="cardColors[2]">
-            <div faceUp class="flex flex-col items-center text-center justify-between h-full">
-                <h1 class="text-xl uppercase pt-10">UI/UX</h1>
-                <fa-icon class="pb-20" size="2xl" [icon]="faDisplay"></fa-icon>
-            </div>
-            <div faceDown class="h-full text-xl flex items-center">
-                <ul class="leading-loose text-center w-full">
-                    <li>Web design</li>
-                    <li>Responsive applications</li>
-                    <li>Data visualization</li>
-                </ul>
-            </div>
+        <div class="col-decorated text-lg pb-12" [references]="references[Section.WEB]">
+            <h1 class="text-center">Web development</h1>
+            <p class="pb-6">As my oldest skill, my seniority in software development is deeply rooted in web
+                development.
+                Specialized in front-end, I learned coding and software design through JavaScript. Extended with large
+                amounts of server-side knowledge, modern design patterns, and frameworks (e.g. Laravel, .NET MVC,
+                Angular,
+                Vue), I'm still waiting for a problem I cannot solve in this field. Some highlighted technologies I'm
+                highly
+                qualified in:</p>
+            <ul class="list-disc pl-12">
+                <li>Web mapping (OpenLayers, MapLibre GL JS, Leaflet, Cesium JS).</li>
+                <li>Front-end frameworks (Angular, Vue, Webpack).</li>
+                <li>Creating modern, modular JavaScript/TypeScript libraries.</li>
+                <li>PHP frameworks (UserSpice, Laravel).</li>
+                <li>C# in general, but from a web perspective .NET MVC, especially Web APIs.</li>
+                <li>eCommerce, many years of hands-on experience with nopCommerce (core, themes, plugins).</li>
+                <li>Data (and 3D) visualization (SVG, D3, THREE, WebGL).</li>
+            </ul>
         </div>
 
-        <div class="card h-64 w-56 justify-self-center" [color]="cardColors[3]">
-            <div faceUp class="flex flex-col items-center text-center justify-between h-full">
-                <h1 class="text-xl uppercase pt-10">Infrastructure</h1>
-                <fa-icon class="pb-20" size="2xl" [icon]="faSitemap"></fa-icon>
-            </div>
-            <div faceDown class="h-full text-xl flex items-center">
-                <ul class="leading-loose text-center w-full">
-                    <li>System administration</li>
-                    <li>Security</li>
-                    <li>Automation</li>
-                    <li>Containerization</li>
-                </ul>
-            </div>
+        <div class="col-decorated text-lg pb-12" [references]="references[Section.UIUX]">
+            <h1 class="text-center">UI/UX</h1>
+            <p class="pb-6">I like to create clean and intuitive user interfaces. While not a creative myself, I have
+                plenty
+                of experience working with custom designs and UI templates. In my opinion, the secret of designing great
+                user interfaces and giving the best user experience is knowing your audience and therefore, having a
+                basic
+                but firm understanding of the human psyche. This knowledge is dangerous though, as the more you
+                understand,
+                the more damage you can do without noticing. Therefore, my most important rule in UI/UX design is:
+                always
+                satisfy and never exploit.</p>
+            <p class="pb-6">I usually move on the Bootstrap - Tailwind axis when creating web interfaces. If there are
+                no
+                design plans available, I like to customize Bootstrap UI elements. If there are design plans or more
+                complicated ideas, I usually stick with Tailwind. Also, I'm looking forward to trying Web Awesome for
+                template UIs. In this area, I can help you with:</p>
+            <ul class="list-disc pl-12">
+                <li>Implementing design (especially Figma) plans.</li>
+                <li>Creating clean and maintainable mobile-first responsive web UIs.</li>
+                <li>Improving user experience with slightly more complicated UI logic.</li>
+                <li>Improving user experience through gamification.</li>
+            </ul>
         </div>
 
-        <div class="card h-64 w-56 sm:col-span-2 lg:col-span-1 justify-self-center" [color]="cardColors[4]">
-            <div faceUp class="flex flex-col items-center text-center justify-between h-full">
-                <h1 class="text-xl uppercase pt-10">Project management</h1>
-                <fa-icon class="pb-20" size="2xl" [icon]="faListCheck"></fa-icon>
-            </div>
-            <div faceDown class="h-full text-xl flex items-center">
-                <ul class="leading-loose text-center w-full">
-                    <li>Agile workflow</li>
-                    <li>Version control</li>
-                    <li>Tools & best practices</li>
-                </ul>
-            </div>
+        <div class="col-decorated text-lg pb-12" [references]="references[Section.INFRASTRUCTURE]">
+            <h1 class="text-center">Infrastructure</h1>
+            <p class="pb-6">Infrastructure is not my strongest suit. Not because I'm bad at it, I'm only not so
+                interested
+                in it. I got introduced to it through the stereotypic setup; there are no system administrators
+                available,
+                let the software developer take care of everything. I did, and I learned a lot about administering Linux
+                systems on the way.</p>
+            <p class="pb-6">Lately, I'm more focused on the DevSecOps aspect of this area, especially on facets close to
+                the
+                architecture and development process, such as web security, CI/CD, automated testing, or
+                containerization.
+                While my experience in infrastructure is typically used for complementing other areas of expertise, if
+                you
+                need direct help from this area, I can help you with:</p>
+            <ul class="list-disc pl-12">
+                <li>Installing and managing operating systems (preferably Linux) locally or remotely.</li>
+                <li>Traditional and spatial database documentation and design.</li>
+                <li>Creating CI/CD workflows and automated software tests.</li>
+                <li>Simple containerization with Docker.</li>
+            </ul>
         </div>
-    </div>
 
-    <p class="md:text-lg pb-12 px-6 md:px-0">Counseling is a great and cost-efficient way to have an extra push. You gain access to all my knowledge and experience without making any commitments. Counseling is generally available, covering all my fields of expertise. It is an ideal starting point as you can begin with a few counsels, and if you are satisfied, come back later for more.</p>
+        <div class="col-decorated text-lg pb-12" [references]="references[Section.PM]">
+            <h1 class="text-center">Project management</h1>
+            <p class="pb-6">I really like Agile. I like how early it recognized the importance of breaking up with
+                traitional business-to-customer behavior in software development in favor of a client-centric one.
+                Shortly
+                after it came out, the Agile principles spread like wildfire. The IT industry showed how much it
+                anticipated
+                this change. What I especially like in this story is the lesson in it. It taught us, that money people,
+                no
+                matter how trained they are in economics, cannot control every aspect of every business. IT project
+                management should be done with an IT background.</p>
+            <p class="pb-6">While project management is not something I would like to ever do full-time, I find value
+                and
+                satisfaction in teaching how to use version control properly with git. This not only includes proper
+                collaboration techniques (like rebasing) but also using git-flow, semantic versioning, and creating a
+                maintainable product lifecycle. In this area, I can help you with the following:</p>
+            <ul class="list-disc pl-12">
+                <li>Implementing Agile in an unobtrusive way.</li>
+                <li>Using version control efficiently with git.</li>
+                <li>Creating a client-friendly product lifecycle and release cycle.</li>
+                <li>Choosing the right tools and methods, from experience.</li>
+            </ul>
+        </div>
+    </section>
 
-    <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-12">Fields of expertise</h1>
-    <div class="col-decorated text-lg pb-12">
-        <h1 class="text-center">Software architecture</h1>
-        <p class="pb-2">Albeit the most recent, this is my most popular and treasured skill to my business partners. I'm not considering myself a senior software architect yet. However, this is the field where most of my daily work pivots around, and therefore, experience builds up rapidly. In this field, I can help you with:</p>
-        <ul class="list-disc pl-12">
-            <li>Planning new software components.</li>
-            <li>Creating, modifying, extending plan documentation.</li>
-            <li>Redesigning software architecture into a scalable form.</li>
-            <li>Writing and reviewing specifications.</li>
-            <li>Spatial algorithms and GIS software structure.</li>
-        </ul>
-    </div>
+    <section>
+        <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-12">Terms and conditions</h1>
+        <div class="w-full bg-primary-accent rounded-lg flex justify-center mb-4">
+            <fa-icon class="text-primary py-4" [icon]="faFileContract" size="2xl"></fa-icon>
+        </div>
+        <p class="md:text-lg pb-6 px-6 md:px-0">For occasional counsel, I don't require any formal papers. For
+            short-term
+            projects spanning over at least two months, we sign a framework contract, the content of which must reflect
+            the
+            specific needs of you or your company. Please keep in mind that I normally don't sign anything limiting my
+            freedom, such as exclusivity contracts. On the other hand, I'm happy to sign any non-disclosure agreement.
+            I'm
+            also open to helping you phrase certificates of completion or other documentation you or your company needs.
+        </p>
 
-    <div class="col-decorated text-lg pb-12" [references]="references[Section.WEB]">
-        <h1 class="text-center">Web development</h1>
-        <p class="pb-6">As my oldest skill, my seniority in software development is deeply rooted in web development. Specialized in front-end, I learned coding and software design through JavaScript. Extended with large amounts of server-side knowledge, modern design patterns, and frameworks (e.g. Laravel, .NET MVC, Angular, Vue), I'm still waiting for a problem I cannot solve in this field. Some highlighted technologies I'm highly qualified in:</p>
-        <ul class="list-disc pl-12">
-            <li>Web mapping (OpenLayers, MapLibre GL JS, Leaflet, Cesium JS).</li>
-            <li>Front-end frameworks (Angular, Vue, Webpack).</li>
-            <li>Creating modern, modular JavaScript/TypeScript libraries.</li>
-            <li>PHP frameworks (UserSpice, Laravel).</li>
-            <li>C# in general, but from a web perspective .NET MVC, especially Web APIs.</li>
-            <li>eCommerce, many years of hands-on experience with nopCommerce (core, themes, plugins).</li>
-            <li>Data (and 3D) visualization (SVG, D3, THREE, WebGL).</li>
-        </ul>
-    </div>
-
-    <div class="col-decorated text-lg pb-12" [references]="references[Section.UIUX]">
-        <h1 class="text-center">UI/UX</h1>
-        <p class="pb-6">I like to create clean and intuitive user interfaces. While not a creative myself, I have plenty of experience working with custom designs and UI templates. In my opinion, the secret of designing great user interfaces and giving the best user experience is knowing your audience and therefore, having a basic but firm understanding of the human psyche. This knowledge is dangerous though, as the more you understand, the more damage you can do without noticing. Therefore, my most important rule in UI/UX design is: always satisfy and never exploit.</p>
-        <p class="pb-6">I usually move on the Bootstrap - Tailwind axis when creating web interfaces. If there are no design plans available, I like to customize Bootstrap UI elements. If there are design plans or more complicated ideas, I usually stick with Tailwind. Also, I'm looking forward to trying Web Awesome for template UIs. In this area, I can help you with:</p>
-        <ul class="list-disc pl-12">
-            <li>Implementing design (especially Figma) plans.</li>
-            <li>Creating clean and maintainable mobile-first responsive web UIs.</li>
-            <li>Improving user experience with slightly more complicated UI logic.</li>
-            <li>Improving user experience through gamification.</li>
-        </ul>
-    </div>
-
-    <div class="col-decorated text-lg pb-12" [references]="references[Section.INFRASTRUCTURE]">
-        <h1 class="text-center">Infrastructure</h1>
-        <p class="pb-6">Infrastructure is not my strongest suit. Not because I'm bad at it, I'm only not so interested in it. I got introduced to it through the stereotypic setup; there are no system administrators available, let the software developer take care of everything. I did, and I learned a lot about administering Linux systems on the way.</p>
-        <p class="pb-6">Lately, I'm more focused on the DevSecOps aspect of this area, especially on facets close to the architecture and development process, such as web security, CI/CD, automated testing, or containerization. While my experience in infrastructure is typically used for complementing other areas of expertise, if you need direct help from this area, I can help you with:</p>
-        <ul class="list-disc pl-12">
-            <li>Installing and managing operating systems (preferably Linux) locally or remotely.</li>
-            <li>Traditional and spatial database documentation and design.</li>
-            <li>Creating CI/CD workflows and automated software tests.</li>
-            <li>Simple containerization with Docker.</li>
-        </ul>
-    </div>
-
-    <div class="col-decorated text-lg pb-12" [references]="references[Section.PM]">
-        <h1 class="text-center">Project management</h1>
-        <p class="pb-6">I really like Agile. I like how early it recognized the importance of breaking up with traitional business-to-customer behavior in software development in favor of a client-centric one. Shortly after it came out, the Agile principles spread like wildfire. The IT industry showed how much it anticipated this change. What I especially like in this story is the lesson in it. It taught us, that money people, no matter how trained they are in economics, cannot control every aspect of every business. IT project management should be done with an IT background.</p>
-        <p class="pb-6">While project management is not something I would like to ever do full-time, I find value and satisfaction in teaching how to use version control properly with git. This not only includes proper collaboration techniques (like rebasing) but also using git-flow, semantic versioning, and creating a maintainable product lifecycle. In this area, I can help you with the following:</p>
-        <ul class="list-disc pl-12">
-            <li>Implementing Agile in an unobtrusive way.</li>
-            <li>Using version control efficiently with git.</li>
-            <li>Creating a client-friendly product lifecycle and release cycle.</li>
-            <li>Choosing the right tools and methods, from experience.</li>
-        </ul>
-    </div>
-
-    <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-12">Terms and conditions</h1>
-    <div class="w-full bg-primary-accent rounded-lg flex justify-center mb-4">
-        <fa-icon class="text-primary py-4" [icon]="faFileContract" size="2xl"></fa-icon>
-    </div>
-    <p class="md:text-lg pb-6 px-6 md:px-0">For occasional counsel, I don't require any formal papers. For short-term projects spanning over at least two months, we sign a framework contract, the content of which must reflect the specific needs of you or your company. Please keep in mind that I normally don't sign anything limiting my freedom, such as exclusivity contracts. On the other hand, I'm happy to sign any non-disclosure agreement. I'm also open to helping you phrase certificates of completion or other documentation you or your company needs.</p>
-
-    <div class="w-full bg-primary-accent rounded-lg flex justify-center mb-4">
-        <fa-icon class="text-primary py-4" [icon]="faMoneyBillWave" size="2xl"></fa-icon>
-    </div>
-    <p class="md:text-lg pb-12 px-6 md:px-0">Counsels and short-term projects are billed on a project basis. We agree on the costs before we start collaborating, and you receive an invoice either at the end of the project or at every milestone we define. Project quotes contain sensible buffers, thus, minor adjustments won't alter the costs.</p>
+        <div class="w-full bg-primary-accent rounded-lg flex justify-center mb-4">
+            <fa-icon class="text-primary py-4" [icon]="faMoneyBillWave" size="2xl"></fa-icon>
+        </div>
+        <p class="md:text-lg pb-12 px-6 md:px-0">Counsels and short-term projects are billed on a project basis. We
+            agree on
+            the costs before we start collaborating, and you receive an invoice either at the end of the project or at
+            every
+            milestone we define. Project quotes contain sensible buffers, thus, minor adjustments won't alter the costs.
+        </p>
+    </section>
 </div>

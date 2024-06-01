@@ -61,4 +61,14 @@ export class CardComponent {
         }
         this.evtCount++;
     }
+
+    /**
+     * Event listener for keyboard operation.
+     */
+    protected onKeypress(evt: KeyboardEvent) {
+        // Act on the default activation keys (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role).
+        if (evt.key === ' ' || evt.key === 'Enter') {
+            this.flipped = !this.flipped;
+        }
+    }
 }
