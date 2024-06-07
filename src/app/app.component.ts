@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '@/components/navigation/navbar/navbar.component';
 import { FooterComponent } from '@/components/footer/footer.component';
+import { filter } from 'rxjs';
+import { analytics } from '@/utils/analytics';
 
 /**
  * Root application component.
@@ -13,4 +15,11 @@ import { FooterComponent } from '@/components/footer/footer.component';
     templateUrl: './app.component.html',
     styleUrl: './app.component.css'
 })
-export class AppComponent { }
+export class AppComponent {
+    constructor(private router: Router) {
+        // Trigger a page view after each successful router navigation.
+        this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(_ => {
+            analytics.page();
+        });
+    }
+}
