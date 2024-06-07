@@ -1,9 +1,16 @@
-<div class="max-w-8xl m-auto pt-6">
-    <p class="px-6 text-lg">Hi! My name is Gábor Farkas (in Hungary, we use a surname - forename order). I'm a software
+<div class="max-w-8xl m-auto pt-6 md:px-6">
+    <p class="px-6 md:px-0 text-lg">Hi! My name is Gábor Farkas (in Hungary, we use a surname - forename order). I'm a software
         architect, senior software developer, geographer, scientist, and GIS expert. Some of the typical questions I
         deemed important or interesting are answered below. If you would like to ask anything else, contact me via the
         email address at the bottom of the page. Happy browsing!</p>
-    @for(group of sectionGroups; track group) {
-    <div class="faq w-full p-5 lg:px-10" [prefix]="group.prefix" [sections]="group.sections"></div>
-    }
+    <section class="pb-6 lg:pb-12">
+        @for(group of sectionGroups; track group) {
+        <div class="faq w-full p-5 lg:px-10" [prefix]="group.prefix" [sections]="group.sections"></div>
+        }
+    </section>
+    <section>
+        <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-12">Data collection</h1>
+        <p class="md:text-lg pb-6 px-6 md:px-0">This site collects strictly anonymous viewer statistics. Curiousness and privacy need to be balanced carefully as they have an intrinsic conflict of interest. I'm always very cautious with any technology related to fintech, such as analytics, as they tend to sacrifice privacy for better business insights. The technology used on this site is promising, as it pledges to err on the privacy side of the scale by providing complete anonymity and transparency. For now, it looks like it can deliver. The data collection process does not use cookies nor connect anything to IP addresses and respects the "do not track" browser setting. You can see the collected data by clicking on the badge at the bottom of the page.
+        </p>
+    </section>
 </div>
