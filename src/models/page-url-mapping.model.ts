@@ -13,5 +13,6 @@ export enum PageUrlMapping {
  * URL slugs pointing to story pages.
  */
 export enum StoryUrlMapping {
-    WEBPROG2 = 'web-programming-2'
+    WEBPROG2 = 'web-programming-2',
+    SWDEVTECH = 'software-development-technologies'
 }

@@ -12,6 +12,7 @@ export const routes: Routes = [
         loadComponent: () => import('@/pages/story/story.page').then(m => m.StoryPage),
         children: [
             { path: StoryUrlMapping.WEBPROG2, loadComponent: () => import('@/components/story/insight/web-programming-2/web-programming-2.component').then(m => m.WebProgramming2Component) },
+            { path: StoryUrlMapping.SWDEVTECH, loadComponent: () => import('@/components/story/insight/software-development-technologies/software-development-technologies.component').then(m => m.SoftwareDevelopmentTechnologiesComponent) },
             { path: '**', loadComponent: () => import('@/components/not-found/not-found.component').then(m => m.NotFoundComponent), data: { text: 'Uh oh! This story must have been left for a journey.' } }
         ]
     },

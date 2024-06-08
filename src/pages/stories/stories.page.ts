@@ -14,7 +14,8 @@ import { CardComponent } from '@/components/card/card.component';
     standalone: true,
     imports: [CardComponent],
     providers: [StoryService, ConfigService],
-    templateUrl: './stories.page.html'
+    templateUrl: './stories.page.html',
+    styleUrl: './stories.page.css'
 })
 export class StoriesPage implements OnInit, OnDestroy {
     /**
