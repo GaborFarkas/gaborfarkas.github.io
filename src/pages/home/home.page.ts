@@ -93,8 +93,8 @@ export class HomePage {
             },
             null,
             {
-                url: '',
-                text: 'Take a look into a Software Development Technologies class (coming soon)',
+                url: `/${PageUrlMapping.INSIGHTS}/${StoryUrlMapping.SWDEVTECH}`,
+                text: 'Take a look into a Software Development Technologies class',
                 icon: faGitAlt
             }
         ]
