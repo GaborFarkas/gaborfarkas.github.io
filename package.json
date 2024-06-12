@@ -7,10 +7,11 @@
     "ng": "ng",
     "start": "ng serve",
     "start-insecure": "ng serve --host 0.0.0.0",
-    "build": "npm run prebuild && ng build",
+    "build": "npm run prebuild && ng build && npm run postbuild",
     "watch": "npm run prebuild && ng build --watch --configuration development",
     "test": "ng test",
-    "prebuild": "node build/generate-stories.mjs"
+    "prebuild": "node build/generate-stories.mjs",
+    "postbuild": "node build/generate-htmls.mjs"
   },
   "repository": {
     "type": "git",
@@ -56,6 +57,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "node-html-parser": "^6.1.13",
     "tailwindcss": "^3.4.3",
     "typescript": "~5.4.5",
     "walk": "^2.3.15"
