@@ -9,3 +9,14 @@
 .grid {
     grid-template-columns: 0.5fr 1fr;
 }
+
+@media (min-width: 1024px) {
+    .email.copied {
+        opacity: 0;
+    }
+
+    span.copied {
+        display: flex;
+        opacity: 1;
+    }
+}

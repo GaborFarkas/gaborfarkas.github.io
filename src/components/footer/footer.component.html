@@ -8,9 +8,15 @@
             <fa-icon [icon]="marker" size="lg"></fa-icon>
             <span class="justify-self-start">Pécs, Hungary</span>
             <fa-icon [icon]="email" size="lg"></fa-icon>
-            <span class="email justify-self-start cursor-pointer"
-                title="Click to copy to clipboard, double click to write an email" (click)="copyToClipboard()"
-                (dblclick)="openEmail()">&#64;</span>
+            <div class="relative justify-self-start cursor-pointer">
+                <span class="email" [ngClass]="{'copied': singleClick}"
+                    title="Click to copy to clipboard, double click to write an email" (click)="copyToClipboard()"
+                    (dblclick)="openEmail()">
+                    <span>&#64;</span>
+                </span>
+                <span class="absolute w-full h-full top-0 left-0 hidden justify-center items-center"
+                    [ngClass]="{'copied': singleClick}">Copied to clipboard</span>
+            </div>
             <span class="lg:hidden col-span-2 px-2 text-center">(Click to copy to clipboard, double click to write an
                 email)</span>
         </div>

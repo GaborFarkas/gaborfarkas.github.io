@@ -48,6 +48,11 @@ export class FooterComponent {
     private dblClick: boolean = false;
 
     /**
+     * Helper variable for user feedback on a single click.
+     */
+    protected singleClick: boolean = false;
+
+    /**
      * Copies the email address to the clickboard.
      */
     protected copyToClipboard(): void {
@@ -55,6 +60,7 @@ export class FooterComponent {
         setTimeout(function (this: FooterComponent) {
             // If we still haven't registered a second click, copy to clipboard.
             if (!this.dblClick) {
+                this.singleClick = true;
                 const emailAddress = this.rawEmail;
                 if (!navigator.clipboard) {
                     this.fallbackCopyToClipboard(emailAddress);
@@ -65,6 +71,7 @@ export class FooterComponent {
                     function (this: FooterComponent) {
                         this.fallbackCopyToClipboard(emailAddress);
                     }.bind(this));
+                setTimeout(() => this.singleClick = false, 1000);
             }
 
             this.dblClick = false;
