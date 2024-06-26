@@ -20,7 +20,7 @@ if (!fs.existsSync(configPath)) {
 const htmlText = fs.readFileSync(indexPath, 'utf-8');
 const configJson = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 
-['counseling', 'partnership', 'insights', 'about'].forEach(slug => {
+['counseling', 'partnership', 'insights', 'about', 'publications'].forEach(slug => {
     generateHtmlFile({
         slug: slug,
         category: 'home'

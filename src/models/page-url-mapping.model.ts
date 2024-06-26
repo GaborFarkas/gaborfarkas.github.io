@@ -4,6 +4,7 @@
 export enum PageUrlMapping {
     HOME = '',
     ABOUT = 'about',
+    PUBLICATIONS = 'publications',
     PARTNERSHIP = 'partnership',
     COUNSELING = 'counseling',
     INSIGHTS = 'insights'

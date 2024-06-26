@@ -4,6 +4,7 @@ import { PageUrlMapping, StoryUrlMapping } from '@/models/page-url-mapping.model
 export const routes: Routes = [
     { path: PageUrlMapping.HOME, loadComponent: () => import('@/pages/home/home.page').then(m => m.HomePage) },
     { path: PageUrlMapping.ABOUT, loadComponent: () => import('@/pages/about/about.page').then(m => m.AboutPage) },
+    { path: PageUrlMapping.PUBLICATIONS, loadComponent: () => import('@/pages/publications/publications.page').then(m => m.PublicationsPage) },
     { path: PageUrlMapping.PARTNERSHIP, loadComponent: () => import('@/pages/partnership/partnership.page').then(m => m.PartnershipPage) },
     { path: PageUrlMapping.COUNSELING, loadComponent: () => import('@/pages/counseling/counseling.page').then(m => m.CounselingPage) },
     { path: PageUrlMapping.INSIGHTS, loadComponent: () => import('@/pages/stories/stories.page').then(m => m.StoriesPage) },

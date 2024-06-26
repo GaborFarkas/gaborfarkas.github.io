@@ -43,7 +43,8 @@ export class NavbarComponent {
         {
             label: 'About',
             items: [
-                { label: 'About me', url: `/${PageUrlMapping.ABOUT}` }
+                { label: 'About me', url: `/${PageUrlMapping.ABOUT}` },
+                { label: 'Publications', url: `/${PageUrlMapping.PUBLICATIONS}` }
             ]
         }
     ]
