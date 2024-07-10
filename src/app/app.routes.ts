@@ -8,6 +8,7 @@ export const routes: Routes = [
     { path: PageUrlMapping.PARTNERSHIP, loadComponent: () => import('@/pages/partnership/partnership.page').then(m => m.PartnershipPage) },
     { path: PageUrlMapping.COUNSELING, loadComponent: () => import('@/pages/counseling/counseling.page').then(m => m.CounselingPage) },
     { path: PageUrlMapping.INSIGHTS, loadComponent: () => import('@/pages/stories/stories.page').then(m => m.StoriesPage) },
+    { path: PageUrlMapping.FEATUREMATRIX, loadComponent: () => import('@/pages/web-mapping/feature-matrix/feature-matrix.page').then(m => m.FeatureMatrixPage) },
     {
         path: `${PageUrlMapping.INSIGHTS}`,
         loadComponent: () => import('@/pages/story/story.page').then(m => m.StoryPage),

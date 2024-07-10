@@ -41,6 +41,12 @@ export class NavbarComponent {
             ]
         },
         {
+            label: 'Web mapping',
+            items: [
+                { label: 'Feature matrix', url: `/${PageUrlMapping.FEATUREMATRIX}` }
+            ]
+        },
+        {
             label: 'About',
             items: [
                 { label: 'About me', url: `/${PageUrlMapping.ABOUT}` },

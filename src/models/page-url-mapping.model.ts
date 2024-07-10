@@ -7,7 +7,8 @@ export enum PageUrlMapping {
     PUBLICATIONS = 'publications',
     PARTNERSHIP = 'partnership',
     COUNSELING = 'counseling',
-    INSIGHTS = 'insights'
+    INSIGHTS = 'insights',
+    FEATUREMATRIX = 'web-mapping/feature-matrix'
 }
 
 /**
