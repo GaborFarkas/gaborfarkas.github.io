@@ -6,6 +6,78 @@
             <img src="/assets/feature-matrix.png" class="w-full lg:w-3/5">
         </div>
 
-        <p class="pb-6">The core concept of that research topic aged badly. The world does not need a cloud GIS. At least not yet. We need modular, feature-packed, cloud-compatible spatial libraries for making any application spatially aware without overhead. On the other hand, the feature comparison still makes sense. Developers work with web maps frequently, while deciding which web mapping library suits the application at hand is a tough choice. However, the better we can itemize the features needed, the easier that decision becomes, given that we have an up-to-date feature support matrix.</p>
+        <p class="pb-6">The core concept of that research topic aged badly. The world does not need a cloud GIS. At least not yet. We need modular, feature-packed, cloud-compatible spatial libraries to make any application spatially aware without overhead. On the other hand, the feature comparison still makes sense. Developers work with web maps frequently, while deciding which web mapping library suits the application at hand is a tough choice. However, the better we can itemize the features needed, the easier that decision becomes, given that we have an up-to-date feature support matrix.</p>
+    </section>
+
+    <section>
+        <h1>Methodology</h1>
+
+        <p class="pb-4">Features on the circle's perimeter in the picture above are examined with some of the more popular spatial visualization libraries. Every library gets an ordinal value (score) depending on its support of the given feature. You can see these values as color-coded boxes in the support table, where every row is a feature and every column is a library. The four different values should be interpreted as follows:</p>
+        <ul>
+            <li class="flex items-center pb-2">
+                <div class="w-10 h-6 bg-lime-400 rounded mr-4 flex-shrink-0"></div>
+                <p class="right">Supported out of the box. Features with this score can be implemented by using built-in API calls.</p>
+            </li>
+            <li class="flex items-center pb-2">
+                <div class="w-10 h-6 bg-yellow-300 rounded mr-4 flex-shrink-0"></div>
+                <p class="right">Easy to implement. This feature needs some custom code, but the logic is rather trivial and the required effort is low.</p>
+            </li>
+            <li class="flex items-center pb-2">
+                <div class="w-10 h-6 bg-amber-500 rounded mr-4 flex-shrink-0"></div>
+                <p class="right">Implementable with some effort. Features in this category take time to implement properly. Usually features requiring to connect another library to the map manually are categorized here.</p>
+            </li>
+            <li class="flex items-center pb-2">
+                <div class="w-10 h-6 bg-red-500 rounded mr-4 flex-shrink-0"></div>
+                <p class="right">Impossible or infeasible to implement. This feature would require a modified form of the library, an extensively time-consuming extension, or it's just plain impossible to implement in a browser.</p>
+            </li>
+        </ul>
+        <p class="pb-2">There are some features with interactive examples to see. If a support score box has a small play icon in it, you can click on it and the example will be displayed in a modal window:</p>
+        <div class="w-10 h-6 bg-lime-400 rounded mr-4 flex-shrink-0 example mb-6"></div>
+
+        <p class="pb-6">Currently, the following libraries appear as subjects of comparison in the support matrix:</p>
+        <div class="flex w-full justify-center">
+            <div class="lg:max-w-3/5">
+                <div class="flex justify-center items-center pb-4">
+                    <a href="https://leafletjs.com/" target="_blank" class="h-8 md:h-16 md:pr-4 flex-shrink-0">
+                        <img class="h-full" src="assets/web-mapping/leaflet-logo.png">
+                    </a>
+                    <div>
+                        <h1 class="text-lg md:text-xl">Leaflet</h1>
+                        <p>Leaflet is a lightweight web mapping library for simple web maps. While limited in capabilities, it offers the easiest learning curve of all available open-source spatial visualization libraries. Don't go further, if you only need a few features displayed on an OpenStreetMap base map.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center items-center pb-4">
+                    <div>
+                        <h1 class="text-lg md:text-xl">OpenLayers</h1>
+                        <p>My personal favorite, OpenLayers is a robust, feature-packed 2D web mapping library for generic Web GIS applications. Its architecture follows desktop Geographic Information Systems, therefore, it has a logical, easy-to-understand API for GIS experts.</p>
+                    </div>
+                    <a href="https://openlayers.org/" target="_blank" class="h-12 md:h-20 md:pl-4 flex-shrink-0">
+                        <img class="h-full" src="assets/web-mapping/openlayers-logo.svg">
+                    </a>
+                </div>
+
+                <div class="flex justify-center items-center pb-4">
+                    <a href="https://maplibre.org/maplibre-gl-js/docs/" target="_blank" class="h-12 md:h-20 md:pr-4 flex-shrink-0">
+                        <img class="h-full" src="assets/web-mapping/maplibre-logo.svg">
+                    </a>
+                    <div>
+                        <h1 class="text-lg md:text-xl">MapLibre GL JS</h1>
+                        <p>MapLibre is an open-source fork of the very popular, but now restrictive Mapbox GL JS library. It has almost the same capabilities with a permissive license. This library offers pixel-perfect spatial visualization with unparalleled speed by utilizing the GPU. It's also semi-3D, which opens the way for visualizing extruded objects on a tilted map.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-center items-center pb-4">
+                    <div>
+                        <h1 class="text-lg md:text-xl">CesiumJS</h1>
+                        <p>Cesium is a 3D virtual globe, offering almost unlimited capabilities in spatial visualization. You can go crazy in this one by adding 3D models, visualizing temporal changes, or even choosing a different planet to show. Major downsides are its steep learning curve and resource intensity.</p>
+                    </div>
+                    <a href="https://cesium.com/platform/cesiumjs/" target="_blank" class="h-8 md:h-16 md:pl-4 flex-shrink-0">
+                        <img class="h-full" src="assets/web-mapping/cesium-logo.svg">
+                    </a>
+                </div>
+            </div>
+
+        </div>
     </section>
 </div>

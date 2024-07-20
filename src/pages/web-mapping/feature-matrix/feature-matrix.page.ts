@@ -6,7 +6,8 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'feature-matrix-page',
     standalone: true,
-    templateUrl: './feature-matrix.page.html'
+    templateUrl: './feature-matrix.page.html',
+    styleUrl: './feature-matrix.page.css'
 })
 export class FeatureMatrixPage {
 }

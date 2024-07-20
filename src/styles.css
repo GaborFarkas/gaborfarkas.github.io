@@ -100,6 +100,10 @@ p, ul {
         max-height: 60%;
     }
 
+    .max-w-3\/5 {
+        max-width: 60%;
+    }
+
     .max-w-2\/5 {
         max-width: 40%;
     }
