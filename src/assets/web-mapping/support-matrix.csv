@@ -1,0 +1,10 @@
+Name,Leaflet,OpenLayers,Maplibre GL JS,Cesium JS,Description,Addendum
+Rendering,,,,,Raw data visaulization features required for quality map composition,
+Hardware acceleration,4,2,1,1,The library can utilize the GPU for faster rendering,"OpenLayers’ support is partial, lines and polygons need additional setup"
+Render geometry,1,1,1,1,The library can render vector geometries,
+Render raster,3,1,0,0,The library can render raster layers,
+Render image,1,1,1,1,The library can render image files,
+Blend layers,0,0,0,0,The library can overlay different layers using different blending modes,
+Format,,,,,Data exchange format support used in GIS software,
+Vector,,,,,Vector data exchange format support,
+ESRI Shapefile,3,3,3,3,The library can read and write Shapefiles,There are third-party JavaScript libraries for interpreting Shapefiles

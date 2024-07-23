@@ -137,7 +137,7 @@
             </thead>
             <tbody>
                 @for(item of featureSupportItems; track item) {
-                <tr>
+                <tr [ngClass]="{'border-t border-slate-600': !item.support}">
                     <td>{{item.name}}</td>
                 @if (item.support) {
                     <td>
@@ -153,9 +153,14 @@
                         <div [supportRectangle]="item.support[WebMappingLibrary.CESIUM]"></div>
                     </td>
                 } @else {
-                    <td colspan="4">{{item.description}}</td>
+                    <td colspan="4" class="text-slate-800">{{item.description}}</td>
                 }
                 </tr>
+                @if (item.addendum) {
+                    <tr>
+                        <td colspan="5" class="text-slate-800">{{item.addendum}}</td>
+                    </tr>
+                }
                 }
             </tbody>
         </table>
