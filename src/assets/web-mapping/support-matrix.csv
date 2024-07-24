@@ -1,13 +1,13 @@
 Name,Leaflet,OpenLayers,Maplibre GL JS,Cesium JS,Description,Addendum
 Rendering,,,,,Raw data visualization features required for quality map composition,
-Hardware acceleration,4,2,1,1,The library can utilize the GPU for faster rendering,"OpenLayers’ support is partial, lines and polygons need additional setup"
+Hardware acceleration,4,2,1,1,The library can utilize the GPU for faster rendering,"OpenLayers’ support is partial, lines and polygons need additional setup. In Cesium and Maplibre, everything is hardware-accelerated."
 Render geometry,1,1,1,1,The library can render vector geometries,
 Render raster,3,1,0,0,The library can render raster layers,
 Render image,1,1,1,1,The library can render image files,
 Blend layers,0,0,0,0,The library can overlay different layers using different blending modes,
 Format,,,,,Data exchange format support used in GIS software,
 Vector,,,,,Vector data exchange format support,
-ESRI Shapefile,3,3,3,3,The library can read and write Shapefiles,There are third-party JavaScript libraries for interpreting Shapefiles
+ESRI Shapefile,3,3,3,3,The library can read and write Shapefiles,There are third-party JavaScript libraries for interpreting Shapefiles.
 KML,0,0,0,0,The library can read and write KMLs,
 GeoJSON,1,1,1,1,The library can read and write GeoJSONs,
 WFS,0,0,0,0,The library can read vector data through a WFS connection,
@@ -31,12 +31,12 @@ Bing Maps,0,0,0,0,The library can read Bing Maps layers,
 Database,,,,,The ability to communicate with spatial databases,
 Connection,,,,,Connecting to spatial databases,
 PostGIS,0,0,0,0,The library can connect to PostGIS databases,
-SpatiaLite,3,3,3,3,The library can connect to SpatiaLite databases,There is a GeoPackage JavaScript library for this
+SpatiaLite,3,3,3,3,The library can connect to SpatiaLite databases,There is a GeoPackage JavaScript library for this.
 MySQL,0,0,0,0,The library can connect to MySQL databases,
 Functionality,,,,,Basic database functionality,
-Using DBMS,3,3,3,3,The library can use any DBMS for vector data,Possible with a custom IndexedDB vector type
+Using DBMS,3,3,3,3,The library can use any DBMS for vector data,Possible with a custom IndexedDB vector type.
 Query/filter,1,1,1,1,The library is capable of querying and filtering vector data,
-Query language,3,3,3,3,The library can use a query language to query and filter vector data,Possible with a custom IndexedDB vector type
+Query language,3,3,3,3,The library can use a query language to query and filter vector data,Possible with a custom IndexedDB vector type.
 Data,,,,,Data operations,
 Pre-process,,,,,Processing capabilities for organizing and manipulating data before display,
 On the fly transformation,0,1,0,0,The library is capable to project vector data on the fly,
@@ -46,7 +46,7 @@ Geometry types,1,1,1,1,"The library can interpret the basic geometry types of po
 Spatial indexing,0,1,0,0,The library is capable to apply a spatial index on its internal vector layers to speed up processing and display,
 Geometry validation,0,0,0,0,The library can validate vector geometries and identify invalid ones,
 Geometry simplification,0,1,0,0,The library is capable of generalizing vector geometries on the fly,
-Attribute table,3,3,3,3,The library is capable of organizing vector attributes into an attribute table,"The organizing part is quite trivial to do manually, but for the tabular display an external library is recommended"
+Attribute table,3,3,3,3,The library is capable of organizing vector attributes into an attribute table,"The organizing part is quite trivial to do manually, but for the tabular display an external library is recommended."
 Conversion,,,,,Data type conversion support,
 Interpolate,3,3,3,3,The library can interpolate vector data into a raster layer,
 Raster to vector,4,4,4,4,The library can vectorize raster data,
@@ -59,8 +59,8 @@ Add/remove layer,1,1,1,1,The library can add and remove layers,
 Change layer order,0,1,0,0,The library is capable of changing the visual order of layers,
 Typed layers,0,1,0,0,The library has a type system for its layers,
 Analysis,,,,,Complex data manipulation capabilities,
-Basic geoprocessing,3,3,3,3,"The library can do basic vector operations (clip, dissolve, buffer, union, difference)",There are geoprocessing libraries for this purpose
-Topological analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)",There are geoprocessing libraries for this purpose
+Basic geoprocessing,3,3,3,3,"The library can do basic vector operations (clip, dissolve, buffer, union, difference)",There are geoprocessing libraries for this purpose.
+Topological analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)",There are geoprocessing libraries for this purpose.
 Modify image,0,1,0,0,The library is capable to transform image data,
 Modify raster,0,0,0,0,The library is capable to transform raster data,
 Raster algebra,0,1,0,0,The library is capable of executing matrix operations between multiple raster layers,
@@ -71,7 +71,7 @@ Projection,,,,,Projection handling,
 Transform vector,1,1,1,1,The library can transform geometries between known projections,
 Warp raster,4,1,0,0,The library can transform raster layers between known projections,
 Well-known projections,1,1,1,1,The library can use WG84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,
-Custom projections,3,1,4,4,The library can use well-defined custom projections,The Proj4JS library is needed in every case
+Custom projections,3,1,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
 Interaction,,,,,GUI capabilities,
 Draw features,2,1,2,0,Users can digitize vector features in this library,
 Modify features,0,1,0,0,Users can modify features with a mouse-based tool in this library,
