@@ -19,7 +19,7 @@
             given that we have an up-to-date feature support matrix.</p>
     </section>
 
-    <section>
+    <section class="pb-12">
         <h1>Methodology</h1>
 
         <p class="pb-4">Features on the circle's perimeter in the picture above are examined with some of the more
@@ -142,16 +142,24 @@
                         <td>{{item.name}}</td>
                         @if (item.support) {
                         <td>
-                            <div [supportRectangle]="item.support[WebMappingLibrary.LEAFLET]"></div>
+                            <div [supportRectangle]="item.support[WebMappingLibrary.LEAFLET]"
+                                (click)="playExample(item, WebMappingLibrary.LEAFLET)"
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.LEAFLET].example}"></div>
                         </td>
                         <td>
-                            <div [supportRectangle]="item.support[WebMappingLibrary.OPENLAYERS]"></div>
+                            <div [supportRectangle]="item.support[WebMappingLibrary.OPENLAYERS]"
+                                (click)="playExample(item, WebMappingLibrary.OPENLAYERS)"
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.OPENLAYERS].example}"></div>
                         </td>
                         <td>
-                            <div [supportRectangle]="item.support[WebMappingLibrary.MAPLIBRE]"></div>
+                            <div [supportRectangle]="item.support[WebMappingLibrary.MAPLIBRE]"
+                                (click)="playExample(item, WebMappingLibrary.MAPLIBRE)"
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.MAPLIBRE].example}"></div>
                         </td>
                         <td>
-                            <div [supportRectangle]="item.support[WebMappingLibrary.CESIUM]"></div>
+                            <div [supportRectangle]="item.support[WebMappingLibrary.CESIUM]"
+                                (click)="playExample(item, WebMappingLibrary.CESIUM)"
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.CESIUM].example}"></div>
                         </td>
                         } @else {
                         <td colspan="4" class="text-slate-800">{{item.description}}</td>
@@ -169,5 +177,13 @@
         }
     </section>
 
-    <p class="py-6">If you find any error in the table, feel free to contact me or open an issue or a pull request on GitHub.</p>
+    <p class="py-6">If you find any error in the table, feel free to contact me or open an issue on GitHub.</p>
 </div>
+
+<dialog class="modal" [windowTitle]="playingItem?.name + ' in ' + playingLibrary" (closed)="clearExample()">
+    <div #maplibreContainer *ngIf="playingLibrary === WebMappingLibrary.MAPLIBRE" class="h-full w-full">
+        @defer (on viewport(maplibreContainer)) {
+        <div class="map maplibre h-full w-full"></div>
+        }
+    </div>
+</dialog>
