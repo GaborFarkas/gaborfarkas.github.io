@@ -96,6 +96,10 @@ p, ul {
         color: var(--secondary-color);
     }
 
+    .text-secondary-accent {
+        color: var(--secondary-accent);
+    }
+
     .max-h-3\/5 {
         max-height: 60%;
     }

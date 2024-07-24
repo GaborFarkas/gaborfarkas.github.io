@@ -1,0 +1,12 @@
+<div class="flex flex-col w-full h-full">
+    <div class="flex w-full justify-between items-center flex-grow-0 h-fit border-b py-1">
+        <h2 class="pl-2">{{windowTitle}}</h2>
+        <fa-icon [icon]="faXmark" size="xl" class="pr-2 cursor-pointer text-primary-accent hover:text-secondary-accent"
+            (click)="close()"></fa-icon>
+    </div>
+
+    <div class="flex-1 w-fully">
+        <ng-content></ng-content>
+    </div>
+</div>
+
