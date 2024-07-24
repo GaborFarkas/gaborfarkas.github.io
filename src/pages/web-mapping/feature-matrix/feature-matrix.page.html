@@ -61,7 +61,7 @@
             play icon in it, you can click on it and the example will be displayed in a modal window:</p>
         <div [supportRectangle]="{score: FeatureSupportScore.NATIVE, example: true}"></div>
 
-        <p class="pb-6">Currently, the following libraries appear as subjects of comparison in the support matrix:</p>
+        <p class="py-6">Currently, the following libraries appear as subjects of comparison in the support matrix:</p>
         <div class="flex w-full justify-center">
             <div class="lg:max-w-3/5">
                 <div class="flex justify-center items-center pb-4">
@@ -125,45 +125,49 @@
         <h1>Feature support matrix</h1>
 
         @if(featureSupportItems) {
-        <table class="w-full">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>{{WebMappingLibrary.LEAFLET}}</th>
-                    <th>{{WebMappingLibrary.OPENLAYERS}}</th>
-                    <th>{{WebMappingLibrary.MAPLIBRE}}</th>
-                    <th>{{WebMappingLibrary.CESIUM}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for(item of featureSupportItems; track item) {
-                <tr [ngClass]="{'border-t border-slate-600': !item.support}">
-                    <td>{{item.name}}</td>
-                @if (item.support) {
-                    <td>
-                        <div [supportRectangle]="item.support[WebMappingLibrary.LEAFLET]"></div>
-                    </td>
-                    <td>
-                        <div [supportRectangle]="item.support[WebMappingLibrary.OPENLAYERS]"></div>
-                    </td>
-                    <td>
-                        <div [supportRectangle]="item.support[WebMappingLibrary.MAPLIBRE]"></div>
-                    </td>
-                    <td>
-                        <div [supportRectangle]="item.support[WebMappingLibrary.CESIUM]"></div>
-                    </td>
-                } @else {
-                    <td colspan="4" class="text-slate-800">{{item.description}}</td>
-                }
-                </tr>
-                @if (item.addendum) {
+        <div class="max-md:overflow-x-auto max-w-full">
+            <table class="w-full relative">
+                <thead class="sticky top-0 bg-primary">
+                    <tr>
+                        <th></th>
+                        <th>{{WebMappingLibrary.LEAFLET}}</th>
+                        <th>{{WebMappingLibrary.OPENLAYERS}}</th>
+                        <th>{{WebMappingLibrary.MAPLIBRE}}</th>
+                        <th>{{WebMappingLibrary.CESIUM}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(item of featureSupportItems; track item) {
+                    <tr [ngClass]="{'border-t border-slate-600': !item.support}">
+                        <td>{{item.name}}</td>
+                        @if (item.support) {
+                        <td>
+                            <div [supportRectangle]="item.support[WebMappingLibrary.LEAFLET]"></div>
+                        </td>
+                        <td>
+                            <div [supportRectangle]="item.support[WebMappingLibrary.OPENLAYERS]"></div>
+                        </td>
+                        <td>
+                            <div [supportRectangle]="item.support[WebMappingLibrary.MAPLIBRE]"></div>
+                        </td>
+                        <td>
+                            <div [supportRectangle]="item.support[WebMappingLibrary.CESIUM]"></div>
+                        </td>
+                        } @else {
+                        <td colspan="4" class="text-slate-800">{{item.description}}</td>
+                        }
+                    </tr>
+                    @if (item.addendum) {
                     <tr>
                         <td colspan="5" class="text-slate-800">{{item.addendum}}</td>
                     </tr>
-                }
-                }
-            </tbody>
-        </table>
+                    }
+                    }
+                </tbody>
+            </table>
+        </div>
         }
     </section>
+
+    <p class="py-6">If you find any error in the table, feel free to contact me or open an issue or a pull request on GitHub.</p>
 </div>

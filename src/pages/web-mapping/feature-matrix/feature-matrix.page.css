@@ -16,6 +16,10 @@ td {
     padding: 0.5rem 0;
 }
 
+td, th {
+    padding-left: 1rem;
+}
+
 td > div {
     margin: auto;
 }
