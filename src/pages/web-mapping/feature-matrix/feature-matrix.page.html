@@ -177,10 +177,16 @@
         }
     </section>
 
-    <p class="py-6">If you find any error in the table, feel free to contact me or open an issue on GitHub.</p>
+    <p class="py-6">If you find any error in the table or would like to extend the matrix, feel free to contact me or open an issue on GitHub.</p>
 </div>
 
 <dialog class="modal" [windowTitle]="playingItem?.name + ' in ' + playingLibrary" (closed)="clearExample()">
+    <div #leafletContainer *ngIf="playingLibrary === WebMappingLibrary.LEAFLET" class="h-full w-full">
+        @defer (on viewport(leafletContainer)) {
+        <div class="map leaflet h-full w-full"></div>
+        }
+    </div>
+
     <div #maplibreContainer *ngIf="playingLibrary === WebMappingLibrary.MAPLIBRE" class="h-full w-full">
         @defer (on viewport(maplibreContainer)) {
         <div class="map maplibre h-full w-full"></div>

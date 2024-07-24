@@ -23,7 +23,7 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
     private map?: Maplibre.Map;
 
     /**
-     * Loads the base map with a simple artistic style and positions it to Pécs.
+     * Loads the base map with a simple style and positions it to Pécs.
      */
     ngAfterViewInit(): void {
         if (this.mapElem?.nativeElement) {
