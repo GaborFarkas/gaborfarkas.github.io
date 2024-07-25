@@ -1,5 +1,5 @@
 /**
- * Enum for feature support features in the feature support matrix.
+ * Enum for features in the feature support matrix.
  */
 export enum FeatureSupportFeature
 {

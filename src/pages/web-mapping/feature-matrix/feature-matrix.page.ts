@@ -1,6 +1,7 @@
 import { ModalComponent } from '@/components/modal/modal.component';
 import { LeafletMapComponent } from '@/components/web-mapping/leaflet-map/leaflet-map.component';
 import { MaplibreMapComponent } from '@/components/web-mapping/maplibre-map/maplibre-map.component';
+import { OpenLayersMapComponent } from '@/components/web-mapping/openlayers-map/openlayers-map.component';
 import { FeatureSupportScoreDirective } from '@/directives/feature-support-score.directive';
 import { FeatureSupportItem } from '@/models/web-mapping/feature-support-item.model';
 import { FeatureSupportScore } from '@/models/web-mapping/feature-support-score.model';
@@ -17,7 +18,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
     standalone: true,
     templateUrl: './feature-matrix.page.html',
     styleUrl: './feature-matrix.page.css',
-    imports: [CommonModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, MaplibreMapComponent],
+    imports: [CommonModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, OpenLayersMapComponent, MaplibreMapComponent],
     providers: [ConfigService]
 })
 export class FeatureMatrixPage implements OnInit {

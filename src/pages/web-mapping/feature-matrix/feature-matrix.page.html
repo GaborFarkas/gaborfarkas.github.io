@@ -187,6 +187,13 @@
         }
     </div>
 
+    <div #openlayersContainer *ngIf="playingLibrary === WebMappingLibrary.OPENLAYERS" class="h-full w-full">
+        @defer (on viewport(openlayersContainer)) {
+        <div class="map openlayers h-full w-full"></div>
+        }
+    </div>
+
+
     <div #maplibreContainer *ngIf="playingLibrary === WebMappingLibrary.MAPLIBRE" class="h-full w-full">
         @defer (on viewport(maplibreContainer)) {
         <div class="map maplibre h-full w-full"></div>

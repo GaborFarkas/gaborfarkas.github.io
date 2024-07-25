@@ -1,28 +1,28 @@
 import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
-import * as L from 'leaflet';
+import { ol } from '@/utils/openlayers';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 
 /**
- * MapLibre GL JS web map component.
+ * OpenLayers web map component.
  */
 @Component({
-    selector: 'div.leaflet',
+    selector: 'div.openlayers',
     standalone: true,
-    templateUrl: './leaflet-map.component.html',
-    styleUrl: '../../../../node_modules/leaflet/dist/leaflet.css',
+    templateUrl: './openlayers-map.component.html',
+    styleUrl: '../../../../node_modules/ol/ol.css',
     encapsulation: ViewEncapsulation.None
 })
-export class LeafletMapComponent implements AfterViewInit, WebMap {
+export class OpenLayersMapComponent implements AfterViewInit, WebMap {
     /**
      * The HTML element for the map canvas.
      */
     @ViewChild('map') private mapElem?: ElementRef<HTMLDivElement>;
 
     /**
-     * The Leaflet map object.
+     * The OpenLayers map object.
      */
-    private map?: L.Map;
+    private map?: ol.Map;
 
     /**
      * Loads the base map with a simple style and positions it to Pécs.
@@ -30,13 +30,18 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
     ngAfterViewInit(): void {
         if (this.mapElem?.nativeElement) {
             // Load the small base map.
-            this.map = new L.Map(this.mapElem.nativeElement)
-                .setView([46.0756, 18.2210], 5);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(this.map);
+            this.map = new ol.Map({
+                target: this.mapElem.nativeElement,
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([18.2210, 46.0756]),
+                    zoom: 5
+                }),
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM()
+                    })
+                ]
+            });
         }
     }
 
