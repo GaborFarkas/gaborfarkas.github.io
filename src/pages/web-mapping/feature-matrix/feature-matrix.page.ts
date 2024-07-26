@@ -1,4 +1,5 @@
 import { ModalComponent } from '@/components/modal/modal.component';
+import { CesiumMapComponent } from '@/components/web-mapping/cesium-map/cesium-map.component';
 import { LeafletMapComponent } from '@/components/web-mapping/leaflet-map/leaflet-map.component';
 import { MaplibreMapComponent } from '@/components/web-mapping/maplibre-map/maplibre-map.component';
 import { OpenLayersMapComponent } from '@/components/web-mapping/openlayers-map/openlayers-map.component';
@@ -18,7 +19,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
     standalone: true,
     templateUrl: './feature-matrix.page.html',
     styleUrl: './feature-matrix.page.css',
-    imports: [CommonModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, OpenLayersMapComponent, MaplibreMapComponent],
+    imports: [CommonModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, OpenLayersMapComponent, MaplibreMapComponent, CesiumMapComponent],
     providers: [ConfigService]
 })
 export class FeatureMatrixPage implements OnInit {
@@ -63,11 +64,11 @@ export class FeatureMatrixPage implements OnInit {
      * @param feature
      */
     playExample(feature: FeatureSupportItem, library: WebMappingLibrary) {
-        if (feature.support?.[library].example) {
-            this.playingLibrary = library;
+        //if (feature.support?.[library].example) {
             this.playingItem = feature;
+            this.playingLibrary = library;
             this.dialog.open();
-        }
+        //}
     }
 
     /**

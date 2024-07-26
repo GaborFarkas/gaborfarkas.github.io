@@ -193,10 +193,15 @@
         }
     </div>
 
-
     <div #maplibreContainer *ngIf="playingLibrary === WebMappingLibrary.MAPLIBRE" class="h-full w-full">
         @defer (on viewport(maplibreContainer)) {
         <div class="map maplibre h-full w-full"></div>
+        }
+    </div>
+
+    <div #cesiumContainer *ngIf="playingLibrary === WebMappingLibrary.CESIUM" class="h-full w-full">
+        @defer (on viewport(cesiumContainer)) {
+        <div class="map cesium h-full w-full"></div>
         }
     </div>
 </dialog>
