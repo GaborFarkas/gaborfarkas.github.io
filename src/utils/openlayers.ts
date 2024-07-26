@@ -17,7 +17,7 @@ import * as ol_webgl from 'ol/webgl'
 /**
  * OpenLayers library patched from individual namespace imports.
  */
-export namespace ol {
+export namespace OpenLayers {
     export import Collection = ol_base.Collection
     export import Disposable = ol_base.Disposable
     export import Feature = ol_base.Feature

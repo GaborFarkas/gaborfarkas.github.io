@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ol } from '@/utils/openlayers';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { OpenLayers } from '@/utils/openlayers';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 
@@ -22,7 +22,9 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
     /**
      * The OpenLayers map object.
      */
-    private map?: ol.Map;
+    private map?: OpenLayers.Map;
+
+    @Input() public example?: string;
 
     /**
      * Loads the base map with a simple style and positions it to Pécs.
@@ -30,22 +32,38 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
     ngAfterViewInit(): void {
         if (this.mapElem?.nativeElement) {
             // Load the small base map.
-            this.map = new ol.Map({
+            this.map = new OpenLayers.Map({
                 target: this.mapElem.nativeElement,
-                view: new ol.View({
-                    center: ol.proj.fromLonLat([18.2210, 46.0756]),
+                view: new OpenLayers.View({
+                    center: OpenLayers.proj.fromLonLat([18.2210, 46.0756]),
                     zoom: 5
                 }),
                 layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.OSM()
+                    new OpenLayers.layer.Tile({
+                        source: new OpenLayers.source.OSM()
                     })
                 ]
             });
         }
     }
 
-    public playExample(feature: FeatureSupportFeature): void {
-        throw new Error('Method not implemented.');
+    public playExample(feature: string): void {
+        import('@/examples/openlayers').then(module => {
+            const examples = module.default;
+            if (examples[feature as FeatureSupportFeature]) {
+                this.play(examples[feature as FeatureSupportFeature]);
+            }
+        });
+    }
+
+    /**
+     * Executes a user function in the context of the OpenLayers map. Passes the OpenLayers library and the map object as arguments.
+     * @param func The user function.
+     */
+    public play(func: (this: OpenLayers.Map, lib: typeof OpenLayers, map: OpenLayers.Map) => void) {
+        if (this.map) {
+            console.log(func.toString());
+            func.bind(this.map)(OpenLayers, this.map);
+        }
     }
 }

@@ -1,10 +1,10 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as Cesium from 'cesium';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 
 /**
- * MapLibre GL JS web map component.
+ * Cesium JS web map component.
  */
 @Component({
     selector: 'div.cesium',
@@ -20,9 +20,11 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
     @ViewChild('map') private mapElem?: ElementRef<HTMLDivElement>;
 
     /**
-     * The Leaflet map object.
+     * The Cesium map object.
      */
     private map?: Cesium.Viewer;
+
+    @Input() public example?: string;
 
     constructor() {
         (window as { [key: string]: any })['CESIUM_BASE_URL'] = '/assets/cesium/';
@@ -35,10 +37,28 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
         if (this.mapElem?.nativeElement) {
             // Load the small base map.
             this.map = new Cesium.Viewer(this.mapElem.nativeElement);
+            const center = Cesium.Cartesian3.fromDegrees(18.2210, 46.0756);
+            this.map.camera.lookAt(center, new Cesium.Cartesian3(0, 0, 3500000));
         }
     }
 
-    public playExample(feature: FeatureSupportFeature): void {
-        throw new Error('Method not implemented.');
+    public playExample(feature: string): void {
+        import('@/examples/cesium').then(module => {
+            const examples = module.default;
+            if (examples[feature as FeatureSupportFeature]) {
+                this.play(examples[feature as FeatureSupportFeature]);
+            }
+        });
+    }
+
+    /**
+     * Executes a user function in the context of the Cesium map. Passes the Cesium library and the map object as arguments.
+     * @param func The user function.
+     */
+    public play(func: (this: Cesium.Viewer, lib: typeof Cesium, map: Cesium.Viewer) => void) {
+        if (this.map) {
+            console.log(func.toString());
+            func.bind(this.map)(Cesium, this.map);
+        }
     }
 }

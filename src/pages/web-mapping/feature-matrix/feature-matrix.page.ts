@@ -64,11 +64,11 @@ export class FeatureMatrixPage implements OnInit {
      * @param feature
      */
     playExample(feature: FeatureSupportItem, library: WebMappingLibrary) {
-        //if (feature.support?.[library].example) {
+        if (feature.support?.[library].example) {
             this.playingItem = feature;
             this.playingLibrary = library;
             this.dialog.open();
-        //}
+        }
     }
 
     /**

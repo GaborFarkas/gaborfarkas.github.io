@@ -183,7 +183,7 @@
 <dialog class="modal" [windowTitle]="playingItem?.name + ' in ' + playingLibrary" (closed)="clearExample()">
     <div #leafletContainer *ngIf="playingLibrary === WebMappingLibrary.LEAFLET" class="h-full w-full">
         @defer (on viewport(leafletContainer)) {
-        <div class="map leaflet h-full w-full"></div>
+        <div class="map leaflet h-full w-full" [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
         }
     </div>
 

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import * as Maplibre from 'maplibre-gl';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
@@ -22,6 +22,8 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
      */
     private map?: Maplibre.Map;
 
+    @Input() public example?: string;
+
     /**
      * Loads the base map with a simple style and positions it to Pécs.
      */
@@ -37,7 +39,23 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
         }
     }
 
-    public playExample(feature: FeatureSupportFeature): void {
-        throw new Error('Method not implemented.');
+    public playExample(feature: string): void {
+        import('@/examples/maplibre').then(module => {
+            const examples = module.default;
+            if (examples[feature as FeatureSupportFeature]) {
+                this.play(examples[feature as FeatureSupportFeature]);
+            }
+        });
+    }
+
+    /**
+     * Executes a user function in the context of the Maplibre GL JS map. Passes the Maplibre GL JS library and the map object as arguments.
+     * @param func The user function.
+     */
+    public play(func: (this: Maplibre.Map, lib: typeof Maplibre, map: Maplibre.Map) => void) {
+        if (this.map) {
+            console.log(func.toString());
+            func.bind(this.map)(Maplibre, this.map);
+        }
     }
 }

@@ -6,6 +6,10 @@ import fse from 'fs-extra';
 import { FeatureSupportItem } from '../src/models/web-mapping/feature-support-item\.model';
 import { WebMappingLibrary } from '../src/models/web-mapping/web-mapping-library';
 import { FeatureSupportFeature } from '../src/models/web-mapping/feature-support-feature\.model';
+import LeafletExamples from '../src/examples/leaflet';
+import OpenLayersExamples from '../src/examples/openlayers';
+import MaplibreExamples from '../src/examples/maplibre';
+import CesiumExamples from '../src/examples/cesium';
 
 const baseDir = dirname(fileURLToPath(import.meta.url));
 const configPath = path.join(baseDir, '..', 'src', 'assets', 'config', 'feature-support.json');
@@ -77,19 +81,19 @@ function processPairedRow(pairedRow: Record<string, string | number | undefined>
             support: {
                 [WebMappingLibrary.LEAFLET]: {
                     score: pairedRow[WebMappingLibrary.LEAFLET],
-                    example: false
+                    example: LeafletExamples[featName as FeatureSupportFeature] !== undefined
                 },
                 [WebMappingLibrary.OPENLAYERS]: {
                     score: pairedRow[WebMappingLibrary.OPENLAYERS],
-                    example: false
+                    example: OpenLayersExamples[featName as FeatureSupportFeature] !== undefined
                 },
                 [WebMappingLibrary.MAPLIBRE]: {
                     score: pairedRow[WebMappingLibrary.MAPLIBRE],
-                    example: false
+                    example: MaplibreExamples[featName as FeatureSupportFeature] !== undefined
                 },
                 [WebMappingLibrary.CESIUM]: {
                     score: pairedRow[WebMappingLibrary.CESIUM],
-                    example: false
+                    example: CesiumExamples[featName as FeatureSupportFeature] !== undefined
                 }
             }
         }

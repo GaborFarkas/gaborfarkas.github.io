@@ -1,3 +1,4 @@
+import { FeatureSupportFeature } from "./feature-support-feature.model";
 import { FeatureSupportScore } from "./feature-support-score.model";
 import { WebMappingLibrary } from "./web-mapping-library";
 
