@@ -61,7 +61,8 @@ export class FeatureMatrixPage implements OnInit {
 
     /**
      * Plays an example based on a feature support item.
-     * @param feature
+     * @param feature The feature to play.
+     * @param library The library to play the feature in.
      */
     playExample(feature: FeatureSupportItem, library: WebMappingLibrary) {
         if (feature.support?.[library].example) {
