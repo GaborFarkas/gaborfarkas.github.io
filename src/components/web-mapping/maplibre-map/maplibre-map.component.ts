@@ -58,7 +58,6 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
      */
     public play(func: (this: Maplibre.Map, lib: typeof Maplibre, map: Maplibre.Map) => void) {
         if (this.map) {
-            console.log(func.toString());
             func.bind(this.map)(Maplibre, this.map);
         }
     }

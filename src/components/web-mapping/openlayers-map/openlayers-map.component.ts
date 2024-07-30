@@ -66,7 +66,6 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
      */
     public play(func: (this: OpenLayers.Map, lib: typeof OpenLayers, map: OpenLayers.Map) => void) {
         if (this.map) {
-            console.log(`${func}`);
             func.bind(this.map)(OpenLayers, this.map);
         }
     }

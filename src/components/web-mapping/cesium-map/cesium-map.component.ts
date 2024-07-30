@@ -61,7 +61,6 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
      */
     public play(func: (this: Cesium.Viewer, lib: typeof Cesium, map: Cesium.Viewer) => void) {
         if (this.map) {
-            console.log(func.toString());
             func.bind(this.map)(Cesium, this.map);
         }
     }

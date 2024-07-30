@@ -29,29 +29,29 @@
             follows:</p>
         <ul>
             <li class="flex items-center pb-2">
-                <div [supportRectangle]="{score: FeatureSupportScore.NATIVE, example: false}"></div>
+                <div [supportRectangle]="{score: FeatureSupportScore.NATIVE}"></div>
                 <p class="right">Supported out of the box. Features with this score can be implemented by using built-in
                     API calls.</p>
             </li>
             <li class="flex items-center pb-2">
-                <div [supportRectangle]="{score: FeatureSupportScore.LOW, example: false}"></div>
+                <div [supportRectangle]="{score: FeatureSupportScore.LOW}"></div>
                 <p class="right">Easy to implement. This feature needs some custom code, but the logic is rather trivial
                     and the required effort is low.</p>
             </li>
             <li class="flex items-center pb-2">
-                <div [supportRectangle]="{score: FeatureSupportScore.MODERATE, example: false}"></div>
+                <div [supportRectangle]="{score: FeatureSupportScore.MODERATE}"></div>
                 <p class="right">Implementable with some effort. Features in this category take time to implement
                     properly. Usually features requiring to connect another library to the map manually are categorized
                     here.</p>
             </li>
             <li class="flex items-center pb-2">
-                <div [supportRectangle]="{score: FeatureSupportScore.HIGH, example: false}"></div>
+                <div [supportRectangle]="{score: FeatureSupportScore.HIGH}"></div>
                 <p class="right">Impossible or infeasible to implement. This feature would require a modified form of
                     the library, an extensively time-consuming extension, or it's just plain impossible to implement in
                     a browser.</p>
             </li>
             <li class="flex items-center pb-2">
-                <div [supportRectangle]="{score: FeatureSupportScore.UNKNOWN, example: false}"></div>
+                <div [supportRectangle]="{score: FeatureSupportScore.UNKNOWN}"></div>
                 <p class="right">I don't know. I did not have time to accurately assess this feature, but it might be
                     possible to do with WASM or other experimental browser features. If possible, it is probably
                     infeasible to implement yet.</p>
@@ -59,7 +59,7 @@
         </ul>
         <p class="pb-2">There are some features with interactive examples to see. If a support score box has a small
             play icon in it, you can click on it and the example will be displayed in a modal window:</p>
-        <div [supportRectangle]="{score: FeatureSupportScore.NATIVE, example: true}"></div>
+        <div [supportRectangle]="{score: FeatureSupportScore.NATIVE, example: 'about:dino'}"></div>
 
         <p class="py-6">Currently, the following libraries appear as subjects of comparison in the support matrix:</p>
         <div class="flex w-full justify-center">
@@ -149,7 +149,8 @@
                         <td>
                             <div [supportRectangle]="item.support[WebMappingLibrary.OPENLAYERS]"
                                 (click)="playExample(item, WebMappingLibrary.OPENLAYERS)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.OPENLAYERS].example}"></div>
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.OPENLAYERS].example}">
+                            </div>
                         </td>
                         <td>
                             <div [supportRectangle]="item.support[WebMappingLibrary.MAPLIBRE]"
@@ -177,31 +178,36 @@
         }
     </section>
 
-    <p class="py-6">If you find any error in the table or would like to extend the matrix, feel free to contact me or open an issue on GitHub.</p>
+    <p class="py-6">If you find any error in the table or would like to extend the matrix, feel free to contact me or
+        open an issue on GitHub.</p>
 </div>
 
-<dialog class="modal" [windowTitle]="playingItem?.name + ' in ' + playingLibrary" (closed)="clearExample()">
+<dialog class="modal" [windowTitle]="playingItem?.name + ' in ' + playingLibrary" [gitHubUrl]="playingItem?.support?.[playingLibrary!]!.example" (closed)="clearExample()">
     <div #leafletContainer *ngIf="playingLibrary === WebMappingLibrary.LEAFLET" class="h-full w-full">
         @defer (on viewport(leafletContainer)) {
-        <div class="map leaflet h-full w-full" [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
+        <div class="map leaflet h-full w-full"
+            [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
         }
     </div>
 
     <div #openlayersContainer *ngIf="playingLibrary === WebMappingLibrary.OPENLAYERS" class="h-full w-full">
         @defer (on viewport(openlayersContainer)) {
-        <div class="map openlayers h-full w-full" [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
+        <div class="map openlayers h-full w-full"
+            [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
         }
     </div>
 
     <div #maplibreContainer *ngIf="playingLibrary === WebMappingLibrary.MAPLIBRE" class="h-full w-full">
         @defer (on viewport(maplibreContainer)) {
-        <div class="map maplibre h-full w-full" [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
+        <div class="map maplibre h-full w-full"
+            [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
         }
     </div>
 
     <div #cesiumContainer *ngIf="playingLibrary === WebMappingLibrary.CESIUM" class="h-full w-full">
         @defer (on viewport(cesiumContainer)) {
-        <div class="map cesium h-full w-full" [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
+        <div class="map cesium h-full w-full"
+            [example]="playingItem!.support![playingLibrary].example ? playingItem!.name : undefined"></div>
         }
     </div>
 </dialog>

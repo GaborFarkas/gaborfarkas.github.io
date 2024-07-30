@@ -3,9 +3,9 @@ import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import fse from 'fs-extra';
-import { FeatureSupportItem } from '../src/models/web-mapping/feature-support-item\.model';
+import { FeatureSupportItem } from '../src/models/web-mapping/feature-support-item.model';
 import { WebMappingLibrary } from '../src/models/web-mapping/web-mapping-library';
-import { FeatureSupportFeature } from '../src/models/web-mapping/feature-support-feature\.model';
+import { FeatureSupportFeature } from '../src/models/web-mapping/feature-support-feature.model';
 import LeafletExamples from '../src/examples/leaflet';
 import OpenLayersExamples from '../src/examples/openlayers';
 import MaplibreExamples from '../src/examples/maplibre';
@@ -81,19 +81,19 @@ function processPairedRow(pairedRow: Record<string, string | number | undefined>
             support: {
                 [WebMappingLibrary.LEAFLET]: {
                     score: pairedRow[WebMappingLibrary.LEAFLET],
-                    example: LeafletExamples[featName as FeatureSupportFeature] !== undefined
+                    example: getExample(WebMappingLibrary.LEAFLET, LeafletExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.OPENLAYERS]: {
                     score: pairedRow[WebMappingLibrary.OPENLAYERS],
-                    example: OpenLayersExamples[featName as FeatureSupportFeature] !== undefined
+                    example: getExample(WebMappingLibrary.OPENLAYERS, OpenLayersExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.MAPLIBRE]: {
                     score: pairedRow[WebMappingLibrary.MAPLIBRE],
-                    example: MaplibreExamples[featName as FeatureSupportFeature] !== undefined
+                    example: getExample(WebMappingLibrary.MAPLIBRE, MaplibreExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.CESIUM]: {
                     score: pairedRow[WebMappingLibrary.CESIUM],
-                    example: CesiumExamples[featName as FeatureSupportFeature] !== undefined
+                    example: getExample(WebMappingLibrary.CESIUM, CesiumExamples[featName as FeatureSupportFeature])
                 }
             }
         }
@@ -105,4 +105,36 @@ function processPairedRow(pairedRow: Record<string, string | number | undefined>
             addendum: pairedRow['Addendum'] as string | undefined
         }
     }
+}
+
+/**
+ * Returns an example GitHub URL for the given library and example function, if any.
+ * @param lib The library.
+ * @param exampleFunc The example function, if any.
+ * @returns The GitHub URL for the example source code.
+ */
+function getExample(lib: WebMappingLibrary, exampleFunc?: (this: any, lib: any, map: any) => void): string | undefined {
+    if (!exampleFunc) return undefined;
+
+    let lineNum = '0';
+    try {
+        // Trigger an error by calling ther func with invalid params
+        exampleFunc(null, null);
+    } catch (exc: unknown) {
+        // Get line num from error
+        const err = exc as Error;
+        if (err.stack) {
+            const firstLine = err.stack.split('\n')[1];
+            lineNum = firstLine.split(":")[1];
+        }
+    }
+
+    const exampleUrlBasePath = 'https://github.com/GaborFarkas/gaborfarkas.github.io/blob/main/src/examples/' + (
+        lib === WebMappingLibrary.LEAFLET ? 'leaflet' :
+            lib === WebMappingLibrary.OPENLAYERS ? 'openlayers' :
+                lib === WebMappingLibrary.MAPLIBRE ? 'maplibre' :
+                    'cesium'
+    ) + '.ts#L';
+
+    return exampleUrlBasePath + lineNum;
 }

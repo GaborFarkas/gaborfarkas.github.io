@@ -69,7 +69,6 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
      */
     public play(func: (this: L.Map, lib: typeof L, map: L.Map) => void) {
         if (this.map) {
-            console.log(func.toString());
             func.bind(this.map)(L, this.map);
         }
     }
