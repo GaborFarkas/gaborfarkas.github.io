@@ -44,6 +44,10 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
                     })
                 ]
             });
+
+            if (this.example) {
+                this.playExample(this.example);
+            }
         }
     }
 
@@ -62,7 +66,7 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
      */
     public play(func: (this: OpenLayers.Map, lib: typeof OpenLayers, map: OpenLayers.Map) => void) {
         if (this.map) {
-            console.log(func.toString());
+            console.log(`${func}`);
             func.bind(this.map)(OpenLayers, this.map);
         }
     }

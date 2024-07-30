@@ -36,6 +36,10 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
                 center: { lat: 46.0756, lng: 18.2210 },
                 zoom: 5
             });
+
+            if (this.example) {
+                this.playExample(this.example);
+            }
         }
     }
 

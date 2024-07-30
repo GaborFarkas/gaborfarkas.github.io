@@ -26,9 +26,16 @@ const configJson = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         category: 'home'
     });
 });
+['feature-matrix'].forEach(slug => {
+    generateHtmlFile({
+        slug: path.join('web-mapping', slug),
+        category: 'home',
+        description: 'Choosing the right spatial visualization technology for a front-end application can be tough. Cut some corners while making a better choice with this free and open source tool.'
+    });
+});
 configJson.forEach(config => {
     generateHtmlFile(config);
-})
+});
 
 /**
  * Generates an HTML file from a configuration used for stories.

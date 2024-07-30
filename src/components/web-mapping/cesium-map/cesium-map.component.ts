@@ -39,6 +39,10 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
             this.map = new Cesium.Viewer(this.mapElem.nativeElement);
             const center = Cesium.Cartesian3.fromDegrees(18.2210, 46.0756);
             this.map.camera.lookAt(center, new Cesium.Cartesian3(0, 0, 3500000));
+
+            if (this.example) {
+                this.playExample(this.example);
+            }
         }
     }
 

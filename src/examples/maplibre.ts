@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 import * as Maplibre from 'maplibre-gl';
 
