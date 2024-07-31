@@ -3,13 +3,16 @@ import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feat
 import { OpenLayers } from '@/utils/openlayers';
 
 const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void> = {
-    [FeatureSupportFeature.HWACCEL]: webglPoints
+    [FeatureSupportFeature.HWACCEL]: webglPoints,
+    [FeatureSupportFeature.BLEND]: blendLayers,
+    [FeatureSupportFeature.GEOTIFF]: geoTiff
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
 
 function webglPoints(ol: typeof OpenLayers, map: OpenLayers.Map) {
-    // In its current form, OpenLayers style descriptors are not stable enough to have a single, data-driven style.
+    // In its current form, OpenLayers flat style descriptors are not stable enough to have a single, data-driven style.
     // We create a group layer and use as many layers as different styles we want.
     const lyr = new ol.layer.Group();
+    // All the layers can work from the same source
     const source = new ol.source.Vector({
         format: new ol.format.GeoJSON({
             dataProjection: 'EPSG:4326'
@@ -45,6 +48,42 @@ function webglPoints(ol: typeof OpenLayers, map: OpenLayers.Map) {
     }
 
     map.addLayer(lyr);
+}
+
+function blendLayers(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    const lyr = new ol.layer.Tile({
+        source: new ol.source.TileImage({
+            attributions:
+                'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer">ArcGIS</a>',
+            url:
+                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
+        })
+    });
+
+    lyr.on('postrender', evt => {
+        if (evt.context) {
+            evt.context.globalCompositeOperation = 'multiply';
+        }
+    });
+
+    map.addLayer(lyr);
+}
+
+function geoTiff(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    const source = new ol.source.GeoTIFF({
+        sources: [
+            {
+                url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif',
+            },
+        ],
+    });
+
+    map.addLayer(new ol.layer.WebGLTile({
+        source: source
+    }));
+
+    map.getView().setCenter([546484, 1842303]);
+    map.getView().setZoom(9);
 }
 
 export default exports;

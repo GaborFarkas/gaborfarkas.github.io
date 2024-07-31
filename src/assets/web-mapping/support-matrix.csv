@@ -2,19 +2,19 @@ Name,Leaflet,OpenLayers,Maplibre GL JS,Cesium JS,Description,Addendum
 Rendering,,,,,Raw data visualization features required for quality map composition,
 Hardware acceleration,3,2,1,1,The library can utilize the GPU for faster rendering,"OpenLayers’ support is partial, lines and polygons need additional setup. In Cesium and Maplibre, everything is hardware-accelerated. For Leaflet, you can try Leaflet.glify."
 Render geometry,1,1,1,1,The library can render vector geometries,
-Render raster,3,1,4,4,The library can render raster layers,
+Render raster,2,1,4,4,The library can render raster layers,Leaflet can render GeoTIFFs easily with the leaflet-geotiff plugin.
 Render image,1,1,1,1,The library can render image files,
-Blend layers,4,2,4,0,The library can overlay different layers using different blending modes,
+Blend layers,4,2,4,0,The library can overlay different layers using different blending modes,Support in OpenLayers only applies to layers displayed with the canvas renderer.
 Format,,,,,Data exchange format support used in GIS software,
 Vector,,,,,Vector data exchange format support,
 ESRI Shapefile,3,3,3,3,The library can read Shapefiles,There are third-party JavaScript libraries for interpreting Shapefiles.
-KML,2,1,2,1,The library can read KMLs,
+KML,2,1,2,1,The library can read KMLs,Possible with plugins in Leaflet and Maplibre GL JS.
 GeoJSON,1,1,1,1,The library can read GeoJSONs,
-WFS,2,1,3,3,The library can read vector data through a WFS connection,
+WFS,2,1,2,3,The library can read vector data through a WFS connection,Easy to manually implement as long as the map can tell its exact view bounds and the WFS server can speak GeoJSON.
 Write transaction,2,2,3,3,The library can write vector data through a WFS-T connection,
-Mapbox vector tile,2,1,1,1,The library can read Mapbox vector tiles,
+Mapbox vector tile,1,1,1,1,The library can read Mapbox vector tiles,
 Raster,,,,,Raster data exchange format support,
-GeoTiff,3,1,3,3,The library can read GeoTIFF rasters,
+GeoTiff,3,1,3,3,The library can read GeoTIFF rasters,Needs geotiff.js in every case. In OpenLayers it is bundled with the library.
 Arc/Info ASCII GRID,4,4,4,4,The library can read ASCII rasters,
 WCS,4,4,4,4,The library can read raster data through a WCS connection,
 Image,,,,,Image data exchange format support,
@@ -44,7 +44,7 @@ Read attribute data,1,1,1,1,The library can use vector attributes,
 "Z, and M coordinates",1,1,1,1,The library preserves Z and M coordinates in vectors,"Maplibre GL JS and Cesium JS utilize Z coordinates, but do not support measurement coordinates."
 Geometry types,1,1,1,1,"The library can interpret the basic geometry types of points, lines, polygons, and their multipart counterparts",
 Spatial indexing,2,1,1,1,The library is capable to apply a spatial index on its internal vector layers to speed up processing and display,
-Geometry validation,3,3,3,3,The library can validate vector geometries and identify invalid ones,
+Geometry validation,3,3,3,3,The library can validate vector geometries and identify invalid ones,"There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
 Geometry simplification,1,1,1,1,The library is capable of generalizing vector geometries on the fly,
 Attribute table,3,3,3,3,The library is capable of organizing vector attributes into an attribute table,"The organizing part is quite trivial to do manually, but for the tabular display an external library is recommended."
 Conversion,,,,,Data type conversion support,
@@ -59,8 +59,8 @@ Add/remove layer,1,1,1,1,The library can add and remove layers,
 Change layer order,1,1,2,1,The library is capable of changing the visual order of layers,Maplibre GL JS does not have a traditional concept of layers. You can reorder features based on attributes with some code.
 Typed layers,1,1,4,1,The library has a type system for its layers,
 Analysis,,,,,Complex data manipulation capabilities,
-Basic geoprocessing,3,3,3,3,"The library can do basic vector operations (clip, dissolve, buffer, union, difference)",There are geoprocessing libraries for this purpose.
-Topological analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)",There are geoprocessing libraries for this purpose.
+Basic geoprocessing,3,3,3,3,"The library can do basic vector operations (clip, dissolve, buffer, union, difference)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
+Topological analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
 Modify image,3,1,3,3,The library is capable to transform image data,
 Modify raster,4,4,4,4,The library is capable to transform raster data,
 Raster algebra,4,1,4,4,The library is capable of executing matrix operations between multiple raster layers,

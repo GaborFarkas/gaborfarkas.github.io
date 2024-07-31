@@ -37,6 +37,10 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
                 zoom: 5
             });
 
+            this.map.on('load', function(this: MaplibreMapComponent) {
+                this.map!.setSprite('https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite');
+            }.bind(this));
+
             if (this.example) {
                 this.playExample(this.example);
             }
