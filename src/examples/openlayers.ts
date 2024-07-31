@@ -7,6 +7,7 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.BLEND]: blendLayers,
     [FeatureSupportFeature.KML]: loadKml,
     [FeatureSupportFeature.GEOTIFF]: geoTiff,
+    [FeatureSupportFeature.WFS]: readWfs,
     [FeatureSupportFeature.MAPBOXTILE]: loadVectorTiles,
     [FeatureSupportFeature.NORTH]: northArrow
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
@@ -99,6 +100,18 @@ function loadKml(ol: typeof OpenLayers, map: OpenLayers.Map) {
         source: new ol.source.Vector({
             url: '/assets/web-mapping/sample-data/simple-kml.kml',
             format: new ol.format.KML()
+        })
+    }));
+}
+
+function readWfs(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: function (extent) {
+                return 'https://view.eumetsat.int/geoserver/osmgray/ows?service=WFS&version=2.0.0&request=GetFeature&srsname=EPSG:3857&typeName=osmgray%3Ane_10m_admin_0_countries_points&outputFormat=application/json'
+                    + '&bbox=' + extent.join(',');
+            },
+            format: new ol.format.GeoJSON()
         })
     }));
 }
