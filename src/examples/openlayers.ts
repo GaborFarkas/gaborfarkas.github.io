@@ -9,6 +9,7 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.GEOTIFF]: geoTiff,
     [FeatureSupportFeature.WFS]: readWfs,
     [FeatureSupportFeature.MAPBOXTILE]: loadVectorTiles,
+    [FeatureSupportFeature.WMTS]: readWmts,
     [FeatureSupportFeature.NORTH]: northArrow
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
 
@@ -131,6 +132,39 @@ function loadVectorTiles(ol: typeof OpenLayers, map: OpenLayers.Map) {
             'fill-color': '#f7f7e9',
         }
     }))
+}
+
+function readWmts(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    // Example taken from https://openlayers.org/en/latest/examples/wmts.html
+    const size = ol.extent.getWidth(map.getView().getProjection().getExtent()) / 256;
+    const resolutions = new Array(19);
+    const matrixIds = new Array(19);
+    for (let z = 0; z < 19; ++z) {
+        // generate resolutions and matrixIds arrays for this WMTS
+        resolutions[z] = size / Math.pow(2, z);
+        matrixIds[z] = z;
+    }
+
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.WMTS({
+            attributions: 'Tiles © <a href="https://mrdata.usgs.gov/geology/state/" target="_blank">USGS</a>',
+            url: 'https://mrdata.usgs.gov/mapcache/wmts',
+            layer: 'sgmc2',
+            matrixSet: 'GoogleMapsCompatible',
+            format: 'image/png',
+            projection: map.getView().getProjection(),
+            tileGrid: new ol.tilegrid.WMTS({
+                origin: ol.extent.getTopLeft(map.getView().getProjection().getExtent()),
+                resolutions: resolutions,
+                matrixIds: matrixIds,
+            }),
+            style: 'default',
+            wrapX: true,
+        })
+    }));
+
+    map.getView().setCenter([-10881201, 4688556]);
+    map.getView().setZoom(4);
 }
 
 export default exports;

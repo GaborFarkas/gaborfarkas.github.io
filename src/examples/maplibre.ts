@@ -4,7 +4,8 @@ import * as Maplibre from 'maplibre-gl';
 
 const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void> = {
     [FeatureSupportFeature.GEOJSON]: loadGeojson,
-    [FeatureSupportFeature.WFS]: readWfs
+    [FeatureSupportFeature.WFS]: readWfs,
+    [FeatureSupportFeature.WMTS]: readWmts
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
 
 function loadGeojson(maplibregl: typeof Maplibre, map: Maplibre.Map) {
@@ -63,6 +64,28 @@ function readWfs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
         return 'https://view.eumetsat.int/geoserver/osmgray/ows?service=WFS&version=2.0.0&request=GetFeature&srsname=EPSG:4326&typeName=osmgray%3Ane_10m_admin_0_countries_points&outputFormat=application/json'
             + '&bbox=' + map.getBounds().toArray().map(coords => coords.reverse()).flat().join(',');
     }
+}
+
+function readWmts(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-usgs-sgmc2', {
+            type: 'raster',
+            tiles: [
+                'https://mrdata.usgs.gov/mapcache/wmts?service=wmts&request=GetTile&version=1.0.0&layer=sgmc2&style=default&tilematrixset=GoogleMapsCompatible&tilematrix={z}&tilerow={y}&tilecol={x}&format=image%2Fpng'
+            ],
+            tileSize: 256,
+            attribution: 'Tiles © <a href="https://mrdata.usgs.gov/geology/state/" target="_blank">USGS</a>'
+        });
+
+        map.addLayer({
+            id: 'lyr-usgs-sgmc2',
+            type: 'raster',
+            source: 'src-usgs-sgmc2'
+        });
+    });
+
+    map.setCenter([-99, 40]);
+    map.setZoom(3.5);
 }
 
 export default exports;

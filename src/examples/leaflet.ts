@@ -4,7 +4,8 @@ import * as Leaflet from 'leaflet';
 
 const exports: Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void> = {
     [FeatureSupportFeature.GEOJSON]: loadGeojson,
-    [FeatureSupportFeature.WFS]: readWfs
+    [FeatureSupportFeature.WFS]: readWfs,
+    [FeatureSupportFeature.WMTS]: readWmts
 } as Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void>;
 
 async function loadGeojson(L: typeof Leaflet, map: Leaflet.Map) {
@@ -39,6 +40,15 @@ function readWfs(L: typeof Leaflet, map: Leaflet.Map) {
             });
     });
     map.fire('moveend');
+}
+
+function readWmts(L: typeof Leaflet, map: Leaflet.Map) {
+    L.tileLayer('https://mrdata.usgs.gov/mapcache/wmts?service=wmts&request=GetTile&version=1.0.0&layer=sgmc2&style=default&tilematrixset=GoogleMapsCompatible&tilematrix={z}&tilerow={y}&tilecol={x}&format=image%2Fpng', {
+        continuousWorld: true,
+        attribution: 'Tiles © <a href="https://mrdata.usgs.gov/geology/state/" target="_blank">USGS</a>',
+    }).addTo(map);
+
+    map.setView([40, -99], 4);
 }
 
 export default exports;
