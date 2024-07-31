@@ -139,8 +139,13 @@
                 <tbody>
                     @for(item of featureSupportItems; track item) {
                     <tr [ngClass]="{'border-t border-slate-600': !item.support}">
-                        <td>{{item.name}}</td>
                         @if (item.support) {
+
+                        <td>
+                            {{item.name}}
+                            <fa-icon [icon]="faQuestionCircle" [title]="item.description"
+                                class="hidden lg:inline text-primary-accent pl-2"></fa-icon>
+                        </td>
                         <td>
                             <div [supportRectangle]="item.support[WebMappingLibrary.LEAFLET]"
                                 (click)="playExample(item, WebMappingLibrary.LEAFLET)"
@@ -162,7 +167,9 @@
                                 (click)="playExample(item, WebMappingLibrary.CESIUM)"
                                 [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.CESIUM].example}"></div>
                         </td>
+
                         } @else {
+                        <td>{{item.name}}</td>
                         <td colspan="4" class="text-slate-800">{{item.description}}</td>
                         }
                     </tr>
@@ -182,7 +189,8 @@
         open an issue on GitHub.</p>
 </div>
 
-<dialog class="modal" [windowTitle]="playingItem?.name + ' in ' + playingLibrary" [gitHubUrl]="playingItem?.support?.[playingLibrary!]!.example" (closed)="clearExample()">
+<dialog class="modal" [windowTitle]="playingItem?.name + ' in ' + playingLibrary"
+    [gitHubUrl]="playingItem?.support?.[playingLibrary!]!.example" (closed)="clearExample()">
     <div #leafletContainer *ngIf="playingLibrary === WebMappingLibrary.LEAFLET" class="h-full w-full">
         @defer (on viewport(leafletContainer)) {
         <div class="map leaflet h-full w-full"

@@ -10,6 +10,9 @@ import { WebMappingLibrary } from '@/models/web-mapping/web-mapping-library';
 import { ConfigService } from '@/services/config.service';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * The feature matrix web mapping page.
@@ -19,10 +22,15 @@ import { Component, OnInit, ViewChild } from '@angular/core';
     standalone: true,
     templateUrl: './feature-matrix.page.html',
     styleUrl: './feature-matrix.page.css',
-    imports: [CommonModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, OpenLayersMapComponent, MaplibreMapComponent, CesiumMapComponent],
+    imports: [CommonModule, FontAwesomeModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, OpenLayersMapComponent, MaplibreMapComponent, CesiumMapComponent],
     providers: [ConfigService]
 })
 export class FeatureMatrixPage implements OnInit {
+    /**
+     * Question mark icon.
+     */
+    protected faQuestionCircle: IconDefinition = faQuestionCircle;
+
     /**
      * Web mapping libraries enum for the template.
      */
