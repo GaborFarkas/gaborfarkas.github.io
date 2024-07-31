@@ -5,7 +5,9 @@ import { OpenLayers } from '@/utils/openlayers';
 const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void> = {
     [FeatureSupportFeature.HWACCEL]: webglPoints,
     [FeatureSupportFeature.BLEND]: blendLayers,
+    [FeatureSupportFeature.KML]: loadKml,
     [FeatureSupportFeature.GEOTIFF]: geoTiff,
+    [FeatureSupportFeature.MAPBOXTILE]: loadVectorTiles,
     [FeatureSupportFeature.NORTH]: northArrow
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
 
@@ -90,6 +92,32 @@ function geoTiff(ol: typeof OpenLayers, map: OpenLayers.Map) {
 function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {
     map.addControl(new ol.control.Rotate());
     map.getView().setRotation(Math.PI / 4);
+}
+
+function loadKml(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/simple-kml.kml',
+            format: new ol.format.KML()
+        })
+    }));
+}
+
+function loadVectorTiles(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.VectorTile({
+        declutter: true,
+        source: new ol.source.VectorTile({
+            format: new ol.format.MVT(),
+            url: 'https://demotiles.maplibre.org/tiles/{z}/{x}/{y}.pbf',
+            attributions: '<a href="https://maplibre.org">Maplibre</a>'
+        }),
+        background: '#d1d1d1',
+        style: {
+            'stroke-width': 0.6,
+            'stroke-color': '#8c8b8b',
+            'fill-color': '#f7f7e9',
+        }
+    }))
 }
 
 export default exports;

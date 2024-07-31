@@ -16,6 +16,7 @@ const configPath = path.join(baseDir, '..', 'src', 'assets', 'config', 'feature-
 const csvPath = path.join(baseDir, '..', 'src', 'assets', 'web-mapping', 'support-matrix.csv');
 
 const supportMatrix: FeatureSupportItem[] = [];
+const pairedRows: Record<string, string | number | undefined>[] = [];
 let header: string[] = [];
 
 fs.createReadStream(csvPath)
@@ -24,11 +25,13 @@ fs.createReadStream(csvPath)
         if (!header.length) {
             header = row;
         } else {
-            const pairedRow = pairRow(row);
-            supportMatrix.push(processPairedRow(pairedRow));
+            pairedRows.push(pairRow(row));
         }
     })
-    .on('end', function () {
+    .on('end', async function () {
+        for (let pairedRow of pairedRows) {
+            supportMatrix.push(await processPairedRowAsync(pairedRow));
+        }
         fse.outputJsonSync(configPath, supportMatrix, { spaces: 2 });
     }
 );
@@ -59,7 +62,7 @@ function pairRow(row: string[]): Record<string, string | number | undefined> {
  * @param pairedRow The paired row
  * @returns The feature support item
  */
-function processPairedRow(pairedRow: Record<string, string | number | undefined>): FeatureSupportItem {
+async function processPairedRowAsync(pairedRow: Record<string, string | number | undefined>): Promise<FeatureSupportItem> {
     const featName: string = pairedRow['Name'] as string;
 
     if (pairedRow[WebMappingLibrary.CESIUM] !== undefined || pairedRow[WebMappingLibrary.LEAFLET] !== undefined ||
@@ -81,19 +84,19 @@ function processPairedRow(pairedRow: Record<string, string | number | undefined>
             support: {
                 [WebMappingLibrary.LEAFLET]: {
                     score: pairedRow[WebMappingLibrary.LEAFLET],
-                    example: getExample(WebMappingLibrary.LEAFLET, LeafletExamples[featName as FeatureSupportFeature])
+                    example: await getExampleAsync(WebMappingLibrary.LEAFLET, LeafletExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.OPENLAYERS]: {
                     score: pairedRow[WebMappingLibrary.OPENLAYERS],
-                    example: getExample(WebMappingLibrary.OPENLAYERS, OpenLayersExamples[featName as FeatureSupportFeature])
+                    example: await getExampleAsync(WebMappingLibrary.OPENLAYERS, OpenLayersExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.MAPLIBRE]: {
                     score: pairedRow[WebMappingLibrary.MAPLIBRE],
-                    example: getExample(WebMappingLibrary.MAPLIBRE, MaplibreExamples[featName as FeatureSupportFeature])
+                    example: await getExampleAsync(WebMappingLibrary.MAPLIBRE, MaplibreExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.CESIUM]: {
                     score: pairedRow[WebMappingLibrary.CESIUM],
-                    example: getExample(WebMappingLibrary.CESIUM, CesiumExamples[featName as FeatureSupportFeature])
+                    example: await getExampleAsync(WebMappingLibrary.CESIUM, CesiumExamples[featName as FeatureSupportFeature])
                 }
             }
         }
@@ -113,19 +116,23 @@ function processPairedRow(pairedRow: Record<string, string | number | undefined>
  * @param exampleFunc The example function, if any.
  * @returns The GitHub URL for the example source code.
  */
-function getExample(lib: WebMappingLibrary, exampleFunc?: (this: any, lib: any, map: any) => void): string | undefined {
+async function getExampleAsync(lib: WebMappingLibrary, exampleFunc?: (this: any, lib: any, map: any) => void): Promise<string | undefined> {
     if (!exampleFunc) return undefined;
 
     let lineNum = '0';
     try {
         // Trigger an error by calling ther func with invalid params
-        exampleFunc(null, null);
+        if (exampleFunc.toString().startsWith('async')) {
+            await exampleFunc(null, null);
+        } else {
+            exampleFunc(null, null);
+        }
     } catch (exc: unknown) {
         // Get line num from error
         const err = exc as Error;
         if (err.stack) {
-            const firstLine = err.stack.split('\n')[1];
-            lineNum = firstLine.split(":")[1];
+            const funcLine = err.stack.split('\n').find(line => line.includes(exampleFunc.name));
+            lineNum = funcLine!.split(":")[1];
         }
     }
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, isDevMode } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '@/components/navigation/navbar/navbar.component';
 import { FooterComponent } from '@/components/footer/footer.component';
@@ -18,8 +18,10 @@ import { analytics } from '@/utils/analytics';
 export class AppComponent {
     constructor(private router: Router) {
         // Trigger a page view after each successful router navigation.
-        this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(_ => {
-            analytics.page();
-        });
+        if (!isDevMode()) {
+            this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(_ => {
+                analytics.page();
+            });
+        }
     }
 }

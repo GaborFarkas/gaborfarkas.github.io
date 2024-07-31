@@ -3,8 +3,28 @@ import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feat
 import * as Maplibre from 'maplibre-gl';
 
 const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void> = {
+    [FeatureSupportFeature.GEOJSON]: loadGeojson,
     [FeatureSupportFeature.WFS]: readWfs
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
+
+function loadGeojson(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-settlements-points', {
+            type: 'geojson',
+            data: '/assets/web-mapping/sample-data/hungary_settlements.geojson'
+        });
+
+        map.addLayer({
+            id: 'lyr-settlements-points',
+            source: 'src-settlements-points',
+            type: 'circle',
+            paint: {
+                "circle-color": '#ff7800',
+                "circle-radius": 4
+            }
+        });
+    });
+}
 
 function readWfs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
     map.on('load', evt => {
