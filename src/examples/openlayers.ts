@@ -5,7 +5,8 @@ import { OpenLayers } from '@/utils/openlayers';
 const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void> = {
     [FeatureSupportFeature.HWACCEL]: webglPoints,
     [FeatureSupportFeature.BLEND]: blendLayers,
-    [FeatureSupportFeature.GEOTIFF]: geoTiff
+    [FeatureSupportFeature.GEOTIFF]: geoTiff,
+    [FeatureSupportFeature.NORTH]: northArrow
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
 
 function webglPoints(ol: typeof OpenLayers, map: OpenLayers.Map) {
@@ -84,6 +85,11 @@ function geoTiff(ol: typeof OpenLayers, map: OpenLayers.Map) {
 
     map.getView().setCenter([546484, 1842303]);
     map.getView().setZoom(9);
+}
+
+function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addControl(new ol.control.Rotate());
+    map.getView().setRotation(Math.PI / 4);
 }
 
 export default exports;

@@ -43,18 +43,18 @@ On the fly transformation,1,1,4,1,The library is capable to project vector data 
 Read attribute data,1,1,1,1,The library can use vector attributes,
 "Z, and M coordinates",1,1,1,1,The library preserves Z and M coordinates in vectors,"Maplibre GL JS and Cesium JS utilize Z coordinates, but do not support measurement coordinates."
 Geometry types,1,1,1,1,"The library can interpret the basic geometry types of points, lines, polygons, and their multipart counterparts",
-Spatial indexing,2,1,1,1,The library is capable to apply a spatial index on its internal vector layers to speed up processing and display,
+Spatial indexing,2,1,1,1,The library is capable to apply a spatial index on its internal vector layers to speed up processing and display,Leaflet can use the Leaflet.LayerIndex plugin for this.
 Geometry validation,3,3,3,3,The library can validate vector geometries and identify invalid ones,"There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
 Geometry simplification,1,1,1,1,The library is capable of generalizing vector geometries on the fly,
 Attribute table,3,3,3,3,The library is capable of organizing vector attributes into an attribute table,"The organizing part is quite trivial to do manually, but for the tabular display an external library is recommended."
 Conversion,,,,,Data type conversion support,
-Interpolate,3,3,3,3,The library can interpolate vector data into a raster layer,
+Interpolate,2,1,1,3,The library can interpolate vector data into a raster layer,If we consider heatmap visualization as a form of interpolation.
 Raster to vector,4,4,4,4,The library can vectorize raster data,
 Vector to raster,4,4,4,4,The library can rasterize vector data,
 Manipulation,,,,,Capabilities for raw vector data and layer management,
 Update attribute data,1,1,1,1,The library can write attribute data of vector layers on the fly,
 Update geometry,1,1,1,1,The library can update geometries of vector layers on the fly,
-Field calculator,2,2,2,2,The library has an abstract mechanism for calculating attributes,
+Field calculator,2,1,1,2,The library has an abstract mechanism for calculating attributes,Maplibre GL JS and OpenLayers have data-driven styling.
 Add/remove layer,1,1,1,1,The library can add and remove layers,
 Change layer order,1,1,2,1,The library is capable of changing the visual order of layers,Maplibre GL JS does not have a traditional concept of layers. You can reorder features based on attributes with some code.
 Typed layers,1,1,4,1,The library has a type system for its layers,
@@ -63,9 +63,9 @@ Basic geoprocessing,3,3,3,3,"The library can do basic vector operations (clip, d
 Topological analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
 Modify image,3,1,3,3,The library is capable to transform image data,
 Modify raster,4,4,4,4,The library is capable to transform raster data,
-Raster algebra,4,1,4,4,The library is capable of executing matrix operations between multiple raster layers,
-Classification,4,1,4,4,The library can reclassify raster layers,
-Convolution,4,0,4,4,The library can transform rasters with a convolution matrix (moving window),
+Raster algebra,4,1,4,4,The library is capable of executing matrix operations between multiple raster layers,"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
+Classification,4,1,4,4,The library can reclassify raster layers,"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
+Convolution,4,1,4,4,The library can transform rasters with a convolution matrix (moving window),"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
 Write WPS request,3,3,3,3,The library is capable of requesting spatial operations through a WPS connection,
 Projection,,,,,Projection handling,
 Transform vector,1,1,1,1,The library can transform geometries between known projections,
@@ -73,8 +73,8 @@ Warp raster,4,1,4,4,The library can transform raster and image layers between kn
 Well-known projections,1,1,4,1,The library can use WG84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,"Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team."
 Custom projections,3,1,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
 Interaction,,,,,GUI capabilities,
-Draw features,2,1,2,3,Users can digitize vector features in this library,"Draw functions in Maplibre GL JS use the mapbox-gl-draw plugin, which currently mostly works, but is susceptible to break when the source codes of Maplibre and Mapbox drift apart far enough."
-Modify features,2,1,3,3,Users can modify features with a mouse-based tool in this library,
+Draw features,2,1,2,2,Users can digitize vector features in this library,"Draw functions in Maplibre GL JS use the mapbox-gl-draw plugin, which currently mostly works, but is susceptible to break when the source codes of Maplibre and Mapbox drift apart far enough."
+Modify features,2,1,2,2,Users can modify features with a mouse-based tool in this library,
 Snap points,2,1,2,3,The library is capable of snapping vertices,
 Modify view,1,1,1,1,The library is capable to change its view settings (e.g. projection) on the fly,
 Select features,2,1,2,2,Users can select features with a mouse-based tool in this library,
@@ -88,9 +88,9 @@ Style vector,1,1,1,1,The library is capable of applying different styles to vect
 Style raster,4,1,4,4,The library is capable of applying different styles to raster layers,
 Thematic maps,1,1,1,1,The library can change its applied styles dynamically,
 Cartographic elements,,,,,Features required for creating a map,
-Scale bar,1,1,1,2,The library can display a scale bar,
+Scale bar,1,1,1,3,The library can display a scale bar,
 North arrow,2,1,2,2,The library can display a North arrow,
-Legend,3,3,3,3,The library can display a legend for its layers,
-Graticule,2,1,2,3,The library can display a graticule over the map,
+Legend,3,3,3,3,The library can display a legend for its layers,"Some libraries have layer switcher plugins, but creating a full-fledged legend with styles, categories and labels is always a challenge."
+Graticule,2,1,2,2,The library can display a graticule over the map,
 Text box,1,1,1,1,The library can display overlays,
-Overview map,2,1,3,3,The library can display an inset map for making orentation and navigation easier,"You can always create and synchronize a second map instance, if everything else fails."
+Overview map,2,1,3,3,The library can display an inset map for making orientation and navigation easier,"You can always create and synchronize a second map instance, if everything else fails."
