@@ -30,6 +30,7 @@ const configJson = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
     generateHtmlFile({
         slug: path.join('web-mapping', slug),
         category: 'home',
+        thumbUrl: '/assets/bg-spatial.jpg',
         description: 'Choosing the right spatial visualization technology for a front-end application can be tough. Cut some corners while making a better choice with this free and open source tool.'
     });
 });
