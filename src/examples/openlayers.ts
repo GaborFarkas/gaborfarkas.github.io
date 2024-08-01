@@ -9,6 +9,7 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.GEOTIFF]: geoTiff,
     [FeatureSupportFeature.WFS]: readWfs,
     [FeatureSupportFeature.MAPBOXTILE]: loadVectorTiles,
+    [FeatureSupportFeature.WMS]: readWms,
     [FeatureSupportFeature.WMTS]: readWmts,
     [FeatureSupportFeature.NORTH]: northArrow
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
@@ -132,6 +133,22 @@ function loadVectorTiles(ol: typeof OpenLayers, map: OpenLayers.Map) {
             'fill-color': '#f7f7e9',
         }
     }))
+}
+
+function readWms(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+            url: 'https://www.oeny.hu/geoserver/ows',
+            serverType: 'geoserver',
+            params: {
+                'LAYERS': 'tr4-tszt:rtszt_tersegi_teruletfelhaszn_kat'
+            },
+            attributions: 'E-TÉR data by © <a href="https://www.oeny.hu/oeny/4tr/#/tudastar/interaktiv-terkep" target="_blank">Lechner Tudásközpont</a>'
+        })
+    }));
+
+    map.getView().setCenter([1962131, 5908264]);
+    map.getView().setZoom(10);
 }
 
 function readWmts(ol: typeof OpenLayers, map: OpenLayers.Map) {

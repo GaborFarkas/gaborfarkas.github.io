@@ -5,6 +5,7 @@ import * as Leaflet from 'leaflet';
 const exports: Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void> = {
     [FeatureSupportFeature.GEOJSON]: loadGeojson,
     [FeatureSupportFeature.WFS]: readWfs,
+    [FeatureSupportFeature.WMS]: readWms,
     [FeatureSupportFeature.WMTS]: readWmts
 } as Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void>;
 
@@ -40,6 +41,17 @@ function readWfs(L: typeof Leaflet, map: Leaflet.Map) {
             });
     });
     map.fire('moveend');
+}
+
+function readWms(L: typeof Leaflet, map: Leaflet.Map) {
+    L.tileLayer.wms('https://www.oeny.hu/geoserver/ows?', {
+        layers: 'tr4-tszt:rtszt_tersegi_teruletfelhaszn_kat',
+        transparent: true,
+        format: 'image/png',
+        attribution: 'E-TÉR data by © <a href="https://www.oeny.hu/oeny/4tr/#/tudastar/interaktiv-terkep" target="_blank">Lechner Tudásközpont</a>'
+    }).addTo(map);
+
+    map.setView([46.78, 17.64], 10);
 }
 
 function readWmts(L: typeof Leaflet, map: Leaflet.Map) {

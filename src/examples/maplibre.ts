@@ -5,6 +5,7 @@ import * as Maplibre from 'maplibre-gl';
 const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void> = {
     [FeatureSupportFeature.GEOJSON]: loadGeojson,
     [FeatureSupportFeature.WFS]: readWfs,
+    [FeatureSupportFeature.WMS]: readWms,
     [FeatureSupportFeature.WMTS]: readWmts
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
 
@@ -64,6 +65,27 @@ function readWfs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
         return 'https://view.eumetsat.int/geoserver/osmgray/ows?service=WFS&version=2.0.0&request=GetFeature&srsname=EPSG:4326&typeName=osmgray%3Ane_10m_admin_0_countries_points&outputFormat=application/json'
             + '&bbox=' + map.getBounds().toArray().map(coords => coords.reverse()).flat().join(',');
     }
+}
+
+function readWms(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-natural-2015', {
+            type: 'raster',
+            tiles: [
+                'https://img.nj.gov/imagerywms/Natural2015?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=Natural2015'
+            ],
+            tileSize: 256
+        });
+
+        map.addLayer({
+            id: 'lyr-natural-2015',
+            type: 'raster',
+            source: 'src-natural-2015'
+        });
+    });
+
+    map.setCenter([-74.88, 40.16]);
+    map.setZoom(7);
 }
 
 function readWmts(maplibregl: typeof Maplibre, map: Maplibre.Map) {

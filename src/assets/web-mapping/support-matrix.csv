@@ -20,7 +20,7 @@ WCS,4,4,4,4,The library can read raster data through a WCS connection,
 Image,,,,,Image data exchange format support,
 JPEG,1,1,1,1,The library can read JPEG images,
 PNG,1,1,1,1,The library can read PNG images,
-WMS,1,1,1,1,The library can read images through a WMS connection,
+WMS,1,1,1,1,The library can read images through a WMS connection,"Maplibre GL JS and Cesium JS both use image data rather than images, therefore requested images are subjects to CORS limitations. Either configure a header or use a proxy."
 Tile service,,,,,Tiled image data exchange format support,
 WMTS,1,1,1,1,The library can read tiles through a WMTS connection,
 TMS,1,1,1,1,The library can read tiles through a TMS connection,

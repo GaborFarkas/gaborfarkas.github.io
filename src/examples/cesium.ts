@@ -5,6 +5,7 @@ import * as CesiumLib from 'cesium';
 const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void> = {
     [FeatureSupportFeature.KML]: loadKml,
     [FeatureSupportFeature.GEOJSON]: loadGeojson,
+    [FeatureSupportFeature.WMS]: readWms,
     [FeatureSupportFeature.WMTS]: readWmts
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 
@@ -14,6 +15,20 @@ function loadKml(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
 
 function loadGeojson(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     map.dataSources.add(Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/hungary_settlements.geojson'));
+}
+
+function readWms(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    map.imageryLayers.addImageryProvider(new Cesium.WebMapServiceImageryProvider({
+        url: 'https://img.nj.gov/imagerywms/Natural2015',
+        layers: 'Natural2015',
+        parameters: {
+            format: 'image/png',
+            transparent: true
+        }
+    }));
+
+    const center = Cesium.Cartesian3.fromDegrees(-74.88, 40.16);
+    map.camera.lookAt(center, new Cesium.Cartesian3(0, 0, 100000));
 }
 
 function readWmts(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
