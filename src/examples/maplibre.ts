@@ -6,7 +6,8 @@ const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: ty
     [FeatureSupportFeature.GEOJSON]: loadGeojson,
     [FeatureSupportFeature.WFS]: readWfs,
     [FeatureSupportFeature.WMS]: readWms,
-    [FeatureSupportFeature.WMTS]: readWmts
+    [FeatureSupportFeature.WMTS]: readWmts,
+    [FeatureSupportFeature.XYZ]: readSlippy
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
 
 function loadGeojson(maplibregl: typeof Maplibre, map: Maplibre.Map) {
@@ -108,6 +109,25 @@ function readWmts(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 
     map.setCenter([-99, 40]);
     map.setZoom(3.5);
+}
+
+function readSlippy(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-carto', {
+            type: 'raster',
+            tiles: [
+                'http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            attribution: 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL'
+        });
+
+        map.addLayer({
+            id: 'lyr-carto',
+            type: 'raster',
+            source: 'src-carto'
+        });
+    });
 }
 
 export default exports;

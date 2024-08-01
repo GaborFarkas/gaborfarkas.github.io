@@ -6,7 +6,8 @@ const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: ty
     [FeatureSupportFeature.KML]: loadKml,
     [FeatureSupportFeature.GEOJSON]: loadGeojson,
     [FeatureSupportFeature.WMS]: readWms,
-    [FeatureSupportFeature.WMTS]: readWmts
+    [FeatureSupportFeature.WMTS]: readWmts,
+    [FeatureSupportFeature.XYZ]: readSlippy
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 
 function loadKml(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
@@ -43,6 +44,13 @@ function readWmts(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
 
     const center = Cesium.Cartesian3.fromDegrees(-99, 40);
     map.camera.lookAt(center, new Cesium.Cartesian3(0, 0, 3500000));
+}
+
+function readSlippy(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    map.imageryLayers.addImageryProvider(new Cesium.OpenStreetMapImageryProvider({
+        url: 'http://a.basemaps.cartocdn.com/light_all',
+        credit: new Cesium.Credit('Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL')
+    }));
 }
 
 export default exports;

@@ -11,6 +11,7 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.MAPBOXTILE]: loadVectorTiles,
     [FeatureSupportFeature.WMS]: readWms,
     [FeatureSupportFeature.WMTS]: readWmts,
+    [FeatureSupportFeature.XYZ]: readSlippy,
     [FeatureSupportFeature.NORTH]: northArrow
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
 
@@ -182,6 +183,15 @@ function readWmts(ol: typeof OpenLayers, map: OpenLayers.Map) {
 
     map.getView().setCenter([-10881201, 4688556]);
     map.getView().setZoom(4);
+}
+
+function readSlippy(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url: 'http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+            attributions: 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL'
+        })
+    }));
 }
 
 export default exports;

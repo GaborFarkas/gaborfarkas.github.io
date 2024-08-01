@@ -6,7 +6,8 @@ const exports: Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leafl
     [FeatureSupportFeature.GEOJSON]: loadGeojson,
     [FeatureSupportFeature.WFS]: readWfs,
     [FeatureSupportFeature.WMS]: readWms,
-    [FeatureSupportFeature.WMTS]: readWmts
+    [FeatureSupportFeature.WMTS]: readWmts,
+    [FeatureSupportFeature.XYZ]: readSlippy
 } as Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void>;
 
 async function loadGeojson(L: typeof Leaflet, map: Leaflet.Map) {
@@ -61,6 +62,13 @@ function readWmts(L: typeof Leaflet, map: Leaflet.Map) {
     }).addTo(map);
 
     map.setView([40, -99], 4);
+}
+
+function readSlippy(L: typeof Leaflet, map: Leaflet.Map) {
+    L.tileLayer('http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        continuousWorld: true,
+        attribution: 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL',
+    }).addTo(map);
 }
 
 export default exports;
