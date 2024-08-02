@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { environment } from '@/environments/environment';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 import { OpenLayers } from '@/utils/openlayers';
 
@@ -12,6 +13,9 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.WMS]: readWms,
     [FeatureSupportFeature.WMTS]: readWmts,
     [FeatureSupportFeature.XYZ]: readSlippy,
+    [FeatureSupportFeature.GOOGLE]: readGoogle,
+    [FeatureSupportFeature.ARCGIS]: readArcgis,
+    [FeatureSupportFeature.BING]: readBing,
     [FeatureSupportFeature.NORTH]: northArrow
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
 
@@ -190,6 +194,39 @@ function readSlippy(ol: typeof OpenLayers, map: OpenLayers.Map) {
         source: new ol.source.XYZ({
             url: 'http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
             attributions: 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL'
+        })
+    }));
+}
+
+function readGoogle(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.WebGLTile({
+        source: new ol.source.Google({
+            key: environment.googleMapsApiKey,
+            scale: 'scaleFactor2x',
+            highDpi: true,
+            mapType: 'satellite',
+            layerTypes: ['layerRoadmap'],
+            overlay: false
+        })
+    }));
+}
+
+function readArcgis(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.WebGLTile({
+        source: new ol.source.TileArcGISRest({
+            url: 'https://services.geodataonline.no/arcgis/rest/services/Geocache_UTM33_EUREF89/GeocacheBilder/MapServer'
+        })
+    }));
+
+    map.getView().setCenter([1564542, 9769810]);
+    map.getView().setZoom(4.5);
+}
+
+function readBing(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.WebGLTile({
+        source: new ol.source.BingMaps({
+            key: environment.bingApiKey,
+            imagerySet: 'AerialWithLabelsOnDemand'
         })
     }));
 }

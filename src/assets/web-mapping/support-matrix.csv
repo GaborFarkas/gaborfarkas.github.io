@@ -25,9 +25,9 @@ Tile service,,,,,Tiled image data exchange format support,
 WMTS,1,1,1,1,The library can read tiles through a WMTS connection,
 TMS,1,1,1,1,The library can read tiles through a TMS connection,
 Slippy map,1,1,1,1,The library can read tiles served in an OpenStreetMap Slippy map format,
-Google Maps,2,1,2,1,The library can read Google Maps layers,Cesium’s support focuses on photorealistic 3D tiles with 3D objects.
-ArcGIS REST API,2,1,2,1,The library can read ArcGIS Online layers,
-Bing Maps,2,1,2,1,The library can read Bing Maps layers,
+Google Maps,2,1,2,1,The library can read Google Maps layers,Cesium’s support focuses on photorealistic 3D tiles with 3D objects. Leaflet and Maplibre GL JS need plugins. Every library needs an API key.
+ArcGIS REST API,2,1,2,1,The library can read ArcGIS Online layers,"Cesium’s support is limited to WKIDs (ArcGIS projection codes) 102100, 102113, and 4326. Leaflet and Maplibre GL JS need plugins."
+Bing Maps,2,1,2,1,The library can read Bing Maps layers,"Cesium’s default view uses Bing layers. Leaflet and Maplibre GL JS need plugins. Except Cesium, every library needs an API key."
 Database,,,,,The ability to communicate with spatial databases,
 Connection,,,,,Connecting to spatial databases,
 PostGIS,4,4,4,4,The library can connect to PostGIS databases,
