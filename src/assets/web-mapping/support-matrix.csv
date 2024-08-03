@@ -39,7 +39,7 @@ Query/filter,2,2,2,2,The library is capable of querying and filtering vector dat
 Query language,3,3,3,3,The library can use a query language to query and filter vector data,Possible with a custom IndexedDB vector type.
 Data,,,,,Data operations,
 Pre-process,,,,,Processing capabilities for organizing and manipulating data before display,
-On the fly transformation,1,1,1,1,The library is capable to project vector data on the fly,Maplibre GL JS only transforms from WGS84 to Web Mercator.
+On the fly transformation,4,4,4,1,The library is capable to project vector data on the fly,OpenLayers and Leaflet must transform vector features to the map projection in order to display. Maplibre GL JS only supports Web Mercator as display projection. Cesium’s projection support is also limited.
 Read attribute data,1,1,1,1,The library can use vector attributes,
 "Z, and M coordinates",1,1,1,1,The library preserves Z and M coordinates in vectors,"Maplibre GL JS and Cesium JS utilize Z coordinates, but do not support measurement coordinates."
 Geometry types,1,1,1,1,"The library can interpret the basic geometry types of points, lines, polygons, and their multipart counterparts",

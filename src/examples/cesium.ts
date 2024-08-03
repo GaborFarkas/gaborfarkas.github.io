@@ -10,7 +10,8 @@ const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: ty
     [FeatureSupportFeature.WMTS]: readWmts,
     [FeatureSupportFeature.XYZ]: readSlippy,
     [FeatureSupportFeature.GOOGLE]: readGoogle,
-    [FeatureSupportFeature.ARCGIS]: readArcgis
+    [FeatureSupportFeature.ARCGIS]: readArcgis,
+    [FeatureSupportFeature.ONTHEFLYPROJ]: loadGeojson
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 
 function loadKml(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {

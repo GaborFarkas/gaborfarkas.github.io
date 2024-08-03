@@ -7,6 +7,7 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.HWACCEL]: webglPoints,
     [FeatureSupportFeature.BLEND]: blendLayers,
     [FeatureSupportFeature.KML]: loadKml,
+    [FeatureSupportFeature.GEOJSON]: loadGeojson,
     [FeatureSupportFeature.GEOTIFF]: geoTiff,
     [FeatureSupportFeature.WFS]: readWfs,
     [FeatureSupportFeature.MAPBOXTILE]: loadVectorTiles,
@@ -107,6 +108,17 @@ function loadKml(ol: typeof OpenLayers, map: OpenLayers.Map) {
         source: new ol.source.Vector({
             url: '/assets/web-mapping/sample-data/simple-kml.kml',
             format: new ol.format.KML()
+        })
+    }));
+}
+
+function loadGeojson(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/hungary_settlements.geojson',
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            })
         })
     }));
 }
