@@ -7,11 +7,11 @@ Render image,1,1,1,1,The library can render image files,
 Blend layers,4,2,4,0,The library can overlay different layers using different blending modes,Support in OpenLayers only applies to layers displayed with the canvas renderer.
 Format,,,,,Data exchange format support used in GIS software,
 Vector,,,,,Vector data exchange format support,
-ESRI Shapefile,3,3,3,3,The library can read Shapefiles,There are third-party JavaScript libraries for interpreting Shapefiles.
+ESRI Shapefile,3,3,3,3,The library can read Shapefiles,"There are third-party JavaScript libraries for interpreting Shapefiles (e.g. shapefile-js, shapefile)."
 KML,2,1,2,1,The library can read KMLs,Possible with plugins in Leaflet and Maplibre GL JS.
 GeoJSON,1,1,1,1,The library can read GeoJSONs,
 WFS,2,1,2,3,The library can read vector data through a WFS connection,Easy to manually implement as long as the map can tell its exact view bounds and the WFS server can speak GeoJSON.
-Write transaction,2,2,3,3,The library can write vector data through a WFS-T connection,
+Write transaction,2,2,3,3,The library can write vector data through a WFS-T connection,Leaflet and OpenLayers can make implementing this easier with plugins and built-in support classes.
 Mapbox vector tile,2,1,1,2,The library can read Mapbox vector tiles,OpenLayers does not support Mapbox style JSONs out of the box. Leaflet and Cesium JS need plugins for this. Cesium’s built-in MapboxStyleImageryProvider only works with old (v11) tiles hosted by Mapbox.
 Raster,,,,,Raster data exchange format support,
 GeoTiff,3,1,3,3,The library can read GeoTIFF rasters,Needs geotiff.js in every case. In OpenLayers it is bundled with the library.
@@ -31,15 +31,15 @@ Bing Maps,2,1,2,1,The library can read Bing Maps layers,"Cesium’s default view
 Database,,,,,The ability to communicate with spatial databases,
 Connection,,,,,Connecting to spatial databases,
 PostGIS,4,4,4,4,The library can connect to PostGIS databases,
-SpatiaLite,3,3,3,3,The library can connect to SpatiaLite databases,There is a GeoPackage JavaScript library for this.
+SpatiaLite,3,3,3,3,The library can connect to SpatiaLite databases,There is a GeoPackage JavaScript library for this called geopackage-js.
 MySQL,4,4,4,4,The library can connect to MySQL databases,
 Functionality,,,,,Basic database functionality,
 Using DBMS,3,3,3,3,The library can use any DBMS for vector data,Possible with a custom IndexedDB vector type.
-Query/filter,1,1,1,1,The library is capable of querying and filtering vector data,
+Query/filter,2,2,2,2,The library is capable of querying and filtering vector data,Pretty trivial if you have a DBMS-powered vector layer (e.g. in CARTO).
 Query language,3,3,3,3,The library can use a query language to query and filter vector data,Possible with a custom IndexedDB vector type.
 Data,,,,,Data operations,
 Pre-process,,,,,Processing capabilities for organizing and manipulating data before display,
-On the fly transformation,1,1,4,1,The library is capable to project vector data on the fly,
+On the fly transformation,1,1,1,1,The library is capable to project vector data on the fly,Maplibre GL JS only transforms from WGS84 to Web Mercator.
 Read attribute data,1,1,1,1,The library can use vector attributes,
 "Z, and M coordinates",1,1,1,1,The library preserves Z and M coordinates in vectors,"Maplibre GL JS and Cesium JS utilize Z coordinates, but do not support measurement coordinates."
 Geometry types,1,1,1,1,"The library can interpret the basic geometry types of points, lines, polygons, and their multipart counterparts",
@@ -61,14 +61,14 @@ Typed layers,1,1,4,1,The library has a type system for its layers,
 Analysis,,,,,Complex data manipulation capabilities,
 Basic geoprocessing,3,3,3,3,"The library can do basic vector operations (clip, dissolve, buffer, union, difference)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
 Topological analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
-Modify image,3,1,3,3,The library is capable to transform image data,
+Modify image,3,2,3,3,The library is capable to transform image data,"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
 Modify raster,4,4,4,4,The library is capable to transform raster data,
-Raster algebra,4,1,4,4,The library is capable of executing matrix operations between multiple raster layers,"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
-Classification,4,1,4,4,The library can reclassify raster layers,"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
-Convolution,4,1,4,4,The library can transform rasters with a convolution matrix (moving window),"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
+Raster algebra,4,2,4,4,The library is capable of executing matrix operations between multiple raster layers,"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
+Classification,4,2,4,4,The library can reclassify raster layers,"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
+Convolution,4,2,4,4,The library can transform rasters with a convolution matrix (moving window),"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
 Write WPS request,3,3,3,3,The library is capable of requesting spatial operations through a WPS connection,
 Projection,,,,,Projection handling,
-Transform vector,1,1,1,1,The library can transform geometries between known projections,
+Transform vector,1,1,0,1,The library can transform geometries between known projections,"Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections."
 Warp raster,4,1,4,4,The library can transform raster and image layers between known projections,
 Well-known projections,1,1,4,1,The library can use WG84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,"Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team."
 Custom projections,3,1,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
