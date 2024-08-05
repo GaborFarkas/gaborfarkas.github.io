@@ -17,7 +17,12 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.GOOGLE]: readGoogle,
     [FeatureSupportFeature.ARCGIS]: readArcgis,
     [FeatureSupportFeature.BING]: readBing,
-    [FeatureSupportFeature.NORTH]: northArrow
+    [FeatureSupportFeature.READATTRIB]: readAttribs,
+    [FeatureSupportFeature.ZCOORDS]: zCoords,
+    [FeatureSupportFeature.MCOORDS]: mCoords,
+    [FeatureSupportFeature.NORTH]: northArrow,
+    [FeatureSupportFeature.OVERLAY]: textBox,
+    [FeatureSupportFeature.OVERVIEWMAP]: overviewMap
 } as Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void>;
 
 function webglPoints(ol: typeof OpenLayers, map: OpenLayers.Map) {
@@ -240,6 +245,130 @@ function readBing(ol: typeof OpenLayers, map: OpenLayers.Map) {
             key: environment.bingApiKey,
             imagerySet: 'AerialWithLabelsOnDemand'
         })
+    }));
+}
+
+function readAttribs(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson',
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            })
+        })
+    }));
+
+    const overlayElem = document.createElement('h1');
+    const overlay = new ol.Overlay({
+        element: overlayElem,
+        offset: [10, -5]
+    });
+    map.addOverlay(overlay);
+
+    map.on('pointermove', function (evt) {
+        const feats = map.getFeaturesAtPixel(evt.pixel, {
+            hitTolerance: 5
+        });
+        if (feats?.length) {
+            const attribs = feats[0].getProperties();
+            overlayElem.textContent = attribs.name;
+            overlay.setPosition(evt.coordinate);
+        } else {
+            overlayElem.textContent = '';
+        }
+    });
+
+    map.getView().setCenter([14747744, -3263853]);
+    map.getView().setZoom(4.6);
+}
+
+function zCoords(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson',
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            })
+        })
+    }));
+
+    const overlayElem = document.createElement('h1');
+    const overlay = new ol.Overlay({
+        element: overlayElem,
+        offset: [10, -5]
+    });
+    map.addOverlay(overlay);
+
+    map.on('pointermove', function (evt) {
+        const feats = map.getFeaturesAtPixel(evt.pixel, {
+            hitTolerance: 5
+        });
+        if (feats?.length) {
+            const closest = feats[0].getGeometry().getClosestPoint(evt.coordinate);
+            overlayElem.textContent = `${closest[2]} m`;
+            overlay.setPosition(evt.coordinate);
+        } else {
+            overlayElem.textContent = '';
+        }
+    });
+
+    map.getView().setCenter([14747744, -3263853]);
+    map.getView().setZoom(4.6);
+}
+
+function mCoords(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson',
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            })
+        })
+    }));
+
+    const overlayElem = document.createElement('h1');
+    overlayElem.className = 'whitespace-pre';
+    const overlay = new ol.Overlay({
+        element: overlayElem,
+        offset: [10, -5]
+    });
+    map.addOverlay(overlay);
+
+    map.on('pointermove', function (evt) {
+        const feats = map.getFeaturesAtPixel(evt.pixel, {
+            hitTolerance: 5
+        });
+        if (feats?.length) {
+            const closest = feats[0].getGeometry().getClosestPoint(evt.coordinate);
+            overlayElem.textContent = `This river accumulates water from \n ${Math.round(closest[3] / 10000) / 100} km2 at this point`;
+            overlay.setPosition(evt.coordinate);
+        } else {
+            overlayElem.textContent = '';
+        }
+    });
+
+    map.getView().setCenter([14747744, -3263853]);
+    map.getView().setZoom(4.6);
+}
+
+function textBox(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    const textElem = document.createElement('h1');
+    textElem.textContent = 'This label is managed by the map';
+
+    map.addOverlay(new ol.Overlay({
+        position: map.getView().getCenter(),
+        element: textElem
+    }));
+}
+
+function overviewMap(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addControl(new ol.control.OverviewMap({
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            })
+        ],
+        collapsible: false
     }));
 }
 

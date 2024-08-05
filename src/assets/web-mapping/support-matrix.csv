@@ -41,7 +41,8 @@ Data,,,,,Data operations,
 Pre-process,,,,,Processing capabilities for organizing and manipulating data before display,
 On the fly transformation,4,4,4,1,The library is capable to project vector data on the fly,OpenLayers and Leaflet must transform vector features to the map projection in order to display. Maplibre GL JS only supports Web Mercator as display projection. Cesium’s projection support is also limited.
 Read attribute data,1,1,1,1,The library can use vector attributes,
-"Z, and M coordinates",1,1,1,1,The library preserves Z and M coordinates in vectors,"Maplibre GL JS and Cesium JS utilize Z coordinates, but do not support measurement coordinates."
+Z coordinates,1,1,4,1,The library preserves Z coordinates in vectors,
+M coordinates,1,1,4,4,The library preserves M coordinates in vectors,"Measurement coordinates are not supported and discouraged to use by modern Web vector formats, like GeoJSON. Libraries supporting M coordinates do not distinguish between XYZ  and XYM."
 Geometry types,1,1,1,1,"The library can interpret the basic geometry types of points, lines, polygons, and their multipart counterparts",
 Spatial indexing,2,1,1,1,The library is capable to apply a spatial index on its internal vector layers to speed up processing and display,Leaflet can use the Leaflet.LayerIndex plugin for this.
 Geometry validation,3,3,3,3,The library can validate vector geometries and identify invalid ones,"There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
@@ -73,7 +74,7 @@ Warp raster,4,1,4,4,The library can transform raster and image layers between kn
 Well-known projections,1,1,4,1,The library can use WG84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,"Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team."
 Custom projections,3,1,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
 Interaction,,,,,GUI capabilities,
-Draw features,2,1,2,2,Users can digitize vector features in this library,"Draw functions in Maplibre GL JS use the mapbox-gl-draw plugin, which currently mostly works, but is susceptible to break when the source codes of Maplibre and Mapbox drift apart far enough."
+Draw features,2,1,2,2,Users can digitize vector features in this library,
 Modify features,2,1,2,2,Users can modify features with a mouse-based tool in this library,
 Snap points,2,1,2,3,The library is capable of snapping vertices,
 Modify view,1,1,1,1,The library is capable to change its view settings (e.g. projection) on the fly,
@@ -92,5 +93,5 @@ Scale bar,1,1,1,3,The library can display a scale bar,
 North arrow,2,1,2,2,The library can display a North arrow,
 Legend,3,3,3,3,The library can display a legend for its layers,"Some libraries have layer switcher plugins, but creating a full-fledged legend with styles, categories and labels is always a challenge."
 Graticule,2,1,2,2,The library can display a graticule over the map,
-Text box,1,1,1,1,The library can display overlays,
+Text box,1,1,2,1,The library can display overlays,
 Overview map,2,1,3,3,The library can display an inset map for making orientation and navigation easier,"You can always create and synchronize a second map instance, if everything else fails."

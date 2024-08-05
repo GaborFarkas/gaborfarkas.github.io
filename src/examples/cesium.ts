@@ -11,7 +11,10 @@ const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: ty
     [FeatureSupportFeature.XYZ]: readSlippy,
     [FeatureSupportFeature.GOOGLE]: readGoogle,
     [FeatureSupportFeature.ARCGIS]: readArcgis,
-    [FeatureSupportFeature.ONTHEFLYPROJ]: loadGeojson
+    [FeatureSupportFeature.ONTHEFLYPROJ]: loadGeojson,
+    [FeatureSupportFeature.READATTRIB]: readAttribs,
+    [FeatureSupportFeature.ZCOORDS]: zCoords,
+    [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 
 function loadKml(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
@@ -70,6 +73,54 @@ async function readArcgis(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     map.imageryLayers.addImageryProvider(await Cesium.ArcGisMapServerImageryProvider.fromUrl(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer'
     ));
+}
+
+function readAttribs(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    map.dataSources.add(Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/australia-rivers-zm.geojson'));
+    map.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000)
+    });
+}
+
+function zCoords(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    map.dataSources.add(Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/australia-rivers-zm.geojson'));
+    map.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000)
+    });
+
+    map.entities.add({
+        id: 'elev_lbl',
+        label: {
+            show: false,
+            pixelOffset: new Cesium.Cartesian2(0, -15)
+        }
+    });
+
+    const labelEntity = map.entities.getById('elev_lbl');
+
+    const handler = new Cesium.ScreenSpaceEventHandler(map.canvas);
+    handler.setInputAction(function (evt) {
+        labelEntity.label.show = false;
+
+        const pickedObject = map.scene.pick(evt.endPosition);
+        if (pickedObject && pickedObject.id.polyline) {
+            const coords = pickedObject.id.polyline.positions.getValue();
+            const avgZ = coords.map(coord => Cesium.Cartographic.fromCartesian(coord).height).reduce((acc, val) => acc + val, 0) / coords.length;
+            const cartesian = map.scene.pickPosition(evt.endPosition);
+            labelEntity.position = cartesian;
+            labelEntity.label.show = true;
+            labelEntity.label.text = `Average elevation is ${avgZ} m`;
+        }
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+}
+
+function textBox(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    map.entities.add({
+        position: Cesium.Cartesian3.fromRadians(map.camera.positionCartographic.longitude, map.camera.positionCartographic.latitude),
+        label: {
+            text: 'This label is managed by the map',
+        }
+    });
 }
 
 export default exports;

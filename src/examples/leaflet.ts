@@ -7,7 +7,11 @@ const exports: Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leafl
     [FeatureSupportFeature.WFS]: readWfs,
     [FeatureSupportFeature.WMS]: readWms,
     [FeatureSupportFeature.WMTS]: readWmts,
-    [FeatureSupportFeature.XYZ]: readSlippy
+    [FeatureSupportFeature.XYZ]: readSlippy,
+    [FeatureSupportFeature.READATTRIB]: readAttribs,
+    [FeatureSupportFeature.ZCOORDS]: zCoords,
+    [FeatureSupportFeature.MCOORDS]: mCoords,
+    [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void>;
 
 async function loadGeojson(L: typeof Leaflet, map: Leaflet.Map) {
@@ -68,6 +72,50 @@ function readSlippy(L: typeof Leaflet, map: Leaflet.Map) {
     L.tileLayer('http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
         continuousWorld: true,
         attribution: 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL',
+    }).addTo(map);
+}
+
+async function readAttribs(L: typeof Leaflet, map: Leaflet.Map) {
+    const geojson = await (await fetch('/assets/web-mapping/sample-data/australia-rivers-zm.geojson')).json();
+    L.geoJSON(geojson, {
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(feature.properties.name);
+        }
+    }).addTo(map);
+
+    map.setView([-25.8, 131.4], 4);
+}
+
+async function zCoords(L: typeof Leaflet, map: Leaflet.Map) {
+    const geojson = await (await fetch('/assets/web-mapping/sample-data/australia-rivers-zm.geojson')).json();
+    L.geoJSON(geojson, {
+        onEachFeature: function (feature, layer) {
+            const avgZ = feature.geometry.coordinates.map(coord => coord[2]).reduce((acc, val) => acc + val, 0) / feature.geometry.coordinates.length;
+            layer.bindPopup(`Average elevation is ${avgZ} m`);
+        }
+    }).addTo(map);
+
+    map.setView([-25.8, 131.4], 4);
+}
+
+async function mCoords(L: typeof Leaflet, map: Leaflet.Map) {
+    const geojson = await (await fetch('/assets/web-mapping/sample-data/australia-rivers-zm.geojson')).json();
+    L.geoJSON(geojson, {
+        onEachFeature: function (feature, layer) {
+            const maxM = Math.round(Math.max(...feature.geometry.coordinates.map(coord => coord[3])) / 1000000);
+            layer.bindPopup(`This river accumulates water from ${maxM} km2`);
+        }
+    }).addTo(map);
+
+    map.setView([-25.8, 131.4], 4);
+}
+
+function textBox(L: typeof Leaflet, map: Leaflet.Map) {
+    L.marker(map.getCenter(), {
+        icon: L.divIcon({
+            html: '<h1>This label is managed by the map</h1>',
+            className: 'whitespace-nowrap'
+        })
     }).addTo(map);
 }
 

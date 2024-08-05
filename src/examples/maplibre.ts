@@ -7,7 +7,9 @@ const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: ty
     [FeatureSupportFeature.WFS]: readWfs,
     [FeatureSupportFeature.WMS]: readWms,
     [FeatureSupportFeature.WMTS]: readWmts,
-    [FeatureSupportFeature.XYZ]: readSlippy
+    [FeatureSupportFeature.XYZ]: readSlippy,
+    [FeatureSupportFeature.READATTRIB]: readAttribs,
+    [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
 
 function loadGeojson(maplibregl: typeof Maplibre, map: Maplibre.Map) {
@@ -126,6 +128,64 @@ function readSlippy(maplibregl: typeof Maplibre, map: Maplibre.Map) {
             id: 'lyr-carto',
             type: 'raster',
             source: 'src-carto'
+        });
+    });
+}
+
+function readAttribs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-aus-rivers', {
+            type: 'geojson',
+            data: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson'
+        });
+
+        map.addLayer({
+            id: 'lyr-aus-rivers',
+            source: 'src-aus-rivers',
+            type: 'line',
+            paint: {
+                "line-width": 5,
+                "line-color": "#0000ff"
+            }
+        });
+
+        map.setCenter([131.4, -25.8]);
+        map.setZoom(3.5);
+
+        map.on('click', 'lyr-aus-rivers', (evt) => {
+            if (evt.features?.length) {
+                new maplibregl.Popup()
+                    .setLngLat(evt.lngLat)
+                    .setHTML(evt.features[0].properties.name)
+                    .addTo(map);
+            }
+        });
+    });
+}
+
+function textBox(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-label', {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: [{
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: map.getCenter().toArray()
+                    }
+                }]
+            }
+        });
+
+        map.addLayer({
+            id: 'lyr-label',
+            source: 'src-label',
+            type: 'symbol',
+            layout: {
+                "text-field": 'This label is managed by the map'
+            }
         });
     });
 }
