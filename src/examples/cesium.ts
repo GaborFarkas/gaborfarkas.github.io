@@ -14,6 +14,7 @@ const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: ty
     [FeatureSupportFeature.ONTHEFLYPROJ]: loadGeojson,
     [FeatureSupportFeature.READATTRIB]: readAttribs,
     [FeatureSupportFeature.ZCOORDS]: zCoords,
+    [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 
@@ -112,6 +113,29 @@ function zCoords(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
             labelEntity.label.text = `Average elevation is ${avgZ} m`;
         }
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+}
+
+async function updateAttribs(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    const dataSource = await Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/hungary_settlements.geojson');
+    for (let entity of dataSource.entities.values) {
+        entity.billboard = undefined;
+        entity.point = new Cesium.PointGraphics({
+            color: Cesium.Color.fromCssColorString('#ff7800'),
+            pixelSize: 4
+        });
+    }
+    map.dataSources.add(dataSource);
+
+    const handler = new Cesium.ScreenSpaceEventHandler(map.canvas);
+    handler.setInputAction(function (evt) {
+        const pickedObject = map.scene.pick(evt.position);
+        if (pickedObject && pickedObject.id.point) {
+            if (!pickedObject.id.properties.hasProperty('visited')) {
+                pickedObject.id.properties.addProperty('visited', true);
+                pickedObject.id.point.color = Cesium.Color.fromCssColorString('#ffff00');
+            }
+        }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
 
 function textBox(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {

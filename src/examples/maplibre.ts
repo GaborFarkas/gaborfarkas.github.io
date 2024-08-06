@@ -9,6 +9,8 @@ const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: ty
     [FeatureSupportFeature.WMTS]: readWmts,
     [FeatureSupportFeature.XYZ]: readSlippy,
     [FeatureSupportFeature.READATTRIB]: readAttribs,
+    [FeatureSupportFeature.INTERPOLATE]: heatMap,
+    [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
 
@@ -158,6 +160,61 @@ function readAttribs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
                     .setLngLat(evt.lngLat)
                     .setHTML(evt.features[0].properties.name)
                     .addTo(map);
+            }
+        });
+    });
+}
+
+function heatMap(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-settlements-points', {
+            type: 'geojson',
+            data: '/assets/web-mapping/sample-data/hungary_settlements.geojson'
+        });
+
+        map.addLayer({
+            id: 'lyr-settlements-points',
+            source: 'src-settlements-points',
+            type: 'heatmap',
+            paint: {
+                'heatmap-weight': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'population'],
+                    0,
+                    0,
+                    6,
+                    1
+                ]
+            }
+        });
+    });
+}
+
+function updateAttribs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-settlements-points', {
+            type: 'geojson',
+            data: '/assets/web-mapping/sample-data/hungary_settlements.geojson'
+        });
+
+        map.addLayer({
+            id: 'lyr-settlements-points',
+            source: 'src-settlements-points',
+            type: 'circle',
+            paint: {
+                "circle-color": ['case', ['==', ['get', 'visited'], true], '#ffff00', '#ff7800'],
+                "circle-radius": 4
+            }
+        });
+
+        map.on('click', 'lyr-settlements-points', function (evt) {
+            if (evt.features?.length) {
+                const featName = evt.features[0].properties.name;
+                map.getSource('src-settlements-points').getData().then(data => {
+                    data.features.find(feature => feature.properties.name === featName).properties.visited = true;
+                    map.getSource('src-settlements-points').setData(data);
+                });
             }
         });
     });

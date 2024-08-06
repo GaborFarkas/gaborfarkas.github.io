@@ -47,13 +47,13 @@ Geometry types,1,1,1,1,"The library can interpret the basic geometry types of po
 Spatial indexing,2,1,1,1,The library is capable to apply a spatial index on its internal vector layers to speed up processing and display,Leaflet can use the Leaflet.LayerIndex plugin for this.
 Geometry validation,3,3,3,3,The library can validate vector geometries and identify invalid ones,"There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
 Geometry simplification,1,1,1,1,The library is capable of generalizing vector geometries on the fly,
-Attribute table,3,3,3,3,The library is capable of organizing vector attributes into an attribute table,"The organizing part is quite trivial to do manually, but for the tabular display an external library is recommended."
+Attribute table,3,3,3,3,The library is capable of organizing vector attributes into an attribute table,"The organizing part is quite trivial to do manually, but for the tabular display and data manipulation an external library is recommended."
 Conversion,,,,,Data type conversion support,
 Interpolate,2,1,1,3,The library can interpolate vector data into a raster layer,If we consider heatmap visualization as a form of interpolation.
 Raster to vector,4,4,4,4,The library can vectorize raster data,
 Vector to raster,4,4,4,4,The library can rasterize vector data,
 Manipulation,,,,,Capabilities for raw vector data and layer management,
-Update attribute data,1,1,1,1,The library can write attribute data of vector layers on the fly,
+Update attribute data,1,1,2,1,The library can write attribute data of vector layers on the fly,"In Maplibre GL JS, you have to manually keep track of the GeoJSON data and set it again after any change on the source."
 Update geometry,1,1,1,1,The library can update geometries of vector layers on the fly,
 Field calculator,2,1,1,2,The library has an abstract mechanism for calculating attributes,Maplibre GL JS and OpenLayers have data-driven styling.
 Add/remove layer,1,1,1,1,The library can add and remove layers,

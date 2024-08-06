@@ -20,6 +20,8 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.READATTRIB]: readAttribs,
     [FeatureSupportFeature.ZCOORDS]: zCoords,
     [FeatureSupportFeature.MCOORDS]: mCoords,
+    [FeatureSupportFeature.INTERPOLATE]: heatMap,
+    [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.NORTH]: northArrow,
     [FeatureSupportFeature.OVERLAY]: textBox,
     [FeatureSupportFeature.OVERVIEWMAP]: overviewMap
@@ -349,6 +351,53 @@ function mCoords(ol: typeof OpenLayers, map: OpenLayers.Map) {
 
     map.getView().setCenter([14747744, -3263853]);
     map.getView().setZoom(4.6);
+}
+
+function heatMap(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Heatmap({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/hungary_settlements.geojson',
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            })
+        }),
+        weight: function (feature) {
+            return feature.get('population')
+        }
+    }));
+}
+
+function updateAttribs(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/hungary_settlements.geojson',
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            })
+        }),
+        style: function (feature) {
+            return new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 4,
+                    fill: new ol.style.Fill({
+                        color: feature.get('visited') ? '#ffff00' : '#ff7800',
+                        opacity: 0.8
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#000',
+                        width: 1
+                    })
+                })
+            });
+        }
+    }));
+
+    map.on('click', function (evt) {
+        const feats = map.getFeaturesAtPixel(evt.pixel);
+        if (feats?.length) {
+            feats[0].set('visited', true);
+        }
+    });
 }
 
 function textBox(ol: typeof OpenLayers, map: OpenLayers.Map) {

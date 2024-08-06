@@ -11,6 +11,7 @@ const exports: Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leafl
     [FeatureSupportFeature.READATTRIB]: readAttribs,
     [FeatureSupportFeature.ZCOORDS]: zCoords,
     [FeatureSupportFeature.MCOORDS]: mCoords,
+    [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void>;
 
@@ -108,6 +109,36 @@ async function mCoords(L: typeof Leaflet, map: Leaflet.Map) {
     }).addTo(map);
 
     map.setView([-25.8, 131.4], 4);
+}
+
+async function updateAttribs(L: typeof Leaflet, map: Leaflet.Map) {
+    const geojson = await (await fetch('/assets/web-mapping/sample-data/hungary_settlements.geojson')).json();
+    const layer = L.geoJSON(geojson, {
+        // By default, Leaflet adds points as clickable markers, which has a huge impact on performance.
+        // No problem with lines and polygons.
+        pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng);
+        },
+        style: styleFunction
+    }).addTo(map);
+
+    layer.on('click', function (evt) {
+        if (evt.sourceTarget) {
+            evt.sourceTarget.feature.properties.visited = true;
+            layer.setStyle(styleFunction);
+        }
+    });
+
+    function styleFunction(feature) {
+        return {
+            radius: 4,
+            fillColor: feature?.properties.visited ? '#ffff00' : '#ff7800',
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        }
+    }
 }
 
 function textBox(L: typeof Leaflet, map: Leaflet.Map) {
