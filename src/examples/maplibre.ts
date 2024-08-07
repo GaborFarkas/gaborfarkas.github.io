@@ -11,6 +11,7 @@ const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: ty
     [FeatureSupportFeature.READATTRIB]: readAttribs,
     [FeatureSupportFeature.INTERPOLATE]: heatMap,
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
+    [FeatureSupportFeature.UPDATEGEOM]: updateGeom,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
 
@@ -217,6 +218,44 @@ function updateAttribs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
                 });
             }
         });
+    });
+}
+
+function updateGeom(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        const geojson = {
+            type: "FeatureCollection",
+            features: [{
+                type: "Feature",
+                geometry: {
+                    type: "LineString",
+                    coordinates: [[Math.random() * 360 - 180, Math.random() * 180 - 90], [Math.random() * 360 - 180, Math.random() * 180 - 90]]
+                }
+            }]
+        };
+
+        map.addSource('src-random-line', {
+            type: 'geojson',
+            data: geojson
+        });
+
+        map.addLayer({
+            id: 'lyr-random-line',
+            source: 'src-random-line',
+            type: 'line',
+            paint: {
+                "line-width": 5,
+                "line-color": "#0000ff"
+            }
+        });
+
+        map.on('click', function () {
+            geojson.features[0].geometry.coordinates.push([Math.random() * 360 - 180, Math.random() * 180 - 90]);
+            map.getSource('src-random-line').setData(geojson);
+        });
+
+        map.setCenter([0, 0]);
+        map.setZoom(1);
     });
 }
 

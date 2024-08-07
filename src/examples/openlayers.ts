@@ -22,6 +22,7 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.MCOORDS]: mCoords,
     [FeatureSupportFeature.INTERPOLATE]: heatMap,
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
+    [FeatureSupportFeature.UPDATEGEOM]: updateGeom,
     [FeatureSupportFeature.NORTH]: northArrow,
     [FeatureSupportFeature.OVERLAY]: textBox,
     [FeatureSupportFeature.OVERVIEWMAP]: overviewMap
@@ -103,11 +104,6 @@ function geoTiff(ol: typeof OpenLayers, map: OpenLayers.Map) {
 
     map.getView().setCenter([546484, 1842303]);
     map.getView().setZoom(9);
-}
-
-function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {
-    map.addControl(new ol.control.Rotate());
-    map.getView().setRotation(Math.PI / 4);
 }
 
 function loadKml(ol: typeof OpenLayers, map: OpenLayers.Map) {
@@ -398,6 +394,29 @@ function updateAttribs(ol: typeof OpenLayers, map: OpenLayers.Map) {
             feats[0].set('visited', true);
         }
     });
+}
+
+function updateGeom(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    const lineFeat = new ol.Feature({
+        geometry: new ol.geom.LineString([ol.proj.fromLonLat([Math.random() * 360 - 180, Math.random() * 180 - 90]), ol.proj.fromLonLat([Math.random() * 360 - 180, Math.random() * 180 - 90])])
+    });
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            features: [lineFeat]
+        })
+    }));
+
+    map.on('click', function () {
+        lineFeat.getGeometry()?.appendCoordinate(ol.proj.fromLonLat([Math.random() * 360 - 180, Math.random() * 180 - 90]));
+    })
+
+    map.getView().setCenter([0, 0]);
+    map.getView().setZoom(0);
+}
+
+function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addControl(new ol.control.Rotate());
+    map.getView().setRotation(Math.PI / 4);
 }
 
 function textBox(ol: typeof OpenLayers, map: OpenLayers.Map) {

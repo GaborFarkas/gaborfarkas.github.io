@@ -54,7 +54,7 @@ Raster to vector,4,4,4,4,The library can vectorize raster data,
 Vector to raster,4,4,4,4,The library can rasterize vector data,
 Manipulation,,,,,Capabilities for raw vector data and layer management,
 Update attribute data,1,1,2,1,The library can write attribute data of vector layers on the fly,"In Maplibre GL JS, you have to manually keep track of the GeoJSON data and set it again after any change on the source."
-Update geometry,1,1,1,1,The library can update geometries of vector layers on the fly,
+Update geometry,2,1,2,1,The library can update geometries of vector layers on the fly,Leaflet can use the official Leaflet.Editable plugin for this. In Maplibre GL JS you have to reset the GeoJSON data source after each edit.
 Field calculator,2,1,1,2,The library has an abstract mechanism for calculating attributes,Maplibre GL JS and OpenLayers have data-driven styling.
 Add/remove layer,1,1,1,1,The library can add and remove layers,
 Change layer order,1,1,2,1,The library is capable of changing the visual order of layers,Maplibre GL JS does not have a traditional concept of layers. You can reorder features based on attributes with some code.
@@ -69,10 +69,10 @@ Classification,4,2,4,4,The library can reclassify raster layers,"Only works in O
 Convolution,4,2,4,4,The library can transform rasters with a convolution matrix (moving window),"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
 Write WPS request,3,3,3,3,The library is capable of requesting spatial operations through a WPS connection,
 Projection,,,,,Projection handling,
-Transform vector,1,1,0,1,The library can transform geometries between known projections,"Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections."
+Transform vector,1,1,4,1,The library can transform geometries between known projections,"Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections."
 Warp raster,4,1,4,4,The library can transform raster and image layers between known projections,
 Well-known projections,1,1,4,1,The library can use WG84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,"Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team."
-Custom projections,3,1,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
+Custom projections,2,2,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
 Interaction,,,,,GUI capabilities,
 Draw features,2,1,2,2,Users can digitize vector features in this library,
 Modify features,2,1,2,2,Users can modify features with a mouse-based tool in this library,

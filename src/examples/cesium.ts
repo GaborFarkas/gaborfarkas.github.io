@@ -15,6 +15,7 @@ const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: ty
     [FeatureSupportFeature.READATTRIB]: readAttribs,
     [FeatureSupportFeature.ZCOORDS]: zCoords,
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
+    [FeatureSupportFeature.UPDATEGEOM]: updateGeom,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 
@@ -135,6 +136,31 @@ async function updateAttribs(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
                 pickedObject.id.point.color = Cesium.Color.fromCssColorString('#ffff00');
             }
         }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+}
+
+async function updateGeom(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    const geojson = {
+        type: "FeatureCollection",
+        features: [{
+            type: "Feature",
+            geometry: {
+                type: "LineString",
+                coordinates: [[Math.random() * 360 - 180, Math.random() * 180 - 90], [Math.random() * 360 - 180, Math.random() * 180 - 90]]
+            }
+        }]
+    };
+
+    const source = await Cesium.GeoJsonDataSource.load(geojson);
+    const polyline = source.entities.values[0].polyline;
+
+    map.dataSources.add(source);
+
+    const handler = new Cesium.ScreenSpaceEventHandler(map.canvas);
+    handler.setInputAction(function (evt) {
+        const currCoords = polyline.positions.getValue();
+        currCoords.push(Cesium.Cartesian3.fromDegrees(Math.random() * 180 - 90, Math.random() * 360 - 180));
+        polyline.positions = currCoords;
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
 
