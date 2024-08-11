@@ -12,6 +12,7 @@ const exports: Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leafl
     [FeatureSupportFeature.ZCOORDS]: zCoords,
     [FeatureSupportFeature.MCOORDS]: mCoords,
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
+    [FeatureSupportFeature.ADDRMLYR]: addRmLayer,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void>;
 
@@ -139,6 +140,29 @@ async function updateAttribs(L: typeof Leaflet, map: Leaflet.Map) {
             fillOpacity: 0.8
         }
     }
+}
+
+async function addRmLayer(L: typeof Leaflet, map: Leaflet.Map) {
+    const geojson = await (await fetch('/assets/web-mapping/sample-data/australia-rivers-zm.geojson')).json();
+    const lyr = L.geoJSON(geojson, {
+        onEachFeature: function (feature, layer) {
+            const maxM = Math.round(Math.max(...feature.geometry.coordinates.map(coord => coord[3])) / 1000000);
+            layer.bindPopup(`This river accumulates water from ${maxM} km2`);
+        }
+    }).addTo(map);
+    let added = true;
+
+    map.setView([-25.8, 131.4], 4);
+
+    map.on('click', function () {
+        if (added) {
+            map.removeLayer(lyr);
+        } else {
+            map.addLayer(lyr);
+        }
+
+        added = !added;
+    });
 }
 
 function textBox(L: typeof Leaflet, map: Leaflet.Map) {

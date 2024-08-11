@@ -57,8 +57,8 @@ Update attribute data,1,1,2,1,The library can write attribute data of vector lay
 Update geometry,2,1,2,1,The library can update geometries of vector layers on the fly,Leaflet can use the official Leaflet.Editable plugin for this. In Maplibre GL JS you have to reset the GeoJSON data source after each edit.
 Field calculator,2,1,1,2,The library has an abstract mechanism for calculating attributes,Maplibre GL JS and OpenLayers have data-driven styling.
 Add/remove layer,1,1,1,1,The library can add and remove layers,
-Change layer order,1,1,2,1,The library is capable of changing the visual order of layers,Maplibre GL JS does not have a traditional concept of layers. You can reorder features based on attributes with some code.
-Typed layers,1,1,4,1,The library has a type system for its layers,
+Change layer order,4,1,1,4,The library is capable of changing the visual order of layers,"Leaflet and Cesium cannot render vectors below image layers, although they can order layers of those two types relative to other layers in the same type. In Maplibre GL JS, the base map usually consists of many layers."
+Typed layers,1,1,1,1,The library has a type system for its layers,"Maplibre GL JS uses enums, the other libraries use classes and inheritance. In Cesium, layers and data sources are the same."
 Analysis,,,,,Complex data manipulation capabilities,
 Basic geoprocessing,3,3,3,3,"The library can do basic vector operations (clip, dissolve, buffer, union, difference)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
 Topological analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."

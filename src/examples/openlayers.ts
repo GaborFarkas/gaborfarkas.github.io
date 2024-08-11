@@ -23,6 +23,8 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.INTERPOLATE]: heatMap,
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.UPDATEGEOM]: updateGeom,
+    [FeatureSupportFeature.ADDRMLYR]: addRmLayer,
+    [FeatureSupportFeature.LYRORDER]: changeLayerOrder,
     [FeatureSupportFeature.NORTH]: northArrow,
     [FeatureSupportFeature.OVERLAY]: textBox,
     [FeatureSupportFeature.OVERVIEWMAP]: overviewMap
@@ -412,6 +414,89 @@ function updateGeom(ol: typeof OpenLayers, map: OpenLayers.Map) {
 
     map.getView().setCenter([0, 0]);
     map.getView().setZoom(0);
+}
+
+function addRmLayer(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    const lyr = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson',
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            })
+        })
+    });
+    map.addLayer(lyr);
+    let added = true;
+
+    map.getView().setCenter([14747744, -3263853]);
+    map.getView().setZoom(4.6);
+
+    map.on('click', function () {
+        if (added) {
+            map.removeLayer(lyr);
+        } else {
+            map.addLayer(lyr);
+        }
+
+        added = !added;
+    });
+}
+
+function changeLayerOrder(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.getLayers().item(0).setOpacity(0.9);
+
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+            url: 'https://www.oeny.hu/geoserver/ows',
+            serverType: 'geoserver',
+            params: {
+                'LAYERS': 'tr4-tszt:rtszt_tersegi_teruletfelhaszn_kat'
+            },
+            attributions: 'E-TÉR data by © <a href="https://www.oeny.hu/oeny/4tr/#/tudastar/interaktiv-terkep" target="_blank">Lechner Tudásközpont</a>'
+        }),
+        opacity: 0.7
+    }));
+
+    const vectorLyr = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            }),
+            url: '/assets/web-mapping/sample-data/hungary_settlements.geojson'
+        }),
+        style: new ol.style.Style({
+            image: new ol.style.Circle({
+                fill: new ol.style.Fill({
+                    color: '#006688'
+                }),
+                radius: 6
+            })
+        })
+    });
+    map.addLayer(vectorLyr);
+
+    map.on('click', function () {
+        const currIdx = map.getLayers().getArray().indexOf(vectorLyr);
+
+        if (currIdx > 0) {
+            map.getLayers().remove(vectorLyr);
+            map.getLayers().insertAt(currIdx - 1, vectorLyr);
+        }
+    });
+
+    map.getTargetElement().addEventListener('contextmenu', function (evt) {
+        evt.preventDefault();
+
+        const currIdx = map.getLayers().getArray().indexOf(vectorLyr);
+
+        if (currIdx < map.getLayers().getLength() - 1) {
+            map.getLayers().remove(vectorLyr);
+            map.getLayers().insertAt(currIdx + 1, vectorLyr);
+        }
+    });
+
+    map.getView().setCenter([1962131, 5908264]);
+    map.getView().setZoom(10);
 }
 
 function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {

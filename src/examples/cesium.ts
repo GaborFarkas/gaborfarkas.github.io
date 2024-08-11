@@ -16,6 +16,7 @@ const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: ty
     [FeatureSupportFeature.ZCOORDS]: zCoords,
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.UPDATEGEOM]: updateGeom,
+    [FeatureSupportFeature.ADDRMLYR]: addRmLayer,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 
@@ -161,6 +162,26 @@ async function updateGeom(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
         const currCoords = polyline.positions.getValue();
         currCoords.push(Cesium.Cartesian3.fromDegrees(Math.random() * 180 - 90, Math.random() * 360 - 180));
         polyline.positions = currCoords;
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+}
+
+async function addRmLayer(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    const dataSource = await Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/australia-rivers-zm.geojson');
+    map.dataSources.add(dataSource);
+    map.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000)
+    });
+    let added = true;
+
+    const handler = new Cesium.ScreenSpaceEventHandler(map.canvas);
+    handler.setInputAction(function (evt) {
+        if (added) {
+            map.dataSources.remove(dataSource);
+        } else {
+            map.dataSources.add(dataSource);
+        }
+
+        added = !added;
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
 

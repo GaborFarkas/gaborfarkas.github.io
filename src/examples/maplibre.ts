@@ -12,6 +12,8 @@ const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: ty
     [FeatureSupportFeature.INTERPOLATE]: heatMap,
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.UPDATEGEOM]: updateGeom,
+    [FeatureSupportFeature.ADDRMLYR]: addRmLayer,
+    [FeatureSupportFeature.LYRORDER]: changeLayerOrder,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
 
@@ -256,6 +258,105 @@ function updateGeom(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 
         map.setCenter([0, 0]);
         map.setZoom(1);
+    });
+}
+
+function addRmLayer(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-aus-rivers', {
+            type: 'geojson',
+            data: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson'
+        });
+
+        const lyr = {
+            id: 'lyr-aus-rivers',
+            source: 'src-aus-rivers',
+            type: 'line',
+            paint: {
+                "line-width": 5,
+                "line-color": "#0000ff"
+            }
+        };
+
+        map.addLayer(lyr);
+
+        map.setCenter([131.4, -25.8]);
+        map.setZoom(3.5);
+        let added = true;
+
+        map.on('click', (evt) => {
+            if (added) {
+                map.removeLayer('lyr-aus-rivers');
+            } else {
+                map.addLayer(lyr);
+            }
+
+            added = !added;
+        });
+    });
+}
+
+function changeLayerOrder(maplibregl: typeof Maplibre, map: Maplibre.Map) {
+    map.on('load', evt => {
+        map.addSource('src-carto', {
+            type: 'raster',
+            tiles: [
+                'http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            attribution: 'Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL'
+        });
+
+        map.addLayer({
+            id: 'lyr-carto',
+            type: 'raster',
+            source: 'src-carto',
+            paint: {
+                "raster-opacity": 0.7
+            }
+        });
+
+        map.addSource('src-settlements-points', {
+            type: 'geojson',
+            data: '/assets/web-mapping/sample-data/hungary_settlements.geojson'
+        });
+
+        map.addLayer({
+            id: 'lyr-settlements-points',
+            source: 'src-settlements-points',
+            type: 'circle',
+            paint: {
+                "circle-color": '#006688',
+                "circle-radius": 6
+            }
+        });
+
+        map.setCenter([17.64, 46.78]);
+        map.setZoom(10);
+
+        const layers = map.getLayersOrder();
+
+        map.on('click', function () {
+            const idx = layers.indexOf('lyr-settlements-points');
+            if (idx > 0) {
+                layers.splice(idx, 1);
+                layers.splice(idx - 1, 0, 'lyr-settlements-points');
+                layers.forEach(layer => {
+                    map.moveLayer(layer);
+                });
+            }
+        });
+
+        map.on('contextmenu', function () {
+            const idx = layers.indexOf('lyr-settlements-points');
+            if (idx < layers.length - 1) {
+                layers.splice(idx, 1);
+                layers.splice(idx + 1, 0, 'lyr-settlements-points');
+                layers.forEach(layer => {
+                    map.moveLayer(layer);
+                });
+            }
+        });
     });
 }
 
