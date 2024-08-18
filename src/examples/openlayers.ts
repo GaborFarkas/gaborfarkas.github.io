@@ -25,6 +25,8 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.UPDATEGEOM]: updateGeom,
     [FeatureSupportFeature.ADDRMLYR]: addRmLayer,
     [FeatureSupportFeature.LYRORDER]: changeLayerOrder,
+    [FeatureSupportFeature.MODIFYIMG]: modifyImage,
+    [FeatureSupportFeature.RASTCALC]: rasterAlgebra,
     [FeatureSupportFeature.NORTH]: northArrow,
     [FeatureSupportFeature.OVERLAY]: textBox,
     [FeatureSupportFeature.OVERVIEWMAP]: overviewMap
@@ -95,9 +97,9 @@ function geoTiff(ol: typeof OpenLayers, map: OpenLayers.Map) {
     const source = new ol.source.GeoTIFF({
         sources: [
             {
-                url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif',
-            },
-        ],
+                url: 'https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/36/Q/WD/2020/7/S2A_36QWD_20200701_0_L2A/TCI.tif'
+            }
+        ]
     });
 
     map.addLayer(new ol.layer.WebGLTile({
@@ -497,6 +499,55 @@ function changeLayerOrder(ol: typeof OpenLayers, map: OpenLayers.Map) {
 
     map.getView().setCenter([1962131, 5908264]);
     map.getView().setZoom(10);
+}
+
+function modifyImage(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Image({
+        source: new ol.source.Raster({
+            sources: [
+                new ol.source.OSM()
+            ],
+            operationType: 'pixel',
+            operation: function (inputs) {
+                // A simple averaging grayscale filter
+                const rgba = inputs[0];
+                const avg = Math.round((rgba[0] + rgba[1] + rgba[2]) / 3);
+                return [avg, avg, avg, rgba[3]];
+            }
+        })
+    }));
+}
+
+function rasterAlgebra(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.WebGLTile({
+        source: new ol.source.GeoTIFF({
+            sources: [{
+                url: '/assets/web-mapping/sample-data/baranya-landsat-8.tif',
+                bands: [3, 4]
+            }],
+            normalize: false
+        }),
+        style: {
+            color: [
+                'case',
+                // In OL there is an extra band holding no-data cells.
+                ['==', ['band', 3], 0],
+                ['color', 0, 0, 0, 0],
+                [
+                    'interpolate',
+                    ['linear'],
+                    // Calculate NDVI from red (band 1) and NIR (band 2)
+                    ['/', ['-', ['band', 2], ['band', 1]], ['+', ['band', 2], ['band', 1]]],
+                    0,
+                    [191, 191, 191],
+                    0.2,
+                    [12, 221, 8],
+                    1,
+                    [0, 69, 0]
+                ]
+            ]
+        }
+    }))
 }
 
 function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {
