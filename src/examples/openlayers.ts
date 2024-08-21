@@ -27,6 +27,8 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.LYRORDER]: changeLayerOrder,
     [FeatureSupportFeature.MODIFYIMG]: modifyImage,
     [FeatureSupportFeature.RASTCALC]: rasterAlgebra,
+    [FeatureSupportFeature.CLASSIFY]: classify,
+    [FeatureSupportFeature.CONVOLVE]: convolve,
     [FeatureSupportFeature.NORTH]: northArrow,
     [FeatureSupportFeature.OVERLAY]: textBox,
     [FeatureSupportFeature.OVERVIEWMAP]: overviewMap
@@ -547,7 +549,85 @@ function rasterAlgebra(ol: typeof OpenLayers, map: OpenLayers.Map) {
                 ]
             ]
         }
-    }))
+    }));
+}
+
+function classify(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.WebGLTile({
+        source: new ol.source.GeoTIFF({
+            sources: [{
+                url: '/assets/web-mapping/sample-data/fejer-srtm-aspect.tif'
+            }],
+            normalize: false,
+            interpolate: false
+        }),
+        style: {
+            color: [
+                'case',
+                // In OL there is an extra band holding no-data cells.
+                ['==', ['band', 2], 0],
+                ['color', 0, 0, 0, 0],
+                // Red for northern aspect
+                ['between', ['band', 1], 0, 45],
+                ['color', 255, 0, 0, 1],
+                // Green for eastern aspect
+                ['between', ['band', 1], 45, 135],
+                ['color', 0, 255, 0, 1],
+                // Blue for southern aspect
+                ['between', ['band', 1], 135, 225],
+                ['color', 0, 0, 255, 1],
+                // Yellow for western aspect
+                ['between', ['band', 1], 225, 315],
+                ['color', 255, 255, 0, 1],
+                // Red for northern aspect
+                ['between', ['band', 1], 315, 360],
+                ['color', 255, 0, 0, 1],
+                // Transparent for the rest
+                ['color', 0, 0, 0, 0]
+            ]
+        }
+    }));
+}
+
+function convolve(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.WebGLTile({
+        source: new ol.source.GeoTIFF({
+            sources: [{
+                url: '/assets/web-mapping/sample-data/fejer-srtm-dem.tif'
+            }],
+            normalize: false
+        }),
+        style: {
+            color: [
+                'case',
+                // In OL there is an extra band holding no-data cells.
+                ['==', ['band', 2], 0],
+                ['color', 0, 0, 0, 0],
+                [
+                    'interpolate',
+                    ['linear'],
+                    // Calculate ruggedness using TRI by Riley et al. (1999)
+                    ['+',
+                        ['-',
+                            // 8Esq
+                            ['*', 8, ['^', ['band', 1], 2]],
+                            ['*',
+                                ['*', 2, ['band', 1]],
+                                // Focal sum
+                                ['+', ['+', ['+', ['+', ['+', ['+', ['+', ['band', 1, -1, -1], ['band', 1, 0, -1]], ['band', 1, 1, -1]], ['band', 1, 1, 0]], ['band', 1, 1, 1]], ['band', 1, 0, 1]], ['band', 1, -1, 1]], ['band', 1, -1, 0]]
+                            ]
+                        ],
+                        // Focal squared
+                        ['+', ['+', ['+', ['+', ['+', ['+', ['+', ['^', ['band', 1, -1, -1], 2], ['^', ['band', 1, 0, -1], 2]], ['^', ['band', 1, 1, -1], 2]], ['^', ['band', 1, 1, 0], 2]], ['^', ['band', 1, 1, 1], 2]], ['^', ['band', 1, 0, 1], 2]], ['^', ['band', 1, -1, 1], 2]], ['^', ['band', 1, -1, 0], 2]]
+                    ],
+                    0,
+                    [0, 0, 0, 1],
+                    200,
+                    [255, 255, 255, 1]
+                ]
+            ]
+        }
+    }));
 }
 
 function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {

@@ -66,7 +66,7 @@ Modify image,3,2,3,3,The library is capable to transform image data,
 Modify raster,4,4,4,4,The library is capable to transform raster data,
 Raster algebra,4,1,4,4,The library is capable of executing matrix operations between multiple raster layers,
 Classification,4,1,4,4,The library can reclassify raster layers,
-Convolution,4,2,4,4,The library can transform rasters with a convolution matrix (moving window),"Only works in OpenLayers with image layers using an ol/source/Raster source, not with GeoTIFF rasters."
+Convolution,4,1,4,4,The library can transform rasters with a convolution matrix (moving window),It is quite hard to formulate even 3x3 kernel operations with style expressions in OpenLayers.
 Write WPS request,3,3,3,3,The library is capable of requesting spatial operations through a WPS connection,
 Projection,,,,,Projection handling,
 Transform vector,1,1,4,1,The library can transform geometries between known projections,"Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections."
