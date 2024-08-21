@@ -550,6 +550,9 @@ function rasterAlgebra(ol: typeof OpenLayers, map: OpenLayers.Map) {
             ]
         }
     }));
+
+    map.getView().setCenter([2026714, 5794064]);
+    map.getView().setZoom(9.5);
 }
 
 function classify(ol: typeof OpenLayers, map: OpenLayers.Map) {
@@ -587,6 +590,9 @@ function classify(ol: typeof OpenLayers, map: OpenLayers.Map) {
             ]
         }
     }));
+
+    map.getView().setCenter([2056439, 5962700]);
+    map.getView().setZoom(9.5);
 }
 
 function convolve(ol: typeof OpenLayers, map: OpenLayers.Map) {
@@ -617,7 +623,7 @@ function convolve(ol: typeof OpenLayers, map: OpenLayers.Map) {
                                 ['+', ['+', ['+', ['+', ['+', ['+', ['+', ['band', 1, -1, -1], ['band', 1, 0, -1]], ['band', 1, 1, -1]], ['band', 1, 1, 0]], ['band', 1, 1, 1]], ['band', 1, 0, 1]], ['band', 1, -1, 1]], ['band', 1, -1, 0]]
                             ]
                         ],
-                        // Focal squared
+                        // Focal squared sum
                         ['+', ['+', ['+', ['+', ['+', ['+', ['+', ['^', ['band', 1, -1, -1], 2], ['^', ['band', 1, 0, -1], 2]], ['^', ['band', 1, 1, -1], 2]], ['^', ['band', 1, 1, 0], 2]], ['^', ['band', 1, 1, 1], 2]], ['^', ['band', 1, 0, 1], 2]], ['^', ['band', 1, -1, 1], 2]], ['^', ['band', 1, -1, 0], 2]]
                     ],
                     0,
@@ -628,6 +634,9 @@ function convolve(ol: typeof OpenLayers, map: OpenLayers.Map) {
             ]
         }
     }));
+
+    map.getView().setCenter([2056439, 5962700]);
+    map.getView().setZoom(9.5);
 }
 
 function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {
