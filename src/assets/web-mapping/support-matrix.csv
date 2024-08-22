@@ -69,19 +69,20 @@ Classification,4,1,4,4,The library can reclassify raster layers,
 Convolution,4,1,4,4,The library can transform rasters with a convolution matrix (moving window),It is quite hard to formulate even 3x3 kernel operations with style expressions in OpenLayers.
 Write WPS request,3,3,3,3,The library is capable of requesting spatial operations through a WPS connection,
 Projection,,,,,Projection handling,
-Transform vector,1,1,4,1,The library can transform geometries between known projections,"Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections."
-Warp raster,4,1,4,4,The library can transform raster and image layers between known projections,
-Well-known projections,1,1,4,1,The library can use WG84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,"Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team."
+Transform vector,1,1,4,4,The library can transform geometries between known projections,"Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections. Cesium only supports WGS84 for vectors."
+Warp raster,4,1,4,1,The library can transform raster and image layers between known projections,"OpenLayers cannot yet warp GeoTIFF rasters, but it can warp any image layer. Cesium’s support only covers Web Mercator image tiles."
+Well-known projections,1,1,4,1,The library can use WGS84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,"Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team."
 Custom projections,2,2,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
 Interaction,,,,,GUI capabilities,
 Draw features,2,1,2,2,Users can digitize vector features in this library,
 Modify features,2,1,2,2,Users can modify features with a mouse-based tool in this library,
 Snap points,2,1,2,3,The library is capable of snapping vertices,
 Modify view,1,1,1,1,The library is capable to change its view settings (e.g. projection) on the fly,
-Select features,2,1,2,2,Users can select features with a mouse-based tool in this library,
-Query,3,3,3,3,Users can query features using the GUI in this library,
+Select features,2,1,2,1,Users can select features with a mouse-based tool in this library,
+Query features,3,3,3,3,Users can query features using the GUI in this library,
+Query raster,4,1,4,4,Users can query raster values with a mouse-based tool in this library,
 Measure,2,1,2,2,Users can measure lengths and areas with a mouse-based tool in this library,
-Change time,3,3,3,1,The library offers temporal controls to users,
+Change time,3,3,3,1,The library offers temporal controls to users,MapLibre GL JS can use plugin maplibre-gl-temporal-control for this.
 Mouse coordinates,2,1,2,2,The library can display mouse coordinates,
 Representation,,,,,Thematic data visualization capabilities,
 Styling,,,,,Features required for creating thematic map content,

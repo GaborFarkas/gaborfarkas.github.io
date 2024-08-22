@@ -17,6 +17,7 @@ const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: ty
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.UPDATEGEOM]: updateGeom,
     [FeatureSupportFeature.ADDRMLYR]: addRmLayer,
+    [FeatureSupportFeature.WARPRAST]: readSlippy,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 

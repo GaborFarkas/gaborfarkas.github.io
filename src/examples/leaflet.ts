@@ -13,6 +13,7 @@ const exports: Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leafl
     [FeatureSupportFeature.MCOORDS]: mCoords,
     [FeatureSupportFeature.UPDATEATTRIB]: updateAttribs,
     [FeatureSupportFeature.ADDRMLYR]: addRmLayer,
+    [FeatureSupportFeature.TRANSVECT]: transformVector,
     [FeatureSupportFeature.OVERLAY]: textBox
 } as Record<FeatureSupportFeature, (this: Leaflet.Map, L: typeof Leaflet, map: Leaflet.Map) => void>;
 
@@ -163,6 +164,13 @@ async function addRmLayer(L: typeof Leaflet, map: Leaflet.Map) {
 
         added = !added;
     });
+}
+
+async function transformVector(L: typeof Leaflet, map: Leaflet.Map) {
+    const geojson = await (await fetch('/assets/web-mapping/sample-data/australia-rivers-zm.geojson')).json();
+    const lyr = L.geoJSON(geojson).addTo(map);
+
+    map.setView([-25.8, 131.4], 4);
 }
 
 function textBox(L: typeof Leaflet, map: Leaflet.Map) {

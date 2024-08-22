@@ -29,6 +29,8 @@ const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof O
     [FeatureSupportFeature.RASTCALC]: rasterAlgebra,
     [FeatureSupportFeature.CLASSIFY]: classify,
     [FeatureSupportFeature.CONVOLVE]: convolve,
+    [FeatureSupportFeature.TRANSVECT]: transformVector,
+    [FeatureSupportFeature.WARPRAST]: warpRaster,
     [FeatureSupportFeature.NORTH]: northArrow,
     [FeatureSupportFeature.OVERLAY]: textBox,
     [FeatureSupportFeature.OVERVIEWMAP]: overviewMap
@@ -637,6 +639,28 @@ function convolve(ol: typeof OpenLayers, map: OpenLayers.Map) {
 
     map.getView().setCenter([2056439, 5962700]);
     map.getView().setZoom(9.5);
+}
+
+function transformVector(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.addLayer(new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson',
+            format: new ol.format.GeoJSON({
+                dataProjection: 'EPSG:4326'
+            })
+        })
+    }));
+
+    map.getView().setCenter([14747744, -3263853]);
+    map.getView().setZoom(4.6);
+}
+
+function warpRaster(ol: typeof OpenLayers, map: OpenLayers.Map) {
+    map.setView(new ol.View({
+        projection: 'EPSG:4326',
+        center: [0, 0],
+        zoom: 5
+    }));
 }
 
 function northArrow(ol: typeof OpenLayers, map: OpenLayers.Map) {
