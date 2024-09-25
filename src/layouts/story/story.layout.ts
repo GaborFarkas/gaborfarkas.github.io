@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { StoryModel, StoryType } from '@/models/story.model';
 import { PageUrlMapping } from '@/models/page-url-mapping.model';
 import { StoryService } from '@/services/story.service';
@@ -7,17 +7,17 @@ import { CommonModule } from '@angular/common';
 import { ConfigService } from '@/services/config.service';
 
 /**
- * Frame component of a single insight or case study page.
+ * Layout component of a single insight or case study page.
  */
 @Component({
-    selector: 'story-page',
+    selector: 'story-layout',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterOutlet],
     providers: [StoryService, ConfigService],
-    templateUrl: './story.page.html',
-    styleUrl: './story.page.css'
+    templateUrl: './story.layout.html',
+    styleUrl: './story.layout.css'
 })
-export class StoryPage {
+export class StoryLayout {
     /**
      * Story types exposed to the template.
      */

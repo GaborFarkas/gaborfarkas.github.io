@@ -8,7 +8,8 @@ export enum PageUrlMapping {
     PARTNERSHIP = 'partnership',
     COUNSELING = 'counseling',
     INSIGHTS = 'insights',
-    FEATUREMATRIX = 'web-mapping/feature-matrix'
+    FEATUREMATRIX = 'web-mapping/feature-matrix',
+    MAP = 'web-mapping/map'
 }
 
 /**
