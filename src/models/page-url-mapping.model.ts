@@ -19,3 +19,10 @@ export enum StoryUrlMapping {
     WEBPROG2 = 'web-programming-2',
     SWDEVTECH = 'software-development-technologies'
 }
+
+/**
+ * Query parameters for the MapPage page component.
+ */
+export enum MapPageQueryParams {
+    LIB = 'lib'
+}
