@@ -43,7 +43,8 @@ export class NavbarComponent {
         {
             label: 'Web mapping',
             items: [
-                { label: 'Feature matrix', url: `/${PageUrlMapping.FEATUREMATRIX}` }
+                { label: 'Feature matrix', url: `/${PageUrlMapping.FEATUREMATRIX}` },
+                { label: 'CartoSandbox', url: `/${PageUrlMapping.SANDBOX}` }
             ]
         },
         {

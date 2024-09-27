@@ -4,6 +4,13 @@ import { PageUrlMapping, StoryUrlMapping } from '@/models/page-url-mapping.model
 export const routes: Routes = [
     { path: PageUrlMapping.MAP, loadComponent: () => import('@/pages/map/map.page').then(m => m.MapPage) },
     {
+        path: PageUrlMapping.SANDBOX,
+        loadComponent: () => import('@/layouts/application/application.layout').then(m => m.ApplicationLayout),
+        children: [
+            { path: '', loadComponent: () => import('@/pages/web-mapping/sandbox/sandbox.page').then(m => m.SandboxPage) }
+        ]
+    },
+    {
         path: '',
         loadComponent: () => import('@/layouts/framed/framed.layout').then(m => m.FramedLayout),
         children: [
