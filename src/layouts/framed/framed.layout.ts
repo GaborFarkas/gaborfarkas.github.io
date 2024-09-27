@@ -1,13 +1,12 @@
 import { FooterComponent } from "@/components/footer/footer.component";
 import { NavbarComponent } from "@/components/navigation/navbar/navbar.component";
-import { analytics } from "@/utils/analytics";
-import { Component, isDevMode } from "@angular/core";
-import { NavigationEnd, Router, RouterOutlet } from "@angular/router";
-import { filter } from "rxjs";
+import { Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { LayoutWithAnalytics } from "../layout-with-analytics";
 
 /**
  * Layout component containing a navigation bar at the top and a footer at the bottom.
- * Analytics are only enabled for this layout.
+ * Analytics are enabled for this layout.
  */
 @Component({
     selector: 'framed-layout',
@@ -15,13 +14,4 @@ import { filter } from "rxjs";
     imports: [RouterOutlet, NavbarComponent, FooterComponent],
     templateUrl: './framed.layout.html'
 })
-export class FramedLayout {
-    constructor(private router: Router) {
-        // Trigger a page view after each successful router navigation.
-        if (!isDevMode()) {
-            this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(_ => {
-                analytics.page();
-            });
-        }
-    }
-}
+export class FramedLayout extends LayoutWithAnalytics { }
