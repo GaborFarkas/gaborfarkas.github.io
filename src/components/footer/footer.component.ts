@@ -1,4 +1,4 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faLocationDot, faEnvelope, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
@@ -24,6 +24,11 @@ export class FooterComponent {
      * FA email icon.
      */
     protected email: IconDefinition = faEnvelope;
+
+    /**
+     * Use a smaller, compact footer.
+     */
+    @Input() public compact: boolean = false;
 
     /**
      * The local part of the email address.
