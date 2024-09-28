@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
 
 /**
- * A component for pages or sections unavailable on small devices (e.g. phones).
+ * A component for pages unavailable on small devices (e.g. phones).
  */
 @Component({
     selector: 'div.no-phone',
@@ -10,7 +10,7 @@ import { Component, Input } from "@angular/core";
 })
 export class NoPhoneComponent {
     /**
-     * Minimum device width for the functionaliy to work.
+     * Minimum device width for the functionality to work.
      */
     @Input({required: true}) public minWidth: number = 0;
 }
