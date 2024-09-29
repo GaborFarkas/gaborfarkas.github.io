@@ -1,18 +1,18 @@
-import * as ol_base from 'ol'
-import * as ol_control from 'ol/control'
-import * as ol_events from 'ol/events'
-import * as ol_extent from 'ol/extent'
-import * as ol_format from 'ol/format'
-import * as ol_geom from 'ol/geom'
-import * as ol_interaction from 'ol/interaction'
-import * as ol_layer from 'ol/layer'
-import * as ol_proj from 'ol/proj'
-import * as ol_render from 'ol/render'
-import * as ol_reproj from 'ol/reproj'
-import * as ol_source from 'ol/source'
-import * as ol_style from 'ol/style'
-import * as ol_tilegrid from 'ol/tilegrid'
-import * as ol_webgl from 'ol/webgl'
+import * as ol_base from 'ol';
+import * as ol_control from 'ol/control';
+import * as ol_events from 'ol/events';
+import * as ol_extent from 'ol/extent';
+import * as ol_format from 'ol/format';
+import * as ol_geom from 'ol/geom';
+import * as ol_interaction from 'ol/interaction';
+import * as ol_layer from 'ol/layer';
+import * as ol_proj from 'ol/proj';
+import * as ol_render from 'ol/render';
+import * as ol_reproj from 'ol/reproj';
+import * as ol_source from 'ol/source';
+import * as ol_style from 'ol/style';
+import * as ol_tilegrid from 'ol/tilegrid';
+import * as ol_webgl from 'ol/webgl';
 
 /**
  * OpenLayers library patched from individual namespace imports.

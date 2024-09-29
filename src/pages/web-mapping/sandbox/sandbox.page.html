@@ -2,13 +2,22 @@
     <nav>
         <span class="cabin-sketch text-2xl">CartoSandbox</span>
     </nav>
-    <div class="h-full">
-
+    <div class="h-full flex items-center">
+        <select [(ngModel)]="library">
+            @for (library of WebMappingLibrary | keyvalue; track library.key) {
+                <option [value]="library.value">{{library.value}}</option>
+            }
+        </select>
     </div>
 </div>
 <div class="flex-grow flex items-center">
     <div class="no-phone px-6 w-full lg:hidden flex flex-col items-center" [minWidth]="1024"></div>
-    <div class="hidden lg:flex flex-row w-full h-full">
-        <div class="code-editor w-1/2 h-full"></div>
+    <div #sandboxContent class="hidden lg:flex flex-row w-full h-full">
+        @defer (on viewport(sandboxContent)) {
+            <div class="code-editor w-1/2 h-full" [definitions]="extraTypes"></div>
+            <div class="w-1/2 h-full">
+                <iframe class="w-full h-full" [src]="webMapUrl"></iframe>
+            </div>
+        }
     </div>
 </div>

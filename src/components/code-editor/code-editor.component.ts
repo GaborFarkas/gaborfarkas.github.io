@@ -1,5 +1,5 @@
 import { MonacoLoaderService } from "@/services/monaco-loader.service";
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from "@angular/core";
 import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";
 
 declare var monaco: typeof monacoType;
@@ -21,9 +21,39 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
     private editor?: monacoType.editor.IStandaloneCodeEditor;
 
     /**
+     * The handler of the currently loaded extra library.
+     */
+    private extraLib?: monacoType.IDisposable;
+
+    /**
+     * Helper variable to tell if the lib has been loaded.
+     */
+    private monacoLoaded: boolean = false;
+
+    /**
+     * Extra definitions are stored here until monaco has been loaded.
+     */
+    private initialExtraDefinitions?: string;
+
+    /**
+     * The extra definitions to load. For JS this can be extra types, for JSON a schema to validate.
+     */
+    @Input() public set definitions(value: string | undefined) {
+        this.extraLib?.dispose();
+        // Currently only JS is supported.
+        if (value) {
+            if (!this.monacoLoaded) {
+                this.initialExtraDefinitions = value;
+            } else {
+                this.extraLib = monaco.languages.typescript.javascriptDefaults.addExtraLib(value);
+            }
+        }
+    }
+
+    /**
      * The editor container's DOM reference.
      */
-    @ViewChild('editorContainer') editorContainer!: ElementRef<HTMLDivElement>;
+    @ViewChild('editorContainer') private editorContainer!: ElementRef<HTMLDivElement>;
 
     constructor(private loaderService: MonacoLoaderService) { }
 
@@ -48,6 +78,13 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
                     theme: 'vs',
                     automaticLayout: true
                 });
+
+                if (this.initialExtraDefinitions) {
+                    this.extraLib = monaco.languages.typescript.javascriptDefaults.addExtraLib(this.initialExtraDefinitions);
+                    this.initialExtraDefinitions = undefined
+                }
+
+                this.monacoLoaded = true;
             }
         });
 
