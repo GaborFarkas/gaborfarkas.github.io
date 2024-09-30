@@ -6,6 +6,10 @@ cp node_modules/cesium/Source/Cesium.d.ts $DTSPATH
 sed -i 's/declare[[:space:]]module[[:space:]]"cesium"/declare namespace Cesium/g' $DTSPATH
 echo "declare var map: Cesium.Viewer;" >> $DTSPATH
 
+# Although as its version is only added to the minified JS, we are extracting it from its package.json here as well.
+CESIUMVERSION=$(grep '"version"' node_modules/cesium/package.json | cut -d '"' -f4)
+sed -i "s/\(^export[[:space:]]const[[:space:]]VERSION.*$\)/export const VERSION = \"$CESIUMVERSION\";"/ src/utils/cesium.ts
+
 # Maplibre GL JS works with dts-gen out of the box
 TYPES=$(npx dts-gen -s -m maplibre-gl)
 DTSPATH=src/assets/web-mapping/types/maplibregljs.d.ts

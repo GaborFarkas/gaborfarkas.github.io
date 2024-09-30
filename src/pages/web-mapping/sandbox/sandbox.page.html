@@ -5,7 +5,7 @@
     <div class="h-full flex items-center">
         <select [(ngModel)]="library">
             @for (library of WebMappingLibrary | keyvalue; track library.key) {
-                <option [value]="library.value">{{library.value}}</option>
+                <option [value]="library.value">{{library.value}} (v{{libraryVersions[library.value]}})</option>
             }
         </select>
     </div>

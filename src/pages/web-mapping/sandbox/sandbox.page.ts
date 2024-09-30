@@ -8,6 +8,10 @@ import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { VERSION as OpenLayersVersion } from "ol";
+import { version as LeafletVersion } from "leaflet";
+import { getVersion as getMaplibreVersion } from "maplibre-gl";
+import { VERSION as CesiumVersion } from "@/utils/cesium";
 
 /**
  * The sandbox web mapping page.
@@ -35,6 +39,16 @@ export class SandboxPage implements OnInit {
      * The URL of the iframe-d web map.
      */
     protected webMapUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`${PageUrlMapping.MAP}?lib=openlayers`);
+
+    /**
+     * Web mapping library versions to display in the library dropdown.
+     */
+    protected libraryVersions: Record<WebMappingLibrary, string> = {
+        [WebMappingLibrary.OPENLAYERS]: OpenLayersVersion,
+        [WebMappingLibrary.LEAFLET]: LeafletVersion,
+        [WebMappingLibrary.MAPLIBRE]: getMaplibreVersion(),
+        [WebMappingLibrary.CESIUM]: CesiumVersion
+    };
 
     /**
      * The chosen library (backing field).
