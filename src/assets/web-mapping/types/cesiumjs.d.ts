@@ -46280,4 +46280,3 @@ export function createCommand(func: (...params: any[]) => any, canExecute?: bool
 }
 
 declare var map: Cesium.Viewer;
-
