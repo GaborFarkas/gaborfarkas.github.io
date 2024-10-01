@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Read the rollup template config, we will need it in several different steps later.
+ROLLUPTEMPLATE=$(cat build/rollup-config.js)
+
 # Cesium JS is the easiest, the officially generated d.ts file only needs to declare a namespace instead of a module.
 DTSPATH=src/assets/web-mapping/types/cesiumjs.d.ts
 cp node_modules/cesium/Source/Cesium.d.ts $DTSPATH
@@ -10,41 +13,28 @@ echo "declare var map: Cesium.Viewer;" >> $DTSPATH
 CESIUMVERSION=$(grep '"version"' node_modules/cesium/package.json | cut -d '"' -f4)
 sed -i "s/\(^export[[:space:]]const[[:space:]]VERSION.*$\)/export const VERSION = \"$CESIUMVERSION\";"/ src/utils/cesium.ts
 
-# Maplibre GL JS works with dts-gen out of the box
-TYPES=$(npx dts-gen -s -m maplibre-gl)
+# Maplibre GL JS has a great default d.ts, but it imports some externals which need to be skipped or rolled up.
 DTSPATH=src/assets/web-mapping/types/maplibregljs.d.ts
+cp node_modules/maplibre-gl/dist/maplibre-gl.d.ts $DTSPATH
+sed -i "s/\(^import.*geojson-vt';$\)//" $DTSPATH
+sed -i "s/\(^import.*gl-matrix';$\)//" $DTSPATH
+sed -i "s/\(^import.*potpack';$\)//" $DTSPATH
+sed -i "s/\(^import.*supercluster';$\)//" $DTSPATH
+npx rollup --config build/rollup-maplibre.mjs
+TYPES=$(cat $DTSPATH)
 echo "declare namespace maplibregl {" > $DTSPATH
 echo "$TYPES" >> $DTSPATH
 echo "}" >> $DTSPATH
 echo "declare var map: maplibregl.Map;" >> $DTSPATH
 
-# Leaflet only works with dts-gen if window is defined
-# Hack from https://gist.github.com/ifiokjr/0e1e993f87a8f99b4924e8ecdce0edbc
-rm -rf node_modules/leaflet-gentypes
-cp -r node_modules/leaflet node_modules/leaflet-gentypes
-ENTRYPATH=node_modules/leaflet-gentypes/dist/leaflet-src.js
-ENTRY=$(cat $ENTRYPATH)
-echo "const { JSDOM } = require('jsdom');" > $ENTRYPATH
-echo "const DEFAULT_HTML = '<html><body></body></html>';" >> $ENTRYPATH
-echo "const jsdom = new JSDOM(DEFAULT_HTML, {" >> $ENTRYPATH
-echo "    url: 'https://www.bbc.co.uk'," >> $ENTRYPATH
-echo "    referrer: 'https://www.bbc.co.uk'," >> $ENTRYPATH
-echo "    contentType: 'text/html'," >> $ENTRYPATH
-echo "    userAgent: 'node.js'," >> $ENTRYPATH
-echo "    includeNodeLocations: true" >> $ENTRYPATH
-echo "});" >> $ENTRYPATH
-echo "const { window } = jsdom;" >> $ENTRYPATH
-echo "const { document, navigator } = window;" >> $ENTRYPATH
-echo "$ENTRY" >> $ENTRYPATH
-
-TYPES=$(npx dts-gen -s -m leaflet-gentypes)
+# Leaflet can be rolled up from its DefinitelyTyped d.ts file without any modifications
 DTSPATH=src/assets/web-mapping/types/leaflet.d.ts
+npx rollup --config build/rollup-leaflet.mjs
+TYPES=$(cat $DTSPATH)
 echo "declare namespace L {" > $DTSPATH
 echo "$TYPES" >> $DTSPATH
 echo "}" >> $DTSPATH
 echo "declare var map: L.Map;" >> $DTSPATH
-
-rm -rf node_modules/leaflet-gentypes
 
 # OpenLayers is the problematic child, we need its source code and build tools first
 rm -rf openlayers
