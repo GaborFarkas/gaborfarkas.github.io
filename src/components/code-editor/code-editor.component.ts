@@ -1,5 +1,5 @@
 import { MonacoLoaderService } from "@/services/monaco-loader.service";
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from "@angular/core";
 import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";
 
 declare var monaco: typeof monacoType;
@@ -34,6 +34,27 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
      * Extra definitions are stored here until monaco has been loaded.
      */
     private initialExtraDefinitions?: string;
+
+    /**
+     * The code editor's current value (backing field).
+     */
+    private value_: string = '';
+    /**
+     * The code editor's current value.
+     */
+    @Input({ required: true }) public set value(newValue: string) {
+        if (newValue !== this.value_) {
+            this.value_ = newValue;
+            this.editor?.setValue(this.value_);
+        }
+    }
+    public get value(): string {
+        return this.value_;
+    }
+    /**
+     * Fires when the code editor current value has been changed.
+     */
+    @Output() valueChange = new EventEmitter<string>();
 
     /**
      * The extra definitions to load. For JS this can be extra types, for JSON a schema to validate.
@@ -73,12 +94,20 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
                     allowNonTsExtensions: true
                 });
 
+                // Instantiate editor
                 this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
                     language: 'javascript',
                     theme: 'vs',
-                    automaticLayout: true
+                    automaticLayout: true,
+                    value: this.value
                 });
 
+                // Add change listener to emit current code
+                this.editor.onDidChangeModelContent(function(this: CodeEditorComponent) {
+                    this.valueChange.emit(this.editor?.getValue());
+                }.bind(this));
+
+                // Add the extra definitions specified on init
                 if (this.initialExtraDefinitions) {
                     this.extraLib = monaco.languages.typescript.javascriptDefaults.addExtraLib(this.initialExtraDefinitions);
                     this.initialExtraDefinitions = undefined
@@ -92,6 +121,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.extraLib?.dispose();
         this.editor?.dispose();
     }
 }
