@@ -103,8 +103,13 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
                 });
 
                 // Add change listener to emit current code
-                this.editor.onDidChangeModelContent(function(this: CodeEditorComponent) {
-                    this.valueChange.emit(this.editor?.getValue());
+                this.editor.onDidChangeModelContent(function (this: CodeEditorComponent) {
+                    if (this.editor) {
+                        this.valueChange.emit(this.editor.getValue());
+                        // Set the backing field as well with the emitted value to avoid constant editor updates due to the
+                        // two way binding. That causes the cursor to jump to the start of the document.
+                        this.value_ = this.editor.getValue();
+                    }
                 }.bind(this));
 
                 // Add the extra definitions specified on init

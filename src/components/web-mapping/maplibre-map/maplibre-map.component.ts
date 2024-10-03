@@ -24,6 +24,8 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
 
     @Input() public example?: string;
 
+    @Input() public exposePlay: boolean = false;
+
     /**
      * Loads the base map with a simple style and positions it to Pécs.
      */
@@ -43,6 +45,12 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
 
             if (this.example) {
                 this.playExample(this.example);
+            }
+
+            if (this.exposePlay) {
+                (document as any).play = this.play.bind(this);
+                (document as any).playLoaded = true;
+                document.dispatchEvent(new Event('playLoaded'));
             }
         }
     }

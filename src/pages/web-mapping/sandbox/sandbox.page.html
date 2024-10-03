@@ -2,7 +2,11 @@
     <nav>
         <span class="cabin-sketch text-2xl">CartoSandbox</span>
     </nav>
-    <div class="h-full flex items-center">
+    <div class="h-full flex items-center gap-6 mr-4">
+        <div class="flex items-center select-none cursor-pointer" (click)="runCode()">
+            <fa-icon [icon]="faPlay" class="text-green-900 pr-2" size="1x" />
+            <span>Run code</span>
+        </div>
         <select [(ngModel)]="library">
             @for (library of WebMappingLibrary | keyvalue; track library.key) {
                 <option [value]="library.value">{{library.value}} (v{{libraryVersions[library.value]}})</option>
@@ -14,9 +18,9 @@
     <div class="no-phone px-6 w-full lg:hidden flex flex-col items-center" [minWidth]="1024"></div>
     <div #sandboxContent class="hidden lg:flex flex-row w-full h-full">
         @defer (on viewport(sandboxContent)) {
-            <div class="code-editor w-1/2 h-full" [definitions]="extraTypes"></div>
+            <div class="code-editor w-1/2 h-full" [definitions]="extraTypes" [(value)]="currentCode"></div>
             <div class="w-1/2 h-full">
-                <iframe class="w-full h-full" [src]="webMapUrl"></iframe>
+                <iframe #webMap class="w-full h-full" [src]="webMapUrl"></iframe>
             </div>
         }
     </div>

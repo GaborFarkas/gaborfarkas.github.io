@@ -26,6 +26,8 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
 
     @Input() public example?: string;
 
+    @Input() public exposePlay: boolean = false;
+
     constructor() {
         (window as { [key: string]: any })['CESIUM_BASE_URL'] = '/assets/cesium/';
     }
@@ -43,6 +45,12 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
 
             if (this.example) {
                 this.playExample(this.example);
+            }
+
+            if (this.exposePlay) {
+                (document as any).play = this.play.bind(this);
+                (document as any).playLoaded = true;
+                document.dispatchEvent(new Event('playLoaded'));
             }
         }
     }

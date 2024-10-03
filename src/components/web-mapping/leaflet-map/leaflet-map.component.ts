@@ -26,6 +26,8 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
 
     @Input() public example?: string;
 
+    @Input() public exposePlay: boolean = false;
+
     constructor() {
         // Update icon paths
         L.Icon.Default.mergeOptions({
@@ -50,6 +52,12 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
 
             if (this.example) {
                 this.playExample(this.example);
+            }
+
+            if (this.exposePlay) {
+                (document as any).play = this.play.bind(this);
+                (document as any).playLoaded = true;
+                document.dispatchEvent(new Event('playLoaded'));
             }
         }
     }
