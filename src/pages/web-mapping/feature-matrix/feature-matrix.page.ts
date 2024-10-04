@@ -4,6 +4,7 @@ import { LeafletMapComponent } from '@/components/web-mapping/leaflet-map/leafle
 import { MaplibreMapComponent } from '@/components/web-mapping/maplibre-map/maplibre-map.component';
 import { OpenLayersMapComponent } from '@/components/web-mapping/openlayers-map/openlayers-map.component';
 import { FeatureSupportScoreDirective } from '@/directives/feature-support-score.directive';
+import { environment } from '@/environments/environment';
 import { FeatureSupportItem } from '@/models/web-mapping/feature-support-item.model';
 import { FeatureSupportScore } from '@/models/web-mapping/feature-support-score.model';
 import { WebMappingLibrary } from '@/models/web-mapping/web-mapping-library';
@@ -61,6 +62,16 @@ export class FeatureMatrixPage implements OnInit {
      */
     protected playingLibrary?: WebMappingLibrary;
 
+    /**
+     * The GitHub URL of the currently playing example.
+     */
+    protected get playingExampleUrl(): string | undefined {
+        const sourceFileName = Object.entries(WebMappingLibrary).find(
+            kvp => kvp[1] === this.playingLibrary)?.[0].toLowerCase();
+        if (!sourceFileName || !this.playingItem?.support?.[this.playingLibrary!].line) return undefined;
+        return `https://github.com/GaborFarkas/gaborfarkas.github.io/blob/${environment.gitRev}/src/examples/${sourceFileName}.ts#L${this.playingItem!.support![this.playingLibrary!].line}`;
+    }
+
     constructor(private configService: ConfigService) { }
 
     async ngOnInit() {
@@ -73,7 +84,7 @@ export class FeatureMatrixPage implements OnInit {
      * @param library The library to play the feature in.
      */
     playExample(feature: FeatureSupportItem, library: WebMappingLibrary) {
-        if (feature.support?.[library].example) {
+        if (feature.support?.[library].line !== undefined) {
             this.playingItem = feature;
             this.playingLibrary = library;
             this.dialog.open();

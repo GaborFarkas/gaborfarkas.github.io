@@ -14,7 +14,7 @@ export class FeatureSupportScoreDirective {
      * The feature score object to display.
      */
     @Input({required: true, alias: 'supportRectangle'}) set supportItem(item: FeatureScoreDescriptor) {
-        this.class = `w-10 h-6 ${this.scoreToBackgroundColor(item.score)} rounded mr-4 flex-shrink-0` + (item.example ? ' example' : '');
+        this.class = `w-10 h-6 ${this.scoreToBackgroundColor(item.score)} rounded mr-4 flex-shrink-0` + (item.line !== undefined ? ' example' : '');
     }
 
     /**

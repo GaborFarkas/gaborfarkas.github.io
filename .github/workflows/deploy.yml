@@ -37,6 +37,7 @@ jobs:
           sed -i "s/{MAPTILER_API_KEY}/${{ secrets.MAPTILER_API_KEY }}/g" src/environments/environment.ts
           sed -i "s/{GOOGLE_MAPS_API_KEY}/${{ secrets.GOOGLE_MAPS_API_KEY }}/g" src/environments/environment.ts
           sed -i "s/{BING_API_KEY}/${{ secrets.BING_API_KEY }}/g" src/environments/environment.ts
+          sed -i "s/{GIT_REV}/${{ github.sha }}/g" src/environments/environment.ts
 
       - name: Setup Node JS
         uses: actions/setup-node@v4

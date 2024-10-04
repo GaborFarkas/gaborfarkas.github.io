@@ -84,19 +84,19 @@ async function processPairedRowAsync(pairedRow: Record<string, string | number |
             support: {
                 [WebMappingLibrary.LEAFLET]: {
                     score: pairedRow[WebMappingLibrary.LEAFLET],
-                    example: await getExampleAsync(WebMappingLibrary.LEAFLET, LeafletExamples[featName as FeatureSupportFeature])
+                    line: await getExampleAsync(WebMappingLibrary.LEAFLET, LeafletExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.OPENLAYERS]: {
                     score: pairedRow[WebMappingLibrary.OPENLAYERS],
-                    example: await getExampleAsync(WebMappingLibrary.OPENLAYERS, OpenLayersExamples[featName as FeatureSupportFeature])
+                    line: await getExampleAsync(WebMappingLibrary.OPENLAYERS, OpenLayersExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.MAPLIBRE]: {
                     score: pairedRow[WebMappingLibrary.MAPLIBRE],
-                    example: await getExampleAsync(WebMappingLibrary.MAPLIBRE, MaplibreExamples[featName as FeatureSupportFeature])
+                    line: await getExampleAsync(WebMappingLibrary.MAPLIBRE, MaplibreExamples[featName as FeatureSupportFeature])
                 },
                 [WebMappingLibrary.CESIUM]: {
                     score: pairedRow[WebMappingLibrary.CESIUM],
-                    example: await getExampleAsync(WebMappingLibrary.CESIUM, CesiumExamples[featName as FeatureSupportFeature])
+                    line: await getExampleAsync(WebMappingLibrary.CESIUM, CesiumExamples[featName as FeatureSupportFeature])
                 }
             }
         }
@@ -111,12 +111,12 @@ async function processPairedRowAsync(pairedRow: Record<string, string | number |
 }
 
 /**
- * Returns an example GitHub URL for the given library and example function, if any.
+ * Returns an example's source line number for the given library and example function, if any.
  * @param lib The library.
  * @param exampleFunc The example function, if any.
- * @returns The GitHub URL for the example source code.
+ * @returns The example's line number in the source code.
  */
-async function getExampleAsync(lib: WebMappingLibrary, exampleFunc?: (this: any, lib: any, map: any) => void): Promise<string | undefined> {
+async function getExampleAsync(lib: WebMappingLibrary, exampleFunc?: (this: any, lib: any, map: any) => void): Promise<number | undefined> {
     if (!exampleFunc) return undefined;
 
     let lineNum = '0';
@@ -136,12 +136,5 @@ async function getExampleAsync(lib: WebMappingLibrary, exampleFunc?: (this: any,
         }
     }
 
-    const exampleUrlBasePath = 'https://github.com/GaborFarkas/gaborfarkas.github.io/blob/main/src/examples/' + (
-        lib === WebMappingLibrary.LEAFLET ? 'leaflet' :
-            lib === WebMappingLibrary.OPENLAYERS ? 'openlayers' :
-                lib === WebMappingLibrary.MAPLIBRE ? 'maplibre' :
-                    'cesium'
-    ) + '.ts#L';
-
-    return exampleUrlBasePath + lineNum;
+    return parseInt(lineNum);
 }

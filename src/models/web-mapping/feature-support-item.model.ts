@@ -33,7 +33,7 @@ export interface FeatureScoreDescriptor {
      */
     score: FeatureSupportScore,
     /**
-     * Link to the example available for this feature and library, if any.
+     * Line number in the source example file, if the feature has an example.
      */
-    example?: string
+    line?: number
 }
