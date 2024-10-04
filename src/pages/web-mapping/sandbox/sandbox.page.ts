@@ -15,6 +15,9 @@ import { VERSION as CesiumVersion } from "@/utils/cesium";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { ConfigService } from "@/services/config.service";
+import { FeatureSupportItem } from "@/models/web-mapping/feature-support-item.model";
+import { GroupedSourceCodeModel, SourceCodeGroup, SourceCodeItem, SourceCodeType } from "@/models/web-mapping/grouped-source-code.model";
 
 /**
  * The sandbox web mapping page.
@@ -23,6 +26,7 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
     selector: 'sandbox-page',
     standalone: true,
     imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule],
+    providers: [ConfigService],
     templateUrl: './sandbox.page.html',
     host: {
         class: 'flex flex-col h-full'
@@ -30,7 +34,8 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 })
 export class SandboxPage implements OnInit, OnDestroy {
     constructor(private sanitizer: DomSanitizer,
-        private httpClient: HttpClient
+        private httpClient: HttpClient,
+        private configService: ConfigService
     ) { }
     /**
      * Play icon for the template.
@@ -75,6 +80,7 @@ export class SandboxPage implements OnInit, OnDestroy {
             this.library_ = value;
             this.webMapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`${PageUrlMapping.MAP}?lib=${encodeURIComponent(this.library_).toLowerCase()}`);
             this.loadTypeDefinitions();
+            this.loadExamples();
         }
     }
 
@@ -114,11 +120,30 @@ export class SandboxPage implements OnInit, OnDestroy {
         }
     }
 
-    ngOnInit(): void {
+    /**
+     * Feature support items containing importable examples for every library.
+     */
+    private featureSupportItems: FeatureSupportItem[] = [];
+
+    /**
+     * The available codes for the currently loaded web mapping libraries including examples and locally saved codes.
+     */
+    protected availableCodes: Record<WebMappingLibrary, GroupedSourceCodeModel | undefined> = {
+        [WebMappingLibrary.LEAFLET]: undefined,
+        [WebMappingLibrary.OPENLAYERS]: undefined,
+        [WebMappingLibrary.MAPLIBRE]: undefined,
+        [WebMappingLibrary.CESIUM]: undefined
+    };
+
+    async ngOnInit(): Promise<void> {
         this.loadTypeDefinitions();
+
         this.saveIntervalKey = window.setInterval(function (this: SandboxPage) {
             // TODO: Save code
         }.bind(this), 5000);
+
+        this.featureSupportItems = await this.configService.getConfigAsync('feature-support.json');
+        this.loadExamples();
     }
 
     ngOnDestroy(): void {
@@ -137,7 +162,7 @@ export class SandboxPage implements OnInit, OnDestroy {
             const scriptElem = iframeDoc.createElement('script');
             scriptElem.type = 'text/javascript';
             //TODO: Think of something more maintainable than this debug hell of a wrapper line!
-            scriptElem.textContent = `const playExampleFn = () => {\n\tdocument.play(function(${this.libraryNamespace}, map) {\n${this.currentCode}\n});\n}\n if (document.playLoaded) { playExampleFn(); } else { document.addEventListener('playLoaded', playExampleFn); }`;
+            scriptElem.textContent = `const playExampleFn = () => {\n\tdocument.play(async function(${this.libraryNamespace}, map) {\n${this.currentCode}\n});\n}\n if (document.playLoaded) { playExampleFn(); } else { document.addEventListener('playLoaded', playExampleFn); }`;
             iframeDoc.head.appendChild(scriptElem);
         }.bind(this);
         this.webMap.nativeElement.addEventListener('load', injector);
@@ -153,5 +178,60 @@ export class SandboxPage implements OnInit, OnDestroy {
         }).subscribe(resp => {
             this.extraTypes = resp;
         });
+    }
+
+    /**
+     * Loads examples available for the currently selected web mapping library.
+     */
+    private loadExamples() {
+        if (!this.availableCodes[this.library]) {
+            const model: GroupedSourceCodeModel = {
+                children: []
+            };
+            // Use a map for quick access
+            const groupMap: Map<string, SourceCodeGroup> = new Map();
+            let maxDepth: number = 0;
+
+            // Build tree
+            for (let feature of this.featureSupportItems) {
+                if (!feature.support) {
+                    // Group
+                    const group: SourceCodeGroup = {
+                        children: [],
+                        name: feature.name,
+                        parent: feature.parent,
+                        depth: feature.parent ? groupMap.get(feature.parent)!.depth + 1 : 1
+                    }
+                    if (group.depth > maxDepth) maxDepth = group.depth;
+
+                    groupMap.set(group.name, group);
+                    if (group.parent) {
+                        groupMap.get(group.parent)!.children.push(group);
+                    } else {
+                        model.children.push(group);
+                    }
+                } else if (feature.support[this.library].line) {
+                    // Feature with example
+                    const featItem: SourceCodeItem = {
+                        name: feature.name,
+                        type: SourceCodeType.GITHUB,
+                        key: feature.support[this.library].line!.toString()
+                    }
+                    groupMap.get(feature.parent!)!.children.push(featItem);
+                }
+            }
+
+            // Shake empty branches
+            for (let depth = maxDepth; depth > 0; --depth) {
+                for (let group of [...groupMap.values()].filter(group => group.depth === depth)) {
+                    if (group.children.length === 0) {
+                        const parent = group.parent ? groupMap.get(group.parent) : model;
+                        parent!.children = parent!.children.filter(child => child !== group);
+                    }
+                }
+            }
+
+            this.availableCodes[this.library] = model;
+        }
     }
 }

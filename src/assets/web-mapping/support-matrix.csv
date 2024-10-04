@@ -1,98 +1,98 @@
-Name,Leaflet,OpenLayers,Maplibre GL JS,Cesium JS,Description,Addendum
-Rendering,,,,,Raw data visualization features required for quality map composition,
-Hardware acceleration,3,2,1,1,The library can utilize the GPU for faster rendering,"OpenLayers’ support is partial, lines and polygons need additional setup. In Cesium and Maplibre, everything is hardware-accelerated. For Leaflet, you can try Leaflet.glify."
-Render geometry,1,1,1,1,The library can render vector geometries,
-Render raster,2,1,4,4,The library can render raster layers,Leaflet can render GeoTIFFs easily with the leaflet-geotiff plugin.
-Render image,1,1,1,1,The library can render image files,
-Blend layers,4,2,4,0,The library can overlay different layers using different blending modes,Support in OpenLayers only applies to layers displayed with the canvas renderer.
-Format,,,,,Data exchange format support used in GIS software,
-Vector,,,,,Vector data exchange format support,
-ESRI Shapefile,3,3,3,3,The library can read Shapefiles,"There are third-party JavaScript libraries for interpreting Shapefiles (e.g. shapefile-js, shapefile)."
-KML,2,1,2,1,The library can read KMLs,Possible with plugins in Leaflet and Maplibre GL JS.
-GeoJSON,1,1,1,1,The library can read GeoJSONs,
-WFS,2,1,2,3,The library can read vector data through a WFS connection,Easy to manually implement as long as the map can tell its exact view bounds and the WFS server can speak GeoJSON.
-Write transaction,2,2,3,3,The library can write vector data through a WFS-T connection,Leaflet and OpenLayers can make implementing this easier with plugins and built-in support classes.
-Mapbox vector tile,2,1,1,2,The library can read Mapbox vector tiles,OpenLayers does not support Mapbox style JSONs out of the box. Leaflet and Cesium JS need plugins for this. Cesium’s built-in MapboxStyleImageryProvider only works with old (v11) tiles hosted by Mapbox.
-Raster,,,,,Raster data exchange format support,
-GeoTiff,3,1,3,3,The library can read GeoTIFF rasters,Needs geotiff.js in every case. In OpenLayers it is bundled with the library.
-Arc/Info ASCII GRID,4,4,4,4,The library can read ASCII rasters,
-WCS,4,4,4,4,The library can read raster data through a WCS connection,
-Image,,,,,Image data exchange format support,
-JPEG,1,1,1,1,The library can read JPEG images,
-PNG,1,1,1,1,The library can read PNG images,
-WMS,1,1,1,1,The library can read images through a WMS connection,"Maplibre GL JS and Cesium JS both use image data rather than images, therefore requested images are subjects to CORS limitations. Either configure a header or use a proxy."
-Tile service,,,,,Tiled image data exchange format support,
-WMTS,1,1,1,1,The library can read tiles through a WMTS connection,
-TMS,1,1,1,1,The library can read tiles through a TMS connection,
-Slippy map,1,1,1,1,The library can read tiles served in an OpenStreetMap Slippy map format,
-Google Maps,2,1,2,1,The library can read Google Maps layers,Cesium’s support focuses on photorealistic 3D tiles with 3D objects. Leaflet and Maplibre GL JS need plugins. Every library needs an API key.
-ArcGIS REST API,2,1,2,1,The library can read ArcGIS Online layers,"Cesium’s support is limited to WKIDs (ArcGIS projection codes) 102100, 102113, and 4326. Leaflet and Maplibre GL JS need plugins."
-Bing Maps,2,1,2,1,The library can read Bing Maps layers,"Cesium’s default view uses Bing layers. Leaflet and Maplibre GL JS need plugins. Except Cesium, every library needs an API key."
-Database,,,,,The ability to communicate with spatial databases,
-Connection,,,,,Connecting to spatial databases,
-PostGIS,4,4,4,4,The library can connect to PostGIS databases,
-SpatiaLite,3,3,3,3,The library can connect to SpatiaLite databases,There is a GeoPackage JavaScript library for this called geopackage-js.
-MySQL,4,4,4,4,The library can connect to MySQL databases,
-Functionality,,,,,Basic database functionality,
-Using DBMS,3,3,3,3,The library can use any DBMS for vector data,Possible with a custom IndexedDB vector type.
-Query/filter,2,2,2,2,The library is capable of querying and filtering vector data,Pretty trivial if you have a DBMS-powered vector layer (e.g. in CARTO).
-Query language,3,3,3,3,The library can use a query language to query and filter vector data,Possible with a custom IndexedDB vector type.
-Data,,,,,Data operations,
-Pre-process,,,,,Processing capabilities for organizing and manipulating data before display,
-On the fly transformation,4,4,4,1,The library is capable to project vector data on the fly,OpenLayers and Leaflet must transform vector features to the map projection in order to display. Maplibre GL JS only supports Web Mercator as display projection. Cesium’s projection support is also limited.
-Read attribute data,1,1,1,1,The library can use vector attributes,
-Z coordinates,1,1,4,1,The library preserves Z coordinates in vectors,
-M coordinates,1,1,4,4,The library preserves M coordinates in vectors,"Measurement coordinates are not supported and discouraged to use by modern Web vector formats, like GeoJSON. Libraries supporting M coordinates do not distinguish between XYZ  and XYM."
-Geometry types,1,1,1,1,"The library can interpret the basic geometry types of points, lines, polygons, and their multipart counterparts",
-Spatial indexing,2,1,1,1,The library is capable to apply a spatial index on its internal vector layers to speed up processing and display,Leaflet can use the Leaflet.LayerIndex plugin for this.
-Geometry validation,3,3,3,3,The library can validate vector geometries and identify invalid ones,"There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
-Geometry simplification,1,1,1,1,The library is capable of generalizing vector geometries on the fly,
-Attribute table,3,3,3,3,The library is capable of organizing vector attributes into an attribute table,"The organizing part is quite trivial to do manually, but for the tabular display and data manipulation an external library is recommended."
-Conversion,,,,,Data type conversion support,
-Interpolate,2,1,1,3,The library can interpolate vector data into a raster layer,If we consider heatmap visualization as a form of interpolation.
-Raster to vector,4,4,4,4,The library can vectorize raster data,
-Vector to raster,4,4,4,4,The library can rasterize vector data,
-Manipulation,,,,,Capabilities for raw vector data and layer management,
-Update attribute data,1,1,2,1,The library can write attribute data of vector layers on the fly,"In Maplibre GL JS, you have to manually keep track of the GeoJSON data and set it again after any change on the source."
-Update geometry,2,1,2,1,The library can update geometries of vector layers on the fly,Leaflet can use the official Leaflet.Editable plugin for this. In Maplibre GL JS you have to reset the GeoJSON data source after each edit.
-Field calculator,2,1,1,2,The library has an abstract mechanism for calculating attributes,Maplibre GL JS and OpenLayers have data-driven styling.
-Add/remove layer,1,1,1,1,The library can add and remove layers,
-Change layer order,4,1,1,4,The library is capable of changing the visual order of layers,"Leaflet and Cesium cannot render vectors below image layers, although they can order layers of those two types relative to other layers in the same type. In Maplibre GL JS, the base map usually consists of many layers."
-Typed layers,1,1,1,1,The library has a type system for its layers,"Maplibre GL JS uses enums, the other libraries use classes and inheritance. Cesium calls its vector layers data sources."
-Analysis,,,,,Complex data manipulation capabilities,
-Basic geoprocessing,3,3,3,3,"The library can do basic vector operations (clip, dissolve, buffer, union, difference)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
-Topological analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
-Modify image,3,2,3,3,The library is capable to transform image data,
-Modify raster,4,4,4,4,The library is capable to transform raster data,
-Raster algebra,4,1,4,4,The library is capable of executing matrix operations between multiple raster layers,
-Classification,4,1,4,4,The library can reclassify raster layers,
-Convolution,4,1,4,4,The library can transform rasters with a convolution matrix (moving window),It is quite hard to formulate even 3x3 kernel operations with style expressions in OpenLayers.
-Write WPS request,3,3,3,3,The library is capable of requesting spatial operations through a WPS connection,
-Projection,,,,,Projection handling,
-Transform vector,1,1,4,4,The library can transform geometries between known projections,"Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections. Cesium only supports WGS84 for vectors."
-Warp raster,4,1,4,1,The library can transform raster and image layers between known projections,"OpenLayers cannot yet warp GeoTIFF rasters, but it can warp any image layer. Cesium’s support only covers Web Mercator image tiles."
-Well-known projections,1,1,4,1,The library can use WGS84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,"Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team."
-Custom projections,2,2,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
-Interaction,,,,,GUI capabilities,
-Draw features,2,1,2,2,Users can digitize vector features in this library,
-Modify features,2,1,2,2,Users can modify features with a mouse-based tool in this library,
-Snap points,2,1,2,3,The library is capable of snapping vertices,
-Modify view,1,1,1,1,The library is capable to change its view settings (e.g. projection) on the fly,
-Select features,2,1,2,1,Users can select features with a mouse-based tool in this library,
-Query features,3,3,3,3,Users can query features using the GUI in this library,
-Query raster,4,1,4,4,Users can query raster values with a mouse-based tool in this library,
-Measure,2,1,2,2,Users can measure lengths and areas with a mouse-based tool in this library,
-Change time,3,3,3,1,The library offers temporal controls to users,MapLibre GL JS can use plugin maplibre-gl-temporal-control for this.
-Mouse coordinates,2,1,2,2,The library can display mouse coordinates,
-Representation,,,,,Thematic data visualization capabilities,
-Styling,,,,,Features required for creating thematic map content,
-Style vector,1,1,1,1,The library is capable of applying different styles to vector elements,
-Style raster,4,1,4,4,The library is capable of applying different styles to raster layers,
-Thematic maps,1,1,1,1,The library can change its applied styles dynamically,
-Cartographic elements,,,,,Features required for creating a map,
-Scale bar,1,1,1,3,The library can display a scale bar,
-North arrow,2,1,2,2,The library can display a North arrow,
-Legend,3,3,3,3,The library can display a legend for its layers,"Some libraries have layer switcher plugins, but creating a full-fledged legend with styles, categories and labels is always a challenge."
-Graticule,2,1,2,2,The library can display a graticule over the map,
-Text box,1,1,2,1,The library can display overlays,
-Overview map,2,1,3,3,The library can display an inset map for making orientation and navigation easier,"You can always create and synchronize a second map instance, if everything else fails."
+Name,Parent,Leaflet,OpenLayers,Maplibre GL JS,Cesium JS,Description,Addendum
+Rendering,,,,,,Raw data visualization features required for quality map composition,
+Hardware acceleration,Rendering,3,2,1,1,The library can utilize the GPU for faster rendering,"OpenLayers’ support is partial, lines and polygons need additional setup. In Cesium and Maplibre, everything is hardware-accelerated. For Leaflet, you can try Leaflet.glify."
+Render geometry,Rendering,1,1,1,1,The library can render vector geometries,
+Render raster,Rendering,2,1,4,4,The library can render raster layers,Leaflet can render GeoTIFFs easily with the leaflet-geotiff plugin.
+Render image,Rendering,1,1,1,1,The library can render image files,
+Blend layers,Rendering,4,2,4,0,The library can overlay different layers using different blending modes,Support in OpenLayers only applies to layers displayed with the canvas renderer.
+Format,,,,,,Data exchange format support used in GIS software,
+Vector,Format,,,,,Vector data exchange format support,
+ESRI Shapefile,Vector,3,3,3,3,The library can read Shapefiles,"There are third-party JavaScript libraries for interpreting Shapefiles (e.g. shapefile-js, shapefile)."
+KML,Vector,2,1,2,1,The library can read KMLs,Possible with plugins in Leaflet and Maplibre GL JS.
+GeoJSON,Vector,1,1,1,1,The library can read GeoJSONs,
+WFS,Vector,2,1,2,3,The library can read vector data through a WFS connection,Easy to manually implement as long as the map can tell its exact view bounds and the WFS server can speak GeoJSON.
+Write transaction,Vector,2,2,3,3,The library can write vector data through a WFS-T connection,Leaflet and OpenLayers can make implementing this easier with plugins and built-in support classes.
+Mapbox vector tile,Vector,2,1,1,2,The library can read Mapbox vector tiles,OpenLayers does not support Mapbox style JSONs out of the box. Leaflet and Cesium JS need plugins for this. Cesium’s built-in MapboxStyleImageryProvider only works with old (v11) tiles hosted by Mapbox.
+Raster,Format,,,,,Raster data exchange format support,
+GeoTiff,Raster,3,1,3,3,The library can read GeoTIFF rasters,Needs geotiff.js in every case. In OpenLayers it is bundled with the library.
+Arc/Info ASCII GRID,Raster,4,4,4,4,The library can read ASCII rasters,
+WCS,Raster,4,4,4,4,The library can read raster data through a WCS connection,
+Image,Format,,,,,Image data exchange format support,
+JPEG,Image,1,1,1,1,The library can read JPEG images,
+PNG,Image,1,1,1,1,The library can read PNG images,
+WMS,Image,1,1,1,1,The library can read images through a WMS connection,"Maplibre GL JS and Cesium JS both use image data rather than images, therefore requested images are subjects to CORS limitations. Either configure a header or use a proxy."
+Tile service,Format,,,,,Tiled image data exchange format support,
+WMTS,Tile service,1,1,1,1,The library can read tiles through a WMTS connection,
+TMS,Tile service,1,1,1,1,The library can read tiles through a TMS connection,
+Slippy map,Tile service,1,1,1,1,The library can read tiles served in an OpenStreetMap Slippy map format,
+Google Maps,Tile service,2,1,2,1,The library can read Google Maps layers,Cesium’s support focuses on photorealistic 3D tiles with 3D objects. Leaflet and Maplibre GL JS need plugins. Every library needs an API key.
+ArcGIS REST API,Tile service,2,1,2,1,The library can read ArcGIS Online layers,"Cesium’s support is limited to WKIDs (ArcGIS projection codes) 102100, 102113, and 4326. Leaflet and Maplibre GL JS need plugins."
+Bing Maps,Tile service,2,1,2,1,The library can read Bing Maps layers,"Cesium’s default view uses Bing layers. Leaflet and Maplibre GL JS need plugins. Except Cesium, every library needs an API key."
+Database,,,,,,The ability to communicate with spatial databases,
+Connection,Database,,,,,Connecting to spatial databases,
+PostGIS,Connection,4,4,4,4,The library can connect to PostGIS databases,
+SpatiaLite,Connection,3,3,3,3,The library can connect to SpatiaLite databases,There is a GeoPackage JavaScript library for this called geopackage-js.
+MySQL,Connection,4,4,4,4,The library can connect to MySQL databases,
+Functionality,Database,,,,,Basic database functionality,
+Using DBMS,Functionality,3,3,3,3,The library can use any DBMS for vector data,Possible with a custom IndexedDB vector type.
+Query/filter,Functionality,2,2,2,2,The library is capable of querying and filtering vector data,Pretty trivial if you have a DBMS-powered vector layer (e.g. in CARTO).
+Query language,Functionality,3,3,3,3,The library can use a query language to query and filter vector data,Possible with a custom IndexedDB vector type.
+Data,,,,,,Data operations,
+Pre-process,Data,,,,,Processing capabilities for organizing and manipulating data before display,
+On the fly transformation,Pre-process,4,4,4,1,The library is capable to project vector data on the fly,OpenLayers and Leaflet must transform vector features to the map projection in order to display. Maplibre GL JS only supports Web Mercator as display projection. Cesium’s projection support is also limited.
+Read attribute data,Pre-process,1,1,1,1,The library can use vector attributes,
+Z coordinates,Pre-process,1,1,4,1,The library preserves Z coordinates in vectors,
+M coordinates,Pre-process,1,1,4,4,The library preserves M coordinates in vectors,"Measurement coordinates are not supported and discouraged to use by modern Web vector formats, like GeoJSON. Libraries supporting M coordinates do not distinguish between XYZ  and XYM."
+Geometry types,Pre-process,1,1,1,1,"The library can interpret the basic geometry types of points, lines, polygons, and their multipart counterparts",
+Spatial indexing,Pre-process,2,1,1,1,The library is capable to apply a spatial index on its internal vector layers to speed up processing and display,Leaflet can use the Leaflet.LayerIndex plugin for this.
+Geometry validation,Pre-process,3,3,3,3,The library can validate vector geometries and identify invalid ones,"There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
+Geometry simplification,Pre-process,1,1,1,1,The library is capable of generalizing vector geometries on the fly,
+Attribute table,Pre-process,3,3,3,3,The library is capable of organizing vector attributes into an attribute table,"The organizing part is quite trivial to do manually, but for the tabular display and data manipulation an external library is recommended."
+Conversion,Data,,,,,Data type conversion support,
+Interpolate,Conversion,2,1,1,3,The library can interpolate vector data into a raster layer,If we consider heatmap visualization as a form of interpolation.
+Raster to vector,Conversion,4,4,4,4,The library can vectorize raster data,
+Vector to raster,Conversion,4,4,4,4,The library can rasterize vector data,
+Manipulation,Data,,,,,Capabilities for raw vector data and layer management,
+Update attribute data,Manipulation,1,1,2,1,The library can write attribute data of vector layers on the fly,"In Maplibre GL JS, you have to manually keep track of the GeoJSON data and set it again after any change on the source."
+Update geometry,Manipulation,2,1,2,1,The library can update geometries of vector layers on the fly,Leaflet can use the official Leaflet.Editable plugin for this. In Maplibre GL JS you have to reset the GeoJSON data source after each edit.
+Field calculator,Manipulation,2,1,1,2,The library has an abstract mechanism for calculating attributes,Maplibre GL JS and OpenLayers have data-driven styling.
+Add/remove layer,Manipulation,1,1,1,1,The library can add and remove layers,
+Change layer order,Manipulation,4,1,1,4,The library is capable of changing the visual order of layers,"Leaflet and Cesium cannot render vectors below image layers, although they can order layers of those two types relative to other layers in the same type. In Maplibre GL JS, the base map usually consists of many layers."
+Typed layers,Manipulation,1,1,1,1,The library has a type system for its layers,"Maplibre GL JS uses enums, the other libraries use classes and inheritance. Cesium calls its vector layers data sources."
+Analysis,Data,,,,,Complex data manipulation capabilities,
+Basic geoprocessing,Analysis,3,3,3,3,"The library can do basic vector operations (clip, dissolve, buffer, union, difference)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
+Topological analysis,Analysis,3,3,3,3,"The library can do vector operations based on topology (intersect, touch, within, cross)","There are geoprocessing libraries for this purpose (e.g. Turf, JSTS)."
+Modify image,Analysis,3,2,3,3,The library is capable to transform image data,
+Modify raster,Analysis,4,4,4,4,The library is capable to transform raster data,
+Raster algebra,Analysis,4,1,4,4,The library is capable of executing matrix operations between multiple raster layers,
+Classification,Analysis,4,1,4,4,The library can reclassify raster layers,
+Convolution,Analysis,4,1,4,4,The library can transform rasters with a convolution matrix (moving window),It is quite hard to formulate even 3x3 kernel operations with style expressions in OpenLayers.
+Write WPS request,Analysis,3,3,3,3,The library is capable of requesting spatial operations through a WPS connection,
+Projection,,,,,,Projection handling,
+Transform vector,Projection,1,1,4,4,The library can transform geometries between known projections,"Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections. Cesium only supports WGS84 for vectors."
+Warp raster,Projection,4,1,4,1,The library can transform raster and image layers between known projections,"OpenLayers cannot yet warp GeoTIFF rasters, but it can warp any image layer. Cesium’s support only covers Web Mercator image tiles."
+Well-known projections,Projection,1,1,4,1,The library can use WGS84 (EPSG:4326) and Web Mercator (EPSG:3857) projections,"Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team."
+Custom projections,Projection,2,2,4,4,The library can use well-defined custom projections,The Proj4JS library is required in every case.
+Interaction,,,,,,GUI capabilities,
+Draw features,Interaction,2,1,2,2,Users can digitize vector features in this library,
+Modify features,Interaction,2,1,2,2,Users can modify features with a mouse-based tool in this library,
+Snap points,Interaction,2,1,2,3,The library is capable of snapping vertices,
+Modify view,Interaction,1,1,1,1,The library is capable to change its view settings (e.g. projection) on the fly,
+Select features,Interaction,2,1,2,1,Users can select features with a mouse-based tool in this library,
+Query features,Interaction,3,3,3,3,Users can query features using the GUI in this library,
+Query raster,Interaction,4,1,4,4,Users can query raster values with a mouse-based tool in this library,
+Measure,Interaction,2,1,2,2,Users can measure lengths and areas with a mouse-based tool in this library,
+Change time,Interaction,3,3,3,1,The library offers temporal controls to users,MapLibre GL JS can use plugin maplibre-gl-temporal-control for this.
+Mouse coordinates,Interaction,2,1,2,2,The library can display mouse coordinates,
+Representation,,,,,,Thematic data visualization capabilities,
+Styling,Representation,,,,,Features required for creating thematic map content,
+Style vector,Styling,1,1,1,1,The library is capable of applying different styles to vector elements,
+Style raster,Styling,4,1,4,4,The library is capable of applying different styles to raster layers,
+Thematic maps,Styling,1,1,1,1,The library can change its applied styles dynamically,
+Cartographic elements,Representation,,,,,Features required for creating a map,
+Scale bar,Cartographic elements,1,1,1,3,The library can display a scale bar,
+North arrow,Cartographic elements,2,1,2,2,The library can display a North arrow,
+Legend,Cartographic elements,3,3,3,3,The library can display a legend for its layers,"Some libraries have layer switcher plugins, but creating a full-fledged legend with styles, categories and labels is always a challenge."
+Graticule,Cartographic elements,2,1,2,2,The library can display a graticule over the map,
+Text box,Cartographic elements,1,1,2,1,The library can display overlays,
+Overview map,Cartographic elements,2,1,3,3,The library can display an inset map for making orientation and navigation easier,"You can always create and synchronize a second map instance, if everything else fails."

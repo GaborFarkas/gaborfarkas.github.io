@@ -1,4 +1,3 @@
-import { FeatureSupportFeature } from "./feature-support-feature.model";
 import { FeatureSupportScore } from "./feature-support-score.model";
 import { WebMappingLibrary } from "./web-mapping-library";
 
@@ -10,6 +9,10 @@ export interface FeatureSupportItem {
      * Name of the item.
      */
     name: string,
+    /**
+     * Name of the item's parent category.
+     */
+    parent?: string,
     /**
      * Short description of the item.
      */

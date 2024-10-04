@@ -79,6 +79,7 @@ async function processPairedRowAsync(pairedRow: Record<string, string | number |
 
         return {
             name: featName,
+            parent: pairedRow['Parent'] as string | undefined,
             description: pairedRow['Description'] as string,
             addendum: pairedRow['Addendum'] as string | undefined,
             support: {
@@ -104,6 +105,7 @@ async function processPairedRowAsync(pairedRow: Record<string, string | number |
         // This is a category
         return {
             name: featName,
+            parent: pairedRow['Parent'] as string | undefined,
             description: pairedRow['Description'] as string,
             addendum: pairedRow['Addendum'] as string | undefined
         }
