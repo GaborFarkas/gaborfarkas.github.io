@@ -18,6 +18,10 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { ConfigService } from "@/services/config.service";
 import { FeatureSupportItem } from "@/models/web-mapping/feature-support-item.model";
 import { GroupedSourceCodeModel, SourceCodeGroup, SourceCodeItem, SourceCodeType } from "@/models/web-mapping/grouped-source-code.model";
+import { TypedTemplateDirective } from "@/directives/typed-template.directive";
+import { SelectAutoResetDirective } from "@/directives/select-auto-reset.directive";
+import { DataValueDirective } from "@/directives/data-value.directive";
+import { ElementWithData } from "@/models/element-with-data.model";
 
 /**
  * The sandbox web mapping page.
@@ -25,7 +29,7 @@ import { GroupedSourceCodeModel, SourceCodeGroup, SourceCodeItem, SourceCodeType
 @Component({
     selector: 'sandbox-page',
     standalone: true,
-    imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule],
+    imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective],
     providers: [ConfigService],
     templateUrl: './sandbox.page.html',
     host: {
@@ -46,6 +50,11 @@ export class SandboxPage implements OnInit, OnDestroy {
      * Web mapping libraries enum for the template.
      */
     protected WebMappingLibrary = WebMappingLibrary;
+
+    /**
+     * Types for the open code option dropdown generator ng-template.
+     */
+    protected openCodeTemplateTypes!: { items: (SourceCodeGroup & SourceCodeItem)[] };
 
     /**
      * The URL of the iframe-d web map.
@@ -170,6 +179,17 @@ export class SandboxPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Opens an existing code snippet into the code editor.
+     * @param item The code descriptor.
+     */
+    protected loadCodePreset(select: EventTarget | null) {
+        // Get the corresponding option from the event's target by value
+        const selectElem = select as HTMLSelectElement;
+        const optionElem = selectElem.querySelector(`option[value="${selectElem.value}"]`) as ElementWithData<SourceCodeItem>;
+        console.log(optionElem?.dataValue);
+    }
+
+    /**
      * Loads the type definitions for the currently selected library.
      */
     private loadTypeDefinitions() {
@@ -185,8 +205,10 @@ export class SandboxPage implements OnInit, OnDestroy {
      */
     private loadExamples() {
         if (!this.availableCodes[this.library]) {
-            const model: GroupedSourceCodeModel = {
-                children: []
+            const examplesModel: SourceCodeGroup = {
+                children: [],
+                name: 'Examples',
+                depth: 1
             };
             // Use a map for quick access
             const groupMap: Map<string, SourceCodeGroup> = new Map();
@@ -200,7 +222,7 @@ export class SandboxPage implements OnInit, OnDestroy {
                         children: [],
                         name: feature.name,
                         parent: feature.parent,
-                        depth: feature.parent ? groupMap.get(feature.parent)!.depth + 1 : 1
+                        depth: feature.parent ? groupMap.get(feature.parent)!.depth + 1 : 2
                     }
                     if (group.depth > maxDepth) maxDepth = group.depth;
 
@@ -208,7 +230,7 @@ export class SandboxPage implements OnInit, OnDestroy {
                     if (group.parent) {
                         groupMap.get(group.parent)!.children.push(group);
                     } else {
-                        model.children.push(group);
+                        examplesModel.children.push(group);
                     }
                 } else if (feature.support[this.library].line) {
                     // Feature with example
@@ -225,13 +247,15 @@ export class SandboxPage implements OnInit, OnDestroy {
             for (let depth = maxDepth; depth > 0; --depth) {
                 for (let group of [...groupMap.values()].filter(group => group.depth === depth)) {
                     if (group.children.length === 0) {
-                        const parent = group.parent ? groupMap.get(group.parent) : model;
+                        const parent = group.parent ? groupMap.get(group.parent) : examplesModel;
                         parent!.children = parent!.children.filter(child => child !== group);
                     }
                 }
             }
 
-            this.availableCodes[this.library] = model;
+            this.availableCodes[this.library] = {
+                children: [examplesModel]
+            };
         }
     }
 }
