@@ -26,7 +26,7 @@ const configJson = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         category: 'home'
     });
 });
-['feature-matrix'].forEach(slug => {
+['feature-matrix', 'sandbox'].forEach(slug => {
     generateHtmlFile({
         slug: path.join('web-mapping', slug),
         category: 'home',
