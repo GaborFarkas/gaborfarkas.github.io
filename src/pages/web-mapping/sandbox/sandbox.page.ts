@@ -201,7 +201,7 @@ export class SandboxPage implements OnInit, OnDestroy {
      */
     private async loadExampleAsync(item: SourceCodeItem) {
         const sourceCode = await this.fileService.getTextDocumentAsync(
-            `https://raw.githubusercontent.com/GaborFarkas/gaborfarkas.github.io/refs/heads/${environment.gitRev}/src/examples/${this.library.replace(/ /g, '').toLowerCase()}.ts`);
+            `/assets/web-mapping/examples/${this.library.replace(/ /g, '').toLowerCase()}.ts`);
         const sourceArr = sourceCode.split('\n');
         const keyLine = parseInt(item.key);
         let startLine = keyLine;
