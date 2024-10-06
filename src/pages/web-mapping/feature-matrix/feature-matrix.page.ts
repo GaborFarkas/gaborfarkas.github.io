@@ -66,8 +66,7 @@ export class FeatureMatrixPage implements OnInit {
      * The GitHub URL of the currently playing example.
      */
     protected get playingExampleUrl(): string | undefined {
-        const sourceFileName = Object.entries(WebMappingLibrary).find(
-            kvp => kvp[1] === this.playingLibrary)?.[0].toLowerCase();
+        const sourceFileName = this.playingLibrary?.replace(/ /g, '').toLowerCase();
         if (!sourceFileName || !this.playingItem?.support?.[this.playingLibrary!].line) return undefined;
         return `https://github.com/GaborFarkas/gaborfarkas.github.io/blob/${environment.gitRev}/src/examples/${sourceFileName}.ts#L${this.playingItem!.support![this.playingLibrary!].line}`;
     }

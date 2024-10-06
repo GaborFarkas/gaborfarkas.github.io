@@ -56,7 +56,7 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
     }
 
     public playExample(feature: string): void {
-        import('@/examples/cesium').then(module => {
+        import('@/examples/cesiumjs').then(module => {
             const examples = module.default;
             if (examples[feature as FeatureSupportFeature]) {
                 this.play(examples[feature as FeatureSupportFeature]);

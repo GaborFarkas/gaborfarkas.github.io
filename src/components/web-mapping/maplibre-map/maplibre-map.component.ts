@@ -56,7 +56,7 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
     }
 
     public playExample(feature: string): void {
-        import('@/examples/maplibre').then(module => {
+        import('@/examples/maplibregljs').then(module => {
             const examples = module.default;
             if (examples[feature as FeatureSupportFeature]) {
                 this.play(examples[feature as FeatureSupportFeature]);

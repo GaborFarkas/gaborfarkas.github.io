@@ -8,8 +8,8 @@ import { WebMappingLibrary } from '../src/models/web-mapping/web-mapping-library
 import { FeatureSupportFeature } from '../src/models/web-mapping/feature-support-feature.model';
 import LeafletExamples from '../src/examples/leaflet';
 import OpenLayersExamples from '../src/examples/openlayers';
-import MaplibreExamples from '../src/examples/maplibre';
-import CesiumExamples from '../src/examples/cesium';
+import MaplibreExamples from '../src/examples/maplibregljs';
+import CesiumExamples from '../src/examples/cesiumjs';
 
 const baseDir = dirname(fileURLToPath(import.meta.url));
 const configPath = path.join(baseDir, '..', 'src', 'assets', 'config', 'feature-support.json');
