@@ -186,16 +186,49 @@ export class SandboxPage implements OnInit, OnDestroy {
         const selectElem = select as HTMLSelectElement;
         const optionElem = selectElem.querySelector(`option[value="${selectElem.value}"]`) as ElementWithData<SourceCodeItem>;
 
-        const url = optionElem.dataValue.type === SourceCodeType.GITHUB ?
-            `https://raw.githubusercontent.com/GaborFarkas/gaborfarkas.github.io/refs/heads/${environment.gitRev}/src/examples/${this.library.replace(/ /g, '').toLowerCase()}.ts` :
-            undefined;
+        switch (optionElem.dataValue.type) {
+            case SourceCodeType.GITHUB:
+                await this.loadExampleAsync(optionElem.dataValue);
+                break;
+            default:
+                throw new Error('Could not load preset.');
+        }
+    }
 
-        if (!url) {
-            throw new Error('Could not load preset.');
+    /**
+     * Loads a pre-written example function from GitHub.
+     * @param item The source code descriptor.
+     */
+    private async loadExampleAsync(item: SourceCodeItem) {
+        const sourceCode = await this.fileService.getTextDocumentAsync(
+            `https://raw.githubusercontent.com/GaborFarkas/gaborfarkas.github.io/refs/heads/${environment.gitRev}/src/examples/${this.library.replace(/ /g, '').toLowerCase()}.ts`);
+        const sourceArr = sourceCode.split('\n');
+        const keyLine = parseInt(item.key);
+        let startLine = keyLine;
+
+        // Line number stores the first call's position. Search for the enclosing function.
+        for (startLine; startLine > 0; --startLine) {
+            if (sourceArr[startLine].startsWith('function') || sourceArr[startLine].startsWith('async function')) {
+                break;
+            }
+        }
+        if (startLine === 0) {
+            throw new Error('Could not extract preset from the source code.');
         }
 
-        const sourceCode = await this.fileService.getTextDocumentAsync(url);
-        console.log(sourceCode);
+        // Look for the end. Conventionally it is the next line with only a closing brace, no indents.
+        let endLine = keyLine;
+        for (endLine; endLine < sourceArr.length; ++endLine) {
+            if (sourceArr[endLine] === '}') {
+                break;
+            }
+        }
+        if (sourceArr[endLine] !== '}') {
+            throw new Error('Could not extract preset from the source code.');
+        }
+
+        // Get the function's body only.
+        this.currentCode = sourceArr.slice(startLine + 1, endLine).map(line => line.slice(4)).join('\n');
     }
 
     /**

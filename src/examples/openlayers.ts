@@ -160,7 +160,7 @@ function loadVectorTiles(ol: typeof OpenLayers, map: OpenLayers.Map) {
             'stroke-color': '#8c8b8b',
             'fill-color': '#f7f7e9',
         }
-    }))
+    }));
 }
 
 function readWms(ol: typeof OpenLayers, map: OpenLayers.Map) {

@@ -85,10 +85,12 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
                 monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
                     noSemanticValidation: false,
                     noSyntaxValidation: false,
-                    noSuggestionDiagnostics: false
+                    noSuggestionDiagnostics: false,
+                    diagnosticCodesToIgnore: [2311, 1375]
                 });
                 monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-                    target: monaco.languages.typescript.ScriptTarget.ES2020,
+                    module: monaco.languages.typescript.ModuleKind.ESNext,
+                    target: monaco.languages.typescript.ScriptTarget.ESNext,
                     allowJs: true,
                     checkJs: true,
                     allowNonTsExtensions: true
