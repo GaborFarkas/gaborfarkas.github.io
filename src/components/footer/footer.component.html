@@ -30,18 +30,22 @@
     </div>
 </div>
 }
-<p class="text-primary text-sm py-2 text-center px-2" [ngClass]="{'hidden md:block': compact}">Copyright © 2024 Gábor Farkas | Hosted by GitHub Pages</p>
-<a href="https://dashboard.simpleanalytics.com/farkasgaborev.eu?utm_source=farkasgaborev.eu&utm_content=badge"
-    referrerpolicy="origin" target="_blank" class="flex justify-center">
-    <picture>
-        <source srcset="https://simpleanalyticsbadges.com/farkasgaborev.eu?mode=light"
-            media="(prefers-color-scheme: light)" />
-        <img class="h-8" src="https://simpleanalyticsbadges.com/farkasgaborev.eu?mode=light" loading="lazy"
-            referrerpolicy="no-referrer" crossorigin="anonymous" />
-    </picture>
-</a>
+<p class="text-primary text-sm py-2 text-center px-2" [ngClass]="{'hidden md:block ml-2': compact}">Copyright © 2024
+    Gábor Farkas | Hosted by GitHub Pages</p>
+<div
+    [ngClass]="{'lg:absolute lg:w-full h-full top-0 left-0 flex items-center justify-center lg:pointer-events-none': compact, 'flex justify-center': !compact}">
+    <a href="https://dashboard.simpleanalytics.com/farkasgaborev.eu?utm_source=farkasgaborev.eu&utm_content=badge"
+        referrerpolicy="origin" target="_blank" class="flex justify-center items-center h-full pointer-events-auto">
+        <picture>
+            <source srcset="https://simpleanalyticsbadges.com/farkasgaborev.eu?mode=light"
+                media="(prefers-color-scheme: light)" />
+            <img class="h-8" src="https://simpleanalyticsbadges.com/farkasgaborev.eu?mode=light" loading="lazy"
+                referrerpolicy="no-referrer" crossorigin="anonymous" />
+        </picture>
+    </a>
+</div>
 @if (compact) {
-<div class="hidden md:block text-primary">
+<div class="hidden md:block text-primary mr-4">
     <fa-icon [icon]="email" size="lg"></fa-icon>
     <span class="email pl-2 cursor-pointer" [ngClass]="{'copied': singleClick}"
         title="Click to copy to clipboard, double click to write an email" (click)="copyToClipboard()"
