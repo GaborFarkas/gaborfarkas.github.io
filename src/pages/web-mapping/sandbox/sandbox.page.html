@@ -8,7 +8,7 @@
         }
         <fa-icon [icon]="faFloppyDisk" title="Save as new snippet" class="cursor-pointer"
             (click)="openSaveDialog()" />
-        <select [reset]="'0'" (change)="loadCodeSnippetAsync($event.target)">
+        <select [reset]="'0'" (change)="loadCodeSnippetAsync($event.target)" class="w-48 text-ellipsis overflow-x-hidden">
             <option value="0" class="text-gray-400">Load snippet</option>
             <ng-container
                 *ngTemplateOutlet="loadCodeOptions; context: { items: this.availableCodes[this.library]?.children }" />
@@ -17,7 +17,7 @@
             <fa-icon [icon]="faPlay" class="text-green-900 pr-2" size="1x" />
             <span>Run code</span>
         </div>
-        <select [(ngModel)]="library">
+        <select [(ngModel)]="library" class="w-48">
             @for (library of WebMappingLibrary | keyvalue; track library.key) {
             <option [value]="library.value">{{library.value}} (v{{libraryVersions[library.value]}})</option>
             }
