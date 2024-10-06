@@ -8,7 +8,7 @@ import { environment } from '@/environments/environment';
 import { FeatureSupportItem } from '@/models/web-mapping/feature-support-item.model';
 import { FeatureSupportScore } from '@/models/web-mapping/feature-support-score.model';
 import { WebMappingLibrary } from '@/models/web-mapping/web-mapping-library';
-import { ConfigService } from '@/services/config.service';
+import { FileService } from '@/services/file.service';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -24,7 +24,7 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
     templateUrl: './feature-matrix.page.html',
     styleUrl: './feature-matrix.page.css',
     imports: [CommonModule, FontAwesomeModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, OpenLayersMapComponent, MaplibreMapComponent, CesiumMapComponent],
-    providers: [ConfigService]
+    providers: [FileService]
 })
 export class FeatureMatrixPage implements OnInit {
     /**
@@ -72,10 +72,10 @@ export class FeatureMatrixPage implements OnInit {
         return `https://github.com/GaborFarkas/gaborfarkas.github.io/blob/${environment.gitRev}/src/examples/${sourceFileName}.ts#L${this.playingItem!.support![this.playingLibrary!].line}`;
     }
 
-    constructor(private configService: ConfigService) { }
+    constructor(private fileService: FileService) { }
 
     async ngOnInit() {
-        this.featureSupportItems = await this.configService.getConfigAsync('feature-support.json');
+        this.featureSupportItems = await this.fileService.getConfigAsync('feature-support.json');
     }
 
     /**

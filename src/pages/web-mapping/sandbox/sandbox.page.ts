@@ -4,7 +4,6 @@ import { NoPhoneComponent } from "@/components/no-phone/no-phone.component";
 import { PageUrlMapping } from "@/models/page-url-mapping.model";
 import { WebMappingLibrary } from "@/models/web-mapping/web-mapping-library";
 import { CommonModule } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
@@ -15,13 +14,14 @@ import { VERSION as CesiumVersion } from "@/utils/cesium";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
-import { ConfigService } from "@/services/config.service";
+import { FileService } from "@/services/file.service";
 import { FeatureSupportItem } from "@/models/web-mapping/feature-support-item.model";
 import { GroupedSourceCodeModel, SourceCodeGroup, SourceCodeItem, SourceCodeType } from "@/models/web-mapping/grouped-source-code.model";
 import { TypedTemplateDirective } from "@/directives/typed-template.directive";
 import { SelectAutoResetDirective } from "@/directives/select-auto-reset.directive";
 import { DataValueDirective } from "@/directives/data-value.directive";
 import { ElementWithData } from "@/models/element-with-data.model";
+import { environment } from "@/environments/environment";
 
 /**
  * The sandbox web mapping page.
@@ -30,7 +30,7 @@ import { ElementWithData } from "@/models/element-with-data.model";
     selector: 'sandbox-page',
     standalone: true,
     imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective],
-    providers: [ConfigService],
+    providers: [FileService],
     templateUrl: './sandbox.page.html',
     host: {
         class: 'flex flex-col h-full'
@@ -38,8 +38,7 @@ import { ElementWithData } from "@/models/element-with-data.model";
 })
 export class SandboxPage implements OnInit, OnDestroy {
     constructor(private sanitizer: DomSanitizer,
-        private httpClient: HttpClient,
-        private configService: ConfigService
+        private fileService: FileService
     ) { }
     /**
      * Play icon for the template.
@@ -88,7 +87,7 @@ export class SandboxPage implements OnInit, OnDestroy {
         if (value !== this.library_) {
             this.library_ = value;
             this.webMapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`${PageUrlMapping.MAP}?lib=${encodeURIComponent(this.library_).toLowerCase()}`);
-            this.loadTypeDefinitions();
+            this.loadTypeDefinitionsAsync();
             this.loadExamples();
         }
     }
@@ -145,13 +144,13 @@ export class SandboxPage implements OnInit, OnDestroy {
     };
 
     async ngOnInit(): Promise<void> {
-        this.loadTypeDefinitions();
+        this.loadTypeDefinitionsAsync();
 
         this.saveIntervalKey = window.setInterval(function (this: SandboxPage) {
             // TODO: Save code
         }.bind(this), 5000);
 
-        this.featureSupportItems = await this.configService.getConfigAsync('feature-support.json');
+        this.featureSupportItems = await this.fileService.getConfigAsync('feature-support.json');
         this.loadExamples();
     }
 
@@ -182,22 +181,29 @@ export class SandboxPage implements OnInit, OnDestroy {
      * Opens an existing code snippet into the code editor.
      * @param item The code descriptor.
      */
-    protected loadCodePreset(select: EventTarget | null) {
+    protected async loadCodePresetAsync(select: EventTarget | null) {
         // Get the corresponding option from the event's target by value
         const selectElem = select as HTMLSelectElement;
         const optionElem = selectElem.querySelector(`option[value="${selectElem.value}"]`) as ElementWithData<SourceCodeItem>;
-        console.log(optionElem?.dataValue);
+
+        const url = optionElem.dataValue.type === SourceCodeType.GITHUB ?
+            `https://raw.githubusercontent.com/GaborFarkas/gaborfarkas.github.io/refs/heads/${environment.gitRev}/src/examples/${this.library.replace(/ /g, '').toLowerCase()}.ts` :
+            undefined;
+
+        if (!url) {
+            throw new Error('Could not load preset.');
+        }
+
+        const sourceCode = await this.fileService.getTextDocumentAsync(url);
+        console.log(sourceCode);
     }
 
     /**
      * Loads the type definitions for the currently selected library.
      */
-    private loadTypeDefinitions() {
-        this.httpClient.get(`/assets/web-mapping/types/${this.library.replace(/ /g, '').toLowerCase()}.d.ts`, {
-            responseType: 'text'
-        }).subscribe(resp => {
-            this.extraTypes = resp;
-        });
+    private async loadTypeDefinitionsAsync() {
+        this.extraTypes = await this.fileService.getTextDocumentAsync(
+            `/assets/web-mapping/types/${this.library.replace(/ /g, '').toLowerCase()}.d.ts`);
     }
 
     /**

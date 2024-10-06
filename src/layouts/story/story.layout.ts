@@ -4,7 +4,7 @@ import { StoryModel, StoryType } from '@/models/story.model';
 import { PageUrlMapping } from '@/models/page-url-mapping.model';
 import { StoryService } from '@/services/story.service';
 import { CommonModule } from '@angular/common';
-import { ConfigService } from '@/services/config.service';
+import { FileService } from '@/services/file.service';
 
 /**
  * Layout component of a single insight or case study page.
@@ -13,7 +13,7 @@ import { ConfigService } from '@/services/config.service';
     selector: 'story-layout',
     standalone: true,
     imports: [CommonModule, RouterOutlet],
-    providers: [StoryService, ConfigService],
+    providers: [StoryService, FileService],
     templateUrl: './story.layout.html',
     styleUrl: './story.layout.css'
 })

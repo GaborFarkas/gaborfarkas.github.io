@@ -3,7 +3,7 @@
         <span class="cabin-sketch text-2xl">CartoSandbox</span>
     </nav>
     <div class="h-full flex items-center gap-6 mr-4">
-        <select [reset]="'0'" (change)="loadCodePreset($event.target)">
+        <select [reset]="'0'" (change)="loadCodePresetAsync($event.target)">
             <option value="0" class="text-gray-400">Load preset</option>
             <ng-container
                 *ngTemplateOutlet="loadCodeOptions; context: { items: this.availableCodes[this.library]?.children }" />

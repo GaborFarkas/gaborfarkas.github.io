@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { StoryModel, StoryType } from "@/models/story.model";
-import { ConfigService } from "@/services/config.service";
+import { FileService } from "@/services/file.service";
 import { ListOptions } from "@/models/list.model";
 
 /**
@@ -18,7 +18,7 @@ export class StoryService {
      */
     private fetchLock?: Promise<void>;
 
-    constructor(private configService: ConfigService) {
+    constructor(private fileService: FileService) {
         this.fetchLock = this.fetchStoriesAsync().then(function (this: StoryService) {
             this.fetchLock = undefined;
         }.bind(this));
@@ -79,7 +79,7 @@ export class StoryService {
      * Fetches the stories from a global configuration file and restructures for this service.
      */
     private async fetchStoriesAsync() {
-        const stories = await this.configService.getConfigAsync<StoryModel[]>('stories.json');
+        const stories = await this.fileService.getConfigAsync<StoryModel[]>('stories.json');
         for (let story of stories) {
             // Store stories with their slugs as keys.
             this.stories.set(story.slug, story);

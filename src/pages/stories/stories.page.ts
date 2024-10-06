@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { StoryModel, StoryType } from '@/models/story.model';
 import { PageUrlMapping } from '@/models/page-url-mapping.model';
 import { StoryService } from '@/services/story.service';
-import { ConfigService } from '@/services/config.service';
+import { FileService } from '@/services/file.service';
 import { CardComponent } from '@/components/card/card.component';
 
 /**
@@ -13,7 +13,7 @@ import { CardComponent } from '@/components/card/card.component';
     selector: 'stories-page',
     standalone: true,
     imports: [CardComponent],
-    providers: [StoryService, ConfigService],
+    providers: [StoryService, FileService],
     templateUrl: './stories.page.html',
     styleUrl: './stories.page.css'
 })
