@@ -13,7 +13,7 @@ import { getVersion as getMaplibreVersion } from "maplibre-gl";
 import { VERSION as CesiumVersion } from "@/utils/cesium";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faFloppyDisk, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FileService } from "@/services/file.service";
 import { FeatureSupportItem } from "@/models/web-mapping/feature-support-item.model";
 import { GroupedSourceCodeModel, SourceCodeGroup, SourceCodeItem, SourceCodeType } from "@/models/web-mapping/grouped-source-code.model";
@@ -21,7 +21,7 @@ import { TypedTemplateDirective } from "@/directives/typed-template.directive";
 import { SelectAutoResetDirective } from "@/directives/select-auto-reset.directive";
 import { DataValueDirective } from "@/directives/data-value.directive";
 import { ElementWithData } from "@/models/element-with-data.model";
-import { environment } from "@/environments/environment";
+import { PersistencyService } from "@/services/persistency.service";
 
 /**
  * The sandbox web mapping page.
@@ -30,7 +30,7 @@ import { environment } from "@/environments/environment";
     selector: 'sandbox-page',
     standalone: true,
     imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective],
-    providers: [FileService],
+    providers: [FileService, PersistencyService],
     templateUrl: './sandbox.page.html',
     host: {
         class: 'flex flex-col h-full'
@@ -38,12 +38,23 @@ import { environment } from "@/environments/environment";
 })
 export class SandboxPage implements OnInit, OnDestroy {
     constructor(private sanitizer: DomSanitizer,
-        private fileService: FileService
+        private fileService: FileService,
+        private persistencyService: PersistencyService
     ) { }
     /**
      * Play icon for the template.
      */
     protected faPlay: IconDefinition = faPlay;
+
+    /**
+     * Save icon for the template.
+     */
+    protected faFloppyDisk: IconDefinition = faFloppyDisk;
+
+    /**
+     * Delete icon for the template.
+     */
+    protected faTrash: IconDefinition = faTrash;
 
     /**
      * Web mapping libraries enum for the template.
@@ -88,7 +99,7 @@ export class SandboxPage implements OnInit, OnDestroy {
             this.library_ = value;
             this.webMapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`${PageUrlMapping.MAP}?lib=${encodeURIComponent(this.library_).toLowerCase()}`);
             this.loadTypeDefinitionsAsync();
-            this.loadExamples();
+            this.loadSnippets();
         }
     }
 
@@ -115,7 +126,7 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * Returns the namespace of the currently selected library for user script wrapping.
      */
-    private get libraryNamespace() {
+    private get libraryNamespace(): string {
         switch (this.library) {
             case WebMappingLibrary.CESIUM:
                 return 'Cesium';
@@ -126,6 +137,13 @@ export class SandboxPage implements OnInit, OnDestroy {
             case WebMappingLibrary.OPENLAYERS:
                 return 'ol';
         }
+    }
+
+    /**
+     * Returns the well-known name of the currently selected library, used in file names and keys.
+     */
+    private get libraryName(): string {
+        return this.library.replace(/ /g, '').toLowerCase();
     }
 
     /**
@@ -151,7 +169,7 @@ export class SandboxPage implements OnInit, OnDestroy {
         }.bind(this), 5000);
 
         this.featureSupportItems = await this.fileService.getConfigAsync('feature-support.json');
-        this.loadExamples();
+        this.loadSnippets();
     }
 
     ngOnDestroy(): void {
@@ -181,7 +199,7 @@ export class SandboxPage implements OnInit, OnDestroy {
      * Opens an existing code snippet into the code editor.
      * @param item The code descriptor.
      */
-    protected async loadCodePresetAsync(select: EventTarget | null) {
+    protected async loadCodeSnippetAsync(select: EventTarget | null) {
         // Get the corresponding option from the event's target by value
         const selectElem = select as HTMLSelectElement;
         const optionElem = selectElem.querySelector(`option[value="${selectElem.value}"]`) as ElementWithData<SourceCodeItem>;
@@ -191,7 +209,7 @@ export class SandboxPage implements OnInit, OnDestroy {
                 await this.loadExampleAsync(optionElem.dataValue);
                 break;
             default:
-                throw new Error('Could not load preset.');
+                throw new Error('Could not load snippet.');
         }
     }
 
@@ -201,7 +219,7 @@ export class SandboxPage implements OnInit, OnDestroy {
      */
     private async loadExampleAsync(item: SourceCodeItem) {
         const sourceCode = await this.fileService.getTextDocumentAsync(
-            `/assets/web-mapping/examples/${this.library.replace(/ /g, '').toLowerCase()}.ts`);
+            `/assets/web-mapping/examples/${this.libraryName}.ts`);
         const sourceArr = sourceCode.split('\n');
         const keyLine = parseInt(item.key);
         let startLine = keyLine;
@@ -213,7 +231,7 @@ export class SandboxPage implements OnInit, OnDestroy {
             }
         }
         if (startLine === 0) {
-            throw new Error('Could not extract preset from the source code.');
+            throw new Error('Could not extract snippet from the source code.');
         }
 
         // Look for the end. Conventionally it is the next line with only a closing brace, no indents.
@@ -224,7 +242,7 @@ export class SandboxPage implements OnInit, OnDestroy {
             }
         }
         if (sourceArr[endLine] !== '}') {
-            throw new Error('Could not extract preset from the source code.');
+            throw new Error('Could not extract snippet from the source code.');
         }
 
         // Get the function's body only.
@@ -236,65 +254,90 @@ export class SandboxPage implements OnInit, OnDestroy {
      */
     private async loadTypeDefinitionsAsync() {
         this.extraTypes = await this.fileService.getTextDocumentAsync(
-            `/assets/web-mapping/types/${this.library.replace(/ /g, '').toLowerCase()}.d.ts`);
+            `/assets/web-mapping/types/${this.libraryName}.d.ts`);
     }
 
     /**
-     * Loads examples available for the currently selected web mapping library.
+     * Loads snippets available for the currently selected web mapping library.
+     * @param forceRebuild Forcefully rebuild the tree to synchronize with changes.
      */
-    private loadExamples() {
-        if (!this.availableCodes[this.library]) {
-            const examplesModel: SourceCodeGroup = {
-                children: [],
-                name: 'Examples',
-                depth: 1
+    private loadSnippets(forceRebuild: boolean = false) {
+        if (forceRebuild || !this.availableCodes[this.library]) {
+            const model: GroupedSourceCodeModel = {
+                children: []
             };
-            // Use a map for quick access
-            const groupMap: Map<string, SourceCodeGroup> = new Map();
-            let maxDepth: number = 0;
 
-            // Build tree
-            for (let feature of this.featureSupportItems) {
-                if (!feature.support) {
-                    // Group
-                    const group: SourceCodeGroup = {
-                        children: [],
-                        name: feature.name,
-                        parent: feature.parent,
-                        depth: feature.parent ? groupMap.get(feature.parent)!.depth + 1 : 2
-                    }
-                    if (group.depth > maxDepth) maxDepth = group.depth;
+            const localSnippets = this.persistencyService.getKeysByPrefix(this.libraryName);
+            if (localSnippets.length) {
+                const localModel: SourceCodeGroup = {
+                    children: localSnippets.map<SourceCodeItem>(key => {
+                        return {
+                            name: key,
+                            type: SourceCodeType.LOCAL,
+                            key: key
+                        };
+                    }),
+                    name: 'Saved snippets',
+                    depth: 1
+                };
 
-                    groupMap.set(group.name, group);
-                    if (group.parent) {
-                        groupMap.get(group.parent)!.children.push(group);
-                    } else {
-                        examplesModel.children.push(group);
-                    }
-                } else if (feature.support[this.library].line) {
-                    // Feature with example
-                    const featItem: SourceCodeItem = {
-                        name: feature.name,
-                        type: SourceCodeType.GITHUB,
-                        key: feature.support[this.library].line!.toString()
-                    }
-                    groupMap.get(feature.parent!)!.children.push(featItem);
-                }
+                model.children.push(localModel);
             }
 
-            // Shake empty branches
-            for (let depth = maxDepth; depth > 0; --depth) {
-                for (let group of [...groupMap.values()].filter(group => group.depth === depth)) {
-                    if (group.children.length === 0) {
-                        const parent = group.parent ? groupMap.get(group.parent) : examplesModel;
-                        parent!.children = parent!.children.filter(child => child !== group);
+            if (this.featureSupportItems.length) {
+                const examplesModel: SourceCodeGroup = {
+                    children: [],
+                    name: 'Examples',
+                    depth: 1
+                };
+                // Use a map for quick access
+                const groupMap: Map<string, SourceCodeGroup> = new Map();
+                let maxDepth: number = 0;
+
+                // Build tree
+                for (let feature of this.featureSupportItems) {
+                    if (!feature.support) {
+                        // Group
+                        const group: SourceCodeGroup = {
+                            children: [],
+                            name: feature.name,
+                            parent: feature.parent,
+                            depth: feature.parent ? groupMap.get(feature.parent)!.depth + 1 : 2
+                        }
+                        if (group.depth > maxDepth) maxDepth = group.depth;
+
+                        groupMap.set(group.name, group);
+                        if (group.parent) {
+                            groupMap.get(group.parent)!.children.push(group);
+                        } else {
+                            examplesModel.children.push(group);
+                        }
+                    } else if (feature.support[this.library].line) {
+                        // Feature with example
+                        const featItem: SourceCodeItem = {
+                            name: feature.name,
+                            type: SourceCodeType.GITHUB,
+                            key: feature.support[this.library].line!.toString()
+                        }
+                        groupMap.get(feature.parent!)!.children.push(featItem);
                     }
                 }
+
+                // Shake empty branches
+                for (let depth = maxDepth; depth > 0; --depth) {
+                    for (let group of [...groupMap.values()].filter(group => group.depth === depth)) {
+                        if (group.children.length === 0) {
+                            const parent = group.parent ? groupMap.get(group.parent) : examplesModel;
+                            parent!.children = parent!.children.filter(child => child !== group);
+                        }
+                    }
+                }
+
+                model.children.push(examplesModel);
             }
 
-            this.availableCodes[this.library] = {
-                children: [examplesModel]
-            };
+
+            this.availableCodes[this.library] = model;
         }
     }
 }
