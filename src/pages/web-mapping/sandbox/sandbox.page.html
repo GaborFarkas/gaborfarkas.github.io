@@ -4,9 +4,10 @@
     </nav>
     <div class="h-full hidden lg:flex items-center gap-6 mr-4">
         @if (canDelete) {
-            <fa-icon [icon]="faTrash" title="Delete current snippet" class="cursor-pointer text-red-700"></fa-icon>
+        <fa-icon [icon]="faTrash" title="Delete current snippet" class="cursor-pointer text-red-700" (click)="deleteSnippet()" />
         }
-        <fa-icon [icon]="faFloppyDisk" title="Save as new snippet" class="cursor-pointer"></fa-icon>
+        <fa-icon [icon]="faFloppyDisk" title="Save as new snippet" class="cursor-pointer"
+            (click)="openSaveDialog()" />
         <select [reset]="'0'" (change)="loadCodeSnippetAsync($event.target)">
             <option value="0" class="text-gray-400">Load snippet</option>
             <ng-container
@@ -45,3 +46,26 @@
     }
     }
 </ng-template>
+
+<dialog class="modal" windowTitle="Save snippet as" (closed)="cancelSave()">
+    <div class="p-6 h-full flex flex-col justify-center items-center bg-primary">
+        <p class="text-center text-lg">This function will save the current state of the code editor in your browser's
+            local
+            storage. Please name it in the field below as you would like to see it in the snippet selector menu.</p>
+
+        <input class="border rounded my-4 w-3/4 p-1" type="text" [(ngModel)]="saveSnippetName"
+            placeholder="Your snippet's name" required>
+
+        <p class="text-center">You can always delete saved snippets with the delete button after opening them. Changes
+            in saved snippets are automatically saved every 5 seconds. Local code snippets are associated with the web
+            mapping library they were created with. If you cannot find a local save in the snippet selector, please
+            check
+            if the library setting is correct.</p>
+
+        <div class="flex gap-6 pt-12">
+            <button class="btn w-24" (click)="saveSnippet()">Save</button>
+            <button class="btn w-24" (click)="cancelSave()">Cancel</button>
+        </div>
+    </div>
+
+</dialog>

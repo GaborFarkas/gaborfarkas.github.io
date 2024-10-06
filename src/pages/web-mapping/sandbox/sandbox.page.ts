@@ -23,6 +23,7 @@ import { DataValueDirective } from "@/directives/data-value.directive";
 import { ElementWithData } from "@/models/element-with-data.model";
 import { PersistencyService } from "@/services/persistency.service";
 import { NotificationService } from "@/services/notification.service";
+import { ModalComponent } from "@/components/modal/modal.component";
 
 /**
  * The sandbox web mapping page.
@@ -30,7 +31,7 @@ import { NotificationService } from "@/services/notification.service";
 @Component({
     selector: 'sandbox-page',
     standalone: true,
-    imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective],
+    imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective, ModalComponent],
     providers: [FileService, PersistencyService],
     templateUrl: './sandbox.page.html',
     host: {
@@ -123,7 +124,12 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * The web map iframe
      */
-    @ViewChild('webMap') webMap!: ElementRef<HTMLIFrameElement>;
+    @ViewChild('webMap') private webMap!: ElementRef<HTMLIFrameElement>;
+
+    /**
+     * The modal dialog of this page.
+     */
+    @ViewChild(ModalComponent) private dialog!: ModalComponent;
 
     /**
      * Returns the namespace of the currently selected library for user script wrapping.
@@ -214,6 +220,11 @@ export class SandboxPage implements OnInit, OnDestroy {
     protected get canDelete(): boolean {
         return this.activeSnippet?.type === SourceCodeType.LOCAL;
     }
+
+    /**
+     * The name of the newly saved snippet.
+     */
+    protected saveSnippetName: string = '';
 
     async ngOnInit(): Promise<void> {
         this.loadTypeDefinitionsAsync();
@@ -405,6 +416,68 @@ export class SandboxPage implements OnInit, OnDestroy {
 
 
             this.availableCodes[this.library] = model;
+        }
+    }
+
+    /**
+     * Opens the save dialog in a modal window.
+     */
+    protected openSaveDialog() {
+        this.saveSnippetName = '';
+        this.dialog.open();
+    }
+
+    /**
+     * Saves the current code as a new  local snippet.
+     */
+    protected saveSnippet() {
+        if (!this.saveSnippetName) {
+            return;
+        }
+
+        this.persistencyService.storeWithPrefix(this.libraryName, this.saveSnippetName, this.currentCode);
+        this.loadSnippets(true);
+
+        this.notificationService.showSuccess(`Successfully saved current code as ${this.saveSnippetName}`, 2000);
+
+        // Find snippet and make it active
+        const localSnippet = (this.availableCodes[this.library]?.children.find(
+            child => child.name === 'Saved snippets') as SourceCodeGroup)?.children.find(child =>
+                child.name === this.saveSnippetName) as SourceCodeItem | undefined;
+        if (localSnippet) {
+            this.activeSnippet = localSnippet;
+        } else {
+            this.notificationService.showError('Could not load newly saved snippet. Please refresh the window.', 5000);
+        }
+
+        this.dialog.close();
+        return;
+    }
+
+    /**
+     * Cancels the current saving process and closes the save modal window.
+     */
+    protected cancelSave() {
+        this.saveSnippetName = '';
+        this.dialog.close();
+    }
+
+    /**
+     * Deletes the currently opened local snippet.
+     */
+    protected deleteSnippet() {
+        if (this.activeSnippet?.type === SourceCodeType.LOCAL) {
+            const snippet = this.activeSnippet;
+
+            // Unload snippet before removing to avoid the save interval to accidentally save it again in a race condition.
+            this.activeSnippet = undefined;
+            this.persistencyService.remove(snippet.key, this.libraryName);
+
+            this.loadSnippets(true);
+            this.notificationService.showSuccess(`Successfully removed snippet ${snippet.name}`, 2000);
+
+        } else {
+            this.notificationService.showError('There is no loaded snippet which could be removed.', 5000);
         }
     }
 }
