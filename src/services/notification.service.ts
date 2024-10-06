@@ -1,4 +1,4 @@
-import { NotificationModel } from "@/models/notification.model";
+import { NotificationLevel, NotificationModel } from "@/models/notification.model";
 import { Injectable } from "@angular/core";
 import { Observable, ReplaySubject } from "rxjs";
 
@@ -23,6 +23,10 @@ export class NotificationService {
      */
     private notifications_: NotificationModel[] = [];
 
+    /**
+     * Shows a new notification.
+     * @param notification The notification descriptor.
+     */
     public showNotification(notification: NotificationModel) {
         if (!this.notifications_.includes(notification)) {
             this.notifications_.push(notification);
@@ -35,12 +39,55 @@ export class NotificationService {
 
     }
 
+    /**
+     * Closes a shown notification.
+     * @param notification The notification descriptor.
+     */
     public closeNotification(notification: NotificationModel) {
         if (this.notifications_.includes(notification)) {
             this.notifications_ = this.notifications_.filter(currNotification =>
                 notification !== currNotification);
             this.updateObservable();
         }
+    }
+
+    /**
+     * Shows a success notification.
+     * @param message The notification message.
+     * @param fadeAfter Automatically close this notification after these many milliseconds.
+     */
+    public showSuccess(message: string, fadeAfter?: number) {
+        this.showNotification({
+            level: NotificationLevel.SUCCESS,
+            message,
+            fadeAfter
+        });
+    }
+
+    /**
+     * Shows a warning notification.
+     * @param message The notification message.
+     * @param fadeAfter Automatically close this notification after these many milliseconds.
+     */
+    public showWarning(message: string, fadeAfter?: number) {
+        this.showNotification({
+            level: NotificationLevel.WARNING,
+            message,
+            fadeAfter
+        });
+    }
+
+    /**
+     * Shows an error notification.
+     * @param message The notification message.
+     * @param fadeAfter Automatically close this notification after these many milliseconds.
+     */
+    public showError(message: string, fadeAfter?: number) {
+        this.showNotification({
+            level: NotificationLevel.ERROR,
+            message,
+            fadeAfter
+        });
     }
 
     /**

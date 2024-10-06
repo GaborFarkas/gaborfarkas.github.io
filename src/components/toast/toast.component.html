@@ -1,4 +1,4 @@
 <div [class]="'flex flex-row items-center w-full h-full rounded p-2 ' + backgroundClass">
-    <p class="flex-grow">{{notification.message}}</p>
-    <fa-icon [icon]="faXmark" size="xl" class="pl-4 pr-2 h-full cursor-pointer hover:text-secondary-accent" (click)="close()" />
+    <p class="flex-grow overflow-x-hidden text-ellipsis">{{notification.message}}</p>
+    <fa-icon [icon]="faXmark" size="xl" class="pl-4 pr-2 cursor-pointer hover:text-secondary-accent" (click)="close()" />
 </div>

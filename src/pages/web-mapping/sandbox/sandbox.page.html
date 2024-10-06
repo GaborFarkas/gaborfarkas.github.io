@@ -1,9 +1,11 @@
 <div class="h-12 flex flex-row justify-between">
-    <nav>
+    <nav class="ml-4">
         <span class="cabin-sketch text-2xl">CartoSandbox</span>
     </nav>
     <div class="h-full hidden lg:flex items-center gap-6 mr-4">
-        <fa-icon [icon]="faTrash" title="Delete current snippet" class="cursor-pointer text-red-700"></fa-icon>
+        @if (canDelete) {
+            <fa-icon [icon]="faTrash" title="Delete current snippet" class="cursor-pointer text-red-700"></fa-icon>
+        }
         <fa-icon [icon]="faFloppyDisk" title="Save as new snippet" class="cursor-pointer"></fa-icon>
         <select [reset]="'0'" (change)="loadCodeSnippetAsync($event.target)">
             <option value="0" class="text-gray-400">Load snippet</option>

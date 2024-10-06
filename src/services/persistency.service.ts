@@ -11,34 +11,14 @@ export class PersistencyService {
     private storage: Storage = window.localStorage;
 
     /**
-     * Gets a stored value by its key.
+     * Gets a stored value by its key and optionally its prefix.
      * @param key The key.
+     * @param prefix The prefix.
      * @returns The stored value.
      */
-    public get(key: string): string | null {
-        return this.storage.getItem(key);
-    }
-
-    /**
-     * Gets all stored KVPs by a prefix.
-     * @param prefix The prefix.
-     * @returns The key-value pairs matching the prefix. Keys are returned without the prefix.
-     */
-    public getByPrefix(prefix: string): Record<string, string> {
-        let keyIndex = 0;
-        let key = this.storage.key(keyIndex);
-        const values: Record<string, string> = {};
-
-        while (key !== null) {
-            if (key.startsWith(`${prefix}:`)) {
-                values[key.replace(`${prefix}:`, '')] = this.storage.getItem(key)!;
-            }
-
-            ++keyIndex;
-            key = this.storage.key(keyIndex);
-        }
-
-        return values;
+    public get(key: string, prefix?: string): string | null {
+        const prefixedKey = prefix !== undefined ? `${prefix}:${key}` : key;
+        return this.storage.getItem(prefixedKey);
     }
 
     /**

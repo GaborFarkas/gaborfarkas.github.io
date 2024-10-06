@@ -51,9 +51,9 @@ export enum SourceCodeType {
     /**
      * A locally saved source code. Key is localStorage key.
      */
-    LOCAL,
+    LOCAL = 'local',
     /**
      * A source code file from GitHub. Key is line number in file.
      */
-    GITHUB
+    GITHUB = 'github'
 }

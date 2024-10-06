@@ -11,7 +11,8 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
     selector: 'div.toast',
     standalone: true,
     imports: [FontAwesomeModule],
-    templateUrl: './toast.component.html'
+    templateUrl: './toast.component.html',
+    styleUrls: [ './toast.component.css' ]
 })
 export class ToastComponent {
     constructor(private notificationService: NotificationService) { }

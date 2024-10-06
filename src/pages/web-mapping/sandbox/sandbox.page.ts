@@ -22,6 +22,7 @@ import { SelectAutoResetDirective } from "@/directives/select-auto-reset.directi
 import { DataValueDirective } from "@/directives/data-value.directive";
 import { ElementWithData } from "@/models/element-with-data.model";
 import { PersistencyService } from "@/services/persistency.service";
+import { NotificationService } from "@/services/notification.service";
 
 /**
  * The sandbox web mapping page.
@@ -39,7 +40,8 @@ import { PersistencyService } from "@/services/persistency.service";
 export class SandboxPage implements OnInit, OnDestroy {
     constructor(private sanitizer: DomSanitizer,
         private fileService: FileService,
-        private persistencyService: PersistencyService
+        private persistencyService: PersistencyService,
+        private notificationService: NotificationService
     ) { }
     /**
      * Play icon for the template.
@@ -161,11 +163,65 @@ export class SandboxPage implements OnInit, OnDestroy {
         [WebMappingLibrary.CESIUM]: undefined
     };
 
+    /**
+     * The currently active snippet (backing field).
+     */
+    private activeSnippet_?: SourceCodeItem;
+    /**
+     * The currently active snippet.
+     */
+    private get activeSnippet() {
+        return this.activeSnippet_;
+    };
+    /**
+     * The currently active snippet.
+     */
+    private set activeSnippet(value: SourceCodeItem | undefined) {
+        if (this.activeSnippet_ !== value) {
+            this.activeSnippet_ = value;
+            if (value) {
+                switch (value.type) {
+                    case SourceCodeType.GITHUB:
+                        this.loadExampleAsync(value).then(() =>
+                            this.notificationService.showSuccess(
+                                `Successfully loaded example ${value.name}.`, 2000))
+                            .catch((err: Error) => {
+                                this.notificationService.showError(err.message, 5000);
+                                this.activeSnippet = undefined;
+                            });
+                        break;
+                    case SourceCodeType.LOCAL:
+                        try {
+                            this.loadLocalSnippet(value);
+                            this.notificationService.showSuccess(
+                                `Successfully loaded local snippet ${value.name}.`, 2000);
+                        } catch (err) {
+                            this.notificationService.showError((err as Error).message, 5000);
+                            this.activeSnippet = undefined;
+                        }
+                        break;
+                    default:
+                        this.notificationService.showError(`Could not load code snippet. Unknown type ${value.type}`,
+                            5000);
+                }
+            }
+        }
+    };
+
+    /**
+     * The currently active snippet can be deleted.
+     */
+    protected get canDelete(): boolean {
+        return this.activeSnippet?.type === SourceCodeType.LOCAL;
+    }
+
     async ngOnInit(): Promise<void> {
         this.loadTypeDefinitionsAsync();
 
         this.saveIntervalKey = window.setInterval(function (this: SandboxPage) {
-            // TODO: Save code
+            if (this.activeSnippet?.type === SourceCodeType.LOCAL) {
+                this.persistencyService.storeWithPrefix(this.libraryName, this.activeSnippet.key, this.currentCode);
+            }
         }.bind(this), 5000);
 
         this.featureSupportItems = await this.fileService.getConfigAsync('feature-support.json');
@@ -204,12 +260,10 @@ export class SandboxPage implements OnInit, OnDestroy {
         const selectElem = select as HTMLSelectElement;
         const optionElem = selectElem.querySelector(`option[value="${selectElem.value}"]`) as ElementWithData<SourceCodeItem>;
 
-        switch (optionElem.dataValue.type) {
-            case SourceCodeType.GITHUB:
-                await this.loadExampleAsync(optionElem.dataValue);
-                break;
-            default:
-                throw new Error('Could not load snippet.');
+        if (optionElem?.dataValue) {
+            this.activeSnippet = optionElem.dataValue;
+        } else {
+            this.notificationService.showError('Could not find the selected code snippet.', 5000);
         }
     }
 
@@ -247,6 +301,19 @@ export class SandboxPage implements OnInit, OnDestroy {
 
         // Get the function's body only.
         this.currentCode = sourceArr.slice(startLine + 1, endLine).map(line => line.slice(4)).join('\n');
+    }
+
+    /**
+     * Loads a locally saved snippet from the configured storage.
+     * @param item The source code descriptor.
+     */
+    private loadLocalSnippet(item: SourceCodeItem) {
+        const sourceCode: string | null = this.persistencyService.get(item.key, this.libraryName);
+        if (!sourceCode) {
+            throw new Error('Could not find snippet in storage.');
+        }
+
+        this.currentCode = sourceCode;
     }
 
     /**
