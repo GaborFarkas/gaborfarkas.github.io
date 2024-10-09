@@ -26,6 +26,11 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
     private extraLib?: monacoType.IDisposable;
 
     /**
+     * The handler of the currentl loaded extra libraries' model.
+     */
+    private extraLibModel?: monacoType.IDisposable;
+
+    /**
      * Helper variable to tell if the lib has been loaded.
      */
     private monacoLoaded: boolean = false;
@@ -61,12 +66,17 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
      */
     @Input() public set definitions(value: string | undefined) {
         this.extraLib?.dispose();
+        this.extraLibModel?.dispose();
+        this.extraLib = undefined;
+        this.extraLibModel = undefined;
         // Currently only JS is supported.
         if (value) {
             if (!this.monacoLoaded) {
                 this.initialExtraDefinitions = value;
             } else {
-                this.extraLib = monaco.languages.typescript.javascriptDefaults.addExtraLib(value);
+                const libUri = 'ts:filename/extraLib.d.ts';
+                this.extraLib = monaco.languages.typescript.javascriptDefaults.addExtraLib(value, libUri);
+                this.extraLibModel = monaco.editor.createModel(value, 'typescript', monaco.Uri.parse(libUri));
             }
         }
     }
@@ -86,14 +96,16 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
                     noSemanticValidation: false,
                     noSyntaxValidation: false,
                     noSuggestionDiagnostics: false,
-                    diagnosticCodesToIgnore: [2311, 1375, 2339]
+                    diagnosticCodesToIgnore: [2311, 1375, 2339, 1108]
                 });
                 monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+                    module: monaco.languages.typescript.ModuleKind.ESNext,
                     target: monaco.languages.typescript.ScriptTarget.ES2020,
                     allowJs: true,
                     checkJs: true,
                     allowNonTsExtensions: true
                 });
+
 
                 // Instantiate editor
                 this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
@@ -102,6 +114,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
                     automaticLayout: true,
                     value: this.value
                 });
+                this.editor
 
                 // Add change listener to emit current code
                 this.editor.onDidChangeModelContent(function (this: CodeEditorComponent) {
@@ -128,6 +141,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.extraLib?.dispose();
+        this.extraLibModel?.dispose();
         this.editor?.dispose();
     }
 }
