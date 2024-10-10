@@ -123,6 +123,10 @@ p, ul {
     .blur-xs {
         filter: blur(2px);
     }
+
+    .h-full-10 {
+        height: calc(100% - 2.5rem);
+    }
 }
 
 .maplibregl-ctrl button.maplibregl-ctrl-building .maplibregl-ctrl-icon {
