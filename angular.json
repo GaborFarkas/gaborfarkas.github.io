@@ -39,6 +39,11 @@
                                 "output": "/assets/monaco/vs"
                             },
                             {
+                                "glob": "**/*",
+                                "input": "node_modules/vscode-oniguruma/release",
+                                "output": "/assets/vscode-oniguruma"
+                            },
+                            {
                                 "glob": "*.ts",
                                 "input": "src/examples",
                                 "output": "/assets/web-mapping/examples"

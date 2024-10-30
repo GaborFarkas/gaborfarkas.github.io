@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AsyncSubject } from "rxjs";
+import { convertTheme } from "@/monaco-vscode-textmate";
 
 /**
  * Loader service for the monaco code editor library. It needs to be loaded through AMD with an
@@ -29,9 +30,14 @@ export class MonacoLoaderService {
                     await this.loadAmdAsync();
                 }
 
+                const theme = await (await fetch('/assets/monaco/themes/light-modern.json')).json();
+
                 // Load monaco with AMD
                 (window as any).require.config({ paths: { vs: '/assets/monaco/vs' } });
                 (window as any).require(['vs/editor/editor.main'], () => {
+                    // Define VSCode light modern theme
+                    (window as any).monaco.editor.defineTheme('light-modern', convertTheme(theme));
+
                     this.loaded.next(true);
                     this.loaded.complete();
                 });
@@ -42,6 +48,8 @@ export class MonacoLoaderService {
                         return '/assets/monaco/vs/base/worker/workerMain.js';
                     }
                 };
+
+
             }
         } catch (err) {
             this.loaded.next(false);

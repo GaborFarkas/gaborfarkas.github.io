@@ -1,3 +1,4 @@
+import { TokensProviderCache } from "@/monaco-vscode-textmate";
 import { MonacoLoaderService } from "@/services/monaco-loader.service";
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from "@angular/core";
 import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";
@@ -110,11 +111,16 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
                 // Instantiate editor
                 this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
                     language: 'javascript',
-                    theme: 'vs',
+                    theme: 'light-modern',
                     automaticLayout: true,
                     value: this.value
                 });
-                this.editor
+
+                // Configure TextMate
+                const cache = new TokensProviderCache(this.editor);
+                cache.getTokensProvider('source.js').then((tokensProvider) => {
+                    monaco.languages.setTokensProvider('javascript', tokensProvider);
+                });
 
                 // Add change listener to emit current code
                 this.editor.onDidChangeModelContent(function (this: CodeEditorComponent) {
