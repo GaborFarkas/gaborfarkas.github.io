@@ -2648,7 +2648,7 @@ interface MapOptions {
     wheelPxPerZoomLevel?: number | undefined;
 
     // Touch interaction options
-    tap?: boolean | undefined;
+    tapHold?: boolean | undefined;
     tapTolerance?: number | undefined;
     touchZoom?: Zoom | undefined;
     bounceAtZoomLimits?: boolean | undefined;
@@ -2660,9 +2660,11 @@ interface ControlOptions {
     position?: ControlPosition | undefined;
 }
 
-declare class Control extends Class {
-    static extend<T extends object>(props: T): { new(...args: any[]): T } & typeof Control;
-    constructor(options?: ControlOptions);
+declare class Control<Options extends ControlOptions = ControlOptions> extends Class {
+    static extend<T extends object, Options extends ControlOptions = ControlOptions>(
+        props: T,
+    ): { new(...args: any[]): T } & typeof Control<Options>;
+    constructor(options?: Options);
     getPosition(): ControlPosition;
     setPosition(position: ControlPosition): this;
     getContainer(): HTMLElement | undefined;
@@ -2673,7 +2675,7 @@ declare class Control extends Class {
     onAdd?(map: Map): HTMLElement;
     onRemove?(map: Map): void;
 
-    options: ControlOptions;
+    options: Options;
 }
 
 declare namespace Control {
@@ -3126,7 +3128,7 @@ declare class Map extends Evented {
     dragging: Handler;
     keyboard: Handler;
     scrollWheelZoom: Handler;
-    tap?: Handler | undefined;
+    tapHold?: Handler | undefined;
     touchZoom: Handler;
     zoomControl: Control.Zoom;
 

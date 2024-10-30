@@ -253,6 +253,7 @@ export namespace OpenLayers {
         export import ImageCanvas = ol_source.ImageCanvas
         export import ImageMapGuide = ol_source.ImageMapGuide
         export import ImageStatic = ol_source.ImageStatic
+        export import ImageTile = ol_source.ImageTile
         export import ImageWMS = ol_source.ImageWMS
         export import OGCMapTile = ol_source.OGCMapTile
         export import OGCVectorTile = ol_source.OGCVectorTile
