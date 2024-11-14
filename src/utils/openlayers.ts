@@ -17,6 +17,7 @@ import * as ol_webgl from 'ol/webgl';
 /**
  * OpenLayers library patched from individual namespace imports.
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace OpenLayers {
     export import Collection = ol_base.Collection
     export import Disposable = ol_base.Disposable
