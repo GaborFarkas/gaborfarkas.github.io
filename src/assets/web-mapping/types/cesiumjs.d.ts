@@ -1255,7 +1255,7 @@ export class BoundingSphere {
     static projectTo2D(sphere: BoundingSphere, projection?: any, result?: BoundingSphere): BoundingSphere;
     /**
      * Determines whether or not a sphere is hidden from view by the occluder.
-     * @param sphere - The bounding sphere surrounding the occludee object.
+     * @param sphere - The bounding sphere surrounding the occluded object.
      * @param occluder - The occluder.
      * @returns <code>true</code> if the sphere is not visible; otherwise <code>false</code>.
      */
@@ -6033,7 +6033,7 @@ export class EllipsoidGeodesic {
     interpolateUsingFraction(fraction: number, result?: Cartographic): Cartographic;
     /**
      * Provides the location of a point at the indicated distance along the geodesic.
-     * @param distance - The distance from the inital point to the point of interest along the geodesic
+     * @param distance - The distance from the initial point to the point of interest along the geodesic
      * @param [result] - The object in which to store the result.
      * @returns The location of the point along the geodesic.
      */
@@ -25952,6 +25952,12 @@ export class Atmosphere {
      * be used for dynamically lighting all atmosphere-related rendering effects.
      */
     dynamicLighting: DynamicAtmosphereLightingType;
+    /**
+     * Returns <code>true</code> if the atmosphere shader requires a color correct step.
+     * @param atmosphere - The atmosphere instance to check
+     * @returns true if the atmosphere shader requires a color correct step
+     */
+    static requiresColorCorrect(atmosphere: Atmosphere): boolean;
 }
 
 /**
@@ -29144,6 +29150,7 @@ export namespace Cesium3DTileset {
      * @property [debugShowRenderingStatistics = false] - For debugging only. When true, draws labels to indicate the number of commands, points, triangles and features for each tile.
      * @property [debugShowMemoryUsage = false] - For debugging only. When true, draws labels to indicate the texture and geometry memory in megabytes used by each tile.
      * @property [debugShowUrl = false] - For debugging only. When true, draws labels to indicate the url of each tile.
+     * @param [options.environmentMapOptions] - The properties for managing dynamic environment maps on this model.
      */
     type ConstructorOptions = {
         show?: boolean;
@@ -29911,6 +29918,14 @@ export class Cesium3DTileset {
      * The properties for managing image-based lighting on this tileset.
      */
     imageBasedLighting: ImageBasedLighting;
+    /**
+     * The properties for managing dynamic environment maps on this model. Affects lighting.
+     * @example
+     * // Change the ground color used for a tileset's environment map to a forest green
+     * const environmentMapManager = tileset.environmentMapManager;
+     * environmentMapManager.groundColor = Cesium.Color.fromCssColorString("#203b34");
+     */
+    readonly environmentMapManager: DynamicEnvironmentMapManager;
     /**
      * Indicates that only the tileset's vector tiles should be used for classification.
      */
@@ -31524,6 +31539,136 @@ export enum DynamicAtmosphereLightingType {
     SUNLIGHT = 2
 }
 
+export namespace DynamicEnvironmentMapManager {
+    /**
+     * Options for the DynamicEnvironmentMapManager constructor
+     * @property [enabled = true] - If true, the environment map and related properties will continue to update.
+     * @property [mipmapLevels = 10] - The number of mipmap levels to generate for specular maps. More mipmap levels will produce a higher resolution specular reflection.
+     * @property [maximumSecondsDifference = 3600] - The maximum amount of elapsed seconds before a new environment map is created.
+     * @property [maximumPositionEpsilon = 1000] - The maximum difference in position before a new environment map is created, in meters. Small differences in position will not visibly affect results.
+     * @property [atmosphereScatteringIntensity = 2.0] - The intensity of the scattered light emitted from the atmosphere. This should be adjusted relative to the value of {@link Scene.light} intensity.
+     * @property [gamma = 1.0] - The gamma correction to apply to the range of light emitted from the environment. 1.0 uses the unmodified emitted light color.
+     * @property [brightness = 1.0] - The brightness of light emitted from the environment. 1.0 uses the unmodified emitted environment color. Less than 1.0 makes the light darker while greater than 1.0 makes it brighter.
+     * @property [saturation = 1.0] - The saturation of the light emitted from the environment. 1.0 uses the unmodified emitted environment color. Less than 1.0 reduces the saturation while greater than 1.0 increases it.
+     * @property [groundColor = DynamicEnvironmentMapManager.AVERAGE_EARTH_GROUND_COLOR] - Solid color used to represent the ground.
+     * @property [groundAlbedo = 0.31] - The percentage of light reflected from the ground. The average earth albedo is 0.31.
+     */
+    type ConstructorOptions = {
+        enabled?: boolean;
+        mipmapLevels?: number;
+        maximumSecondsDifference?: number;
+        maximumPositionEpsilon?: number;
+        atmosphereScatteringIntensity?: number;
+        gamma?: number;
+        brightness?: number;
+        saturation?: number;
+        groundColor?: Color;
+        groundAlbedo?: number;
+    };
+}
+
+/**
+ * Generates an environment map at the given position based on scene's current lighting conditions. From this, it produces multiple levels of specular maps and spherical harmonic coefficients than can be used with {@link ImageBasedLighting} for models or tilesets.
+ * @example
+ * // Enable time-of-day environment mapping in a scene
+ * scene.atmosphere.dynamicLighting = Cesium.DynamicAtmosphereLightingType.SUNLIGHT;
+ *
+ * // Decrease the directional lighting contribution
+ * scene.light.intensity = 0.5
+ *
+ * // Increase the intensity of of the environment map lighting contribution
+ * const environmentMapManager = tileset.environmentMapManager;
+ * environmentMapManager.atmosphereScatteringIntensity = 3.0;
+ * @example
+ * // Change the ground color used for a model's environment map to a forest green
+ * const environmentMapManager = model.environmentMapManager;
+ * environmentMapManager.groundColor = Cesium.Color.fromCssColorString("#203b34");
+ * @param [options] - An object describing initialization options.
+ */
+export class DynamicEnvironmentMapManager {
+    constructor(options?: DynamicEnvironmentMapManager.ConstructorOptions);
+    /**
+     * If true, the environment map and related properties will continue to update.
+     */
+    enabled: boolean;
+    /**
+     * The maximum amount of elapsed seconds before a new environment map is created.
+     */
+    maximumSecondsDifference: number;
+    /**
+     * The maximum difference in position before a new environment map is created, in meters. Small differences in position will not visibly affect results.
+     */
+    maximumPositionEpsilon: number;
+    /**
+     * The intensity of the scattered light emitted from the atmosphere. This should be adjusted relative to the value of {@link Scene.light} intensity.
+     */
+    atmosphereScatteringIntensity: number;
+    /**
+     * The gamma correction to apply to the range of light emitted from the environment. 1.0 uses the unmodified incoming light color.
+     */
+    gamma: number;
+    /**
+     * The brightness of light emitted from the environment. 1.0 uses the unmodified emitted environment color. Less than 1.0
+     * makes the light darker while greater than 1.0 makes it brighter.
+     */
+    brightness: number;
+    /**
+     * The saturation of the light emitted from the environment. 1.0 uses the unmodified emitted environment color. Less than 1.0 reduces the
+     * saturation while greater than 1.0 increases it.
+     */
+    saturation: number;
+    /**
+     * Solid color used to represent the ground.
+     */
+    groundColor: Color;
+    /**
+     * The percentage of light reflected from the ground. The average earth albedo is 0.31.
+     */
+    groundAlbedo: number;
+    /**
+     * The position around which the environment map is generated.
+     */
+    position: Cartesian3 | undefined;
+    /**
+     * Returns true if this object was destroyed; otherwise, false.
+     * <br /><br />
+     * If this object was destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
+     * @returns <code>true</code> if this object was destroyed; otherwise, <code>false</code>.
+     */
+    isDestroyed(): boolean;
+    /**
+     * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
+     * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
+     * <br /><br />
+     * Once an object is destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
+     * assign the return value (<code>undefined</code>) to the object as done in the example.
+     * @example
+     * mapManager = mapManager && mapManager.destroy();
+     */
+    destroy(): void;
+    /**
+     * Returns <code>true</code> if dynamic updates are supported in the current WebGL rendering context.
+     * Dynamic updates requires the EXT_color_buffer_float or EXT_color_buffer_half_float extension.
+     * @param scene - The object containing the rendering context
+     * @returns true if supported
+     */
+    static isDynamicUpdateSupported(scene: Scene): boolean;
+    /**
+     * Average hue of ground color on earth, a warm green-gray.
+     */
+    static readonly AVERAGE_EARTH_GROUND_COLOR: Color;
+    /**
+     * The default third order spherical harmonic coefficients used for the diffuse color of image-based lighting, a white ambient light with low intensity.
+     * <p>
+     * There are nine <code>Cartesian3</code> coefficients.
+     * The order of the coefficients is: L<sub>0,0</sub>, L<sub>1,-1</sub>, L<sub>1,0</sub>, L<sub>1,1</sub>, L<sub>2,-2</sub>, L<sub>2,-1</sub>, L<sub>2,0</sub>, L<sub>2,1</sub>, L<sub>2,2</sub>
+     * </p>
+     */
+    static readonly DEFAULT_SPHERICAL_HARMONIC_COEFFICIENTS: Cartesian3[];
+}
+
 /**
  * An appearance for geometry on the surface of the ellipsoid like {@link PolygonGeometry}
  * and {@link RectangleGeometry}, which supports all materials like {@link MaterialAppearance}
@@ -31707,11 +31852,18 @@ export class Fog {
     constructor();
     /**
      * <code>true</code> if fog is enabled, <code>false</code> otherwise.
+     * @example
+     * // Disable fog in the scene
+     * viewer.scene.fog.enabled = false;
      */
     enabled: boolean;
     /**
      * <code>true</code> if fog is renderable in shaders, <code>false</code> otherwise.
      * This allows to benefits from optimized tile loading strategy based on fog density without the actual visual rendering.
+     * @example
+     * // Use fog culling but don't render it
+     * viewer.scene.fog.enabled = true;
+     * viewer.scene.fog.renderable = false;
      */
     renderable: boolean;
     /**
@@ -31720,8 +31872,27 @@ export class Fog {
      * The more dense the fog is, the more aggressively the terrain is culled. For example, if the camera is a height of
      * 1000.0m above the ellipsoid, increasing the value to 3.0e-3 will cause many tiles close to the viewer be culled.
      * Decreasing the value will push the fog further from the viewer, but decrease performance as more of the terrain is rendered.
+     * @example
+     * // Double the default fog density
+     * viewer.scene.fog.density = 0.0012;
      */
     density: number;
+    /**
+     * A scalar used in the function to adjust density based on the height of the camera above the terrain.
+     */
+    heightScalar: number;
+    /**
+     * The maximum height fog is applied. If the camera is above this height fog will be disabled.
+     */
+    maxHeight: number;
+    /**
+     * A scalar that impacts the visual density of fog. This value does not impact the culling of terrain.
+     * Use in combination with the {@link Fog.density} to make fog appear more or less dense.
+     * @example
+     * // Increase fog appearance effect
+     * viewer.scene.fog.visualDensityScalar = 0.6;
+     */
+    visualDensityScalar: number;
     /**
      * A factor used to increase the screen space error of terrain tiles when they are partially in fog. The effect is to reduce
      * the number of terrain tiles requested for rendering. If set to zero, the feature will be disabled. If the value is increased
@@ -31734,6 +31905,11 @@ export class Fog {
      * the brightness at all.
      */
     minimumBrightness: number;
+    /**
+     * Exponent factor used in the function to adjust how density changes based on the height of the camera above the ellipsoid. Smaller values produce a more gradual transition as camera height increases.
+     * Value must be greater than 0.
+     */
+    heightFalloff: number;
 }
 
 /**
@@ -33660,7 +33836,6 @@ export class I3SSymbology {
  * Otherwise, the application is responsible for calling destroy().
  * </p>
  * @param [options.imageBasedLightingFactor = Cartesian2(1.0, 1.0)] - Scales diffuse and specular image-based lighting from the earth, sky, atmosphere and star skybox.
- * @param [options.luminanceAtZenith = 0.2] - The sun's luminance at the zenith in kilo candela per meter squared to use for this model's procedural environment map.
  * @param [options.sphericalHarmonicCoefficients] - The third order spherical harmonic coefficients used for the diffuse color of image-based lighting.
  * @param [options.specularEnvironmentMaps] - A URL to a KTX2 file that contains a cube map of the specular lighting and the convoluted specular mipmaps.
  */
@@ -33673,13 +33848,6 @@ export class ImageBasedLighting {
      * disable those light sources.
      */
     imageBasedLightingFactor: Cartesian2;
-    /**
-     * The sun's luminance at the zenith in kilo candela per meter squared
-     * to use for this model's procedural environment map. This is used when
-     * {@link ImageBasedLighting#specularEnvironmentMaps} and {@link ImageBasedLighting#sphericalHarmonicCoefficients}
-     * are not defined.
-     */
-    luminanceAtZenith: number;
     /**
      * The third order spherical harmonic coefficients used for the diffuse color of image-based lighting. When <code>undefined</code>, a diffuse irradiance
      * computed from the atmosphere color is used.
@@ -37098,7 +37266,7 @@ export class Model {
      */
     enableVerticalExaggeration: boolean;
     /**
-     * The light color when shading the model. When <code>undefined</code> the scene's light color is used instead.
+     * The directional light color when shading the model. When <code>undefined</code> the scene's light color is used instead.
      * <p>
      * Disabling additional light sources by setting
      * <code>model.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(0.0, 0.0)</code>
@@ -37110,6 +37278,14 @@ export class Model {
      * The properties for managing image-based lighting on this model.
      */
     imageBasedLighting: ImageBasedLighting;
+    /**
+     * The properties for managing dynamic environment maps on this model. Affects lighting.
+     * @example
+     * // Change the ground color used for a model's environment map to a forest green
+     * const environmentMapManager = model.environmentMapManager;
+     * environmentMapManager.groundColor = Cesium.Color.fromCssColorString("#203b34");
+     */
+    readonly environmentMapManager: DynamicEnvironmentMapManager;
     /**
      * Whether to cull back-facing geometry. When true, back face culling is
      * determined by the material's doubleSided property; when false, back face
@@ -37349,6 +37525,7 @@ export class Model {
      * @param [options.clippingPolygons] - The {@link ClippingPolygonCollection} used to selectively disable rendering the model.
      * @param [options.lightColor] - The light color when shading the model. When <code>undefined</code> the scene's light color is used instead.
      * @param [options.imageBasedLighting] - The properties for managing image-based lighting on this model.
+     * @param [options.environmentMapOptions] - The properties for managing dynamic environment maps on this model.
      * @param [options.backFaceCulling = true] - Whether to cull back-facing geometry. When true, back face culling is determined by the material's doubleSided property; when false, back face culling is disabled. Back faces are not culled if the model's color is translucent.
      * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
      * @param [options.showCreditsOnScreen = false] - Whether to display the credits of this model on screen.
@@ -37402,6 +37579,7 @@ export class Model {
         clippingPolygons?: ClippingPolygonCollection;
         lightColor?: Cartesian3;
         imageBasedLighting?: ImageBasedLighting;
+        environmentMapOptions?: DynamicEnvironmentMapManager.ConstructorOptions;
         backFaceCulling?: boolean;
         credit?: Credit | string;
         showCreditsOnScreen?: boolean;
@@ -41439,6 +41617,13 @@ export class ScreenSpaceCameraController {
      */
     enableCollisionDetection: boolean;
     /**
+     * The angle, relative to the ellipsoid normal, restricting the maximum amount that the user can tilt the camera. If <code>undefined</code>, the angle of the camera tilt is unrestricted.
+     * @example
+     * // Prevent the camera from tilting below the ellipsoid surface
+     * viewer.scene.screenSpaceCameraController.maximumTiltAngle = Math.PI / 2.0;
+     */
+    maximumTiltAngle: number | undefined;
+    /**
      * Returns true if this object was destroyed; otherwise, false.
      * <br /><br />
      * If this object was destroyed, it should not be used; calling any function other than
@@ -43979,6 +44164,7 @@ export function createWorldImageryAsync(options?: {
  * @param container - The DOM element or ID that will contain the widget.
  * @param [options] - Object with the following properties:
  * @param [options.clock = new Clock()] - The clock to use to control current time.
+ * @param [options.shouldAnimate = false] - <code>true</code> if the clock should attempt to advance simulation time by default, <code>false</code> otherwise.
  * @param [options.ellipsoid = Ellipsoid.default] - The default ellipsoid.
  * @param [options.baseLayer = ImageryLayer.fromWorldImagery()] - The bottommost imagery layer applied to the globe. If set to <code>false</code>, no imagery provider will be added.
  * @param [options.terrainProvider = new EllipsoidTerrainProvider(options.ellipsoid)] - The terrain provider.
@@ -43994,14 +44180,17 @@ export function createWorldImageryAsync(options?: {
  * @param [options.useBrowserRecommendedResolution = true] - If true, render at the browser's recommended resolution and ignore <code>window.devicePixelRatio</code>.
  * @param [options.targetFrameRate] - The target frame rate when using the default render loop.
  * @param [options.showRenderLoopErrors = true] - If true, this widget will automatically display an HTML panel to the user containing the error, if a render loop error occurs.
+ * @param [options.automaticallyTrackDataSourceClocks = true] - If true, this widget will automatically track the clock settings of newly added DataSources, updating if the DataSource's clock changes.  Set this to false if you want to configure the clock independently.
  * @param [options.contextOptions] - Context and WebGL creation properties passed to {@link Scene}.
  * @param [options.creditContainer] - The DOM element or ID that will contain the {@link CreditDisplay}.  If not specified, the credits are added
  *        to the bottom of the widget itself.
  * @param [options.creditViewport] - The DOM element or ID that will contain the credit pop up created by the {@link CreditDisplay}.  If not specified, it will appear over the widget itself.
+ * @param [options.dataSources = new DataSourceCollection()] - The collection of data sources visualized by the widget.  If this parameter is provided,
+ *                               the instance is assumed to be owned by the caller and will not be destroyed when the widget is destroyed.
  * @param [options.shadows = false] - Determines if shadows are cast by light sources.
  * @param [options.terrainShadows = ShadowMode.RECEIVE_ONLY] - Determines if the terrain casts or receives shadows from light sources.
  * @param [options.mapMode2D = MapMode2D.INFINITE_SCROLL] - Determines if the 2D map is rotatable or can be scrolled infinitely in the horizontal direction.
- * @param [options.blurActiveElementOnCanvasFocus = true] - If true, the active element will blur when the viewer's canvas is clicked. Setting this to false is useful for cases when the canvas is clicked only for retrieving position or an entity data without actually meaning to set the canvas to be the active element.
+ * @param [options.blurActiveElementOnCanvasFocus = true] - If true, the active element will blur when the widget's canvas is clicked. Setting this to false is useful for cases when the canvas is clicked only for retrieving position or an entity data without actually meaning to set the canvas to be the active element.
  * @param [options.requestRenderMode = false] - If true, rendering a frame will only occur when needed as determined by changes within the scene. Enabling improves performance of the application, but requires using {@link Scene#requestRender} to render a new frame explicitly in this mode. This will be necessary in many cases after making changes to the scene in other parts of the API. See {@link https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/|Improving Performance with Explicit Rendering}.
  * @param [options.maximumRenderTimeChange = 0.0] - If requestRenderMode is true, this value defines the maximum change in simulation time allowed before a render is requested. See {@link https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/|Improving Performance with Explicit Rendering}.
  * @param [options.msaaSamples = 4] - If provided, this value controls the rate of multisample antialiasing. Typical multisampling rates are 2, 4, and sometimes 8 samples per pixel. Higher sampling rates of MSAA may impact performance in exchange for improved visual quality. This value only applies to WebGL2 contexts that support multisample render targets. Set to 1 to disable MSAA.
@@ -44009,6 +44198,7 @@ export function createWorldImageryAsync(options?: {
 export class CesiumWidget {
     constructor(container: Element | string, options?: {
         clock?: Clock;
+        shouldAnimate?: boolean;
         ellipsoid?: Ellipsoid;
         baseLayer?: ImageryLayer | false;
         terrainProvider?: TerrainProvider;
@@ -44024,9 +44214,11 @@ export class CesiumWidget {
         useBrowserRecommendedResolution?: boolean;
         targetFrameRate?: number;
         showRenderLoopErrors?: boolean;
+        automaticallyTrackDataSourceClocks?: boolean;
         contextOptions?: ContextOptions;
         creditContainer?: Element | string;
         creditViewport?: Element | string;
+        dataSources?: DataSourceCollection;
         shadows?: boolean;
         terrainShadows?: ShadowMode;
         mapMode2D?: MapMode2D;
@@ -44067,6 +44259,19 @@ export class CesiumWidget {
      * Manages the list of credits to display on screen and in the lightbox.
      */
     creditDisplay: CreditDisplay;
+    /**
+     * Gets the display used for {@link DataSource} visualization.
+     */
+    readonly dataSourceDisplay: DataSourceDisplay;
+    /**
+     * Gets the collection of entities not tied to a particular data source.
+     * This is a shortcut to [dataSourceDisplay.defaultDataSource.entities]{@link CesiumWidget#dataSourceDisplay}.
+     */
+    readonly entities: EntityCollection;
+    /**
+     * Gets the set of {@link DataSource} instances to be visualized.
+     */
+    readonly dataSources: DataSourceCollection;
     /**
      * Gets the camera.
      */
@@ -44121,6 +44326,25 @@ export class CesiumWidget {
      */
     useBrowserRecommendedResolution: boolean;
     /**
+     * Gets or sets whether or not data sources can temporarily pause
+     * animation in order to avoid showing an incomplete picture to the user.
+     * For example, if asynchronous primitives are being processed in the
+     * background, the clock will not advance until the geometry is ready.
+     */
+    allowDataSourcesToSuspendAnimation: boolean;
+    /**
+     * Gets or sets the Entity instance currently being tracked by the camera.
+     */
+    trackedEntity: Entity | undefined;
+    /**
+     * Gets the event that is raised when the tracked entity changes.
+     */
+    readonly trackedEntityChanged: Event;
+    /**
+     * Gets or sets the data source to track with the widget's clock.
+     */
+    clockTrackedDataSource: DataSource;
+    /**
      * Show an error panel to the user containing a title and a longer error message,
      * which can be dismissed using an OK button.  This panel is displayed automatically
      * when a render loop error occurs, if showRenderLoopErrors was not false when the
@@ -44150,6 +44374,51 @@ export class CesiumWidget {
      * unless <code>useDefaultRenderLoop</code> is set to false;
      */
     render(): void;
+    /**
+     * Asynchronously sets the camera to view the provided entity, entities, or data source.
+     * If the data source is still in the process of loading or the visualization is otherwise still loading,
+     * this method waits for the data to be ready before performing the zoom.
+     *
+     * <p>The offset is heading/pitch/range in the local east-north-up reference frame centered at the center of the bounding sphere.
+     * The heading and the pitch angles are defined in the local east-north-up reference frame.
+     * The heading is the angle from y axis and increasing towards the x axis. Pitch is the rotation from the xy-plane. Positive pitch
+     * angles are above the plane. Negative pitch angles are below the plane. The range is the distance from the center. If the range is
+     * zero, a range will be computed such that the whole bounding sphere is visible.</p>
+     *
+     * <p>In 2D, there must be a top down view. The camera will be placed above the target looking down. The height above the
+     * target will be the range. The heading will be determined from the offset. If the heading cannot be
+     * determined from the offset, the heading will be north.</p>
+     * @param target - The entity, array of entities, entity collection, data source, Cesium3DTileset, point cloud, or imagery layer to view. You can also pass a promise that resolves to one of the previously mentioned types.
+     * @param [offset] - The offset from the center of the entity in the local east-north-up reference frame.
+     * @returns A Promise that resolves to true if the zoom was successful or false if the target is not currently visualized in the scene or the zoom was cancelled.
+     */
+    zoomTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive>, offset?: HeadingPitchRange): Promise<boolean>;
+    /**
+     * Flies the camera to the provided entity, entities, or data source.
+     * If the data source is still in the process of loading or the visualization is otherwise still loading,
+     * this method waits for the data to be ready before performing the flight.
+     *
+     * <p>The offset is heading/pitch/range in the local east-north-up reference frame centered at the center of the bounding sphere.
+     * The heading and the pitch angles are defined in the local east-north-up reference frame.
+     * The heading is the angle from y axis and increasing towards the x axis. Pitch is the rotation from the xy-plane. Positive pitch
+     * angles are above the plane. Negative pitch angles are below the plane. The range is the distance from the center. If the range is
+     * zero, a range will be computed such that the whole bounding sphere is visible.</p>
+     *
+     * <p>In 2D, there must be a top down view. The camera will be placed above the target looking down. The height above the
+     * target will be the range. The heading will be determined from the offset. If the heading cannot be
+     * determined from the offset, the heading will be north.</p>
+     * @param target - The entity, array of entities, entity collection, data source, Cesium3DTileset, point cloud, or imagery layer to view. You can also pass a promise that resolves to one of the previously mentioned types.
+     * @param [options] - Object with the following properties:
+     * @param [options.duration = 3.0] - The duration of the flight in seconds.
+     * @param [options.maximumHeight] - The maximum height at the peak of the flight.
+     * @param [options.offset] - The offset from the target in the local east-north-up reference frame centered at the target.
+     * @returns A Promise that resolves to true if the flight was successful or false if the target is not currently visualized in the scene or the flight was cancelled. //TODO: Cleanup entity mentions
+     */
+    flyTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive>, options?: {
+        duration?: number;
+        maximumHeight?: number;
+        offset?: HeadingPitchRange;
+    }): Promise<boolean>;
 }
 
 /**
