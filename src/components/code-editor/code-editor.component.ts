@@ -75,7 +75,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
             if (!this.monacoLoaded) {
                 this.initialExtraDefinitions = value;
             } else {
-                const libUri = 'ts:filename/extraLib.d.ts';
+                const libUri = 'file://extraLib.d.ts';
                 this.extraLib = monaco.languages.typescript.javascriptDefaults.addExtraLib(value, libUri);
                 this.extraLibModel = monaco.editor.createModel(value, 'typescript', monaco.Uri.parse(libUri));
             }

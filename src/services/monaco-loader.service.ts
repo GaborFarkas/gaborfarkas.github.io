@@ -30,13 +30,15 @@ export class MonacoLoaderService {
                     await this.loadAmdAsync();
                 }
 
-                const theme = await (await fetch('/assets/monaco/themes/light-modern.json')).json();
+                const lightTheme = await (await fetch('/assets/monaco/themes/light-modern.json')).json();
+                const darkTheme = await (await fetch('/assets/monaco/themes/dark-modern.json')).json();
 
                 // Load monaco with AMD
                 (window as any).require.config({ paths: { vs: '/assets/monaco/vs' } });
                 (window as any).require(['vs/editor/editor.main'], () => {
-                    // Define VSCode light modern theme
-                    (window as any).monaco.editor.defineTheme('light-modern', convertTheme(theme));
+                    // Define VSCode light/dark modern themes
+                    (window as any).monaco.editor.defineTheme('light-modern', convertTheme(lightTheme));
+                    (window as any).monaco.editor.defineTheme('dark-modern', convertTheme(darkTheme));
 
                     this.loaded.next(true);
                     this.loaded.complete();
