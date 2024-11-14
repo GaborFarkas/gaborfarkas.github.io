@@ -12,5 +12,5 @@ export class NoPhoneComponent {
     /**
      * Minimum device width for the functionality to work.
      */
-    @Input({required: true}) public minWidth: number = 0;
+    @Input({required: true}) public minWidth = 0;
 }

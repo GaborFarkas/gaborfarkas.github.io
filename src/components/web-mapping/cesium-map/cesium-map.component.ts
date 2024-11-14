@@ -26,10 +26,10 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
 
     @Input() public example?: string;
 
-    @Input() public exposePlay: boolean = false;
+    @Input() public exposePlay = false;
 
     constructor() {
-        (window as { [key: string]: any })['CESIUM_BASE_URL'] = '/assets/cesium/';
+        (window as Record<string, any>)['CESIUM_BASE_URL'] = '/assets/cesium/';
     }
 
     /**

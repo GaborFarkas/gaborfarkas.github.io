@@ -26,7 +26,7 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
 
     @Input() public example?: string;
 
-    @Input() public exposePlay: boolean = false;
+    @Input() public exposePlay = false;
 
     constructor() {
         // Update icon paths

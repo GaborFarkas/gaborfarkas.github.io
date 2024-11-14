@@ -22,7 +22,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     /**
      * The hero image used in the animation.
      */
-    @Input() heroImg: string = '';
+    @Input() heroImg = '';
 
     /**
      * The scene of this animation.
@@ -32,7 +32,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     /**
      * The frequency the animation should be restarted automatically in ms.
      */
-    @Input() autoRestartInterval: number = 0;
+    @Input() autoRestartInterval = 0;
 
     /**
      * Fires an event when a hero change is requested.
@@ -77,7 +77,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
 
         const today = new Date();
         const endDate = +new Date(`${today.getFullYear()}-${today.getMonth()}-01`);
-        let cursor = new Date('2018-08-01');
+        const cursor = new Date('2018-08-01');
         const monthLbls: string[] = [];
 
         while (+cursor < endDate) {
@@ -111,7 +111,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     /**
      * The gap between frames on the wall of fame in rems.
      */
-    private static gap: number = 0.75;
+    private static gap = 0.75;
 
     ngOnInit(): void {
         if (this.autoRestartInterval) {
@@ -152,7 +152,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
      * Restarts all animations of the current hero scene.
      * @param [timeout=0] Restart delay, increase this if the browser cannot restart the CSS animations on small devices.
      */
-    restart(timeout: number = 0) {
+    restart(timeout = 0) {
         if (this.sceneContainer?.nativeElement) {
             // Restart CSS animations
             this.sceneContainer.nativeElement.style.display = 'none';
@@ -161,7 +161,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
 
                 // Restart typewriter (JS) animations
                 if (this.typewriters) {
-                    for (let typewriter of this.typewriters) {
+                    for (const typewriter of this.typewriters) {
                         typewriter.startAnimation();
                     }
                 }
@@ -198,7 +198,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
             frameImg.onload = () => {
                 const employeeImg = new Image();
                 employeeImg.onload = () => {
-                    for (let monthLbl of this.companyMonths) {
+                    for (const monthLbl of this.companyMonths) {
                         ctx.drawImage(employeeImg, xCursor + picInset[0], yCursor + picInset[1],
                             picDimsPx[0], picDimsPx[1]);
                         ctx.drawImage(frameImg, xCursor, yCursor, frameDimsPx[0], frameDimsPx[1]);

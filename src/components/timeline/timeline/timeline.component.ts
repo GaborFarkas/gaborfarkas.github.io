@@ -15,7 +15,7 @@ export class TimelineComponent implements AfterContentInit {
     /**
      * Start the timeline with a right-directed element.
      */
-    @Input() startRight: boolean = false;
+    @Input() startRight = false;
 
     /**
      * The colors (CSS format: hex, rgb, or rgba) used by the timeline items.

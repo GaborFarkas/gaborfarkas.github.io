@@ -20,7 +20,7 @@ export class NavbarComponent {
     /**
      * Gets or sets if the navigation bar is expanded. Small screens only.
      */
-    protected expanded: boolean = false;
+    protected expanded = false;
 
     /**
      * Gets the FA icon for the toggler button.

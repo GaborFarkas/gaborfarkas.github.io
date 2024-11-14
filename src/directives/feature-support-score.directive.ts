@@ -20,7 +20,7 @@ export class FeatureSupportScoreDirective {
     /**
      * Element's class name calculated from the support item.
      */
-    @HostBinding('class') class: string = 'w-10 h-6 rounded mr-4 flex-shrink-0';
+    @HostBinding('class') class = 'w-10 h-6 rounded mr-4 flex-shrink-0';
 
     /**
      * Returns the background color class string for the current score.

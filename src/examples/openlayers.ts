@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
 import { environment } from '@/environments/environment';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
@@ -67,7 +68,7 @@ function webglPoints(ol: typeof OpenLayers, map: OpenLayers.Map) {
     }];
 
     // Process styles, create a layer for each and add it to the layer group
-    for (let style of styles) {
+    for (const style of styles) {
         const ptLyr = new ol.layer.WebGLPoints({
             source: source,
             style: style

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 import * as Leaflet from 'leaflet';
@@ -37,7 +38,7 @@ async function loadGeojson(L: typeof Leaflet, map: Leaflet.Map) {
 
 function readWfs(L: typeof Leaflet, map: Leaflet.Map) {
     const wfsLayer = L.geoJSON().addTo(map);
-    map.on('moveend', function (evt) {
+    map.on('moveend', function () {
         const bounds = map.getBounds();
         const bboxArr = [bounds.getSouth(), bounds.getWest(), bounds.getNorth(), bounds.getEast()];
         fetch('https://view.eumetsat.int/geoserver/osmgray/ows?service=WFS&version=2.0.0&request=GetFeature&srsname=EPSG:4326&typeName=osmgray%3Ane_10m_admin_0_countries_points&outputFormat=application/json'
@@ -168,7 +169,7 @@ async function addRmLayer(L: typeof Leaflet, map: Leaflet.Map) {
 
 async function transformVector(L: typeof Leaflet, map: Leaflet.Map) {
     const geojson = await (await fetch('/assets/web-mapping/sample-data/australia-rivers-zm.geojson')).json();
-    const lyr = L.geoJSON(geojson).addTo(map);
+    L.geoJSON(geojson).addTo(map);
 
     map.setView([-25.8, 131.4], 4);
 }

@@ -53,12 +53,12 @@ export class StoriesPage implements OnInit, OnDestroy {
     /**
      * The current page displayed. New pages are loaded when the user reaches the bottom.
      */
-    private page: number = 0;
+    private page = 0;
 
     /**
      * A lock to avoid requesting new pages when there are no more.
      */
-    private noMorePages: boolean = false;
+    private noMorePages = false;
 
     constructor(private router: Router,
         private storyService: StoryService
@@ -104,7 +104,7 @@ export class StoriesPage implements OnInit, OnDestroy {
      * Prebound scroll event listener fetching new stories when the user reaches the bottom of the container div.
      * Pre-binding is required for cleaning up when the component is destroyed.
      */
-    private onScroll = function (this: StoriesPage, evt: Event) {
+    private onScroll = function (this: StoriesPage) {
         if (!this.noMorePages && this.storyGridElem?.nativeElement &&
             window.scrollY > this.storyGridElem.nativeElement.offsetTop + this.storyGridElem.nativeElement.clientHeight - window.innerHeight
         ) {

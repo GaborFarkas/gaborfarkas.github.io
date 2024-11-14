@@ -16,7 +16,7 @@ export class NotFoundComponent {
     /**
      * The description text.
      */
-    @Input() text: string = '';
+    @Input() text = '';
 
     /**
      * Possible notfound images to choose one from randomly.

@@ -7,9 +7,7 @@ interface IVScodeTheme {
     type: ThemeType | string;
     tokenColors: TokenColor[];
     colors?:
-    | {
-        [name: string]: string;
-    }
+    | Record<string, string>
     | undefined;
 }
 

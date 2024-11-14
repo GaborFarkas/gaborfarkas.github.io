@@ -28,7 +28,7 @@ export class HeroSectionComponent {
     /**
      * Flip the background with the text.
      */
-    @Input() flip: boolean = false;
+    @Input() flip = false;
 
     /**
      * The references of this hero section.

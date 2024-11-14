@@ -17,7 +17,7 @@ export class FaqBlockComponent {
     /**
      * The question prefix of the current FAQ group.
      */
-    @Input() prefix: string = '';
+    @Input() prefix = '';
 
     /**
      * The section models for this FAQ group.
@@ -27,7 +27,7 @@ export class FaqBlockComponent {
     /**
      * Gets or sets if any FAQ section is expanded.
      */
-    protected expanded: boolean = false;
+    protected expanded = false;
 
     /**
      * Gets the component reference of all FAQ sections.
@@ -39,7 +39,7 @@ export class FaqBlockComponent {
      */
     protected toggle(evtSection: FaqSectionComponent) {
         if (this.sectionComponents) {
-            for (let section of this.sectionComponents) {
+            for (const section of this.sectionComponents) {
                 if (section !== evtSection) {
                     section.close();
                 }

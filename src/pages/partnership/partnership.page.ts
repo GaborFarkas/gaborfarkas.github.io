@@ -39,7 +39,7 @@ export class PartnershipPage {
     /**
      * The page puzzle has been completed.
      */
-    protected puzzleComplete: boolean = false;
+    protected puzzleComplete = false;
 
     /**
      * Marks the puzzle as completed.

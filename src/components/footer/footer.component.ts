@@ -28,17 +28,17 @@ export class FooterComponent {
     /**
      * Use a smaller, compact footer.
      */
-    @Input() public compact: boolean = false;
+    @Input() public compact = false;
 
     /**
      * The local part of the email address.
      */
-    @HostBinding('style.--local') protected emailLocal: string = '\"contact\"';
+    @HostBinding('style.--local') protected emailLocal = '"contact"';
 
     /**
      * The domain of the email address.
      */
-    @HostBinding('style.--domain') protected emailDomain: string = '\"farkasgaborev.eu\"';
+    @HostBinding('style.--domain') protected emailDomain = '"farkasgaborev.eu"';
 
     /**
      * Returns the raw email address.
@@ -50,12 +50,12 @@ export class FooterComponent {
     /**
      * Helper variable for tracking if we need to copy to the clipboard.
      */
-    private dblClick: boolean = false;
+    private dblClick = false;
 
     /**
      * Helper variable for user feedback on a single click.
      */
-    protected singleClick: boolean = false;
+    protected singleClick = false;
 
     /**
      * Copies the email address to the clickboard.
@@ -96,7 +96,9 @@ export class FooterComponent {
 
         try {
             document.execCommand('copy');
-        } catch (ex) { }
+        } catch (ex) {
+            console.error(ex);
+        }
 
         copyElem.remove();
     }

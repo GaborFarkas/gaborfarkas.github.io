@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 import * as Maplibre from 'maplibre-gl';
@@ -18,7 +19,7 @@ const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: ty
 } as Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void>;
 
 function loadGeojson(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-settlements-points', {
             type: 'geojson',
             data: '/assets/web-mapping/sample-data/hungary_settlements.geojson'
@@ -37,7 +38,7 @@ function loadGeojson(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function readWfs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-ne-10m-countries-points', {
             type: 'geojson',
             data: getWfsUrl()
@@ -60,7 +61,7 @@ function readWfs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
         });
     });
 
-    map.on('moveend', evt => {
+    map.on('moveend', () => {
         map.getSource('src-ne-10m-countries-points')?.setData(getWfsUrl());
     });
 
@@ -76,7 +77,7 @@ function readWfs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function readWms(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-natural-2015', {
             type: 'raster',
             tiles: [
@@ -97,7 +98,7 @@ function readWms(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function readWmts(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-usgs-sgmc2', {
             type: 'raster',
             tiles: [
@@ -119,7 +120,7 @@ function readWmts(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function readSlippy(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-carto', {
             type: 'raster',
             tiles: [
@@ -138,7 +139,7 @@ function readSlippy(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function readAttribs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-aus-rivers', {
             type: 'geojson',
             data: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson'
@@ -169,7 +170,7 @@ function readAttribs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function heatMap(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-settlements-points', {
             type: 'geojson',
             data: '/assets/web-mapping/sample-data/hungary_settlements.geojson'
@@ -195,7 +196,7 @@ function heatMap(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function updateAttribs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-settlements-points', {
             type: 'geojson',
             data: '/assets/web-mapping/sample-data/hungary_settlements.geojson'
@@ -224,7 +225,7 @@ function updateAttribs(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function updateGeom(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         const geojson = {
             type: "FeatureCollection",
             features: [{
@@ -262,7 +263,7 @@ function updateGeom(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function addRmLayer(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-aus-rivers', {
             type: 'geojson',
             data: '/assets/web-mapping/sample-data/australia-rivers-zm.geojson'
@@ -284,7 +285,7 @@ function addRmLayer(maplibregl: typeof Maplibre, map: Maplibre.Map) {
         map.setZoom(3.5);
         let added = true;
 
-        map.on('click', (evt) => {
+        map.on('click', () => {
             if (added) {
                 map.removeLayer('lyr-aus-rivers');
             } else {
@@ -297,7 +298,7 @@ function addRmLayer(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function changeLayerOrder(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-carto', {
             type: 'raster',
             tiles: [
@@ -361,7 +362,7 @@ function changeLayerOrder(maplibregl: typeof Maplibre, map: Maplibre.Map) {
 }
 
 function textBox(maplibregl: typeof Maplibre, map: Maplibre.Map) {
-    map.on('load', evt => {
+    map.on('load', () => {
         map.addSource('src-label', {
             type: 'geojson',
             data: {

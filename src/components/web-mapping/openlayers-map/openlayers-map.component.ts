@@ -26,7 +26,7 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
 
     @Input() public example?: string;
 
-    @Input() public exposePlay: boolean = false;
+    @Input() public exposePlay = false;
 
     /**
      * Loads the base map with a simple style and positions it to Pécs.

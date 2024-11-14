@@ -15,7 +15,7 @@ export class CardComponent {
     /**
      * The color class of this item.
      */
-    @Input() color: string = '#ffffff';
+    @Input() color = '#ffffff';
 
     /**
      * The host element's item color CSS variable.
@@ -27,12 +27,12 @@ export class CardComponent {
     /**
      * The card is flipped.
      */
-    protected flipped: boolean = false;
+    protected flipped = false;
 
     /**
      * Event count counting the number of interactions with the card in a single flip session.
      */
-    private evtCount: number = 0;
+    private evtCount = 0;
 
     /**
      * Event listener for the card mouse enter event.

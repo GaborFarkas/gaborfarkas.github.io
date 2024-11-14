@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -10,31 +10,31 @@ import { CommonModule } from '@angular/common';
     imports: [CommonModule],
     templateUrl: './typewriter.component.html'
 })
-export class TypewriterComponent implements OnInit, OnDestroy {
+export class TypewriterComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * The text to write. If changed, the animation starts again.
      */
-    @Input() textContent: string = '';
+    @Input() textContent = '';
 
     /**
      * The total animation duration in ms.
      */
-    @Input() duration: number = 0;
+    @Input() duration = 0;
 
     /**
      * The delay the animation should start after in ms.
      */
-    @Input() delay: number = 0;
+    @Input() delay = 0;
 
     /**
      * Sets custom class names to the dynamic text element.
      */
-    @Input() textClass: string = '';
+    @Input() textClass = '';
 
     /**
      * The current state of the output text.
      */
-    protected currentText: string = '';
+    protected currentText = '';
 
     /**
      * The array of characters to output.

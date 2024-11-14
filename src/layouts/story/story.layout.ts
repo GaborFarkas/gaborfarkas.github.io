@@ -36,12 +36,12 @@ export class StoryLayout {
     /**
      * The base URL fragment for the category page.
      */
-    protected baseUrl: string = '';
+    protected baseUrl = '';
 
     /**
      * The category label used in the beadcrumbs.
      */
-    protected categoryLabel: string = '';
+    protected categoryLabel = '';
 
     constructor(private router: Router,
         private storyService: StoryService
@@ -67,9 +67,7 @@ export class StoryLayout {
      * @param slug The URL slug of the story.
      */
     private async fetchStoryAsync(type: StoryType, slug: string) {
-        let story: StoryModel | undefined;
-
-        story = await this.storyService.getStoryAsync(slug);
+        const story = await this.storyService.getStoryAsync(slug);
 
         if (story) {
             this.story = story;

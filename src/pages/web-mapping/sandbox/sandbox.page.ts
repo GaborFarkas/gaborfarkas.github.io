@@ -114,7 +114,7 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * The current content of the code editor.
      */
-    protected currentCode: string = '';
+    protected currentCode = '';
 
     /**
      * Registration key of the automatic code save interval.
@@ -224,7 +224,7 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * The name of the newly saved snippet.
      */
-    protected saveSnippetName: string = '';
+    protected saveSnippetName = '';
 
     async ngOnInit(): Promise<void> {
         this.loadTypeDefinitionsAsync();
@@ -259,6 +259,7 @@ export class SandboxPage implements OnInit, OnDestroy {
             iframeDoc.head.appendChild(scriptElem);
         }.bind(this);
         this.webMap.nativeElement.addEventListener('load', injector);
+        // eslint-disable-next-line no-self-assign
         this.webMap.nativeElement.src = this.webMap.nativeElement.src;
     }
 
@@ -339,7 +340,7 @@ export class SandboxPage implements OnInit, OnDestroy {
      * Loads snippets available for the currently selected web mapping library.
      * @param forceRebuild Forcefully rebuild the tree to synchronize with changes.
      */
-    private loadSnippets(forceRebuild: boolean = false) {
+    private loadSnippets(forceRebuild = false) {
         if (forceRebuild || !this.availableCodes[this.library]) {
             const model: GroupedSourceCodeModel = {
                 children: []
@@ -370,10 +371,10 @@ export class SandboxPage implements OnInit, OnDestroy {
                 };
                 // Use a map for quick access
                 const groupMap: Map<string, SourceCodeGroup> = new Map();
-                let maxDepth: number = 0;
+                let maxDepth = 0;
 
                 // Build tree
-                for (let feature of this.featureSupportItems) {
+                for (const feature of this.featureSupportItems) {
                     if (!feature.support) {
                         // Group
                         const group: SourceCodeGroup = {
@@ -403,7 +404,7 @@ export class SandboxPage implements OnInit, OnDestroy {
 
                 // Shake empty branches
                 for (let depth = maxDepth; depth > 0; --depth) {
-                    for (let group of [...groupMap.values()].filter(group => group.depth === depth)) {
+                    for (const group of [...groupMap.values()].filter(group => group.depth === depth)) {
                         if (group.children.length === 0) {
                             const parent = group.parent ? groupMap.get(group.parent) : examplesModel;
                             parent!.children = parent!.children.filter(child => child !== group);

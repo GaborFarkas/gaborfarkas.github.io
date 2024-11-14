@@ -19,12 +19,12 @@ export class DecoratedColumnComponent implements AfterViewInit, OnDestroy {
     /**
      * The width of the pattern on a single side in elements.
      */
-    protected decorationRows: number = 0;
+    protected decorationRows = 0;
 
     /**
      * The height of the pattern on a single side in elements.
      */
-    protected decorationColumns: number = 0;
+    protected decorationColumns = 0;
 
     /**
      * The observer instance triggering resize events on the content container.
@@ -56,7 +56,7 @@ export class DecoratedColumnComponent implements AfterViewInit, OnDestroy {
         let left = true;
         let row = 1;
 
-        for (let ref of val) {
+        for (const ref of val) {
             (left ? leftColRefs : rightColRefs)[row] = ref;
             if (!left) {
                 row += 2;
@@ -71,7 +71,7 @@ export class DecoratedColumnComponent implements AfterViewInit, OnDestroy {
     /**
      * The class of the container element.
      */
-    @HostBinding('class') protected class: string = 'w-full flex justify-between';
+    @HostBinding('class') protected class = 'w-full flex justify-between';
 
     /**
      * The content container's element.

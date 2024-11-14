@@ -25,7 +25,7 @@ export interface IColorTheme {
   export function findMatchingThemeRule(
     theme: IColorTheme,
     scopes: string[],
-    onlyColorRules: boolean = true
+    onlyColorRules = true
   ): ThemeRule | null {
     for (let i = scopes.length - 1; i >= 0; i--) {
       const parentScopes = scopes.slice(0, i);

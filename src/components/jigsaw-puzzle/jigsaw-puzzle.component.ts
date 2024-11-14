@@ -20,12 +20,12 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
     /**
      * Total width of the puzzle.
      */
-    protected width: number = 0;
+    protected width = 0;
 
     /**
      * Total height of the puzzle.
      */
-    protected height: number = 0;
+    protected height = 0;
 
     /**
      * Gets the width of a single puzzle piece.
@@ -45,7 +45,7 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
      * Gets or sets if the board has been initialized.
      * Used for avoiding a race condition between loading the ref image and initializing the view.
      */
-    private initialized: boolean = false;
+    private initialized = false;
 
     /**
      * The currently dragged item.
@@ -65,12 +65,12 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
     /**
      * Number of columns in the puzzle.
      */
-    @Input() columns: number = 0;
+    @Input() columns = 0;
 
     /**
      * Number of rows in the puzzle
      */
-    @Input() rows: number = 0;
+    @Input() rows = 0;
 
     /**
      * Indices of the fixed puzzle pieces (glued to their correct position).
@@ -216,7 +216,7 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
             }
 
             // Move every fixed element to the bottom of the DOM.
-            for (let piece of this.puzzlePieces) {
+            for (const piece of this.puzzlePieces) {
                 if (piece.locked && piece.dom) {
                     const firstPuzzleSvg = this.svg.nativeElement.querySelector('path');
                     if (firstPuzzleSvg) {
@@ -274,18 +274,17 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
         const horizontal = direction === Direction.LEFT || direction === Direction.RIGHT;
         const forward = direction === Direction.RIGHT || direction === Direction.DOWN;
         const positive = Math.sign(edgeVariant) === 1;
-        switch (edgeVariant) {
-            case 0:
-                // Straight edge
-                return `${horizontal ? 'h' : 'v'} ${forward ? '' : '-'}${dimension}`;
-            default:
-                // Bezier curve
-                const recipe = this.edgeRecipes[edgeVariant];
-                if (!recipe) {
-                    throw new Error(`Unsupported edge variant ${edgeVariant}. Cannot generate puzzle SVG.`);
-                }
-                const scaledRecipe = recipe.map(seg => seg.map(coord => coord * dimension)) as [number, number][];
-                return `c ${this.generateCoordinates(horizontal, forward, positive, scaledRecipe)}`;
+        if (edgeVariant === 0) {
+            // Straight edge
+            return `${horizontal ? 'h' : 'v'} ${forward ? '' : '-'}${dimension}`;
+        } else {
+            // Bezier curve
+            const recipe = this.edgeRecipes[edgeVariant];
+            if (!recipe) {
+                throw new Error(`Unsupported edge variant ${edgeVariant}. Cannot generate puzzle SVG.`);
+            }
+            const scaledRecipe = recipe.map(seg => seg.map(coord => coord * dimension)) as [number, number][];
+            return `c ${this.generateCoordinates(horizontal, forward, positive, scaledRecipe)}`;
         }
     }
 

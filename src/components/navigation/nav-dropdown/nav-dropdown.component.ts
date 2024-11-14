@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { NavDropdownItem } from '@/models/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '@/components/navigation/navbar/navbar.component';
 
 /**
  * Dropdown component for the navigation bar.
@@ -33,7 +32,7 @@ export class NavDropdownComponent implements AfterViewInit {
     /**
      * Gets or sets if the dropdown menu is expanded. Large screens only.
      */
-    protected expanded: boolean = false;
+    protected expanded = false;
 
     public ngAfterViewInit() {
         this.ariaTarget?.nativeElement.addEventListener('keypress', function (this: NavDropdownComponent, evt: KeyboardEvent) {

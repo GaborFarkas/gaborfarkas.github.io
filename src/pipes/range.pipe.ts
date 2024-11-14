@@ -20,7 +20,7 @@ export class RangePipe implements PipeTransform {
      *   {{ 2 | range }}
      *   formats to: [undefined, undefined]
      */
-    transform(value: number): Array<any> {
+    transform(value: number): unknown[] {
         return new Array(value);
     }
 }

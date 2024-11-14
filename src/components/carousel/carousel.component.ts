@@ -30,12 +30,12 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Gets or sets the number of slides in this carousel.
      */
-    protected numSlides: number = 0;
+    protected numSlides = 0;
 
     /**
      * Gets or sets the current slide of this carousel. Backing field.
      */
-    private _currSlide: number = 0;
+    private _currSlide = 0;
 
     /**
      * Gets or sets the current slide of this carousel.
@@ -72,17 +72,17 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Show page switcher buttons on the left and right sides of the carousel.
      */
-    @Input() pageSwitcher: boolean = true;
+    @Input() pageSwitcher = true;
 
     /**
      * Automatically start the carousel
      */
-    @Input() autoStart: boolean = true;
+    @Input() autoStart = true;
 
     /**
      * The time between switching slides in milliseconds. Backing field.
      */
-    private _autoSlideInterval: number = 0;
+    private _autoSlideInterval = 0;
 
     /**
      * The time between switching slides in milliseconds.
@@ -145,10 +145,10 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
 
             const slides: Element[] = [...carouselDomElem.children];
 
-            for (let i = 0; i < slides.length; ++i) {
+            for (const slide of slides) {
                 const containerElem = document.createElement('div');
                 containerElem.className = 'carousel-slide';
-                containerElem.appendChild(slides[i]);
+                containerElem.appendChild(slide);
                 carouselDomElem.appendChild(containerElem);
             }
         }

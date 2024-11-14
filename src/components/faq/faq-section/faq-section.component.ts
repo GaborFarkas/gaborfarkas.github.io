@@ -16,7 +16,7 @@ export class FaqSectionComponent {
     /**
      * The question prefix of the current FAQ group.
      */
-    @Input() groupPrefix: string = '';
+    @Input() groupPrefix = '';
 
     /**
      * The descriptor of the current FAQ section.
@@ -31,7 +31,7 @@ export class FaqSectionComponent {
     /**
      * Gets or sets if the FAQ section is expanded. Backing field.
      */
-    private expanded_: boolean = false;
+    private expanded_ = false;
 
     /**
      * Gets or sets if the FAQ section is expanded.

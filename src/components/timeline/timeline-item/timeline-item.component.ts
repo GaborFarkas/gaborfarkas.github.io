@@ -28,12 +28,12 @@ export class TimelineItemComponent {
     /**
      * Invert the direction of this timeline item (right to left).
      */
-    @Input() reverse: boolean = false;
+    @Input() reverse = false;
 
     /**
      * The color class of this item.
      */
-    @Input() color: string = '#ffffff';
+    @Input() color = '#ffffff';
 
     /**
      * Fired when the current item is extended.
@@ -57,7 +57,7 @@ export class TimelineItemComponent {
     /**
      * The current item is extended.
      */
-    protected extended: boolean = false;
+    protected extended = false;
 
     /**
      * Presumably unique ID used by ARIA attributes.

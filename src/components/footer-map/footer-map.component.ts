@@ -21,12 +21,12 @@ export class FooterMapComponent implements AfterViewInit {
     /**
      * Gets or sets if extra features are already loaded into the map.
      */
-    private extrasLoaded: boolean = false;
+    private extrasLoaded = false;
 
     /**
      * Gets or sets if extra features are currently loading into the map.
      */
-    private extrasLoading: boolean = false;
+    private extrasLoading = false;
 
     /**
      * The Maplibre GL JS map object.
@@ -195,9 +195,9 @@ export class FooterMapComponent implements AfterViewInit {
             layers: [BaseMapStyle.ARTISTIC, BaseMapStyle.PRECISE]
         });
         togglerControl.on('layerswitch', function (this: FooterMapComponent, evt: LayerToggleEvent) {
-            for (let lyrGroup of this.baseMapLayers) {
+            for (const lyrGroup of this.baseMapLayers) {
                 // Set visibility for every layer in the layer group
-                for (let lyr of lyrGroup[1]) {
+                for (const lyr of lyrGroup[1]) {
                     this.map?.setLayoutProperty(lyr, 'visibility', lyrGroup[0] === evt.layer ? 'visible' : 'none');
                 }
             }

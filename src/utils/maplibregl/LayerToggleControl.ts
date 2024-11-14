@@ -1,4 +1,4 @@
-import { Evented, IControl, Map } from "maplibre-gl";
+import { Evented, IControl } from "maplibre-gl";
 
 /**
  * MapLibreGL 3D layer toggler control.
@@ -26,11 +26,11 @@ export default class LayerToggleControl extends Evented implements IControl {
         this.container = this.buildDom();
     }
 
-    onAdd(map: Map): HTMLElement {
+    onAdd(): HTMLElement {
         return this.container;
     }
 
-    onRemove(map: Map): void {
+    onRemove(): void {
         this.container.remove();
     }
 

@@ -6,6 +6,10 @@ const angular = require("angular-eslint");
 module.exports = tseslint.config(
     {
         files: ["**/*.ts"],
+        ignores: [
+            "src/assets/**/*.ts",
+            "src/examples/*.ts"
+        ],
         extends: [
             eslint.configs.recommended,
             ...tseslint.configs.recommended,
@@ -31,7 +35,7 @@ module.exports = tseslint.config(
             "@angular-eslint/component-class-suffix": [
                 "error",
                 {
-                    suffixes: ["Component", "Page"]
+                    suffixes: ["Component", "Page", "Layout"]
                 }
             ]
         },

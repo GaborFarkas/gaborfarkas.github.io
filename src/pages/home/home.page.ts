@@ -123,7 +123,7 @@ export class HomePage {
      */
     protected resetSlideAnimations(evt: CarouselChangeEvent) {
         if (this.heroScenes) {
-            for (let heroScene of this.heroScenes) {
+            for (const heroScene of this.heroScenes) {
                 if (heroScene.sceneContainer && evt.slide?.contains(heroScene.sceneContainer.nativeElement)) {
                     heroScene.restart();
                 }

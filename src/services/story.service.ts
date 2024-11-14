@@ -80,7 +80,7 @@ export class StoryService {
      */
     private async fetchStoriesAsync() {
         const stories = await this.fileService.getConfigAsync<StoryModel[]>('stories.json');
-        for (let story of stories) {
+        for (const story of stories) {
             // Store stories with their slugs as keys.
             this.stories.set(story.slug, story);
         }

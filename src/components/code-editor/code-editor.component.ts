@@ -3,7 +3,7 @@ import { MonacoLoaderService } from "@/services/monaco-loader.service";
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from "@angular/core";
 import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";
 
-declare var monaco: typeof monacoType;
+declare const monaco: typeof monacoType;
 
 /**
  * A monaco-based code editor component.
@@ -34,7 +34,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
     /**
      * Helper variable to tell if the lib has been loaded.
      */
-    private monacoLoaded: boolean = false;
+    private monacoLoaded = false;
 
     /**
      * Extra definitions are stored here until monaco has been loaded.
@@ -44,7 +44,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
     /**
      * The code editor's current value (backing field).
      */
-    private value_: string = '';
+    private value_ = '';
     /**
      * The code editor's current value.
      */

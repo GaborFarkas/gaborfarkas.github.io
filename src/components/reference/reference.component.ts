@@ -25,7 +25,7 @@ export class ReferenceComponent {
     /**
      * Flip the flyout text vertically. Useful if the text is upside down.
      */
-    @Input() flyoutFlip: boolean = false;
+    @Input() flyoutFlip = false;
 
     /**
      * The URL this reference is referring to.

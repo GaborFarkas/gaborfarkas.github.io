@@ -22,7 +22,7 @@ export default class BuildingControl implements IControl {
     /**
      * Backing field for the active property.
      */
-    private active_: boolean = false;
+    private active_ = false;
 
     /**
      * Gets or sets if the control is currently active.
@@ -60,7 +60,7 @@ export default class BuildingControl implements IControl {
         return this.container;
     }
 
-    onRemove(map: Map): void {
+    onRemove(): void {
         this.container.remove();
         this.map = undefined;
         this.active = false;

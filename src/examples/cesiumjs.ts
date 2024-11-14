@@ -1,5 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
-import { environment } from '@/environments/environment';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 import * as CesiumLib from 'cesium';
 
@@ -120,7 +120,7 @@ function zCoords(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
 
 async function updateAttribs(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     const dataSource = await Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/hungary_settlements.geojson');
-    for (let entity of dataSource.entities.values) {
+    for (const entity of dataSource.entities.values) {
         entity.billboard = undefined;
         entity.point = new Cesium.PointGraphics({
             color: Cesium.Color.fromCssColorString('#ff7800'),
@@ -159,7 +159,7 @@ async function updateGeom(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     map.dataSources.add(source);
 
     const handler = new Cesium.ScreenSpaceEventHandler(map.canvas);
-    handler.setInputAction(function (evt) {
+    handler.setInputAction(function () {
         const currCoords = polyline.positions.getValue();
         currCoords.push(Cesium.Cartesian3.fromDegrees(Math.random() * 180 - 90, Math.random() * 360 - 180));
         polyline.positions = currCoords;
@@ -175,7 +175,7 @@ async function addRmLayer(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     let added = true;
 
     const handler = new Cesium.ScreenSpaceEventHandler(map.canvas);
-    handler.setInputAction(function (evt) {
+    handler.setInputAction(function () {
         if (added) {
             map.dataSources.remove(dataSource);
         } else {
