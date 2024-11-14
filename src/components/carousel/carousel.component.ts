@@ -128,7 +128,7 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Triggered before a slide change occurs. Passes the slide's index and DOM element.
      */
-    @Output() slideChange: EventEmitter<CarouselChangeEvent> = new EventEmitter();
+    @Output() slideChange = new EventEmitter<CarouselChangeEvent>();
 
     ngOnDestroy(): void {
         if (this.autoSlideIntervalKey) {

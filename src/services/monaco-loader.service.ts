@@ -12,7 +12,7 @@ export class MonacoLoaderService {
      * Proxies the load state of the monaco library.
      * After subscribing, please run loadAsync to receive a value.
      */
-    public loaded: AsyncSubject<boolean> = new AsyncSubject();
+    public loaded = new AsyncSubject<boolean>();
 
     /**
      * Loads the monaco library if it is not already loaded.

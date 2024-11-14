@@ -38,7 +38,7 @@ export class TimelineItemComponent {
     /**
      * Fired when the current item is extended.
      */
-    @Output() extend: EventEmitter<TimelineItemComponent> = new EventEmitter();
+    @Output() extend = new EventEmitter<TimelineItemComponent>();
 
     /**
      * The host element's class attribute.

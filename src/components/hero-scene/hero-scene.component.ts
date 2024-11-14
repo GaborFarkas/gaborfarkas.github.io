@@ -37,7 +37,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     /**
      * Fires an event when a hero change is requested.
      */
-    @Output() heroChanged: EventEmitter<any> = new EventEmitter();
+    @Output() heroChanged = new EventEmitter<void>();
 
     /**
      * Gets or sets if the current hero is animating and cannot be clicked.

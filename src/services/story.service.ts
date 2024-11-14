@@ -11,7 +11,7 @@ export class StoryService {
     /**
      * Stories available with slugs as keys.
      */
-    private stories: Map<string, StoryModel> = new Map();
+    private stories = new Map<string, StoryModel>();
 
     /**
      * The story fetching operation, if it is still running.

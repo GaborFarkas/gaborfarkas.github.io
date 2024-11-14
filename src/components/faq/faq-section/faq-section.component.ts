@@ -26,7 +26,7 @@ export class FaqSectionComponent {
     /**
      * Fired when the FAQ section is toggled with the current instance.
      */
-    @Output() toggled: EventEmitter<FaqSectionComponent> = new EventEmitter();
+    @Output() toggled = new EventEmitter<FaqSectionComponent>();
 
     /**
      * Gets or sets if the FAQ section is expanded. Backing field.

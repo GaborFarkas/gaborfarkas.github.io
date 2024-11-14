@@ -370,7 +370,7 @@ export class SandboxPage implements OnInit, OnDestroy {
                     depth: 1
                 };
                 // Use a map for quick access
-                const groupMap: Map<string, SourceCodeGroup> = new Map();
+                const groupMap = new Map<string, SourceCodeGroup>();
                 let maxDepth = 0;
 
                 // Build tree

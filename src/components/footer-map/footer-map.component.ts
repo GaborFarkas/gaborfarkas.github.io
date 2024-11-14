@@ -36,7 +36,7 @@ export class FooterMapComponent implements AfterViewInit {
     /**
      * Gets or sets the base map layers associated with a single style.
      */
-    private baseMapLayers: Map<BaseMapStyle, string[]> = new Map();
+    private baseMapLayers = new Map<BaseMapStyle, string[]>();
 
     /**
      * Loads the base map with a simple artistic style and positions it to Pécs.

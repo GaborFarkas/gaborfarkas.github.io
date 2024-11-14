@@ -35,7 +35,7 @@ export class ApplicationLayout extends LayoutWithAnalytics implements OnInit, On
     /**
      * The current component is destroyed, do not subscribe to the notification service anymore from here.
      */
-    private destroyed: Subject<boolean> = new Subject();
+    private destroyed = new Subject<boolean>();
 
     ngOnInit(): void {
         this.notificationService.notifications.pipe(takeUntil(this.destroyed)).subscribe(value =>
