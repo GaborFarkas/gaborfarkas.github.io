@@ -65,19 +65,19 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
     /**
      * The extra definitions to load. For JS this can be extra types, for JSON a schema to validate.
      */
-    @Input() public set definitions(value: string | undefined) {
+    @Input() public set definitions(newDefinitions: string | undefined) {
         this.extraLib?.dispose();
         this.extraLibModel?.dispose();
         this.extraLib = undefined;
         this.extraLibModel = undefined;
         // Currently only JS is supported.
-        if (value) {
+        if (newDefinitions) {
             if (!this.monacoLoaded) {
-                this.initialExtraDefinitions = value;
+                this.initialExtraDefinitions = newDefinitions;
             } else {
-                const libUri = 'file://extraLib.d.ts';
-                this.extraLib = monaco.languages.typescript.javascriptDefaults.addExtraLib(value, libUri);
-                this.extraLibModel = monaco.editor.createModel(value, 'typescript', monaco.Uri.parse(libUri));
+                const libUri = 'ts:filename/extraLib.d.ts';
+                this.extraLib = monaco.languages.typescript.javascriptDefaults.addExtraLib(newDefinitions, libUri);
+                this.extraLibModel = monaco.editor.createModel(newDefinitions, 'typescript', monaco.Uri.parse(libUri));
             }
         }
     }
