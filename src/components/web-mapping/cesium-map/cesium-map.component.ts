@@ -29,7 +29,7 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
     @Input() public exposePlay = false;
 
     constructor() {
-        (window as Record<string, any>)['CESIUM_BASE_URL'] = '/assets/cesium/';
+        (window as unknown as Record<string, unknown>)['CESIUM_BASE_URL'] = '/assets/cesium/';
     }
 
     /**
@@ -48,8 +48,8 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
             }
 
             if (this.exposePlay) {
-                (document as any).play = this.play.bind(this);
-                (document as any).playLoaded = true;
+                (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
+                (document as unknown as Record<string, unknown>)['playLoaded'] = true;
                 document.dispatchEvent(new Event('playLoaded'));
             }
         }

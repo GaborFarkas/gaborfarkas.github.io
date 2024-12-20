@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RangePipe } from '@/pipes/range.pipe';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +11,7 @@ import { CarouselChangeEvent } from '@/models/carousel-change-event.model';
 @Component({
     selector: 'div.carousel',
     standalone: true,
-    imports: [CommonModule, RangePipe, FontAwesomeModule],
+    imports: [CommonModule, FontAwesomeModule],
     templateUrl: './carousel.component.html',
     styleUrl: './carousel.component.css'
 })

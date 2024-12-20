@@ -5,7 +5,7 @@
         <p class="text-center">If you think this is a mistake, feel free to contact me at the email address below.</p>
     </div>
     <div class="xl:col-start-2 px-6 flex justify-center relative">
-        <img [src]="image.url" />
+        <img [src]="image.url" alt="Content not found" />
         <div *ngIf="image.attributionText" class="attribution opaque-bg absolute right-0 bottom-0">
             <a *ngIf="image.attributionUrl; else attribution" [href]="image.attributionUrl">
                 <ng-container *ngTemplateOutlet="attribution"></ng-container>

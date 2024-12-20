@@ -13,7 +13,7 @@
             <ng-container
                 *ngTemplateOutlet="loadCodeOptions; context: { items: this.availableCodes[this.library]?.children }" />
         </select>
-        <div class="flex items-center select-none cursor-pointer" (click)="runCode()">
+        <div class="flex items-center select-none cursor-pointer" (click)="runCode()" (keypress)="runCode()" tabindex="0">
             <fa-icon [icon]="faPlay" class="text-green-900 pr-2" size="1x" />
             <span>Run code</span>
         </div>

@@ -14,7 +14,7 @@ export class DataValueDirective {
     /**
      * The value to store.
      */
-    @Input({ required: true }) set dataValue(value: any) {
+    @Input({ required: true }) set dataValue(value: unknown) {
         (this.viewRef.element.nativeElement as ElementWithData).dataValue = value;
     }
 }

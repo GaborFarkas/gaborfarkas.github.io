@@ -37,8 +37,9 @@ export class StoryService {
             return [];
         }
         return typedItems
-            .sort((a, b) => (options.ascending ? a : b as any)[options.orderBy] -
-                (options.ascending ? b : a as any)[options.orderBy])
+            //TODO: This is sort of ugly
+            .sort((a, b) => ((options.ascending ? a : b) as unknown as Record<string, number>)[options.orderBy] -
+                ((options.ascending ? b : a) as unknown as Record<string, number>)[options.orderBy])
             .slice(options.skip, options.skip + options.take);
     }
 

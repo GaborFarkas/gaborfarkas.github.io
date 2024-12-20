@@ -55,8 +55,8 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
             }
 
             if (this.exposePlay) {
-                (document as any).play = this.play.bind(this);
-                (document as any).playLoaded = true;
+                (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
+                (document as unknown as Record<string, unknown>)['playLoaded'] = true;
                 document.dispatchEvent(new Event('playLoaded'));
             }
         }

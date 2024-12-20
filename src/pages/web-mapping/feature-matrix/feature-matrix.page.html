@@ -8,7 +8,7 @@
         </p>
 
         <div class="w-full flex justify-center pb-6">
-            <img src="/assets/feature-matrix.png" class="w-full lg:w-3/5">
+            <img src="/assets/feature-matrix.png" class="w-full lg:w-3/5" alt="Feature matrix diagram">
         </div>
 
         <p class="pb-6">The core concept of that research topic aged badly. The world does not need a cloud GIS. At
@@ -66,7 +66,7 @@
             <div class="lg:max-w-3/5">
                 <div class="flex justify-center items-center pb-4">
                     <a href="https://leafletjs.com/" target="_blank" class="h-8 md:h-16 md:pr-4 flex-shrink-0">
-                        <img class="h-full" src="assets/web-mapping/leaflet-logo.png">
+                        <img class="h-full" src="assets/web-mapping/leaflet-logo.png" alt="Leaflet logo">
                     </a>
                     <div>
                         <h1 class="text-lg md:text-xl">Leaflet</h1>
@@ -85,14 +85,14 @@
                             Systems, therefore, it has a logical, easy-to-understand API for GIS experts.</p>
                     </div>
                     <a href="https://openlayers.org/" target="_blank" class="h-12 md:h-20 md:pl-4 flex-shrink-0">
-                        <img class="h-full" src="assets/web-mapping/openlayers-logo.svg">
+                        <img class="h-full" src="assets/web-mapping/openlayers-logo.svg" alt="OpenLayers logo">
                     </a>
                 </div>
 
                 <div class="flex justify-center items-center pb-4">
                     <a href="https://maplibre.org/maplibre-gl-js/docs/" target="_blank"
                         class="h-12 md:h-20 md:pr-4 flex-shrink-0">
-                        <img class="h-full" src="assets/web-mapping/maplibre-logo.svg">
+                        <img class="h-full" src="assets/web-mapping/maplibre-logo.svg" alt="MapLibre logo">
                     </a>
                     <div>
                         <h1 class="text-lg md:text-xl">MapLibre GL JS</h1>
@@ -113,7 +113,7 @@
                     </div>
                     <a href="https://cesium.com/platform/cesiumjs/" target="_blank"
                         class="h-8 md:h-16 md:pl-4 flex-shrink-0">
-                        <img class="h-full" src="assets/web-mapping/cesium-logo.svg">
+                        <img class="h-full" src="assets/web-mapping/cesium-logo.svg" alt="Cesium logo">
                     </a>
                 </div>
             </div>
@@ -148,24 +148,26 @@
                         </td>
                         <td>
                             <div [supportRectangle]="item.support[WebMappingLibrary.LEAFLET]"
-                                (click)="playExample(item, WebMappingLibrary.LEAFLET)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.LEAFLET].line !== undefined}"></div>
+                                (click)="playExample(item, WebMappingLibrary.LEAFLET)" (keypress)="playExample(item, WebMappingLibrary.LEAFLET)"
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.LEAFLET].line !== undefined}" tabindex="0"></div>
                         </td>
                         <td>
                             <div [supportRectangle]="item.support[WebMappingLibrary.OPENLAYERS]"
-                                (click)="playExample(item, WebMappingLibrary.OPENLAYERS)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.OPENLAYERS].line !== undefined}">
+                                (click)="playExample(item, WebMappingLibrary.OPENLAYERS)" (keypress)="playExample(item, WebMappingLibrary.OPENLAYERS)"
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.OPENLAYERS].line !== undefined}" tabindex="0">
                             </div>
                         </td>
                         <td>
                             <div [supportRectangle]="item.support[WebMappingLibrary.MAPLIBRE]"
-                                (click)="playExample(item, WebMappingLibrary.MAPLIBRE)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.MAPLIBRE].line !== undefined}"></div>
+                                (click)="playExample(item, WebMappingLibrary.MAPLIBRE)" (keypress)="playExample(item, WebMappingLibrary.MAPLIBRE)"
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.MAPLIBRE].line !== undefined}" tabindex="0">
+                            </div>
                         </td>
                         <td>
                             <div [supportRectangle]="item.support[WebMappingLibrary.CESIUM]"
-                                (click)="playExample(item, WebMappingLibrary.CESIUM)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.CESIUM].line !== undefined}"></div>
+                                (click)="playExample(item, WebMappingLibrary.CESIUM)" (keypress)="playExample(item, WebMappingLibrary.CESIUM)"
+                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary.CESIUM].line !== undefined}" tabindex="0">
+                            </div>
                         </td>
 
                         } @else {

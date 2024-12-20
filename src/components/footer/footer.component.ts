@@ -72,7 +72,7 @@ export class FooterComponent {
                     return;
                 }
                 navigator.clipboard.writeText(emailAddress).then(
-                    () => { },
+                    () => { /** Do nothing */ },
                     function (this: FooterComponent) {
                         this.fallbackCopyToClipboard(emailAddress);
                     }.bind(this));

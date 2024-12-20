@@ -12,7 +12,7 @@
             <div class="relative justify-self-start cursor-pointer">
                 <span class="email" [ngClass]="{'copied': singleClick}"
                     title="Click to copy to clipboard, double click to write an email" (click)="copyToClipboard()"
-                    (dblclick)="openEmail()">
+                    (dblclick)="openEmail()" (keypress)="copyToClipboard()" tabindex="0">
                     <span>&#64;</span>
                 </span>
                 <span class="absolute w-full h-full top-0 left-0 hidden justify-center items-center"
@@ -40,7 +40,7 @@
             <source srcset="https://simpleanalyticsbadges.com/farkasgaborev.eu?mode=light"
                 media="(prefers-color-scheme: light)" />
             <img class="h-8" src="https://simpleanalyticsbadges.com/farkasgaborev.eu?mode=light" loading="lazy"
-                referrerpolicy="no-referrer" crossorigin="anonymous" />
+                referrerpolicy="no-referrer" crossorigin="anonymous" alt="Simple Analytics badge" />
         </picture>
     </a>
 </div>
@@ -49,7 +49,7 @@
     <fa-icon [icon]="email" size="lg"></fa-icon>
     <span class="email pl-2 cursor-pointer" [ngClass]="{'copied': singleClick}"
         title="Click to copy to clipboard, double click to write an email" (click)="copyToClipboard()"
-        (dblclick)="openEmail()">
+        (dblclick)="openEmail()" (keypress)="copyToClipboard()" tabindex="0">
         <span>&#64;</span>
     </span>
 </div>

@@ -56,56 +56,133 @@
 
 <h1>Technology stack</h1>
 
-<p class="pb-4">Since we are mimicking a real-life business scenario, the technology stack always starts with proper version control. That is not changeable, not debatable. We are using git and GitHub. There are three main reasons behind this: it is the most popular VCS, it allows free private repositories to practice on, and finally, it has an integrated project management system. That leaves us to use GitHub for practicing project management techniques as well.</p>
+<p class="pb-4">Since we are mimicking a real-life business scenario, the technology stack always starts with proper
+    version control. That is not changeable, not debatable. We are using git and GitHub. There are three main reasons
+    behind this: it is the most popular VCS, it allows free private repositories to practice on, and finally, it has an
+    integrated project management system. That leaves us to use GitHub for practicing project management techniques as
+    well.</p>
 
-<p class="pb-8">The rest of the stack is more or less up to the students. There are two constraints. I need to be proficient in the selected technologies and we must choose a separate back-end and front-end framework. By default, my preferred choice is a Laravel back-end with an Angular front-end. Laravel is a convenient choice as students learn Web programming through PHP earlier in their studies, and it is a flexible system in terms of used features. Angular is mostly a personal preference. Alternatives can be Vue, React, ASP.NET MVC, or NestJS.</p>
+<p class="pb-8">The rest of the stack is more or less up to the students. There are two constraints. I need to be
+    proficient in the selected technologies and we must choose a separate back-end and front-end framework. By default,
+    my preferred choice is a Laravel back-end with an Angular front-end. Laravel is a convenient choice as students
+    learn Web programming through PHP earlier in their studies, and it is a flexible system in terms of used features.
+    Angular is mostly a personal preference. Alternatives can be Vue, React, ASP.NET MVC, or NestJS.</p>
 
 <h1>Traveling in time with a hint of bureaucracy</h1>
 
-<p class="pb-4">We start the course by practicing proper teamwork using git and GitHub. In the first two weeks, we learn the basic terms (e.g. commit, staging, branch, origin, remote), visualize branches to see what's happening under the hood, and practice git CLI (command line interface) commands. In this phase, students are only allowed to work in CLIs to understand and memorize each git command more easily by parametrizing them over and over again.</p>
+<p class="pb-4">We start the course by practicing proper teamwork using git and GitHub. In the first two weeks, we learn
+    the basic terms (e.g. commit, staging, branch, origin, remote), visualize branches to see what's happening under the
+    hood, and practice git CLI (command line interface) commands. In this phase, students are only allowed to work in
+    CLIs to understand and memorize each git command more easily by parametrizing them over and over again.</p>
 
-<p class="pb-4">When everybody is familiar with the environment, the basic commands, navigating through the local git structure, and validating the remote state on GitHub, we proceed by forming groups working together. That is the exciting part, as we are getting into branching, merging, and rebasing with the necessary underlying concepts. We learn by making mistakes when possible. We create conflicts, try to solve them, and even end up in situations where a hard reset is the only way forward at this skill level. In the end, students learn about the typical pitfalls and how to avoid them.</p>
+<p class="pb-4">When everybody is familiar with the environment, the basic commands, navigating through the local git
+    structure, and validating the remote state on GitHub, we proceed by forming groups working together. That is the
+    exciting part, as we are getting into branching, merging, and rebasing with the necessary underlying concepts. We
+    learn by making mistakes when possible. We create conflicts, try to solve them, and even end up in situations where
+    a hard reset is the only way forward at this skill level. In the end, students learn about the typical pitfalls and
+    how to avoid them.</p>
 
-<img class="w-full pb-2" src="/assets/stories/software-development-technologies/git.jpg" />
-<p class="pb-8 text-center text-sm">We are talking about and visualizing workflows, graphs and commands until most students have a basic idea about proper version control techniques.</p>
+<img class="w-full pb-2" src="/assets/stories/software-development-technologies/git.jpg" alt="Git graphs and commands" />
+<p class="pb-8 text-center text-sm">We are talking about and visualizing workflows, graphs and commands until most
+    students have a basic idea about proper version control techniques.</p>
 
-<p class="pb-4">While we are dealing with GitHub, I think it's better to stay a bit longer and learn some basic project management techniques. First, we talk about Agile. We discuss what Agile is (a software developer attitude recommendation), what Agile is not (Scrum), and how (and why) a lot of companies understand and misuse it (dogmatically enforced Scrum). The key point I try to convey here is there is no universal optimal management solution in IT, however, if we understand the different techniques (Agile, Waterfall, and even Impact engineering), understand the current requirements, and only utilize the right mix afterward, we cannot fall far from the target.</p>
+<p class="pb-4">While we are dealing with GitHub, I think it's better to stay a bit longer and learn some basic project
+    management techniques. First, we talk about Agile. We discuss what Agile is (a software developer attitude
+    recommendation), what Agile is not (Scrum), and how (and why) a lot of companies understand and misuse it
+    (dogmatically enforced Scrum). The key point I try to convey here is there is no universal optimal management
+    solution in IT, however, if we understand the different techniques (Agile, Waterfall, and even Impact engineering),
+    understand the current requirements, and only utilize the right mix afterward, we cannot fall far from the target.
+</p>
 
-<p class="pb-8">With all these theories behind us, we can delve into the practical realm of GitHub Projects. We learn to use the Kanban board and the Gantt roadmap views of GitHub's integrated project management system and start to create user stories and formulate development tasks from them. At this point, students have already composed a list of themes for the class project we can choose one from by voting. This article is based on the class of 2024, which voted for a job platform called GetHired. While we know we can only implement a limited set of features during the semester, we go wild and create tasks for a complete application.</p>
+<p class="pb-8">With all these theories behind us, we can delve into the practical realm of GitHub Projects. We learn to
+    use the Kanban board and the Gantt roadmap views of GitHub's integrated project management system and start to
+    create user stories and formulate development tasks from them. At this point, students have already composed a list
+    of themes for the class project we can choose one from by voting. This article is based on the class of 2024, which
+    voted for a job platform called GetHired. While we know we can only implement a limited set of features during the
+    semester, we go wild and create tasks for a complete application.</p>
 
 <h1>Design-first</h1>
 
-<p class="pb-4">The user stories and the related issues provide us with a great starting point in architecture. We can use all that information to prioritize features necessary for the application to work in its simplest form. The next phase is system planning, which we start with the back-end. The back-end always contains more business logic, layers, and complexity than the front-end, thus we can practice creating different plan documentation and understand the backbone of our software.</p>
+<p class="pb-4">The user stories and the related issues provide us with a great starting point in architecture. We can
+    use all that information to prioritize features necessary for the application to work in its simplest form. The next
+    phase is system planning, which we start with the back-end. The back-end always contains more business logic,
+    layers, and complexity than the front-end, thus we can practice creating different plan documentation and understand
+    the backbone of our software.</p>
 
-<p class="pb-4">In the following weeks, we go through a basic CRUD back-end system layer by layer. Every layer is a new milestone. We start every milestone by discussing key concepts, like design patterns, conventions, and best practices. The first milestone, the database, is a prime example. We design a table structure for the theme at hand and create ERDs (entity-relation diagrams) if we have time. We discuss database normalization, relationships, code-first and database-first approaches, mapping tables, and migrations. When everything is clear, we create the table structure for the first few tables we would like to use in our application, author some migrations, and continue with the next layer.</p>
+<p class="pb-4">In the following weeks, we go through a basic CRUD back-end system layer by layer. Every layer is a new
+    milestone. We start every milestone by discussing key concepts, like design patterns, conventions, and best
+    practices. The first milestone, the database, is a prime example. We design a table structure for the theme at hand
+    and create ERDs (entity-relation diagrams) if we have time. We discuss database normalization, relationships,
+    code-first and database-first approaches, mapping tables, and migrations. When everything is clear, we create the
+    table structure for the first few tables we would like to use in our application, author some migrations, and
+    continue with the next layer.</p>
 
-<img class="w-full pb-2" src="/assets/stories/software-development-technologies/db.jpeg" />
-<p class="pb-8 text-center text-sm">We try to discuss as many conceptual aspects of planning a single layer in our application as possible. 3 and 5 are the normal forms I recommend to strive for with different database design approaches.</p>
+<img class="w-full pb-2" src="/assets/stories/software-development-technologies/db.jpeg" alt="Database layer" />
+<p class="pb-8 text-center text-sm">We try to discuss as many conceptual aspects of planning a single layer in our
+    application as possible. 3 and 5 are the normal forms I recommend to strive for with different database design
+    approaches.</p>
 
-<p class="pb-4">The rest of the back-end heavily relies on language-specific patterns, therefore, the other layers usually change yearly. For the Laravel application, we go into environments, controllers, routes, models, middlewares, JWTs (JSON Web Tokens), database transactions, and the Eloquent ORM (object-relational mapping). If we have time, we can also discuss service providers and facades. For ASP.NET MVC applications, we usually cover configurations, services, and IoC (inversion of control) related concepts, as they are hard to avoid. Commonly, we always draw a lot of class diagrams and sequence diagrams. Sometimes flowcharts as well.</p>
+<p class="pb-4">The rest of the back-end heavily relies on language-specific patterns, therefore, the other layers
+    usually change yearly. For the Laravel application, we go into environments, controllers, routes, models,
+    middlewares, JWTs (JSON Web Tokens), database transactions, and the Eloquent ORM (object-relational mapping). If we
+    have time, we can also discuss service providers and facades. For ASP.NET MVC applications, we usually cover
+    configurations, services, and IoC (inversion of control) related concepts, as they are hard to avoid. Commonly, we
+    always draw a lot of class diagrams and sequence diagrams. Sometimes flowcharts as well.</p>
 
-<img class="w-full pb-2" src="/assets/stories/software-development-technologies/seq.jpeg" />
+<img class="w-full pb-2" src="/assets/stories/software-development-technologies/seq.jpeg" alt="Laravel sequece diagrams" />
 <p class="pb-8 text-center text-sm">Sequece diagrams describing some facets of a typical Laravel application.</p>
 
 <h1>Graphical complexity</h1>
 
-<p class="pb-4">When the back-end becomes sufficiently complex to provide some data to display, we switch to the front-end temporarily. In this phase, we focus on the GUI until we get a decently-looking web application. After that, we continue developing both sides in parallel until the end of the semester. We need to choose two things at this point: a template and a framework.</p>
+<p class="pb-4">When the back-end becomes sufficiently complex to provide some data to display, we switch to the
+    front-end temporarily. In this phase, we focus on the GUI until we get a decently-looking web application. After
+    that, we continue developing both sides in parallel until the end of the semester. We need to choose two things at
+    this point: a template and a framework.</p>
 
-<p class="pb-4">Choosing a framework to create a front-end for an API back-end might sound like an overshoot for a class, but every framework holds a degree of architectural uniqueness, usable to understand better how modern web applications work. Experience from years of this class tells me that learning a front-end framework after understanding core concepts in a back-end framework is much easier for students, as they are relatively similar.</p>
+<p class="pb-4">Choosing a framework to create a front-end for an API back-end might sound like an overshoot for a
+    class, but every framework holds a degree of architectural uniqueness, usable to understand better how modern web
+    applications work. Experience from years of this class tells me that learning a front-end framework after
+    understanding core concepts in a back-end framework is much easier for students, as they are relatively similar.</p>
 
-<p class="pb-4">My preference for Angular has two aspects. First, it gives me the best DX (developer experience) from the available front-end frameworks. It is a robust, clean, elegant, well-designed, and scalable technology. Second, it adheres to SOLID principles so well, that its SRP (single responsibility principle) design makes it an outstanding candidate to learn about IoC through it. We can go through the whole DI (dependency injection) pipeline just like links in a chain. I emphasize this single concept because it is the most complicated to understand for students new to IoC and modern frameworks. The easier I can demonstrate what happens under the hood, the better. Angular is a real treasure here, especially with standalone components.</p>
+<p class="pb-4">My preference for Angular has two aspects. First, it gives me the best DX (developer experience) from
+    the available front-end frameworks. It is a robust, clean, elegant, well-designed, and scalable technology. Second,
+    it adheres to SOLID principles so well, that its SRP (single responsibility principle) design makes it an
+    outstanding candidate to learn about IoC through it. We can go through the whole DI (dependency injection) pipeline
+    just like links in a chain. I emphasize this single concept because it is the most complicated to understand for
+    students new to IoC and modern frameworks. The easier I can demonstrate what happens under the hood, the better.
+    Angular is a real treasure here, especially with standalone components.</p>
 
-<img class="w-full pb-2" src="/assets/stories/software-development-technologies/ioc.jpeg" />
-<p class="pb-8 text-center text-sm">Understanding IoC is no easy feat. We draw pipelines and examine providers (buckets as an analogy) and injectors. Finally, we demonstrate by making errors and debugging them.</p>
+<img class="w-full pb-2" src="/assets/stories/software-development-technologies/ioc.jpeg" alt="Inversion of control" />
+<p class="pb-8 text-center text-sm">Understanding IoC is no easy feat. We draw pipelines and examine providers (buckets
+    as an analogy) and injectors. Finally, we demonstrate by making errors and debugging them.</p>
 
-<p class="pb-8">The rest of the front-end phase is about reactivity and framework-specific design patterns. Nothing special, just pages, components, and services. We focus on getting familiar with TypeScript and we discuss patterns we come across during development. Usually, we use forms, we end up with a modular application, but sometimes we deal with rxjs classes directly or create guards or interceptors.</p>
+<p class="pb-8">The rest of the front-end phase is about reactivity and framework-specific design patterns. Nothing
+    special, just pages, components, and services. We focus on getting familiar with TypeScript and we discuss patterns
+    we come across during development. Usually, we use forms, we end up with a modular application, but sometimes we
+    deal with rxjs classes directly or create guards or interceptors.</p>
 
 <h1>And the rest</h1>
 
-<p class="pb-4">Course requirements include clean code, proper code documentation, and unit tests. We are picking up clean code patterns throughout development, but the other two need additional time to explain. I usually take some time from the middle of the course to discuss code documentation. Preferably when we already have some classes, methods, and properties to decorate in both frameworks. It is mostly about syntax and sources. We look for websites showing examples of the de-facto standard code documentation syntax for the selected languages and see how the IDE is getting more competent with every documented symbol, even in weakly typed environments.</p>
+<p class="pb-4">Course requirements include clean code, proper code documentation, and unit tests. We are picking up
+    clean code patterns throughout development, but the other two need additional time to explain. I usually take some
+    time from the middle of the course to discuss code documentation. Preferably when we already have some classes,
+    methods, and properties to decorate in both frameworks. It is mostly about syntax and sources. We look for websites
+    showing examples of the de-facto standard code documentation syntax for the selected languages and see how the IDE
+    is getting more competent with every documented symbol, even in weakly typed environments.</p>
 
-<p class="pb-4">Unit testing is usually the last lessons' topic. The main reason is that writing unit tests is not my favorite part of software development and students are more eager to develop features as well. Still, this is so important, that we need to talk about it for at least a week. I like to focus on patterns in unit testing, like AAA (arrange, act, assert, not the other one). Once there, we also discuss the three-letter software design approaches, especially TDD (test-driven design). While not a big fan of TDD, I like to show students scenarios where it is feasible to use and strengthen the idea in them that there are no bad patterns, just inappropriate situations to apply them.</p>
+<p class="pb-4">Unit testing is usually the last lessons' topic. The main reason is that writing unit tests is not my
+    favorite part of software development and students are more eager to develop features as well. Still, this is so
+    important, that we need to talk about it for at least a week. I like to focus on patterns in unit testing, like AAA
+    (arrange, act, assert, not the other one). Once there, we also discuss the three-letter software design approaches,
+    especially TDD (test-driven design). While not a big fan of TDD, I like to show students scenarios where it is
+    feasible to use and strengthen the idea in them that there are no bad patterns, just inappropriate situations to
+    apply them.</p>
 
 <h1>Source code</h1>
 
-<p class="pb-4">The source code for a sample Software Development Technologies course can be found in the following respositories: <a href="https://github.com/GaborFarkas/sw-dev-tech-sample-front-end">https://github.com/GaborFarkas/sw-dev-tech-sample-front-end</a> for the front-end and <a href="https://github.com/GaborFarkas/sw-dev-tech-sample-back-end">https://github.com/GaborFarkas/sw-dev-tech-sample-back-end</a> for the back-end.</p>
+<p class="pb-4">The source code for a sample Software Development Technologies course can be found in the following
+    respositories: <a
+        href="https://github.com/GaborFarkas/sw-dev-tech-sample-front-end">https://github.com/GaborFarkas/sw-dev-tech-sample-front-end</a>
+    for the front-end and <a
+        href="https://github.com/GaborFarkas/sw-dev-tech-sample-back-end">https://github.com/GaborFarkas/sw-dev-tech-sample-back-end</a>
+    for the back-end.</p>

@@ -12,7 +12,7 @@ export class DateReviverInterceptor implements HttpInterceptor {
     // ISO-8601 timestamp regex from https://gist.github.com/martinobordin/39bb1fe3400a29c1078dec00ff76bba9
     private iso8601 = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/;
 
-    intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    intercept(httpRequest: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
         if (httpRequest.responseType === 'json') {
             // If the expected response type is JSON then handle it here.
             return next.handle(httpRequest).pipe(map(event => {
@@ -32,14 +32,14 @@ export class DateReviverInterceptor implements HttpInterceptor {
      * Converts ISO-8601 timestamps to JS Date objects in any plain object.
      * @param body The plain object.
      */
-    private convertToDate(body: Record<string, any>) {
+    private convertToDate(body: Record<string, unknown>) {
         for (const key of Object.keys(body)) {
             const value = body[key];
             if (typeof value === 'string' && this.iso8601.test(value)) {
                 body[key] = new Date(value);
-            } else if (typeof value === 'object') {
+            } else if (typeof value === 'object' && value !== null) {
                 // Support deep conversion.
-                this.convertToDate(value);
+                this.convertToDate(value as Record<string, unknown>);
             }
         }
     }

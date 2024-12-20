@@ -24,7 +24,6 @@ export default config(
                 "error",
                 {
                     type: "attribute",
-                    prefix: "app",
                     style: "camelCase",
                 },
             ],

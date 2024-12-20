@@ -3,6 +3,8 @@ import { loadWASM, OnigScanner, OnigString } from 'vscode-oniguruma';
 import * as monaco from 'monaco-editor';
 import { IColorTheme, TMToMonacoToken } from './tm-to-monaco-token';
 
+type IStandaloneCodeEditorWithThemeService = monaco.editor.IStandaloneCodeEditor & { _themeService: { _theme: { themeData: { rules: monaco.editor.ITokenThemeRule[] } } } };
+
 export {
     convertTheme,
     type IVScodeTheme,
@@ -45,7 +47,7 @@ const registry = new vsctm.Registry({
 async function createTokensProvider(
     scopeName: string,
     editor?:
-        | (monaco.editor.IStandaloneCodeEditor & { _themeService?: any })
+        | IStandaloneCodeEditorWithThemeService
         | undefined
 ): Promise<monaco.languages.TokensProvider> {
     let colorTheme: IColorTheme | undefined = undefined;
@@ -64,7 +66,7 @@ async function createTokensProvider(
             })),
         };
 
-        // @ts-expect-error
+        // @ts-expect-error Won't write full definition for monaco's internal theme service.
         editor._themeService.onDidColorThemeChange((theme) => {
             const rules: monaco.editor.ITokenThemeRule[] = theme.themeData.rules;
             colorTheme = {
@@ -122,7 +124,7 @@ class TokensProviderCache {
         if (!this.cache[scopeName]) {
             this.cache[scopeName] = await createTokensProvider(
                 scopeName,
-                this.editor
+                this.editor as IStandaloneCodeEditorWithThemeService
             );
         }
 

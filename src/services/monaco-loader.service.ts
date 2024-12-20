@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { AsyncSubject } from "rxjs";
 import { convertTheme } from "@/monaco-vscode-textmate";
+import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";
 
 /**
  * Loader service for the monaco code editor library. It needs to be loaded through AMD with an
@@ -19,14 +20,14 @@ export class MonacoLoaderService {
      */
     public async loadAsync(): Promise<void> {
         try {
-            const monaco: any = (window as any).monaco;
+            const monaco: typeof monacoType | undefined = (window as unknown as Record<string, typeof monacoType | undefined>)['monaco'];
             if (monaco?.editor?.create) {
                 // We already have the lib loaded
                 this.loaded.next(true);
                 this.loaded.complete();
             } else {
                 // Load AMD loader, if it is not already loaded
-                if (!(window as any).require) {
+                if (!(window as unknown as Record<string, unknown>)['require']) {
                     await this.loadAmdAsync();
                 }
 
@@ -34,18 +35,21 @@ export class MonacoLoaderService {
                 const darkTheme = await (await fetch('/assets/monaco/themes/dark-modern.json')).json();
 
                 // Load monaco with AMD
-                (window as any).require.config({ paths: { vs: '/assets/monaco/vs' } });
-                (window as any).require(['vs/editor/editor.main'], () => {
+                //@ts-expect-error TS and RequireJS are not friends when Angular is present
+                window.require.config({ paths: { vs: '/assets/monaco/vs' } });
+                //@ts-expect-error TS and RequireJS are not friends when Angular is present
+                window.require(['vs/editor/editor.main'], () => {
                     // Define VSCode light/dark modern themes
-                    (window as any).monaco.editor.defineTheme('light-modern', convertTheme(lightTheme));
-                    (window as any).monaco.editor.defineTheme('dark-modern', convertTheme(darkTheme));
+                    const monaco = (window as unknown as Record<string, typeof monacoType>)['monaco'];
+                    monaco.editor.defineTheme('light-modern', convertTheme(lightTheme));
+                    monaco.editor.defineTheme('dark-modern', convertTheme(darkTheme));
 
                     this.loaded.next(true);
                     this.loaded.complete();
                 });
 
                 // Configure base URL for Worker script
-                (window as any).MonacoEnvironment = {
+                window.MonacoEnvironment = {
                     getWorkerUrl: function () {
                         return '/assets/monaco/vs/base/worker/workerMain.js';
                     }
