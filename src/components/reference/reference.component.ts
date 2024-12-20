@@ -6,7 +6,6 @@ import { Component, HostBinding, Input } from '@angular/core';
  */
 @Component({
     selector: 'p.reference',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './reference.component.html',
     styleUrl: './reference.component.css'

@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
  */
 @Component({
     selector: 'div.jigsaw',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './jigsaw-puzzle.component.html'
 })

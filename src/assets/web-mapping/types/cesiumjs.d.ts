@@ -7725,6 +7725,27 @@ export class GoogleEarthEnterpriseTerrainProvider {
 }
 
 /**
+ * Provides geocoding through Google.
+ * @param options - Object with the following properties:
+ * @param options.key - An API key to use with the Google geocoding service
+ */
+export class GoogleGeocoderService {
+    constructor(options: {
+        key: string;
+    });
+    /**
+     * Gets the credit to display after a geocode is performed. Typically this is used to credit
+     * the geocoder service.
+     */
+    readonly credit: Credit | undefined;
+    /**
+     * Get a list of possible locations that match a search string.
+     * @param query - The query to be sent to the geocoder service
+     */
+    geocode(query: string): Promise<GeocoderService.Result[]>;
+}
+
+/**
  * Default settings for accessing the Google Maps API.
  * <br/>
  * An API key is only required if you are directly using any Google Maps APIs, such as through {@link createGooglePhotorealistic3DTileset}.
@@ -8364,6 +8385,37 @@ export class HermiteSpline {
 export namespace HilbertOrder { }
 
 /**
+ * Default settings for accessing the iTwin platform.
+ */
+export namespace ITwinPlatform {
+    /**
+     * Status states for a mesh-export export.
+     * Valid values are: <code>NotStarted</code>, <code>InProgress</code>, <code>Complete</code>, <code>Invalid</code>
+     */
+    enum ExportStatus {
+    }
+    /**
+     * Types of mesh-export exports. CesiumJS only supports loading <code>3DTILES</code> type exports.
+     * Valid values are: <code>IMODEL</code>, <code>CESIUM</code>, <code>3DTILES</code>
+     */
+    enum ExportType {
+    }
+    /**
+     * Types of Reality data
+     */
+    enum RealityDataType {
+    }
+    /**
+     * Gets or sets the default iTwin access token. This token should have the <code>itwin-platform</code> scope.
+     */
+    var defaultAccessToken: string | undefined;
+    /**
+     * Gets or sets the default iTwin API endpoint.
+     */
+    var apiEndpoint: string | Resource;
+}
+
+/**
  * Constants for WebGL index datatypes.  These corresponds to the
  * <code>type</code> parameter of {@link http://www.khronos.org/opengles/sdk/docs/man/xhtml/glDrawElements.xml|drawElements}.
  */
@@ -8683,23 +8735,48 @@ export namespace Ion {
 }
 
 /**
+ * Underlying geocoding services that can be used via Cesium ion.
+ */
+export enum IonGeocodeProviderType {
+    /**
+     * Google geocoder, for use with Google data.
+     */
+    GOOGLE = "GOOGLE",
+    /**
+     * Bing geocoder, for use with Bing data.
+     */
+    BING = "BING",
+    /**
+     * Use the default geocoder as set on the server.  Used when neither Bing or
+     * Google data is used.
+     */
+    DEFAULT = "DEFAULT"
+}
+
+/**
  * Provides geocoding through Cesium ion.
  * @param options - Object with the following properties:
  * @param options.scene - The scene
  * @param [options.accessToken = Ion.defaultAccessToken] - The access token to use.
  * @param [options.server = Ion.defaultServer] - The resource to the Cesium ion API server.
+ * @param [options.geocodeProviderType = IonGeocodeProviderType.DEFAULT] - The geocoder the Cesium ion API server should use to fulfill this request.
  */
 export class IonGeocoderService {
     constructor(options: {
         scene: Scene;
         accessToken?: string;
         server?: string | Resource;
+        geocodeProviderType?: IonGeocodeProviderType;
     });
     /**
      * Gets the credit to display after a geocode is performed. Typically this is used to credit
      * the geocoder service.
      */
     readonly credit: Credit | undefined;
+    /**
+     * The geocoding service that Cesium ion API server should use to fulfill geocding requests.
+     */
+    geocodeProviderType: IonGeocodeProviderType;
     /**
      * @param query - The query to be sent to the geocoder service
      * @param [type = GeocodeType.SEARCH] - The type of geocode to perform.
@@ -14290,11 +14367,6 @@ export class Rectangle {
      */
     equalsEpsilon(other?: Rectangle, epsilon?: number): boolean;
     /**
-     * Checks a Rectangle's properties and throws if they are not in valid ranges.
-     * @param rectangle - The rectangle to validate
-     */
-    static validate(rectangle: Rectangle): void;
-    /**
      * Computes the southwest corner of a rectangle.
      * @param rectangle - The rectangle for which to find the corner
      * @param [result] - The object onto which to store the result.
@@ -17141,6 +17213,34 @@ export enum TimeStandard {
      * TAI is the principal time standard to which the other time standards are related.
      */
     TAI = 1
+}
+
+/**
+ * Constants for identifying well-known tracking reference frames.
+ */
+export enum TrackingReferenceFrame {
+    /**
+     * Auto-detect algorithm. The reference frame used to track the Entity will
+     * be automatically selected based on its trajectory: near-surface slow moving
+     * objects will be tracked in the entity's local east-north-up reference
+     * frame, while faster objects like satellites will use VVLH (Vehicle Velocity,
+     * Local Horizontal).
+     */
+    AUTODETECT = 0,
+    /**
+     * The entity's local East-North-Up reference frame.
+     */
+    ENU = 1,
+    /**
+     * The entity's inertial reference frame. If entity has no defined orientation
+     * property, it falls back to auto-detect algorithm.
+     */
+    INERTIAL = 2,
+    /**
+     * The entity's inertial reference frame with orientation fixed to its
+     * {@link VelocityOrientationProperty}, ignoring its own orientation.
+     */
+    VELOCITY = 3
 }
 
 /**
@@ -20904,6 +21004,7 @@ export namespace Entity {
      * @property [name] - A human readable name to display to users. It does not have to be unique.
      * @property [availability] - The availability, if any, associated with this object.
      * @property [show] - A boolean value indicating if the entity and its children are displayed.
+     * @property [trackingReferenceFrame = TrackingReferenceFrame.AUTODETECT] - The reference frame used when this entity is being tracked. <br/> If <code>undefined</code>, reference frame is determined based on entity velocity: near-surface slow moving entities are tracked using the local east-north-up reference frame, whereas fast moving entities such as satellites are tracked using VVLH (Vehicle Velocity, Local Horizontal).
      * @property [description] - A string Property specifying an HTML description for this entity.
      * @property [position] - A Property specifying the entity position.
      * @property [orientation = Transforms.eastNorthUpToFixedFrame(position)] - A Property specifying the entity orientation in respect to Earth-fixed-Earth-centered (ECEF). If undefined, east-north-up at entity position is used.
@@ -20933,8 +21034,9 @@ export namespace Entity {
         name?: string;
         availability?: TimeIntervalCollection;
         show?: boolean;
+        trackingReferenceFrame?: TrackingReferenceFrame;
         description?: Property | string;
-        position?: PositionProperty | Cartesian3 | CallbackProperty;
+        position?: PositionProperty | Cartesian3 | CallbackPositionProperty;
         orientation?: Property | Quaternion;
         viewFrom?: Property | Cartesian3;
         parent?: Entity;
@@ -20999,6 +21101,10 @@ export class Entity {
      * the entity is only displayed if the parent entity's show property is also true.
      */
     show: boolean;
+    /**
+     * Gets or sets the entity's tracking reference frame.
+     */
+    trackingReferenceFrame: TrackingReferenceFrame;
     /**
      * Gets whether this entity is being displayed, taking into account
      * the visibility of any ancestor entities.
@@ -24862,6 +24968,12 @@ export class SampledProperty {
      * @param [derivativeValues] - An array where each item is the array of derivatives at the equivalent time index.
      */
     addSamples(times: JulianDate[], values: Packable[], derivativeValues?: any[][]): void;
+    /**
+     * Retrieves the time of the provided sample associated with the index. A negative index accesses the list of samples in reverse order.
+     * @param index - The index of samples list.
+     * @returns The JulianDate time of the sample, or undefined if failed.
+     */
+    getSample(index: number): JulianDate | undefined;
     /**
      * Adds samples as a single packed array where each new sample is represented as a date,
      * followed by the packed representation of the corresponding value and derivatives.
@@ -31437,6 +31549,47 @@ export enum DepthFunction {
 export function getGlslType(classProperty: MetadataClassProperty): string;
 
 /**
+ * Returns a shader statement that applies the inverse of the
+ * value transform to the given value, based on the given offset
+ * and scale.
+ * @param input - The input value
+ * @param offset - The offset
+ * @param scale - The scale
+ * @returns The statement
+ */
+export function unapplyValueTransform(input: string, offset: string, scale: string): string;
+
+/**
+ * Returns a shader statement that applies the inverse of the
+ * normalization, based on the given component type
+ * @param input - The input value
+ * @param componentType - The component type
+ * @returns The statement
+ */
+export function unnormalize(input: string, componentType: string): string;
+
+/**
+ * Creates a shader statement that returns the value of the specified
+ * property, normalized to the range [0, 1].
+ * @param classProperty - The class property
+ * @param metadataProperty - The metadata property, either
+ * a `PropertyTextureProperty` or a `PropertyAttributeProperty`
+ * @returns The string
+ */
+export function getSourceValueStringScalar(classProperty: MetadataClassProperty, metadataProperty: any): string;
+
+/**
+ * Creates a shader statement that returns the value of the specified
+ * component of the given property, normalized to the range [0, 1].
+ * @param classProperty - The class property
+ * @param metadataProperty - The metadata property, either
+ * a `PropertyTextureProperty` or a `PropertyAttributeProperty`
+ * @param componentName - The name, in ["x", "y", "z", "w"]
+ * @returns The string
+ */
+export function getSourceValueStringComponent(classProperty: MetadataClassProperty, metadataProperty: any, componentName: string): string;
+
+/**
  * A light that gets emitted in a single direction from infinitely far away.
  * @param options - Object with the following properties:
  * @param options.direction - The direction in which light gets emitted.
@@ -33824,6 +33977,40 @@ export class I3SSymbology {
      * Gets the default symbology data.
      */
     readonly defaultSymbology: any;
+}
+
+/**
+ * Methods for loading iTwin platform data into CesiumJS
+ */
+export namespace ITwinData {
+    /**
+     * Create a {@link Cesium3DTileset} for the given iModel id using iTwin's Mesh Export API.
+     *
+     * If there is not a completed export available for the given iModel id, the returned promise will resolve to <code>undefined</code>.
+     * We recommend waiting 10-20 seconds and trying to load the tileset again.
+     * If all exports are Invalid this will throw an error.
+     * @example
+     * const tileset = await Cesium.ITwinData.createTilesetFromIModelId(iModelId);
+     * if (Cesium.defined(tileset)) {
+     *   viewer.scene.primitives.add(tileset);
+     * }
+     * @param iModelId - The id of the iModel to load
+     * @param [options] - Object containing options to pass to the internally created {@link Cesium3DTileset}.
+     * @returns A promise that will resolve to the created 3D tileset or <code>undefined</code> if there is no completed export for the given iModel id
+     */
+    function createTilesetFromIModelId(iModelId: string, options?: Cesium3DTileset.ConstructorOptions): Promise<Cesium3DTileset | undefined>;
+    /**
+     * Create a tileset for the specified reality data id. This function only works
+     * with 3D Tiles meshes and point clouds.
+     *
+     * If the <code>type</code> or <code>rootDocument</code> are not provided this function
+     * will first request the full metadata for the specified reality data to fill these values.
+     * @param iTwinId - The id of the iTwin to load data from
+     * @param realityDataId - The id of the reality data to load
+     * @param [type] - The type of this reality data
+     * @param [rootDocument] - The path of the root document for this reality data
+     */
+    function createTilesetForRealityDataId(iTwinId: string, realityDataId: string, type?: ITwinPlatform.RealityDataType, rootDocument?: string): Promise<Cesium3DTileset>;
 }
 
 /**
@@ -36273,10 +36460,18 @@ export class MetadataClassProperty {
     readonly semantic: string;
     /**
      * The offset to be added to property values as part of the value transform.
+     *
+     * This is always defined, even when `hasValueTransform` is `false`. If
+     * the class property JSON itself did not define it, then it will be
+     * initialized to the default value.
      */
     readonly offset: number | number[] | number[][];
     /**
      * The scale to be multiplied to property values as part of the value transform.
+     *
+     * This is always defined, even when `hasValueTransform` is `false`. If
+     * the class property JSON itself did not define it, then it will be
+     * initialized to the default value.
      */
     readonly scale: number | number[] | number[][];
     /**
@@ -36498,6 +36693,26 @@ export class MetadataSchema {
      */
     readonly extensions: any;
 }
+
+/**
+ * An instance of a metadata value.<br>
+ * <br>
+ * This can be one of the following types:
+ * <ul>
+ *   <li><code>number</code> for type <code>SCALAR</code> and numeric component types except for <code>INT64</code> or <code>UINT64</code></li>
+ *   <li><code>bigint</code> for type <code>SCALAR</code> and component type <code>INT64</code> or <code>UINT64</code></li>
+ *   <li><code>string</code> for type <code>STRING</code> or <code>ENUM</code></li>
+ *   <li><code>boolean</code> for type <code>BOOLEAN</code></li>
+ *   <li><code>Cartesian2</code> for type <code>VEC2</code></li>
+ *   <li><code>Cartesian3</code> for type <code>VEC3</code></li>
+ *   <li><code>Cartesian4</code> for type <code>VEC4</code></li>
+ *   <li><code>Matrix2</code> for type <code>MAT2</code></li>
+ *   <li><code>Matrix3</code> for type <code>MAT3</code></li>
+ *   <li><code>Matrix4</code> for type <code>MAT4</code></li>
+ *   <li>Arrays of these types when the metadata value is an array</li>
+ * </ul>
+ */
+export type MetadataValue = number | bigint | string | boolean | Cartesian2 | Cartesian3 | Cartesian4 | Matrix2 | Matrix3 | Matrix4 | number[] | bigint[] | string[] | boolean[] | Cartesian2[] | Cartesian3[] | Cartesian4[] | Matrix2[] | Matrix3[] | Matrix4[];
 
 /**
  * An enum of metadata types. These metadata types are containers containing
@@ -38815,9 +39030,18 @@ export var className: string;
 export var propertyName: string;
 
 /**
- * The optional ID of the metadata schema
+ * The the `MetadataClassProperty` that is described by this
+ * structure, as obtained from the `MetadataSchema`
  */
 export var classProperty: MetadataClassProperty;
+
+/**
+ * The `PropertyTextureProperty` or `PropertyAttributeProperty` that
+ * is described by this structure, as obtained from the property texture
+ * or property attribute of the `StructuralMetadata` that matches the
+ * class name and property name.
+ */
+export var metadataProperty: any;
 
 /**
  * Compute the rectangle that describes the part of the drawing buffer
@@ -39812,31 +40036,19 @@ export class PostProcessStageCollection {
      * surface receives light and regardless of the light's position.
      * </p>
      * <p>
-     * The uniforms have the following properties: <code>intensity</code>, <code>bias</code>, <code>lengthCap</code>,
-     * <code>stepSize</code>, <code>frustumLength</code>, <code>ambientOcclusionOnly</code>,
-     * <code>delta</code>, <code>sigma</code>, and <code>blurStepSize</code>.
-     * </p>
+     * The uniforms have the following properties:
      * <ul>
      * <li><code>intensity</code> is a scalar value used to lighten or darken the shadows exponentially. Higher values make the shadows darker. The default value is <code>3.0</code>.</li>
-     *
      * <li><code>bias</code> is a scalar value representing an angle in radians. If the dot product between the normal of the sample and the vector to the camera is less than this value,
      * sampling stops in the current direction. This is used to remove shadows from near planar edges. The default value is <code>0.1</code>.</li>
-     *
      * <li><code>lengthCap</code> is a scalar value representing a length in meters. If the distance from the current sample to first sample is greater than this value,
      * sampling stops in the current direction. The default value is <code>0.26</code>.</li>
-     *
-     * <li><code>stepSize</code> is a scalar value indicating the distance to the next texel sample in the current direction. The default value is <code>1.95</code>.</li>
-     *
-     * <li><code>frustumLength</code> is a scalar value in meters. If the current fragment has a distance from the camera greater than this value, ambient occlusion is not computed for the fragment.
-     * The default value is <code>1000.0</code>.</li>
-     *
+     * <li><code>directionCount</code> is the number of directions along which the ray marching will search for occluders. The default value is <code>8</code>.</li>
+     * <li><code>stepCount</code> is the number of steps the ray marching will take along each direction. The default value is <code>32</code>.</li>
+     * <li><code>randomTexture</code> is a texture where the red channel is a random value in [0.0, 1.0]. The default value is <code>undefined</code>. This texture needs to be set.</li>
      * <li><code>ambientOcclusionOnly</code> is a boolean value. When <code>true</code>, only the shadows generated are written to the output. When <code>false</code>, the input texture is modulated
      * with the ambient occlusion. This is a useful debug option for seeing the effects of changing the uniform values. The default value is <code>false</code>.</li>
      * </ul>
-     * <p>
-     * <code>delta</code>, <code>sigma</code>, and <code>blurStepSize</code> are the same properties as {@link PostProcessStageLibrary#createBlurStage}.
-     * The blur is applied to the shadows generated from the image to make them smoother.
-     * </p>
      * <p>
      * When enabled, this stage will execute before all others.
      * </p>
@@ -41203,9 +41415,10 @@ export class Scene {
      * values from
      * @param propertyName - The name of the metadata property to pick
      * values from
-     * @returns The metadata value
+     * @returns The metadata value, or `undefined` when
+     * no matching metadata was found at the given position
      */
-    pickMetadata(windowPosition: Cartesian2, schemaId: string | undefined, className: string, propertyName: string): any;
+    pickMetadata(windowPosition: Cartesian2, schemaId: string | undefined, className: string, propertyName: string): MetadataValue | undefined;
     /**
      * Pick the schema of the metadata of the object at the given position
      * @param windowPosition - Window coordinates to perform picking on.
@@ -42928,13 +43141,13 @@ export namespace UrlTemplateImageryProvider {
  * });
  * // Access a Web Map Service (WMS) server.
  * const wms = new Cesium.UrlTemplateImageryProvider({
- *    url : 'https://programs.communications.gov.au/geoserver/ows?tiled=true&' +
- *          'transparent=true&format=image%2Fpng&exceptions=application%2Fvnd.ogc.se_xml&' +
- *          'styles=&service=WMS&version=1.1.1&request=GetMap&' +
- *          'layers=public%3AMyBroadband_Availability&srs=EPSG%3A3857&' +
+ *    url : 'https://services.ga.gov.au/gis/services/NM_Hydrology_and_Marine_Points/MapServer/WMSServer?' +
+ *          'tiled=true&transparent=true&format=image%2Fpng&exceptions=application%2Fvnd.ogc.se_xml&' +
+ *          'styles=&service=WMS&version=1.3.0&request=GetMap&' +
+ *          'layers=Bores&crs=EPSG%3A3857&' +
  *          'bbox={westProjected}%2C{southProjected}%2C{eastProjected}%2C{northProjected}&' +
  *          'width=256&height=256',
- *    rectangle : Cesium.Rectangle.fromDegrees(96.799393, -43.598214999057824, 153.63925700000001, -9.2159219997013)
+ *    rectangle : Cesium.Rectangle.fromDegrees(95.0, -55.0, 170.0, -1.0)  // From GetCapabilities EX_GeographicBoundingBox
  * });
  * // Using custom tags in your template url.
  * const custom = new Cesium.UrlTemplateImageryProvider({
@@ -44007,12 +44220,22 @@ export function createElevationBandMaterial(options: {
 }): Material;
 
 /**
- * Creates a {@link Cesium3DTileset} instance for the Google Photorealistic 3D Tiles tileset.
+ * Creates a {@link Cesium3DTileset} instance for the Google Photorealistic 3D
+ * Tiles tileset.
+ *
+ * Google Photorealistic 3D Tiles can only be used with the Google geocoder.  To
+ * confirm that you are aware of this restriction pass
+ * `usingOnlyWithGoogleGeocoder: true` to the apiOptions.  Otherwise a one time
+ * warning will be displayed when this function is called.
  * @example
- * const viewer = new Cesium.Viewer("cesiumContainer");
+ * const viewer = new Cesium.Viewer("cesiumContainer", {
+ *   geocoder: Cesium.IonGeocodeProviderType.GOOGLE
+ * });
  *
  * try {
- *   const tileset = await Cesium.createGooglePhotorealistic3DTileset();
+ *   const tileset = await Cesium.createGooglePhotorealistic3DTileset({
+ *      onlyUsingWithGoogleGeocoder: true,
+ *   });
  *   viewer.scene.primitives.add(tileset));
  * } catch (error) {
  *   console.log(`Error creating tileset: ${error}`);
@@ -44021,18 +44244,26 @@ export function createElevationBandMaterial(options: {
  * // Use your own Google Maps API key
  * Cesium.GoogleMaps.defaultApiKey = "your-api-key";
  *
- * const viewer = new Cesium.Viewer("cesiumContainer");
+ * const viewer = new Cesium.Viewer("cesiumContainer". {
+ *   geocoder: Cesium.IonGeocodeProviderType.GOOGLE
+ * });
  *
  * try {
- *   const tileset = await Cesium.createGooglePhotorealistic3DTileset();
+ *   const tileset = await Cesium.createGooglePhotorealistic3DTileset({
+ *      onlyUsingWithGoogleGeocoder: true,
+ *   });
  *   viewer.scene.primitives.add(tileset));
  * } catch (error) {
  *   console.log(`Error creating tileset: ${error}`);
  * }
- * @param [key = GoogleMaps.defaultApiKey] - Your API key to access Google Photorealistic 3D Tiles. See {@link https://developers.google.com/maps/documentation/javascript/get-api-key} for instructions on how to create your own key.
- * @param [options] - An object describing initialization options.
+ * @param [apiOptions.key = GoogleMaps.defaultApiKey] - Your API key to access Google Photorealistic 3D Tiles. See {@link https://developers.google.com/maps/documentation/javascript/get-api-key} for instructions on how to create your own key.
+ * @param [apiOptions.onlyUsingWithGoogleGeocoder] - Confirmation that this tileset will only be used with the Google geocoder.
+ * @param [tilesetOptions] - An object describing initialization options.
  */
-export function createGooglePhotorealistic3DTileset(key?: string, options?: Cesium3DTileset.ConstructorOptions): Promise<Cesium3DTileset>;
+export function createGooglePhotorealistic3DTileset(apiOptions?: {
+    key?: string;
+    onlyUsingWithGoogleGeocoder?: true;
+}, tilesetOptions?: Cesium3DTileset.ConstructorOptions): Promise<Cesium3DTileset>;
 
 /**
  * Creates a {@link Cesium3DTileset} instance for the
@@ -46408,7 +46639,7 @@ export namespace Viewer {
      * @property [baseLayerPicker = true] - If set to false, the BaseLayerPicker widget will not be created.
      * @property [fullscreenButton = true] - If set to false, the FullscreenButton widget will not be created.
      * @property [vrButton = false] - If set to true, the VRButton widget will be created.
-     * @property [geocoder = true] - If set to false, the Geocoder widget will not be created.
+     * @property [geocoder = IonGeocodeProviderType.DEFAULT] - The geocoding service or services to use when searching with the Geocoder widget. If set to false, the Geocoder widget will not be created.
      * @property [homeButton = true] - If set to false, the HomeButton widget will not be created.
      * @property [infoBox = true] - If set to false, the InfoBox widget will not be created.
      * @property [sceneModePicker = true] - If set to false, the SceneModePicker widget will not be created.
@@ -46423,7 +46654,7 @@ export namespace Viewer {
      * @property [imageryProviderViewModels = createDefaultImageryProviderViewModels()] - The array of ProviderViewModels to be selectable from the BaseLayerPicker.  This value is only valid if `baseLayerPicker` is set to true.
      * @property [selectedTerrainProviderViewModel] - The view model for the current base terrain layer, if not supplied the first available base layer is used.  This value is only valid if `baseLayerPicker` is set to true.
      * @property [terrainProviderViewModels = createDefaultTerrainProviderViewModels()] - The array of ProviderViewModels to be selectable from the BaseLayerPicker.  This value is only valid if `baseLayerPicker` is set to true.
-     * @property [baseLayer = ImageryLayer.fromWorldImagery()] - The bottommost imagery layer applied to the globe. If set to <code>false</code>, no imagery provider will be added. This value is only valid if `baseLayerPicker` is set to false.
+     * @property [baseLayer = ImageryLayer.fromWorldImagery()] - The bottommost imagery layer applied to the globe. If set to <code>false</code>, no imagery provider will be added. This value is only valid if `baseLayerPicker` is set to false. Cannot be used when `globe` is set to false.
      * @property [ellipsoid = Ellipsoid.default] - The default ellipsoid.
      * @property [terrainProvider = new EllipsoidTerrainProvider()] - The terrain provider to use
      * @property [terrain] - A terrain object which handles asynchronous terrain provider. Can only specify if options.terrainProvider is undefined.
@@ -46459,7 +46690,7 @@ export namespace Viewer {
         baseLayerPicker?: boolean;
         fullscreenButton?: boolean;
         vrButton?: boolean;
-        geocoder?: boolean | GeocoderService[];
+        geocoder?: boolean | IonGeocodeProviderType | GeocoderService[];
         homeButton?: boolean;
         infoBox?: boolean;
         sceneModePicker?: boolean;

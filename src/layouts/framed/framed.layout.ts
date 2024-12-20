@@ -10,7 +10,6 @@ import { LayoutWithAnalytics } from "../layout-with-analytics";
  */
 @Component({
     selector: 'framed-layout',
-    standalone: true,
     imports: [RouterOutlet, NavbarComponent, FooterComponent],
     templateUrl: './framed.layout.html'
 })

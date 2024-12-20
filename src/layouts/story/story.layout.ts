@@ -11,7 +11,6 @@ import { FileService } from '@/services/file.service';
  */
 @Component({
     selector: 'story-layout',
-    standalone: true,
     imports: [CommonModule, RouterOutlet],
     providers: [StoryService, FileService],
     templateUrl: './story.layout.html',

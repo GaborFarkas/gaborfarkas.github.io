@@ -55,7 +55,10 @@ interface GeoJsonObject {
 /**
  * Union of GeoJSON objects.
  */
-type GeoJSON$1 = Geometry | Feature | FeatureCollection;
+type GeoJSON$1<G extends Geometry | null = Geometry, P = GeoJsonProperties> =
+    | G
+    | Feature<G, P>
+    | FeatureCollection<G, P>;
 
 /**
  * Geometry object.
@@ -334,7 +337,7 @@ declare function latLng(
 
 declare class LatLngBounds {
     constructor(southWest: LatLngExpression, northEast: LatLngExpression);
-    constructor(latlngs: LatLngBoundsLiteral);
+    constructor(latlngs: LatLngExpression[]);
     extend(latlngOrBounds: LatLngExpression | LatLngBoundsExpression): this;
     pad(bufferRatio: number): LatLngBounds; // Returns a new LatLngBounds
     getCenter(): LatLng;

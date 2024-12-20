@@ -30,7 +30,6 @@ import { ModalComponent } from "@/components/modal/modal.component";
  */
 @Component({
     selector: 'sandbox-page',
-    standalone: true,
     imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective, ModalComponent],
     providers: [FileService, PersistencyService],
     templateUrl: './sandbox.page.html',

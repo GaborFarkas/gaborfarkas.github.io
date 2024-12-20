@@ -9,7 +9,6 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
  */
 @Component({
     selector: 'div.timeline-item',
-    standalone: true,
     imports: [CommonModule, FontAwesomeModule],
     templateUrl: './timeline-item.component.html',
     styleUrl: './timeline-item.component.css'

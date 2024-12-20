@@ -13,7 +13,6 @@ import { Subject, takeUntil } from "rxjs";
  */
 @Component({
     selector: 'application-layout',
-    standalone: true,
     imports: [RouterOutlet, FooterComponent, ToastComponent],
     providers: [NotificationService],
     templateUrl: './application.layout.html',

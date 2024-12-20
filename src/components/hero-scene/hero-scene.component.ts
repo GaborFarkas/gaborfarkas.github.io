@@ -8,7 +8,6 @@ import { HeroScene } from '@/models/hero.model';
  */
 @Component({
     selector: 'div.hero-scene',
-    standalone: true,
     imports: [CommonModule, TypewriterComponent],
     templateUrl: './hero-scene.component.html',
     styleUrl: './hero-scene.component.css'

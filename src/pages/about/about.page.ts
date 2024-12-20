@@ -7,7 +7,6 @@ import { FaqGroupModel } from '@/models/faq.model';
  */
 @Component({
     selector: 'about-page',
-    standalone: true,
     templateUrl: './about.page.html',
     imports: [FaqBlockComponent]
 })

@@ -12,7 +12,6 @@ import { faAngular, faLinux } from '@fortawesome/free-brands-svg-icons';
  */
 @Component({
     selector: 'counseling-page',
-    standalone: true,
     imports: [CardComponent, FontAwesomeModule, DecoratedColumnComponent],
     templateUrl: './counseling.page.html'
 })

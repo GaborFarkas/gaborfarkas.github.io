@@ -10,7 +10,6 @@ import { CarouselChangeEvent } from '@/models/carousel-change-event.model';
  */
 @Component({
     selector: 'div.carousel',
-    standalone: true,
     imports: [CommonModule, FontAwesomeModule],
     templateUrl: './carousel.component.html',
     styleUrl: './carousel.component.css'

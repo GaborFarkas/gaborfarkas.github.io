@@ -9,7 +9,6 @@ import { FooterMapComponent } from '@/components/footer-map/footer-map.component
  */
 @Component({
     selector: 'footer',
-    standalone: true,
     imports: [FontAwesomeModule, CommonModule, FooterMapComponent],
     templateUrl: './footer.component.html',
     styleUrl: './footer.component.css'

@@ -13,7 +13,6 @@ import { ActivatedRoute } from "@angular/router";
  */
 @Component({
     selector: 'map-page',
-    standalone: true,
     templateUrl: './map.page.html',
     imports: [CommonModule, CesiumMapComponent, LeafletMapComponent, MaplibreMapComponent, OpenLayersMapComponent]
 })

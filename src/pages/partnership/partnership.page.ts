@@ -12,7 +12,6 @@ import { faHandshake } from '@fortawesome/free-regular-svg-icons';
  */
 @Component({
     selector: 'partnership-page',
-    standalone: true,
     imports: [CommonModule, JigsawPuzzleComponent, TimelineComponent, TimelineItemComponent, FontAwesomeModule],
     templateUrl: './partnership.page.html',
     styleUrl: './partnership.page.css'

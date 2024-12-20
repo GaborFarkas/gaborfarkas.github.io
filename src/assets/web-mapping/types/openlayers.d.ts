@@ -152,7 +152,7 @@ declare class Target extends Disposable {
      *     `true` will be returned if this event target has any listeners.
      * @return {boolean} Has listeners.
      */
-    hasListener(type?: string | undefined): boolean;
+    hasListener(type?: string): boolean;
     /**
      * @param {string} type Type.
      * @param {import("../events.js").Listener} listener Listener.
@@ -197,7 +197,7 @@ declare class Target extends Disposable {
  * @param {boolean} [once] If true, add the listener as one-off listener.
  * @return {EventsKey} Unique key for the listener.
  */
-declare function listen(target: EventTargetLike, type: string, listener: ListenerFunction, thisArg?: any, once?: boolean | undefined): EventsKey;
+declare function listen(target: EventTargetLike, type: string, listener: ListenerFunction, thisArg?: any, once?: boolean): EventsKey;
 /**
  * Registers a one-off event listener on an event target. Inspired by
  * https://google.github.io/closure-library/api/source/closure/goog/events/events.js.src.html
@@ -434,7 +434,7 @@ declare class BaseObject extends Observable {
      */
     constructor(values?: {
         [x: string]: any;
-    } | undefined);
+    });
     /***
      * @type {ObjectOnSignature<import("./events").EventsKey>}
      */
@@ -506,7 +506,7 @@ declare class BaseObject extends Observable {
      * @param {boolean} [silent] Update without triggering an event.
      * @api
      */
-    set(key: string, value: any, silent?: boolean | undefined): void;
+    set(key: string, value: any, silent?: boolean): void;
     /**
      * Sets a collection of key-value pairs.  Note that this changes any existing
      * properties and adds new ones (it does not remove any existing properties).
@@ -516,7 +516,7 @@ declare class BaseObject extends Observable {
      */
     setProperties(values: {
         [x: string]: any;
-    }, silent?: boolean | undefined): void;
+    }, silent?: boolean): void;
     /**
      * Apply any properties from another object without triggering events.
      * @param {BaseObject} source The source object.
@@ -529,7 +529,7 @@ declare class BaseObject extends Observable {
      * @param {boolean} [silent] Unset without triggering an event.
      * @api
      */
-    unset(key: string, silent?: boolean | undefined): void;
+    unset(key: string, silent?: boolean): void;
 }
 
 /**
@@ -563,7 +563,7 @@ declare class CollectionEvent<T> extends BaseEvent {
  * *
  */
 type CollectionOnSignature<T, Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2 | "change:length", ObjectEvent, Return> & OnSignature<"add" | "remove", CollectionEvent<T>, Return> & CombinedOnSignature<EventTypes | Types$2 | "change:length" | "add" | "remove", Return>;
-type Options$1R = {
+type Options$1T = {
     /**
      * Disallow the same item from being added to
      * the collection twice.
@@ -603,7 +603,7 @@ declare class Collection<T> extends BaseObject {
      * @param {Array<T>} [array] Array.
      * @param {Options} [options] Collection options.
      */
-    constructor(array?: T[] | undefined, options?: Options$1R | undefined);
+    constructor(array?: Array<T>, options?: Options$1T);
     /***
      * @type {CollectionOnSignature<T, import("./events").EventsKey>}
      */
@@ -740,7 +740,7 @@ declare class Collection<T> extends BaseObject {
  * @param {Size} [dest] Optional reusable size array.
  * @return {Size} The buffered size.
  */
-declare function buffer$1(size: Size, num: number, dest?: Size | undefined): Size;
+declare function buffer$1(size: Size, num: number, dest?: Size): Size;
 /**
  * Determines if a size has a positive area.
  * @param {Size} size The size to test.
@@ -754,7 +754,7 @@ declare function hasArea(size: Size): boolean;
  * @param {Size} [dest] Optional reusable size array.
  * @return {Size} The scaled size.
  */
-declare function scale$3(size: Size, ratio: number, dest?: Size | undefined): Size;
+declare function scale$4(size: Size, ratio: number, dest?: Size): Size;
 /**
  * Returns an `Size` array for the passed in number (meaning: square) or
  * `Size` array.
@@ -764,7 +764,7 @@ declare function scale$3(size: Size, ratio: number, dest?: Size | undefined): Si
  * @return {Size} Size.
  * @api
  */
-declare function toSize(size: number | Size, dest?: Size | undefined): Size;
+declare function toSize(size: number | Size, dest?: Size): Size;
 /**
  * An array of numbers representing a size: `[width, height]`.
  */
@@ -782,7 +782,7 @@ type Size = Array<number>;
  * @param {Function} [comparator] Comparator function.
  * @return {number} The index of the item if found, -1 if not.
  */
-declare function binarySearch(haystack: Array<any>, needle: any, comparator?: Function | undefined): number;
+declare function binarySearch(haystack: Array<any>, needle: any, comparator?: Function): number;
 /**
  * Compare function sorting arrays in ascending order.  Safe to use for numeric values.
  * @param {*} a The first object to be compared.
@@ -861,7 +861,7 @@ declare function stableSort(arr: Array<any>, compareFnc: (arg0: any, arg1: any) 
  * @param {boolean} [strict] Strictly sorted (default false).
  * @return {boolean} Return index.
  */
-declare function isSorted(arr: Array<any>, func?: Function | undefined, strict?: boolean | undefined): boolean;
+declare function isSorted(arr: Array<any>, func?: Function, strict?: boolean): boolean;
 /**
  * {@link module :ol/tilegrid/TileGrid~TileGrid#getZForResolution} can use a function
  * of this type to determine which nearest resolution to use.
@@ -1000,20 +1000,20 @@ type MetersPerUnitLookup = {
 /**
  * @param {boolean} [disable = true] Disable console info about `useGeographic()`
  */
-declare function disableCoordinateWarning(disable?: boolean | undefined): void;
+declare function disableCoordinateWarning(disable?: boolean): void;
 /**
  * @param {Array<number>} input Input coordinate array.
  * @param {Array<number>} [output] Output array of coordinate values.
  * @return {Array<number>} Output coordinate array (new array, same coordinate
  *     values).
  */
-declare function cloneTransform(input: Array<number>, output?: number[] | undefined): Array<number>;
+declare function cloneTransform(input: Array<number>, output?: Array<number>): Array<number>;
 /**
  * @param {Array<number>} input Input coordinate array.
  * @param {Array<number>} [output] Output array of coordinate values.
  * @return {Array<number>} Input coordinate array (same array as input).
  */
-declare function identityTransform(input: Array<number>, output?: number[] | undefined): Array<number>;
+declare function identityTransform(input: Array<number>, output?: Array<number>): Array<number>;
 /**
  * Add a Projection object to the list of supported projections that can be
  * looked up by their code.
@@ -1056,7 +1056,7 @@ declare function get$2(projectionLike: ProjectionLike): Projection | null;
  * @return {number} Point resolution.
  * @api
  */
-declare function getPointResolution(projection: ProjectionLike, resolution: number, point: Coordinate, units?: Units$1 | undefined): number;
+declare function getPointResolution(projection: ProjectionLike, resolution: number, point: Coordinate, units?: Units$1): number;
 /**
  * Registers transformation functions that don't alter coordinates. Those allow
  * to transform between projections with equal meaning.
@@ -1155,12 +1155,12 @@ declare function equivalent(projection1: Projection, projection2: Projection): b
  * Searches in the list of transform functions for the function for converting
  * coordinates from the source projection to the destination projection.
  *
- * @param {Projection} sourceProjection Source Projection object.
- * @param {Projection} destinationProjection Destination Projection
+ * @param {Projection} source Source Projection object.
+ * @param {Projection} destination Destination Projection
  *     object.
- * @return {TransformFunction} Transform function.
+ * @return {TransformFunction|null} Transform function.
  */
-declare function getTransformFromProjections(sourceProjection: Projection, destinationProjection: Projection): TransformFunction;
+declare function getTransformFromProjections(source: Projection, destination: Projection): TransformFunction | null;
 /**
  * Given the projection-like objects, searches for a transformation
  * function to convert a coordinates array from the source projection to the
@@ -1174,7 +1174,9 @@ declare function getTransformFromProjections(sourceProjection: Projection, desti
 declare function getTransform(source: ProjectionLike, destination: ProjectionLike): TransformFunction;
 /**
  * Transforms a coordinate from source projection to destination projection.
- * This returns a new coordinate (and does not modify the original).
+ * This returns a new coordinate (and does not modify the original). If there
+ * is no available transform between the two projection, the function will throw
+ * an error.
  *
  * See {@link module:ol/proj.transformExtent} for extent transformation.
  * See the transform method of {@link module:ol/geom/Geometry~Geometry} and its
@@ -1199,7 +1201,7 @@ declare function transform(coordinate: Coordinate, source: ProjectionLike, desti
  * @return {import("./extent.js").Extent} The transformed extent.
  * @api
  */
-declare function transformExtent(extent: Extent$1, source: ProjectionLike, destination: ProjectionLike, stops?: number | undefined): Extent$1;
+declare function transformExtent(extent: Extent$1, source: ProjectionLike, destination: ProjectionLike, stops?: number): Extent$1;
 /**
  * Transforms the given point to the destination projection.
  *
@@ -1307,6 +1309,16 @@ declare function addCommon(): void;
  * string or undefined.
  */
 type ProjectionLike = Projection | string | undefined;
+type Transforms = {
+    /**
+     * The forward transform (from geographic).
+     */
+    forward: TransformFunction;
+    /**
+     * The inverse transform (to geographic).
+     */
+    inverse: TransformFunction;
+};
 /**
  * A transform function accepts an array of input coordinate values, an optional
  * output array, and an optional dimension (default should be 2).  The function
@@ -1340,7 +1352,7 @@ declare function boundingExtent(coordinates: Array<Coordinate>): Extent$1;
  * @return {Extent} Extent.
  * @api
  */
-declare function buffer(extent: Extent$1, value: number, dest?: Extent$1 | undefined): Extent$1;
+declare function buffer(extent: Extent$1, value: number, dest?: Extent$1): Extent$1;
 /**
  * Creates a clone of an extent.
  *
@@ -1348,7 +1360,7 @@ declare function buffer(extent: Extent$1, value: number, dest?: Extent$1 | undef
  * @param {Extent} [dest] Extent.
  * @return {Extent} The clone.
  */
-declare function clone(extent: Extent$1, dest?: Extent$1 | undefined): Extent$1;
+declare function clone(extent: Extent$1, dest?: Extent$1): Extent$1;
 /**
  * @param {Extent} extent Extent.
  * @param {number} x X.
@@ -1411,25 +1423,25 @@ declare function createEmpty(): Extent$1;
  * @param {Extent} [dest] Destination extent.
  * @return {Extent} Extent.
  */
-declare function createOrUpdate$1(minX: number, minY: number, maxX: number, maxY: number, dest?: Extent$1 | undefined): Extent$1;
+declare function createOrUpdate$1(minX: number, minY: number, maxX: number, maxY: number, dest?: Extent$1): Extent$1;
 /**
  * Create a new empty extent or make the provided one empty.
  * @param {Extent} [dest] Extent.
  * @return {Extent} Extent.
  */
-declare function createOrUpdateEmpty(dest?: Extent$1 | undefined): Extent$1;
+declare function createOrUpdateEmpty(dest?: Extent$1): Extent$1;
 /**
  * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
  * @param {Extent} [dest] Extent.
  * @return {Extent} Extent.
  */
-declare function createOrUpdateFromCoordinate(coordinate: Coordinate, dest?: Extent$1 | undefined): Extent$1;
+declare function createOrUpdateFromCoordinate(coordinate: Coordinate, dest?: Extent$1): Extent$1;
 /**
  * @param {Array<import("./coordinate.js").Coordinate>} coordinates Coordinates.
  * @param {Extent} [dest] Extent.
  * @return {Extent} Extent.
  */
-declare function createOrUpdateFromCoordinates(coordinates: Array<Coordinate>, dest?: Extent$1 | undefined): Extent$1;
+declare function createOrUpdateFromCoordinates(coordinates: Array<Coordinate>, dest?: Extent$1): Extent$1;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -1438,13 +1450,13 @@ declare function createOrUpdateFromCoordinates(coordinates: Array<Coordinate>, d
  * @param {Extent} [dest] Extent.
  * @return {Extent} Extent.
  */
-declare function createOrUpdateFromFlatCoordinates(flatCoordinates: Array<number>, offset: number, end: number, stride: number, dest?: Extent$1 | undefined): Extent$1;
+declare function createOrUpdateFromFlatCoordinates(flatCoordinates: Array<number>, offset: number, end: number, stride: number, dest?: Extent$1): Extent$1;
 /**
  * @param {Array<Array<import("./coordinate.js").Coordinate>>} rings Rings.
  * @param {Extent} [dest] Extent.
  * @return {Extent} Extent.
  */
-declare function createOrUpdateFromRings(rings: Array<Array<Coordinate>>, dest?: Extent$1 | undefined): Extent$1;
+declare function createOrUpdateFromRings(rings: Array<Array<Coordinate>>, dest?: Extent$1): Extent$1;
 /**
  * Determine if two extents are equivalent.
  * @param {Extent} extent1 Extent 1.
@@ -1560,7 +1572,7 @@ declare function getEnlargedArea(extent1: Extent$1, extent2: Extent$1): number;
  * @param {Extent} [dest] Destination extent.
  * @return {Extent} Extent.
  */
-declare function getForViewAndSize(center: Coordinate, resolution: number, rotation: number, size: Size, dest?: Extent$1 | undefined): Extent$1;
+declare function getForViewAndSize(center: Coordinate, resolution: number, rotation: number, size: Size, dest?: Extent$1): Extent$1;
 /**
  * @param {import("./coordinate.js").Coordinate} center Center.
  * @param {number} resolution Resolution.
@@ -1590,7 +1602,7 @@ declare function getIntersectionArea(extent1: Extent$1, extent2: Extent$1): numb
  * @return {Extent} Intersecting extent.
  * @api
  */
-declare function getIntersection(extent1: Extent$1, extent2: Extent$1, dest?: Extent$1 | undefined): Extent$1;
+declare function getIntersection(extent1: Extent$1, extent2: Extent$1, dest?: Extent$1): Extent$1;
 /**
  * @param {Extent} extent Extent.
  * @return {number} Margin.
@@ -1644,7 +1656,7 @@ declare function isEmpty$1(extent: Extent$1): boolean;
  * @param {Extent} [dest] Extent.
  * @return {Extent} Extent.
  */
-declare function returnOrUpdate(extent: Extent$1, dest?: Extent$1 | undefined): Extent$1;
+declare function returnOrUpdate(extent: Extent$1, dest?: Extent$1): Extent$1;
 /**
  * @param {Extent} extent Extent.
  * @param {number} value Value.
@@ -1670,7 +1682,7 @@ declare function intersectsSegment(extent: Extent$1, start: Coordinate, end: Coo
  * @return {Extent} Extent.
  * @api
  */
-declare function applyTransform(extent: Extent$1, transformFn: TransformFunction, dest?: Extent$1 | undefined, stops?: number | undefined): Extent$1;
+declare function applyTransform(extent: Extent$1, transformFn: TransformFunction, dest?: Extent$1, stops?: number): Extent$1;
 /**
  * Modifies the provided extent in-place to be within the real world
  * extent.
@@ -1693,7 +1705,7 @@ declare function wrapX$2(extent: Extent$1, projection: Projection): Extent$1;
  * @param {boolean} [multiWorld] Return all worlds
  * @return {Array<Extent>} The extent within the real world extent.
  */
-declare function wrapAndSliceX(extent: Extent$1, projection: Projection, multiWorld?: boolean | undefined): Array<Extent$1>;
+declare function wrapAndSliceX(extent: Extent$1, projection: Projection, multiWorld?: boolean): Array<Extent$1>;
 /**
  * An array of numbers representing an extent: `[minx, miny, maxx, maxy]`.
  */
@@ -1703,7 +1715,7 @@ type Extent$1 = Array<number>;
  */
 type Corner = "bottom-left" | "bottom-right" | "top-left" | "top-right";
 
-type Options$1Q = {
+type Options$1S = {
     /**
      * The SRS identifier code, e.g. `EPSG:4326`.
      */
@@ -1762,28 +1774,30 @@ type Options$1Q = {
  */
 /**
  * @classdesc
- * Projection definition class. One of these is created for each projection
- * supported in the application and stored in the {@link module:ol/proj} namespace.
- * You can use these in applications, but this is not required, as API params
- * and options use {@link module:ol/proj~ProjectionLike} which means the simple string
- * code will suffice.
+ * In most cases, you should not need to create instances of this class.
+ * Instead, where projection information is required, you can use a string
+ * projection code or identifier (e.g. `EPSG:4326`) instead of a projection
+ * instance.
  *
- * You can use {@link module:ol/proj.get} to retrieve the object for a particular
- * projection.
+ * The library includes support for transforming coordinates between the following
+ * projections:
  *
- * The library includes definitions for `EPSG:4326` and `EPSG:3857`, together
- * with the following aliases:
- * * `EPSG:4326`: CRS:84, urn:ogc:def:crs:EPSG:6.6:4326,
- *     urn:ogc:def:crs:OGC:1.3:CRS84, urn:ogc:def:crs:OGC:2:84,
- *     http://www.opengis.net/gml/srs/epsg.xml#4326,
- *     urn:x-ogc:def:crs:EPSG:4326
- * * `EPSG:3857`: EPSG:102100, EPSG:102113, EPSG:900913,
- *     urn:ogc:def:crs:EPSG:6.18:3:3857,
- *     http://www.opengis.net/gml/srs/epsg.xml#3857
+ *  * WGS 84 / Geographic - Using codes `EPSG:4326`, `CRS:84`, `urn:ogc:def:crs:EPSG:6.6:4326`,
+ *    `urn:ogc:def:crs:OGC:1.3:CRS84`, `urn:ogc:def:crs:OGC:2:84`, `http://www.opengis.net/gml/srs/epsg.xml#4326`,
+ *    or `urn:x-ogc:def:crs:EPSG:4326`
+ *  * WGS 84 / Spherical Mercator - Using codes `EPSG:3857`, `EPSG:102100`, `EPSG:102113`, `EPSG:900913`,
+ *    `urn:ogc:def:crs:EPSG:6.18:3:3857`, or `http://www.opengis.net/gml/srs/epsg.xml#3857`
+ *  * WGS 84 / UTM zones - Using codes `EPSG:32601` through `EPSG:32660` for northern zones
+ *    and `EPSG:32701` through `EPSG:32760` for southern zones. Note that the built-in UTM transforms
+ *    are lower accuracy (with errors on the order of 0.1 m) than those that you might get in a
+ *    library like [proj4js](https://github.com/proj4js/proj4js).
  *
- * If you use [proj4js](https://github.com/proj4js/proj4js), aliases can
- * be added using `proj4.defs()`. After all required projection definitions are
- * added, call the {@link module:ol/proj/proj4.register} function.
+ * For additional projection support, or to use higher accuracy transforms than the built-in ones, you can use
+ * the [proj4js](https://github.com/proj4js/proj4js) library. With `proj4js`, after adding any new projection
+ * definitions, call the {@link module:ol/proj/proj4.register} function.
+ *
+ * You can use the {@link module:ol/proj.get} function to retrieve a projection instance
+ * for one of the registered projections.
  *
  * @api
  */
@@ -1791,7 +1805,7 @@ declare class Projection {
     /**
      * @param {Options} options Projection options.
      */
-    constructor(options: Options$1Q);
+    constructor(options: Options$1S);
     /**
      * @private
      * @type {string}
@@ -2008,7 +2022,7 @@ declare class Geometry$1 extends BaseObject {
      * @param {import("../proj.js").TransformFunction} [transform] Optional transform function.
      * @return {Geometry} Simplified geometry.
      */
-    simplifyTransformed(squaredTolerance: number, transform?: TransformFunction | undefined): Geometry$1;
+    simplifyTransformed(squaredTolerance: number, transform?: TransformFunction): Geometry$1;
     /**
      * Make a complete copy of the geometry.
      * @abstract
@@ -2038,7 +2052,7 @@ declare class Geometry$1 extends BaseObject {
      * @return {import("../coordinate.js").Coordinate} Closest point.
      * @api
      */
-    getClosestPoint(point: Coordinate, closestPoint?: Coordinate | undefined): Coordinate;
+    getClosestPoint(point: Coordinate, closestPoint?: Coordinate): Coordinate;
     /**
      * Returns true if this geometry includes the specified coordinate. If the
      * coordinate is on the boundary of the geometry, returns false.
@@ -2060,7 +2074,7 @@ declare class Geometry$1 extends BaseObject {
      * @return {import("../extent.js").Extent} extent Extent.
      * @api
      */
-    getExtent(extent?: Extent$1 | undefined): Extent$1;
+    getExtent(extent?: Extent$1): Extent$1;
     /**
      * Rotate the geometry around a given coordinate. This modifies the geometry
      * coordinates in place.
@@ -2080,7 +2094,7 @@ declare class Geometry$1 extends BaseObject {
      *     of the geometry extent).
      * @api
      */
-    scale(sx: number, sy?: number | undefined, anchor?: Coordinate | undefined): void;
+    scale(sx: number, sy?: number, anchor?: Coordinate): void;
     /**
      * Create a simplified version of this geometry.  For linestrings, this uses
      * the [Douglas Peucker](https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm)
@@ -2218,7 +2232,7 @@ declare function rotate$2(transform: Transform, angle: number): Transform;
  * @param {number} y Scale factor y.
  * @return {!Transform} The scaled transform.
  */
-declare function scale$2(transform: Transform, x: number, y: number): Transform;
+declare function scale$3(transform: Transform, x: number, y: number): Transform;
 /**
  * Creates a scale transform.
  * @param {!Transform} target Transform to overwrite.
@@ -2234,7 +2248,7 @@ declare function makeScale(target: Transform, x: number, y: number): Transform;
  * @param {number} dy Translation y.
  * @return {!Transform} The translated transform.
  */
-declare function translate$1(transform: Transform, dx: number, dy: number): Transform;
+declare function translate$2(transform: Transform, dx: number, dy: number): Transform;
 /**
  * Creates a composite transform given an initial translation, scale, rotation, and
  * final translation (in that order only, not commutative).
@@ -2375,7 +2389,7 @@ declare class SimpleGeometry extends Geometry$1 {
      * @param {!Array<*>} coordinates Coordinates.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      */
-    setCoordinates(coordinates: Array<any>, layout?: GeometryLayout | undefined): void;
+    setCoordinates(coordinates: Array<any>, layout?: GeometryLayout): void;
     /**
      * @param {import("./Geometry.js").GeometryLayout|undefined} layout Layout.
      * @param {Array<*>} coordinates Coordinates.
@@ -2399,7 +2413,7 @@ declare class Circle extends SimpleGeometry {
      * @param {number} [radius] Radius in units of the projection.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      */
-    constructor(center: Coordinate, radius?: number | undefined, layout?: GeometryLayout | undefined);
+    constructor(center: Coordinate, radius?: number, layout?: GeometryLayout);
     /**
      * Make a complete copy of the geometry.
      * @return {!Circle} Clone.
@@ -2438,7 +2452,7 @@ declare class Circle extends SimpleGeometry {
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      * @api
      */
-    setCenterAndRadius(center: Coordinate, radius: number, layout?: GeometryLayout | undefined): void;
+    setCenterAndRadius(center: Coordinate, radius: number, layout?: GeometryLayout): void;
     /**
      * @override
      */
@@ -2537,7 +2551,7 @@ declare function closestOnSegment(coordinate: Coordinate, segment: Array<Coordin
  * @return {CoordinateFormat} Coordinate format.
  * @api
  */
-declare function createStringXY(fractionDigits?: number | undefined): CoordinateFormat;
+declare function createStringXY(fractionDigits?: number): CoordinateFormat;
 /**
  * @param {string} hemispheres Hemispheres.
  * @param {number} degrees Degrees.
@@ -2545,7 +2559,7 @@ declare function createStringXY(fractionDigits?: number | undefined): Coordinate
  *    after the decimal point. Default is `0`.
  * @return {string} String.
  */
-declare function degreesToStringHDMS(hemispheres: string, degrees: number, fractionDigits?: number | undefined): string;
+declare function degreesToStringHDMS(hemispheres: string, degrees: number, fractionDigits?: number): string;
 /**
  * Transforms the given {@link module:ol/coordinate~Coordinate} to a string
  * using the given string template. The strings `{x}` and `{y}` in the template
@@ -2577,7 +2591,7 @@ declare function degreesToStringHDMS(hemispheres: string, degrees: number, fract
  * @return {string} Formatted coordinate.
  * @api
  */
-declare function format(coordinate: Coordinate, template: string, fractionDigits?: number | undefined): string;
+declare function format(coordinate: Coordinate, template: string, fractionDigits?: number): string;
 /**
  * @param {Coordinate} coordinate1 First coordinate.
  * @param {Coordinate} coordinate2 Second coordinate.
@@ -2620,7 +2634,7 @@ declare function rotate$1(coordinate: Coordinate, angle: number): Coordinate;
  * @param {number} scale Scale factor.
  * @return {Coordinate} Coordinate.
  */
-declare function scale$1(coordinate: Coordinate, scale: number): Coordinate;
+declare function scale$2(coordinate: Coordinate, scale: number): Coordinate;
 /**
  * @param {Coordinate} coord1 First coordinate.
  * @param {Coordinate} coord2 Second coordinate.
@@ -2668,7 +2682,7 @@ declare function squaredDistanceToSegment(coordinate: Coordinate, segment: Array
  * @return {string} Hemisphere, degrees, minutes and seconds.
  * @api
  */
-declare function toStringHDMS(coordinate: Coordinate, fractionDigits?: number | undefined): string;
+declare function toStringHDMS(coordinate: Coordinate, fractionDigits?: number): string;
 /**
  * Format a coordinate as a comma delimited string.
  *
@@ -2694,7 +2708,7 @@ declare function toStringHDMS(coordinate: Coordinate, fractionDigits?: number | 
  * @return {string} XY.
  * @api
  */
-declare function toStringXY(coordinate: Coordinate, fractionDigits?: number | undefined): string;
+declare function toStringXY(coordinate: Coordinate, fractionDigits?: number): string;
 /**
  * Modifies the provided coordinate in-place to be within the real world
  * extent. The lower projection extent boundary is inclusive, the upper one
@@ -2711,7 +2725,7 @@ declare function wrapX$1(coordinate: Coordinate, projection: Projection): Coordi
  * @param {number} [sourceExtentWidth] Width of the source extent.
  * @return {number} Offset in world widths.
  */
-declare function getWorldsAway(coordinate: Coordinate, projection: Projection, sourceExtentWidth?: number | undefined): number;
+declare function getWorldsAway(coordinate: Coordinate, projection: Projection, sourceExtentWidth?: number): number;
 /**
  * An array of numbers representing an `xy`, `xyz` or `xyzm` coordinate.
  * Example: `[16, 48]`.
@@ -2723,7 +2737,7 @@ type Coordinate = Array<number>;
  */
 type CoordinateFormat = (arg0: (Coordinate | undefined)) => string;
 
-type Options$1P = {
+type Options$1R = {
     /**
      * Extent for the tile grid. No tiles outside this
      * extent will be requested by {@link module :ol/source/Tile~TileSource} sources. When no `origin` or
@@ -2816,7 +2830,7 @@ declare class TileGrid {
     /**
      * @param {Options} options Tile grid options.
      */
-    constructor(options: Options$1P);
+    constructor(options: Options$1R);
     /**
      * @protected
      * @type {number}
@@ -2893,7 +2907,7 @@ declare class TileGrid {
      * @param {import("../extent.js").Extent} [tempExtent] Temporary import("../extent.js").Extent object.
      * @return {boolean} Callback succeeded.
      */
-    forEachTileCoordParentTileRange(tileCoord: TileCoord, callback: (arg0: number, arg1: TileRange) => boolean, tempTileRange?: TileRange | undefined, tempExtent?: Extent$1 | undefined): boolean;
+    forEachTileCoordParentTileRange(tileCoord: TileCoord, callback: (arg0: number, arg1: TileRange) => boolean, tempTileRange?: TileRange, tempExtent?: Extent$1): boolean;
     /**
      * Get the extent for this tile grid, if it was configured.
      * @return {import("../extent.js").Extent} Extent.
@@ -2938,14 +2952,14 @@ declare class TileGrid {
      * @param {import("../extent.js").Extent} [tempExtent] Temporary import("../extent.js").Extent object.
      * @return {import("../TileRange.js").default|null} Tile range.
      */
-    getTileCoordChildTileRange(tileCoord: TileCoord, tempTileRange?: TileRange | undefined, tempExtent?: Extent$1 | undefined): TileRange | null;
+    getTileCoordChildTileRange(tileCoord: TileCoord, tempTileRange?: TileRange, tempExtent?: Extent$1): TileRange | null;
     /**
      * @param {import("../tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {number} z Integer zoom level.
      * @param {import("../TileRange.js").default} [tempTileRange] Temporary import("../TileRange.js").default object.
      * @return {import("../TileRange.js").default|null} Tile range.
      */
-    getTileRangeForTileCoordAndZ(tileCoord: TileCoord, z: number, tempTileRange?: TileRange | undefined): TileRange | null;
+    getTileRangeForTileCoordAndZ(tileCoord: TileCoord, z: number, tempTileRange?: TileRange): TileRange | null;
     /**
      * Get a tile range for the given extent and integer zoom level.
      * @param {import("../extent.js").Extent} extent Extent.
@@ -2953,7 +2967,7 @@ declare class TileGrid {
      * @param {import("../TileRange.js").default} [tempTileRange] Temporary tile range object.
      * @return {import("../TileRange.js").default} Tile range.
      */
-    getTileRangeForExtentAndZ(extent: Extent$1, z: number, tempTileRange?: TileRange | undefined): TileRange;
+    getTileRangeForExtentAndZ(extent: Extent$1, z: number, tempTileRange?: TileRange): TileRange;
     /**
      * @param {import("../tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @return {import("../coordinate.js").Coordinate} Tile center.
@@ -2967,7 +2981,7 @@ declare class TileGrid {
      * @return {import("../extent.js").Extent} Extent.
      * @api
      */
-    getTileCoordExtent(tileCoord: TileCoord, tempExtent?: Extent$1 | undefined): Extent$1;
+    getTileCoordExtent(tileCoord: TileCoord, tempExtent?: Extent$1): Extent$1;
     /**
      * Get the tile coordinate for the given map coordinate and resolution.  This
      * method considers that coordinates that intersect tile boundaries should be
@@ -2979,7 +2993,7 @@ declare class TileGrid {
      * @return {import("../tilecoord.js").TileCoord} Tile coordinate.
      * @api
      */
-    getTileCoordForCoordAndResolution(coordinate: Coordinate, resolution: number, opt_tileCoord?: TileCoord | undefined): TileCoord;
+    getTileCoordForCoordAndResolution(coordinate: Coordinate, resolution: number, opt_tileCoord?: TileCoord): TileCoord;
     /**
      * Note that this method should not be called for resolutions that correspond
      * to an integer zoom level.  Instead call the `getTileCoordForXYAndZ_` method.
@@ -3018,7 +3032,7 @@ declare class TileGrid {
      * @return {import("../tilecoord.js").TileCoord} Tile coordinate.
      * @api
      */
-    getTileCoordForCoordAndZ(coordinate: Coordinate, z: number, opt_tileCoord?: TileCoord | undefined): TileCoord;
+    getTileCoordForCoordAndZ(coordinate: Coordinate, z: number, opt_tileCoord?: TileCoord): TileCoord;
     /**
      * @param {import("../tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @return {number} Tile resolution.
@@ -3055,7 +3069,7 @@ declare class TileGrid {
      * @return {number} Z.
      * @api
      */
-    getZForResolution(resolution: number, opt_direction?: number | NearestDirectionFunction | undefined): number;
+    getZForResolution(resolution: number, opt_direction?: number | NearestDirectionFunction): number;
     /**
      * The tile with the provided tile coordinate intersects the given viewport.
      * @param {import('../tilecoord.js').TileCoord} tileCoord Tile coordinate.
@@ -3086,7 +3100,7 @@ declare class TileGrid {
  * @param {TileCoord} [tileCoord] Tile coordinate.
  * @return {TileCoord} Tile coordinate.
  */
-declare function createOrUpdate(z: number, x: number, y: number, tileCoord?: TileCoord | undefined): TileCoord;
+declare function createOrUpdate(z: number, x: number, y: number, tileCoord?: TileCoord): TileCoord;
 /**
  * @param {number} z Z.
  * @param {number} x X.
@@ -3169,7 +3183,7 @@ type TileCoord = Array<number>;
  * });
  * ```
  */
-type LoadFunction$1 = (arg0: Tile, arg1: string) => void;
+type LoadFunction$1 = (arg0: Tile$1, arg1: string) => void;
 /**
  * {@link module :ol/source/Tile~TileSource} sources use a function of this type to get
  * the url that provides a tile for a given tile coordinate.
@@ -3181,7 +3195,7 @@ type LoadFunction$1 = (arg0: Tile, arg1: string) => void;
  * should be requested for the passed tile coordinate.
  */
 type UrlFunction = (arg0: TileCoord, arg1: number, arg2: Projection) => (string | undefined);
-type Options$1O = {
+type Options$1Q = {
     /**
      * A duration for tile opacity
      * transitions in milliseconds. A duration of 0 disables the opacity transition.
@@ -3257,13 +3271,13 @@ type Options$1O = {
  *
  * @abstract
  */
-declare class Tile extends Target {
+declare class Tile$1 extends Target {
     /**
      * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {import("./TileState.js").default} state State.
      * @param {Options} [options] Tile options.
      */
-    constructor(tileCoord: TileCoord, state: any, options?: Options$1O | undefined);
+    constructor(tileCoord: TileCoord, state: any, options?: Options$1Q);
     /**
      * @type {import("./tilecoord.js").TileCoord}
      */
@@ -3363,7 +3377,7 @@ type ArrayLike = Uint8Array | Uint8ClampedArray | Float32Array | DataView;
  * Data that can be used with a DataTile.
  */
 type Data = ArrayLike | ImageLike;
-type Options$1N = {
+type Options$1P = {
     /**
      * Tile coordinate.
      */
@@ -3405,11 +3419,11 @@ type Options$1N = {
  * @property {AbortController} [controller] An abort controller.
  * @api
  */
-declare class DataTile extends Tile {
+declare class DataTile extends Tile$1 {
     /**
      * @param {Options} options Tile options.
      */
-    constructor(options: Options$1N);
+    constructor(options: Options$1P);
     /**
      * @type {function(): Promise<Data>}
      * @private
@@ -3587,7 +3601,7 @@ type PatternDescriptor = {
  */
 type ColorLike = string | CanvasPattern | CanvasGradient;
 
-type Options$1M = {
+type Options$1O = {
     /**
      * A color, gradient or pattern.
      * See {@link module :ol/color~Color} and {@link module :ol/colorlike~ColorLike} for possible formats.
@@ -3646,7 +3660,7 @@ declare class Stroke {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1M | undefined);
+    constructor(options?: Options$1O);
     /**
      * @private
      * @type {import("../color.js").Color|import("../colorlike.js").ColorLike}
@@ -3781,7 +3795,7 @@ declare class Stroke {
     setWidth(width: number | undefined): void;
 }
 
-type Options$1L = {
+type Options$1N = {
     /**
      * A color,
      * gradient or pattern.
@@ -3808,7 +3822,7 @@ declare class Fill {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1L | undefined);
+    constructor(options?: Options$1N);
     /**
      * @private
      * @type {import("./IconImage.js").default|null}
@@ -3839,6 +3853,10 @@ declare class Fill {
      */
     setColor(color: Color | ColorLike | PatternDescriptor | null): void;
     /**
+     * @return {string} Key of the fill for cache lookup.
+     */
+    getKey(): string;
+    /**
      * @return {boolean} The fill style is loading an image pattern.
      */
     loading(): boolean;
@@ -3856,7 +3874,7 @@ declare class Fill {
  */
 type TextPlacement = "point" | "line";
 type TextJustify = "left" | "center" | "right";
-type Options$1K = {
+type Options$1M = {
     /**
      * Font style as CSS `font` value, see:
      * https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font. Default is `'10px sans-serif'`
@@ -3897,6 +3915,10 @@ type Options$1K = {
      * Whether to rotate the text with the view.
      */
     rotateWithView?: boolean | undefined;
+    /**
+     * Whether the text can be rotated 180° to prevent being rendered upside down.
+     */
+    keepUpright?: boolean | undefined;
     /**
      * Rotation in radians (positive rotation clockwise).
      */
@@ -3970,6 +3992,7 @@ type Options$1K = {
  * the distance between two text anchors in pixels. Only available when `placement` is set to `'line'`. Overrides 'textAlign'.
  * @property {number|import("../size.js").Size} [scale] Scale.
  * @property {boolean} [rotateWithView=false] Whether to rotate the text with the view.
+ * @property {boolean} [keepUpright=true] Whether the text can be rotated 180° to prevent being rendered upside down.
  * @property {number} [rotation=0] Rotation in radians (positive rotation clockwise).
  * @property {string|Array<string>} [text] Text content or rich text content. For plain text provide a string, which can
  * contain line breaks (`\n`). For rich text provide an array of text/font tuples. A tuple consists of the text to
@@ -4004,7 +4027,7 @@ declare class Text$1 {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1K | undefined);
+    constructor(options?: Options$1M);
     /**
      * @private
      * @type {string|undefined}
@@ -4020,6 +4043,11 @@ declare class Text$1 {
      * @type {boolean|undefined}
      */
     private rotateWithView_;
+    /**
+     * @private
+     * @type {boolean|undefined}
+     */
+    private keepUpright_;
     /**
      * @private
      * @type {number|import("../size.js").Size|undefined}
@@ -4171,6 +4199,12 @@ declare class Text$1 {
      */
     getRotateWithView(): boolean | undefined;
     /**
+     * Determine whether the text can be rendered upside down.
+     * @return {boolean|undefined} Keep text upright.
+     * @api
+     */
+    getKeepUpright(): boolean | undefined;
+    /**
      * Get the text rotation.
      * @return {number|undefined} Rotation.
      * @api
@@ -4297,6 +4331,13 @@ declare class Text$1 {
      */
     setRotateWithView(rotateWithView: boolean): void;
     /**
+     * Set whether the text can be rendered upside down.
+     *
+     * @param {boolean} keepUpright Keep text upright.
+     * @api
+     */
+    setKeepUpright(keepUpright: boolean): void;
+    /**
      * Set the fill.
      *
      * @param {import("./Fill.js").default|null} fill Fill style.
@@ -4375,7 +4416,7 @@ declare class Text$1 {
     setPadding(padding: Array<number> | null): void;
 }
 
-type Options$1J = {
+type Options$1L = {
     /**
      * Opacity.
      */
@@ -4422,7 +4463,7 @@ declare class ImageStyle {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$1J);
+    constructor(options: Options$1L);
     /**
      * @private
      * @type {number}
@@ -4924,7 +4965,7 @@ declare function createSnapToN(n: number): Type$4;
  * @param {number} [tolerance] Tolerance.
  * @return {Type} Rotation constraint.
  */
-declare function createSnapToZero(tolerance?: number | undefined): Type$4;
+declare function createSnapToZero(tolerance?: number): Type$4;
 type Type$4 = (arg0: (number | undefined), arg1: boolean | undefined) => (number | undefined);
 
 /**
@@ -4934,7 +4975,7 @@ type Type$4 = (arg0: (number | undefined), arg1: boolean | undefined) => (number
  * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
  * @return {Type} Zoom function.
  */
-declare function createSnapToResolutions(resolutions: Array<number>, smooth?: boolean | undefined, maxExtent?: Extent$1 | undefined, showFullExtent?: boolean | undefined): Type$3;
+declare function createSnapToResolutions(resolutions: Array<number>, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$3;
 /**
  * @param {number} power Power.
  * @param {number} maxResolution Maximum resolution.
@@ -4944,7 +4985,7 @@ declare function createSnapToResolutions(resolutions: Array<number>, smooth?: bo
  * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
  * @return {Type} Zoom function.
  */
-declare function createSnapToPower(power: number, maxResolution: number, minResolution?: number | undefined, smooth?: boolean | undefined, maxExtent?: Extent$1 | undefined, showFullExtent?: boolean | undefined): Type$3;
+declare function createSnapToPower(power: number, maxResolution: number, minResolution?: number, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$3;
 /**
  * @param {number} maxResolution Max resolution.
  * @param {number} minResolution Min resolution.
@@ -4953,7 +4994,7 @@ declare function createSnapToPower(power: number, maxResolution: number, minReso
  * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
  * @return {Type} Zoom function.
  */
-declare function createMinMaxResolution(maxResolution: number, minResolution: number, smooth?: boolean | undefined, maxExtent?: Extent$1 | undefined, showFullExtent?: boolean | undefined): Type$3;
+declare function createMinMaxResolution(maxResolution: number, minResolution: number, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$3;
 type Type$3 = (arg0: (number | undefined), arg1: number, arg2: Size, arg3: boolean | undefined) => (number | undefined);
 
 /**
@@ -4971,7 +5012,7 @@ declare function createExtent(extent: Extent$1, onlyCenter: boolean, smooth: boo
  * @param {import("./coordinate.js").Coordinate} [center] Center.
  * @return {import("./coordinate.js").Coordinate|undefined} Center.
  */
-declare function none(center?: Coordinate | undefined): Coordinate | undefined;
+declare function none(center?: Coordinate): Coordinate | undefined;
 type Type$2 = (arg0: (Coordinate | undefined), arg1: number, arg2: Size, arg3: boolean | undefined, arg4: Array<number> | undefined) => (Coordinate | undefined);
 
 type Constraints = {
@@ -5360,7 +5401,7 @@ declare class View extends BaseObject {
     /**
      * @param {ViewOptions} [options] View options.
      */
-    constructor(options?: ViewOptions | undefined);
+    constructor(options?: ViewOptions);
     /***
      * @type {ViewOnSignature<import("./events").EventsKey>}
      */
@@ -5474,7 +5515,7 @@ declare class View extends BaseObject {
      * @type {Constraints}
      */
     private constraints_;
-    set padding(padding: number[] | undefined);
+    set padding(padding: Array<number> | undefined);
     /**
      * Padding (in css pixels).
      * If the map viewport is partially covered with other content (overlays) along
@@ -5484,7 +5525,7 @@ declare class View extends BaseObject {
      * @type {Array<number>|undefined}
      * @api
      */
-    get padding(): number[] | undefined;
+    get padding(): Array<number> | undefined;
     /**
      * Get an updated version of the view options used to construct the view.  The
      * current resolution (or zoom), center, and rotation are applied to any stored
@@ -5579,7 +5620,7 @@ declare class View extends BaseObject {
      * Note: the constraints are not resolved during an animation to avoid stopping it
      * @param {import("./size.js").Size} [size] Viewport size; if undefined, [100, 100] is assumed
      */
-    setViewportSize(size?: Size | undefined): void;
+    setViewportSize(size?: Size): void;
     /**
      * Get the view center.
      * @return {import("./coordinate.js").Coordinate|undefined} The center of the view.
@@ -5604,7 +5645,7 @@ declare class View extends BaseObject {
      * @param {Array<number>} [hints] Destination array.
      * @return {Array<number>} Hint.
      */
-    getHints(hints?: number[] | undefined): Array<number>;
+    getHints(hints?: Array<number>): Array<number>;
     /**
      * Calculate the extent for the current view state and the passed box size.
      * @param {import("./size.js").Size} [size] The pixel dimensions of the box
@@ -5615,13 +5656,13 @@ declare class View extends BaseObject {
      * @return {import("./extent.js").Extent} Extent.
      * @api
      */
-    calculateExtent(size?: Size | undefined): Extent$1;
+    calculateExtent(size?: Size): Extent$1;
     /**
      * @param {import("./size.js").Size} [size] Box pixel size. If not provided,
      * the map's last known viewport size will be used.
      * @return {import("./extent.js").Extent} Extent.
      */
-    calculateExtentInternal(size?: Size | undefined): Extent$1;
+    calculateExtentInternal(size?: Size): Extent$1;
     /**
      * Get the maximum resolution of the view.
      * @return {number} The maximum resolution of the view.
@@ -5692,7 +5733,7 @@ declare class View extends BaseObject {
      *     the given size.
      * @api
      */
-    getResolutionForExtent(extent: Extent$1, size?: Size | undefined): number;
+    getResolutionForExtent(extent: Extent$1, size?: Size): number;
     /**
      * Get the resolution for a provided extent (in map units) and size (in pixels).
      * @param {import("./extent.js").Extent} extent Extent.
@@ -5700,14 +5741,14 @@ declare class View extends BaseObject {
      * @return {number} The resolution at which the provided extent will render at
      *     the given size.
      */
-    getResolutionForExtentInternal(extent: Extent$1, size?: Size | undefined): number;
+    getResolutionForExtentInternal(extent: Extent$1, size?: Size): number;
     /**
      * Return a function that returns a value between 0 and 1 for a
      * resolution. Exponential scaling is assumed.
      * @param {number} [power] Power.
      * @return {function(number): number} Resolution for value function.
      */
-    getResolutionForValueFunction(power?: number | undefined): (arg0: number) => number;
+    getResolutionForValueFunction(power?: number): (arg0: number) => number;
     /**
      * Get the view rotation.
      * @return {number} The rotation of the view in radians.
@@ -5721,7 +5762,7 @@ declare class View extends BaseObject {
      * @param {number} [power] Power.
      * @return {function(number): number} Value for resolution function.
      */
-    getValueForResolutionFunction(power?: number | undefined): (arg0: number) => number;
+    getValueForResolutionFunction(power?: number): (arg0: number) => number;
     /**
      * Returns the size of the viewport minus padding.
      * @private
@@ -5769,7 +5810,7 @@ declare class View extends BaseObject {
      * @param {FitOptions} [options] Options.
      * @api
      */
-    fit(geometryOrExtent: SimpleGeometry | Extent$1, options?: FitOptions | undefined): void;
+    fit(geometryOrExtent: SimpleGeometry | Extent$1, options?: FitOptions): void;
     /**
      * Calculate rotated extent
      * @param {import("./geom/SimpleGeometry.js").default} geometry The geometry.
@@ -5780,7 +5821,7 @@ declare class View extends BaseObject {
      * @param {import("./geom/SimpleGeometry.js").default} geometry The geometry.
      * @param {FitOptions} [options] Options.
      */
-    fitInternal(geometry: SimpleGeometry, options?: FitOptions | undefined): void;
+    fitInternal(geometry: SimpleGeometry, options?: FitOptions): void;
     /**
      * Center on coordinate and view position.
      * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
@@ -5826,14 +5867,14 @@ declare class View extends BaseObject {
      * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
      * @api
      */
-    adjustResolution(ratio: number, anchor?: Coordinate | undefined): void;
+    adjustResolution(ratio: number, anchor?: Coordinate): void;
     /**
      * Multiply the view resolution by a ratio, optionally using an anchor. Any resolution
      * constraint will apply.
      * @param {number} ratio The ratio to apply on the view resolution.
      * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
      */
-    adjustResolutionInternal(ratio: number, anchor?: Coordinate | undefined): void;
+    adjustResolutionInternal(ratio: number, anchor?: Coordinate): void;
     /**
      * Adds a value to the view zoom level, optionally using an anchor. Any resolution
      * constraint will apply.
@@ -5841,7 +5882,7 @@ declare class View extends BaseObject {
      * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
      * @api
      */
-    adjustZoom(delta: number, anchor?: Coordinate | undefined): void;
+    adjustZoom(delta: number, anchor?: Coordinate): void;
     /**
      * Adds a value to the view rotation, optionally using an anchor. Any rotation
      * constraint will apply.
@@ -5849,12 +5890,12 @@ declare class View extends BaseObject {
      * @param {import("./coordinate.js").Coordinate} [anchor] The rotation center.
      * @api
      */
-    adjustRotation(delta: number, anchor?: Coordinate | undefined): void;
+    adjustRotation(delta: number, anchor?: Coordinate): void;
     /**
      * @param {number} delta Relative value to add to the zoom rotation, in radians.
      * @param {import("./coordinate.js").Coordinate} [anchor] The rotation center.
      */
-    adjustRotationInternal(delta: number, anchor?: Coordinate | undefined): void;
+    adjustRotationInternal(delta: number, anchor?: Coordinate): void;
     /**
      * Set the center of the current view. Any extent constraint will apply.
      * @param {import("./coordinate.js").Coordinate|undefined} center The center of the view.
@@ -5911,7 +5952,7 @@ declare class View extends BaseObject {
      * @param {number} [resolutionDirection] Which direction to zoom.
      * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
      */
-    resolveConstraints(duration?: number | undefined, resolutionDirection?: number | undefined, anchor?: Coordinate | undefined): void;
+    resolveConstraints(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
     /**
      * Notify the View that an interaction has started.
      * The view state will be resolved to a stable one if needed
@@ -5927,7 +5968,7 @@ declare class View extends BaseObject {
      * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
      * @api
      */
-    endInteraction(duration?: number | undefined, resolutionDirection?: number | undefined, anchor?: Coordinate | undefined): void;
+    endInteraction(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
     /**
      * Notify the View that an interaction has ended. The view state will be resolved
      * to a stable one if needed (depending on its constraints).
@@ -5935,7 +5976,7 @@ declare class View extends BaseObject {
      * @param {number} [resolutionDirection] Which direction to zoom.
      * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
      */
-    endInteractionInternal(duration?: number | undefined, resolutionDirection?: number | undefined, anchor?: Coordinate | undefined): void;
+    endInteractionInternal(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
     /**
      * Get a valid position for the view center according to the current constraints.
      * @param {import("./coordinate.js").Coordinate|undefined} targetCenter Target center position.
@@ -5943,7 +5984,7 @@ declare class View extends BaseObject {
      * This is useful to guess a valid center position at a different zoom level.
      * @return {import("./coordinate.js").Coordinate|undefined} Valid center position.
      */
-    getConstrainedCenter(targetCenter: Coordinate | undefined, targetResolution?: number | undefined): Coordinate | undefined;
+    getConstrainedCenter(targetCenter: Coordinate | undefined, targetResolution?: number): Coordinate | undefined;
     /**
      * Get a valid zoom level according to the current view constraints.
      * @param {number|undefined} targetZoom Target zoom.
@@ -5953,7 +5994,7 @@ declare class View extends BaseObject {
      * will be used. If -1, the nearest higher resolution will be used.
      * @return {number|undefined} Valid zoom level.
      */
-    getConstrainedZoom(targetZoom: number | undefined, direction?: number | undefined): number | undefined;
+    getConstrainedZoom(targetZoom: number | undefined, direction?: number): number | undefined;
     /**
      * Get a valid resolution according to the current view constraints.
      * @param {number|undefined} targetResolution Target resolution.
@@ -5963,7 +6004,7 @@ declare class View extends BaseObject {
      * will be used. If -1, the nearest higher resolution will be used.
      * @return {number|undefined} Valid resolution.
      */
-    getConstrainedResolution(targetResolution: number | undefined, direction?: number | undefined): number | undefined;
+    getConstrainedResolution(targetResolution: number | undefined, direction?: number): number | undefined;
 }
 
 /**
@@ -5984,7 +6025,7 @@ type Attribution$1 = (arg0: ViewStateLayerStateExtent) => (string | Array<string
  * * a function that returns a string or array of strings ({@link module :ol/source/Source~Attribution})
  */
 type AttributionLike = string | Array<string> | Attribution$1;
-type Options$1I = {
+type Options$1K = {
     /**
      * Attributions.
      */
@@ -6055,7 +6096,7 @@ declare class Source extends BaseObject {
     /**
      * @param {Options} options Source options.
      */
-    constructor(options: Options$1I);
+    constructor(options: Options$1K);
     /**
      * @protected
      * @type {import("../proj/Projection.js").default|null}
@@ -6128,7 +6169,7 @@ declare class Source extends BaseObject {
      * @param {import("../proj/Projection").default} [projection] Projection.
      * @return {Array<number>|null} Resolutions.
      */
-    getResolutions(projection?: Projection | undefined): Array<number> | null;
+    getResolutions(projection?: Projection): Array<number> | null;
     /**
      * @return {Promise<import("../View.js").ViewOptions>} A promise for view-related properties.
      */
@@ -6179,7 +6220,7 @@ type BaseLayerObjectEventTypes = Types$2 | "change:extent" | "change:maxResoluti
  * *
  */
 type BaseLayerOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes, ObjectEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes, Return>;
-type Options$1H = {
+type Options$1J = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -6289,7 +6330,7 @@ declare class BaseLayer extends BaseObject {
     /**
      * @param {Options} options Layer options.
      */
-    constructor(options: Options$1H);
+    constructor(options: Options$1J);
     /***
      * @type {BaseLayerOnSignature<import("../events").EventsKey>}
      */
@@ -6333,21 +6374,21 @@ declare class BaseLayer extends BaseObject {
      * @param {boolean} [managed] Layer is managed.
      * @return {import("./Layer.js").State} Layer state.
      */
-    getLayerState(managed?: boolean | undefined): State$1;
+    getLayerState(managed?: boolean): State$1;
     /**
      * @abstract
      * @param {Array<import("./Layer.js").default>} [array] Array of layers (to be
      *     modified in place).
      * @return {Array<import("./Layer.js").default>} Array of layers.
      */
-    getLayersArray(array?: Layer<Source, LayerRenderer<any>>[] | undefined): Array<Layer>;
+    getLayersArray(array?: Array<Layer>): Array<Layer>;
     /**
      * @abstract
      * @param {Array<import("./Layer.js").State>} [states] Optional list of layer
      *     states (to be modified in place).
      * @return {Array<import("./Layer.js").State>} List of layer states.
      */
-    getLayerStatesArray(states?: State$1[] | undefined): Array<State$1>;
+    getLayerStatesArray(states?: Array<State$1>): Array<State$1>;
     /**
      * Return the {@link module:ol/extent~Extent extent} of the layer or `undefined` if it
      * will be visible regardless of extent.
@@ -6420,7 +6461,7 @@ declare class BaseLayer extends BaseObject {
      * Sets the background color.
      * @param {BackgroundColor} [background] Background color.
      */
-    setBackground(background?: BackgroundColor | undefined): void;
+    setBackground(background?: BackgroundColor): void;
     /**
      * Set the extent at which the layer is visible.  If `undefined`, the layer
      * will be visible at all extents.
@@ -6491,7 +6532,7 @@ type LayerEventType = "sourceready" | "change:source";
  * *
  */
 type LayerOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes | LayerEventType, ObjectEvent, Return> & OnSignature<LayerRenderEventTypes, RenderEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes | LayerEventType | LayerRenderEventTypes, Return>;
-type Options$1G<SourceType extends Source = Source> = {
+type Options$1I<SourceType extends Source = Source> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -6686,7 +6727,7 @@ declare class Layer<SourceType extends Source = Source, RendererType extends Lay
     /**
      * @param {Options<SourceType>} options Layer options.
      */
-    constructor(options: Options$1G<SourceType>);
+    constructor(options: Options$1I<SourceType>);
     /***
      * @type {LayerOnSignature<import("../events").EventsKey>}
      */
@@ -6777,7 +6818,7 @@ declare class Layer<SourceType extends Source = Source, RendererType extends Lay
      * @return {boolean} The layer is visible in the map view.
      * @api
      */
-    isVisible(view?: View | ViewStateLayerStateExtent | undefined): boolean;
+    isVisible(view?: View | ViewStateLayerStateExtent): boolean;
     /**
      * Get the attributions of the source of this layer for the given view.
      * @param {View|import("../View.js").ViewStateLayerStateExtent} [view] View or {@link import("../Map.js").FrameState}.
@@ -6785,7 +6826,7 @@ declare class Layer<SourceType extends Source = Source, RendererType extends Lay
      * @return {Array<string>} Attributions for this layer at the given view.
      * @api
      */
-    getAttributions(view?: View | ViewStateLayerStateExtent | undefined): Array<string>;
+    getAttributions(view?: View | ViewStateLayerStateExtent): Array<string>;
     /**
      * Called when a layer is not visible during a map render.
      */
@@ -6851,6 +6892,10 @@ declare class Layer<SourceType extends Source = Source, RendererType extends Lay
      * @protected
      */
     protected createRenderer(): RendererType;
+    /**
+     * This will clear the renderer so that a new one can be created next time it is needed
+     */
+    clearRenderer(): void;
 }
 
 interface BBox$1 {
@@ -7038,6 +7083,116 @@ declare class RBush$1<T> {
     fromJSON(data: any): RBush$1<T>;
 }
 
+type Entry<T> = BBox$1 & {
+    value: T;
+};
+/**
+ * @typedef {import("rbush").BBox & {value: T}} Entry
+ * @template T
+ */
+/**
+ * @classdesc
+ * Wrapper around the RBush by Vladimir Agafonkin.
+ * See https://github.com/mourner/rbush.
+ *
+ * @template {Object} T
+ */
+declare class RBush<T extends unknown> {
+    /**
+     * @param {number} [maxEntries] Max entries.
+     */
+    constructor(maxEntries?: number);
+    /**
+     * @private
+     * @type {RBush_<Entry<T>>}
+     */
+    private rbush_;
+    /**
+     * A mapping between the objects added to this rbush wrapper
+     * and the objects that are actually added to the internal rbush.
+     * @private
+     * @type {Object<string, Entry<T>>}
+     */
+    private items_;
+    /**
+     * Insert a value into the RBush.
+     * @param {import("../extent.js").Extent} extent Extent.
+     * @param {T} value Value.
+     */
+    insert(extent: Extent$1, value: T): void;
+    /**
+     * Bulk-insert values into the RBush.
+     * @param {Array<import("../extent.js").Extent>} extents Extents.
+     * @param {Array<T>} values Values.
+     */
+    load(extents: Array<Extent$1>, values: Array<T>): void;
+    /**
+     * Remove a value from the RBush.
+     * @param {T} value Value.
+     * @return {boolean} Removed.
+     */
+    remove(value: T): boolean;
+    /**
+     * Update the extent of a value in the RBush.
+     * @param {import("../extent.js").Extent} extent Extent.
+     * @param {T} value Value.
+     */
+    update(extent: Extent$1, value: T): void;
+    /**
+     * Return all values in the RBush.
+     * @return {Array<T>} All.
+     */
+    getAll(): Array<T>;
+    /**
+     * Return all values in the given extent.
+     * @param {import("../extent.js").Extent} extent Extent.
+     * @return {Array<T>} All in extent.
+     */
+    getInExtent(extent: Extent$1): Array<T>;
+    /**
+     * Calls a callback function with each value in the tree.
+     * If the callback returns a truthy value, this value is returned without
+     * checking the rest of the tree.
+     * @param {function(T): R} callback Callback.
+     * @return {R|undefined} Callback return value.
+     * @template R
+     */
+    forEach<R>(callback: (arg0: T) => R): R | undefined;
+    /**
+     * Calls a callback function with each value in the provided extent.
+     * @param {import("../extent.js").Extent} extent Extent.
+     * @param {function(T): R} callback Callback.
+     * @return {R|undefined} Callback return value.
+     * @template R
+     */
+    forEachInExtent<R>(extent: Extent$1, callback: (arg0: T) => R): R | undefined;
+    /**
+     * @param {Array<T>} values Values.
+     * @param {function(T): R} callback Callback.
+     * @return {R|undefined} Callback return value.
+     * @template R
+     * @private
+     */
+    private forEach_;
+    /**
+     * @return {boolean} Is empty.
+     */
+    isEmpty(): boolean;
+    /**
+     * Remove all values from the RBush.
+     */
+    clear(): void;
+    /**
+     * @param {import("../extent.js").Extent} [extent] Extent.
+     * @return {import("../extent.js").Extent} Extent.
+     */
+    getExtent(extent?: Extent$1): Extent$1;
+    /**
+     * @param {RBush<T>} rbush R-Tree.
+     */
+    concat(rbush: RBush<T>): void;
+}
+
 type ZIndexContextProxy = CanvasRenderingContext2D & {
     globalAlpha: any;
 };
@@ -7094,6 +7249,265 @@ declare class ZIndexContext {
      * avoid conflicting context.clip() or context.save()/restore() calls.
      */
     offset(): void;
+}
+
+type DeclutterEntry = Entry<FeatureLike>;
+type ImageOrLabelDimensions = {
+    /**
+     * DrawImageX.
+     */
+    drawImageX: number;
+    /**
+     * DrawImageY.
+     */
+    drawImageY: number;
+    /**
+     * DrawImageW.
+     */
+    drawImageW: number;
+    /**
+     * DrawImageH.
+     */
+    drawImageH: number;
+    /**
+     * OriginX.
+     */
+    originX: number;
+    /**
+     * OriginY.
+     */
+    originY: number;
+    /**
+     * Scale.
+     */
+    scale: Array<number>;
+    /**
+     * DeclutterBox.
+     */
+    declutterBox: DeclutterEntry;
+    /**
+     * CanvasTransform.
+     */
+    canvasTransform: Transform;
+};
+type ReplayImageOrLabelArgs = {
+    0: CanvasRenderingContext2D;
+    1: Size;
+    2: Label | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+    3: ImageOrLabelDimensions;
+    4: number;
+    5: Array<any>;
+    6: Array<any>;
+};
+type FeatureCallback$1<T> = (arg0: FeatureLike, arg1: SimpleGeometry, arg2: DeclutterMode) => T;
+declare class Executor {
+    /**
+     * @param {number} resolution Resolution.
+     * @param {number} pixelRatio Pixel ratio.
+     * @param {boolean} overlaps The replay can have overlapping geometries.
+     * @param {import("../canvas.js").SerializableInstructions} instructions The serializable instructions.
+     * @param {boolean} [deferredRendering] Enable deferred rendering.
+     */
+    constructor(resolution: number, pixelRatio: number, overlaps: boolean, instructions: SerializableInstructions, deferredRendering?: boolean);
+    /**
+     * @protected
+     * @type {boolean}
+     */
+    protected overlaps: boolean;
+    /**
+     * @protected
+     * @type {number}
+     */
+    protected pixelRatio: number;
+    /**
+     * @protected
+     * @const
+     * @type {number}
+     */
+    protected resolution: number;
+    /**
+     * @private
+     * @type {number}
+     */
+    private alignAndScaleFill_;
+    /**
+     * @protected
+     * @type {Array<*>}
+     */
+    protected instructions: Array<any>;
+    /**
+     * @protected
+     * @type {Array<number>}
+     */
+    protected coordinates: Array<number>;
+    /**
+     * @private
+     * @type {!Object<number,import("../../coordinate.js").Coordinate|Array<import("../../coordinate.js").Coordinate>|Array<Array<import("../../coordinate.js").Coordinate>>>}
+     */
+    private coordinateCache_;
+    /**
+     * @private
+     * @type {!import("../../transform.js").Transform}
+     */
+    private renderedTransform_;
+    /**
+     * @protected
+     * @type {Array<*>}
+     */
+    protected hitDetectionInstructions: Array<any>;
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private pixelCoordinates_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private viewRotation_;
+    /**
+     * @type {!Object<string, import("../canvas.js").FillState>}
+     */
+    fillStates: {
+        [x: string]: FillState;
+    };
+    /**
+     * @type {!Object<string, import("../canvas.js").StrokeState>}
+     */
+    strokeStates: {
+        [x: string]: StrokeState;
+    };
+    /**
+     * @type {!Object<string, import("../canvas.js").TextState>}
+     */
+    textStates: {
+        [x: string]: TextState;
+    };
+    /**
+     * @private
+     * @type {Object<string, Object<string, number>>}
+     */
+    private widths_;
+    /**
+     * @private
+     * @type {Object<string, import("../canvas.js").Label>}
+     */
+    private labels_;
+    /**
+     * @private
+     * @type {import("../canvas/ZIndexContext.js").default}
+     */
+    private zIndexContext_;
+    /**
+     * @return {ZIndexContext} ZIndex context.
+     */
+    getZIndexContext(): ZIndexContext;
+    /**
+     * @param {string|Array<string>} text Text.
+     * @param {string} textKey Text style key.
+     * @param {string} fillKey Fill style key.
+     * @param {string} strokeKey Stroke style key.
+     * @return {import("../canvas.js").Label} Label.
+     */
+    createLabel(text: string | Array<string>, textKey: string, fillKey: string, strokeKey: string): Label;
+    /**
+     * @param {CanvasRenderingContext2D} context Context.
+     * @param {import("../../coordinate.js").Coordinate} p1 1st point of the background box.
+     * @param {import("../../coordinate.js").Coordinate} p2 2nd point of the background box.
+     * @param {import("../../coordinate.js").Coordinate} p3 3rd point of the background box.
+     * @param {import("../../coordinate.js").Coordinate} p4 4th point of the background box.
+     * @param {Array<*>} fillInstruction Fill instruction.
+     * @param {Array<*>} strokeInstruction Stroke instruction.
+     */
+    replayTextBackground_(context: CanvasRenderingContext2D, p1: Coordinate, p2: Coordinate, p3: Coordinate, p4: Coordinate, fillInstruction: Array<any>, strokeInstruction: Array<any>): void;
+    /**
+     * @private
+     * @param {number} sheetWidth Width of the sprite sheet.
+     * @param {number} sheetHeight Height of the sprite sheet.
+     * @param {number} centerX X.
+     * @param {number} centerY Y.
+     * @param {number} width Width.
+     * @param {number} height Height.
+     * @param {number} anchorX Anchor X.
+     * @param {number} anchorY Anchor Y.
+     * @param {number} originX Origin X.
+     * @param {number} originY Origin Y.
+     * @param {number} rotation Rotation.
+     * @param {import("../../size.js").Size} scale Scale.
+     * @param {boolean} snapToPixel Snap to pixel.
+     * @param {Array<number>} padding Padding.
+     * @param {boolean} fillStroke Background fill or stroke.
+     * @param {import("../../Feature.js").FeatureLike} feature Feature.
+     * @return {ImageOrLabelDimensions} Dimensions for positioning and decluttering the image or label.
+     */
+    private calculateImageOrLabelDimensions_;
+    /**
+     * @private
+     * @param {CanvasRenderingContext2D} context Context.
+     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size.
+     * @param {import("../canvas.js").Label|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} imageOrLabel Image.
+     * @param {ImageOrLabelDimensions} dimensions Dimensions.
+     * @param {number} opacity Opacity.
+     * @param {Array<*>} fillInstruction Fill instruction.
+     * @param {Array<*>} strokeInstruction Stroke instruction.
+     * @return {boolean} The image or label was rendered.
+     */
+    private replayImageOrLabel_;
+    /**
+     * @private
+     * @param {CanvasRenderingContext2D} context Context.
+     */
+    private fill_;
+    /**
+     * @private
+     * @param {CanvasRenderingContext2D} context Context.
+     * @param {Array<*>} instruction Instruction.
+     */
+    private setStrokeStyle_;
+    /**
+     * @private
+     * @param {string|Array<string>} text The text to draw.
+     * @param {string} textKey The key of the text state.
+     * @param {string} strokeKey The key for the stroke state.
+     * @param {string} fillKey The key for the fill state.
+     * @return {{label: import("../canvas.js").Label, anchorX: number, anchorY: number}} The text image and its anchor.
+     */
+    private drawLabelWithPointPlacement_;
+    /**
+     * @private
+     * @param {CanvasRenderingContext2D} context Context.
+     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size
+     * @param {import("../../transform.js").Transform} transform Transform.
+     * @param {Array<*>} instructions Instructions array.
+     * @param {boolean} snapToPixel Snap point symbols and text to integer pixels.
+     * @param {FeatureCallback<T>} [featureCallback] Feature callback.
+     * @param {import("../../extent.js").Extent} [hitExtent] Only check
+     *     features that intersect this extent.
+     * @param {import("rbush").default<DeclutterEntry>} [declutterTree] Declutter tree.
+     * @return {T|undefined} Callback result.
+     * @template T
+     */
+    private execute_;
+    /**
+     * @param {CanvasRenderingContext2D} context Context.
+     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size.
+     * @param {import("../../transform.js").Transform} transform Transform.
+     * @param {number} viewRotation View rotation.
+     * @param {boolean} snapToPixel Snap point symbols and text to integer pixels.
+     * @param {import("rbush").default<DeclutterEntry>} [declutterTree] Declutter tree.
+     */
+    execute(context: CanvasRenderingContext2D, scaledCanvasSize: Size, transform: Transform, viewRotation: number, snapToPixel: boolean, declutterTree?: RBush$1<DeclutterEntry>): void;
+    /**
+     * @param {CanvasRenderingContext2D} context Context.
+     * @param {import("../../transform.js").Transform} transform Transform.
+     * @param {number} viewRotation View rotation.
+     * @param {FeatureCallback<T>} [featureCallback] Feature callback.
+     * @param {import("../../extent.js").Extent} [hitExtent] Only check
+     *     features that intersect this extent.
+     * @return {T|undefined} Callback result.
+     * @template T
+     */
+    executeHitDetection<T>(context: CanvasRenderingContext2D, transform: Transform, viewRotation: number, featureCallback?: FeatureCallback$1<T>, hitExtent?: Extent$1): T | undefined;
 }
 
 /**
@@ -7495,372 +7909,9 @@ type SerializableInstructions = {
         [x: string]: StrokeState;
     } | undefined;
 };
-
-type Entry<T> = BBox$1 & {
-    value: T;
+type DeclutterImageWithText = {
+    [x: number]: ReplayImageOrLabelArgs;
 };
-/**
- * @typedef {import("rbush").BBox & {value: T}} Entry
- * @template T
- */
-/**
- * @classdesc
- * Wrapper around the RBush by Vladimir Agafonkin.
- * See https://github.com/mourner/rbush.
- *
- * @template {Object} T
- */
-declare class RBush<T extends unknown> {
-    /**
-     * @param {number} [maxEntries] Max entries.
-     */
-    constructor(maxEntries?: number | undefined);
-    /**
-     * @private
-     * @type {RBush_<Entry<T>>}
-     */
-    private rbush_;
-    /**
-     * A mapping between the objects added to this rbush wrapper
-     * and the objects that are actually added to the internal rbush.
-     * @private
-     * @type {Object<string, Entry<T>>}
-     */
-    private items_;
-    /**
-     * Insert a value into the RBush.
-     * @param {import("../extent.js").Extent} extent Extent.
-     * @param {T} value Value.
-     */
-    insert(extent: Extent$1, value: T): void;
-    /**
-     * Bulk-insert values into the RBush.
-     * @param {Array<import("../extent.js").Extent>} extents Extents.
-     * @param {Array<T>} values Values.
-     */
-    load(extents: Array<Extent$1>, values: Array<T>): void;
-    /**
-     * Remove a value from the RBush.
-     * @param {T} value Value.
-     * @return {boolean} Removed.
-     */
-    remove(value: T): boolean;
-    /**
-     * Update the extent of a value in the RBush.
-     * @param {import("../extent.js").Extent} extent Extent.
-     * @param {T} value Value.
-     */
-    update(extent: Extent$1, value: T): void;
-    /**
-     * Return all values in the RBush.
-     * @return {Array<T>} All.
-     */
-    getAll(): Array<T>;
-    /**
-     * Return all values in the given extent.
-     * @param {import("../extent.js").Extent} extent Extent.
-     * @return {Array<T>} All in extent.
-     */
-    getInExtent(extent: Extent$1): Array<T>;
-    /**
-     * Calls a callback function with each value in the tree.
-     * If the callback returns a truthy value, this value is returned without
-     * checking the rest of the tree.
-     * @param {function(T): *} callback Callback.
-     * @return {*} Callback return value.
-     */
-    forEach(callback: (arg0: T) => any): any;
-    /**
-     * Calls a callback function with each value in the provided extent.
-     * @param {import("../extent.js").Extent} extent Extent.
-     * @param {function(T): *} callback Callback.
-     * @return {*} Callback return value.
-     */
-    forEachInExtent(extent: Extent$1, callback: (arg0: T) => any): any;
-    /**
-     * @param {Array<T>} values Values.
-     * @param {function(T): *} callback Callback.
-     * @private
-     * @return {*} Callback return value.
-     */
-    private forEach_;
-    /**
-     * @return {boolean} Is empty.
-     */
-    isEmpty(): boolean;
-    /**
-     * Remove all values from the RBush.
-     */
-    clear(): void;
-    /**
-     * @param {import("../extent.js").Extent} [extent] Extent.
-     * @return {import("../extent.js").Extent} Extent.
-     */
-    getExtent(extent?: Extent$1 | undefined): Extent$1;
-    /**
-     * @param {RBush<T>} rbush R-Tree.
-     */
-    concat(rbush: RBush<T>): void;
-}
-
-type DeclutterEntry = Entry<FeatureLike>;
-type ImageOrLabelDimensions = {
-    /**
-     * DrawImageX.
-     */
-    drawImageX: number;
-    /**
-     * DrawImageY.
-     */
-    drawImageY: number;
-    /**
-     * DrawImageW.
-     */
-    drawImageW: number;
-    /**
-     * DrawImageH.
-     */
-    drawImageH: number;
-    /**
-     * OriginX.
-     */
-    originX: number;
-    /**
-     * OriginY.
-     */
-    originY: number;
-    /**
-     * Scale.
-     */
-    scale: Array<number>;
-    /**
-     * DeclutterBox.
-     */
-    declutterBox: DeclutterEntry;
-    /**
-     * CanvasTransform.
-     */
-    canvasTransform: Transform;
-};
-type ReplayImageOrLabelArgs = {
-    0: CanvasRenderingContext2D;
-    1: Size;
-    2: Label | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
-    3: ImageOrLabelDimensions;
-    4: number;
-    5: Array<any>;
-    6: Array<any>;
-};
-type FeatureCallback$1<T> = (arg0: FeatureLike, arg1: SimpleGeometry, arg2: DeclutterMode) => T;
-declare class Executor {
-    /**
-     * @param {number} resolution Resolution.
-     * @param {number} pixelRatio Pixel ratio.
-     * @param {boolean} overlaps The replay can have overlapping geometries.
-     * @param {import("../canvas.js").SerializableInstructions} instructions The serializable instructions.
-     * @param {boolean} [deferredRendering] Enable deferred rendering.
-     */
-    constructor(resolution: number, pixelRatio: number, overlaps: boolean, instructions: SerializableInstructions, deferredRendering?: boolean | undefined);
-    /**
-     * @protected
-     * @type {boolean}
-     */
-    protected overlaps: boolean;
-    /**
-     * @protected
-     * @type {number}
-     */
-    protected pixelRatio: number;
-    /**
-     * @protected
-     * @const
-     * @type {number}
-     */
-    protected resolution: number;
-    /**
-     * @private
-     * @type {number}
-     */
-    private alignAndScaleFill_;
-    /**
-     * @protected
-     * @type {Array<*>}
-     */
-    protected instructions: Array<any>;
-    /**
-     * @protected
-     * @type {Array<number>}
-     */
-    protected coordinates: Array<number>;
-    /**
-     * @private
-     * @type {!Object<number,import("../../coordinate.js").Coordinate|Array<import("../../coordinate.js").Coordinate>|Array<Array<import("../../coordinate.js").Coordinate>>>}
-     */
-    private coordinateCache_;
-    /**
-     * @private
-     * @type {!import("../../transform.js").Transform}
-     */
-    private renderedTransform_;
-    /**
-     * @protected
-     * @type {Array<*>}
-     */
-    protected hitDetectionInstructions: Array<any>;
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private pixelCoordinates_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private viewRotation_;
-    /**
-     * @type {!Object<string, import("../canvas.js").FillState>}
-     */
-    fillStates: {
-        [x: string]: FillState;
-    };
-    /**
-     * @type {!Object<string, import("../canvas.js").StrokeState>}
-     */
-    strokeStates: {
-        [x: string]: StrokeState;
-    };
-    /**
-     * @type {!Object<string, import("../canvas.js").TextState>}
-     */
-    textStates: {
-        [x: string]: TextState;
-    };
-    /**
-     * @private
-     * @type {Object<string, Object<string, number>>}
-     */
-    private widths_;
-    /**
-     * @private
-     * @type {Object<string, import("../canvas.js").Label>}
-     */
-    private labels_;
-    /**
-     * @private
-     * @type {import("../canvas/ZIndexContext.js").default}
-     */
-    private zIndexContext_;
-    /**
-     * @return {ZIndexContext} ZIndex context.
-     */
-    getZIndexContext(): ZIndexContext;
-    /**
-     * @param {string|Array<string>} text Text.
-     * @param {string} textKey Text style key.
-     * @param {string} fillKey Fill style key.
-     * @param {string} strokeKey Stroke style key.
-     * @return {import("../canvas.js").Label} Label.
-     */
-    createLabel(text: string | Array<string>, textKey: string, fillKey: string, strokeKey: string): Label;
-    /**
-     * @param {CanvasRenderingContext2D} context Context.
-     * @param {import("../../coordinate.js").Coordinate} p1 1st point of the background box.
-     * @param {import("../../coordinate.js").Coordinate} p2 2nd point of the background box.
-     * @param {import("../../coordinate.js").Coordinate} p3 3rd point of the background box.
-     * @param {import("../../coordinate.js").Coordinate} p4 4th point of the background box.
-     * @param {Array<*>} fillInstruction Fill instruction.
-     * @param {Array<*>} strokeInstruction Stroke instruction.
-     */
-    replayTextBackground_(context: CanvasRenderingContext2D, p1: Coordinate, p2: Coordinate, p3: Coordinate, p4: Coordinate, fillInstruction: Array<any>, strokeInstruction: Array<any>): void;
-    /**
-     * @private
-     * @param {number} sheetWidth Width of the sprite sheet.
-     * @param {number} sheetHeight Height of the sprite sheet.
-     * @param {number} centerX X.
-     * @param {number} centerY Y.
-     * @param {number} width Width.
-     * @param {number} height Height.
-     * @param {number} anchorX Anchor X.
-     * @param {number} anchorY Anchor Y.
-     * @param {number} originX Origin X.
-     * @param {number} originY Origin Y.
-     * @param {number} rotation Rotation.
-     * @param {import("../../size.js").Size} scale Scale.
-     * @param {boolean} snapToPixel Snap to pixel.
-     * @param {Array<number>} padding Padding.
-     * @param {boolean} fillStroke Background fill or stroke.
-     * @param {import("../../Feature.js").FeatureLike} feature Feature.
-     * @return {ImageOrLabelDimensions} Dimensions for positioning and decluttering the image or label.
-     */
-    private calculateImageOrLabelDimensions_;
-    /**
-     * @private
-     * @param {CanvasRenderingContext2D} context Context.
-     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size.
-     * @param {import("../canvas.js").Label|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} imageOrLabel Image.
-     * @param {ImageOrLabelDimensions} dimensions Dimensions.
-     * @param {number} opacity Opacity.
-     * @param {Array<*>} fillInstruction Fill instruction.
-     * @param {Array<*>} strokeInstruction Stroke instruction.
-     * @return {boolean} The image or label was rendered.
-     */
-    private replayImageOrLabel_;
-    /**
-     * @private
-     * @param {CanvasRenderingContext2D} context Context.
-     */
-    private fill_;
-    /**
-     * @private
-     * @param {CanvasRenderingContext2D} context Context.
-     * @param {Array<*>} instruction Instruction.
-     */
-    private setStrokeStyle_;
-    /**
-     * @private
-     * @param {string|Array<string>} text The text to draw.
-     * @param {string} textKey The key of the text state.
-     * @param {string} strokeKey The key for the stroke state.
-     * @param {string} fillKey The key for the fill state.
-     * @return {{label: import("../canvas.js").Label, anchorX: number, anchorY: number}} The text image and its anchor.
-     */
-    private drawLabelWithPointPlacement_;
-    /**
-     * @private
-     * @param {CanvasRenderingContext2D} context Context.
-     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size
-     * @param {import("../../transform.js").Transform} transform Transform.
-     * @param {Array<*>} instructions Instructions array.
-     * @param {boolean} snapToPixel Snap point symbols and text to integer pixels.
-     * @param {FeatureCallback<T>} [featureCallback] Feature callback.
-     * @param {import("../../extent.js").Extent} [hitExtent] Only check
-     *     features that intersect this extent.
-     * @param {import("rbush").default<DeclutterEntry>} [declutterTree] Declutter tree.
-     * @return {T|undefined} Callback result.
-     * @template T
-     */
-    private execute_;
-    /**
-     * @param {CanvasRenderingContext2D} context Context.
-     * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size.
-     * @param {import("../../transform.js").Transform} transform Transform.
-     * @param {number} viewRotation View rotation.
-     * @param {boolean} snapToPixel Snap point symbols and text to integer pixels.
-     * @param {import("rbush").default<DeclutterEntry>} [declutterTree] Declutter tree.
-     */
-    execute(context: CanvasRenderingContext2D, scaledCanvasSize: Size, transform: Transform, viewRotation: number, snapToPixel: boolean, declutterTree?: RBush$1<DeclutterEntry> | undefined): void;
-    /**
-     * @param {CanvasRenderingContext2D} context Context.
-     * @param {import("../../transform.js").Transform} transform Transform.
-     * @param {number} viewRotation View rotation.
-     * @param {FeatureCallback<T>} [featureCallback] Feature callback.
-     * @param {import("../../extent.js").Extent} [hitExtent] Only check
-     *     features that intersect this extent.
-     * @return {T|undefined} Callback result.
-     * @template T
-     */
-    executeHitDetection<T>(context: CanvasRenderingContext2D, transform: Transform, viewRotation: number, featureCallback?: FeatureCallback$1<T> | undefined, hitExtent?: Extent$1 | undefined): T | undefined;
-}
 
 /**
  * @classdesc
@@ -7875,7 +7926,7 @@ declare class LinearRing extends SimpleGeometry {
      *     For internal use, flat coordinates in combination with `layout` are also accepted.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      */
-    constructor(coordinates: Array<Coordinate> | Array<number>, layout?: GeometryLayout | undefined);
+    constructor(coordinates: Array<Coordinate> | Array<number>, layout?: GeometryLayout);
     /**
      * @private
      * @type {number}
@@ -7920,7 +7971,7 @@ declare class LinearRing extends SimpleGeometry {
      * @api
      * @override
      */
-    override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout | undefined): void;
+    override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout): void;
 }
 //# sourceMappingURL=LinearRing.d.ts.map
 
@@ -7935,7 +7986,7 @@ declare class Point$1 extends SimpleGeometry {
      * @param {import("../coordinate.js").Coordinate} coordinates Coordinates.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      */
-    constructor(coordinates: Coordinate, layout?: GeometryLayout | undefined);
+    constructor(coordinates: Coordinate, layout?: GeometryLayout);
     /**
      * Make a complete copy of the geometry.
      * @return {!Point} Clone.
@@ -7971,7 +8022,7 @@ declare class Polygon$1 extends SimpleGeometry {
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      * @param {Array<number>} [ends] Ends (for internal use with flat coordinates).
      */
-    constructor(coordinates: Array<Array<Coordinate>> | Array<number>, layout?: GeometryLayout | undefined, ends?: number[] | undefined);
+    constructor(coordinates: Array<Array<Coordinate>> | Array<number>, layout?: GeometryLayout, ends?: Array<number>);
     /**
      * @type {Array<number>}
      * @private
@@ -8040,7 +8091,7 @@ declare class Polygon$1 extends SimpleGeometry {
      * @api
      * @override
      */
-    override getCoordinates(right?: boolean | undefined): Array<Array<Coordinate>>;
+    override getCoordinates(right?: boolean): Array<Array<Coordinate>>;
     /**
      * @return {Array<number>} Ends.
      */
@@ -8099,7 +8150,7 @@ declare class Polygon$1 extends SimpleGeometry {
      * @api
      * @override
      */
-    override setCoordinates(coordinates: Array<Array<Coordinate>>, layout?: GeometryLayout | undefined): void;
+    override setCoordinates(coordinates: Array<Array<Coordinate>>, layout?: GeometryLayout): void;
 }
 
 /**
@@ -8114,7 +8165,7 @@ declare class MultiPoint$1 extends SimpleGeometry {
      *     For internal use, flat coordinates in combination with `layout` are also accepted.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      */
-    constructor(coordinates: Array<Coordinate> | Array<number>, layout?: GeometryLayout | undefined);
+    constructor(coordinates: Array<Coordinate> | Array<number>, layout?: GeometryLayout);
     /**
      * Append the passed point to this multipoint.
      * @param {Point} point Point.
@@ -8155,7 +8206,7 @@ declare class MultiPoint$1 extends SimpleGeometry {
      * @api
      * @override
      */
-    override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout | undefined): void;
+    override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout): void;
 }
 //# sourceMappingURL=MultiPoint.d.ts.map
 
@@ -8172,7 +8223,7 @@ declare class MultiPolygon$1 extends SimpleGeometry {
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      * @param {Array<Array<number>>} [endss] Array of ends for internal use with flat coordinates.
      */
-    constructor(coordinates: Array<Array<Array<Coordinate>> | Polygon$1> | Array<number>, layout?: GeometryLayout | undefined, endss?: number[][] | undefined);
+    constructor(coordinates: Array<Array<Array<Coordinate>> | Polygon$1> | Array<number>, layout?: GeometryLayout, endss?: Array<Array<number>>);
     /**
      * @type {Array<Array<number>>}
      * @private
@@ -8241,7 +8292,7 @@ declare class MultiPolygon$1 extends SimpleGeometry {
      * @api
      * @override
      */
-    override getCoordinates(right?: boolean | undefined): Array<Array<Array<Coordinate>>>;
+    override getCoordinates(right?: boolean): Array<Array<Array<Coordinate>>>;
     /**
      * @return {Array<Array<number>>} Endss.
      */
@@ -8288,7 +8339,7 @@ declare class MultiPolygon$1 extends SimpleGeometry {
      * @api
      * @override
      */
-    override setCoordinates(coordinates: Array<Array<Array<Coordinate>>>, layout?: GeometryLayout | undefined): void;
+    override setCoordinates(coordinates: Array<Array<Array<Coordinate>>>, layout?: GeometryLayout): void;
 }
 //# sourceMappingURL=MultiPolygon.d.ts.map
 
@@ -8304,7 +8355,7 @@ declare class LineString$1 extends SimpleGeometry {
      *     For internal use, flat coordinates in combination with `layout` are also accepted.
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      */
-    constructor(coordinates: Array<Coordinate> | Array<number>, layout?: GeometryLayout | undefined);
+    constructor(coordinates: Array<Coordinate> | Array<number>, layout?: GeometryLayout);
     /**
      * @private
      * @type {import("../coordinate.js").Coordinate|null}
@@ -8364,7 +8415,7 @@ declare class LineString$1 extends SimpleGeometry {
      * @return {import("../coordinate.js").Coordinate|null} Coordinate.
      * @api
      */
-    getCoordinateAtM(m: number, extrapolate?: boolean | undefined): Coordinate | null;
+    getCoordinateAtM(m: number, extrapolate?: boolean): Coordinate | null;
     /**
      * Return the coordinates of the linestring.
      * @return {Array<import("../coordinate.js").Coordinate>} Coordinates.
@@ -8382,7 +8433,7 @@ declare class LineString$1 extends SimpleGeometry {
      * @return {import("../coordinate.js").Coordinate} Coordinate of the interpolated point.
      * @api
      */
-    getCoordinateAt(fraction: number, dest?: Coordinate | undefined): Coordinate;
+    getCoordinateAt(fraction: number, dest?: Coordinate): Coordinate;
     /**
      * Return the length of the linestring on projected plane.
      * @return {number} Length (on projected plane).
@@ -8407,7 +8458,7 @@ declare class LineString$1 extends SimpleGeometry {
      * @api
      * @override
      */
-    override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout | undefined): void;
+    override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout): void;
 }
 //# sourceMappingURL=LineString.d.ts.map
 
@@ -8425,7 +8476,7 @@ declare class MultiLineString$1 extends SimpleGeometry {
      * @param {import("./Geometry.js").GeometryLayout} [layout] Layout.
      * @param {Array<number>} [ends] Flat coordinate ends for internal use.
      */
-    constructor(coordinates: Array<Array<Coordinate> | LineString$1> | Array<number>, layout?: GeometryLayout | undefined, ends?: number[] | undefined);
+    constructor(coordinates: Array<Array<Coordinate> | LineString$1> | Array<number>, layout?: GeometryLayout, ends?: Array<number>);
     /**
      * @type {Array<number>}
      * @private
@@ -8476,7 +8527,7 @@ declare class MultiLineString$1 extends SimpleGeometry {
      * @return {import("../coordinate.js").Coordinate|null} Coordinate.
      * @api
      */
-    getCoordinateAtM(m: number, extrapolate?: boolean | undefined, interpolate?: boolean | undefined): Coordinate | null;
+    getCoordinateAtM(m: number, extrapolate?: boolean, interpolate?: boolean): Coordinate | null;
     /**
      * Return the coordinates of the multilinestring.
      * @return {Array<Array<import("../coordinate.js").Coordinate>>} Coordinates.
@@ -8519,7 +8570,7 @@ declare class MultiLineString$1 extends SimpleGeometry {
      * @api
      * @override
      */
-    override setCoordinates(coordinates: Array<Array<Coordinate>>, layout?: GeometryLayout | undefined): void;
+    override setCoordinates(coordinates: Array<Array<Coordinate>>, layout?: GeometryLayout): void;
 }
 //# sourceMappingURL=MultiLineString.d.ts.map
 
@@ -8616,7 +8667,7 @@ declare class VectorContext {
      * @param {Function} hitDetectionRenderer Renderer.
      * @param {number} [index] Render order index.
      */
-    drawCustom(geometry: SimpleGeometry, feature: FeatureLike, renderer: Function, hitDetectionRenderer: Function, index?: number | undefined): void;
+    drawCustom(geometry: SimpleGeometry, feature: FeatureLike, renderer: Function, hitDetectionRenderer: Function, index?: number): void;
     /**
      * Render a geometry.
      *
@@ -8634,61 +8685,61 @@ declare class VectorContext {
      * @param {import("../Feature.js").default} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawCircle(circleGeometry: Circle, feature: Feature$2, index?: number | undefined): void;
+    drawCircle(circleGeometry: Circle, feature: Feature$2, index?: number): void;
     /**
      * @param {import("../Feature.js").default} feature Feature.
      * @param {import("../style/Style.js").default} style Style.
      * @param {number} [index] Render order index.
      */
-    drawFeature(feature: Feature$2, style: Style$2, index?: number | undefined): void;
+    drawFeature(feature: Feature$2, style: Style$2, index?: number): void;
     /**
      * @param {import("../geom/GeometryCollection.js").default} geometryCollectionGeometry Geometry collection.
      * @param {import("../Feature.js").default} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawGeometryCollection(geometryCollectionGeometry: GeometryCollection$1, feature: Feature$2, index?: number | undefined): void;
+    drawGeometryCollection(geometryCollectionGeometry: GeometryCollection$1, feature: Feature$2, index?: number): void;
     /**
      * @param {import("../geom/LineString.js").default|import("./Feature.js").default} lineStringGeometry Line string geometry.
      * @param {import("../Feature.js").FeatureLike} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawLineString(lineStringGeometry: LineString$1 | RenderFeature, feature: FeatureLike, index?: number | undefined): void;
+    drawLineString(lineStringGeometry: LineString$1 | RenderFeature, feature: FeatureLike, index?: number): void;
     /**
      * @param {import("../geom/MultiLineString.js").default|import("./Feature.js").default} multiLineStringGeometry MultiLineString geometry.
      * @param {import("../Feature.js").FeatureLike} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawMultiLineString(multiLineStringGeometry: MultiLineString$1 | RenderFeature, feature: FeatureLike, index?: number | undefined): void;
+    drawMultiLineString(multiLineStringGeometry: MultiLineString$1 | RenderFeature, feature: FeatureLike, index?: number): void;
     /**
      * @param {import("../geom/MultiPoint.js").default|import("./Feature.js").default} multiPointGeometry MultiPoint geometry.
      * @param {import("../Feature.js").FeatureLike} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawMultiPoint(multiPointGeometry: MultiPoint$1 | RenderFeature, feature: FeatureLike, index?: number | undefined): void;
+    drawMultiPoint(multiPointGeometry: MultiPoint$1 | RenderFeature, feature: FeatureLike, index?: number): void;
     /**
      * @param {import("../geom/MultiPolygon.js").default} multiPolygonGeometry MultiPolygon geometry.
      * @param {import("../Feature.js").FeatureLike} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawMultiPolygon(multiPolygonGeometry: MultiPolygon$1, feature: FeatureLike, index?: number | undefined): void;
+    drawMultiPolygon(multiPolygonGeometry: MultiPolygon$1, feature: FeatureLike, index?: number): void;
     /**
      * @param {import("../geom/Point.js").default|import("./Feature.js").default} pointGeometry Point geometry.
      * @param {import("../Feature.js").FeatureLike} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawPoint(pointGeometry: Point$1 | RenderFeature, feature: FeatureLike, index?: number | undefined): void;
+    drawPoint(pointGeometry: Point$1 | RenderFeature, feature: FeatureLike, index?: number): void;
     /**
      * @param {import("../geom/Polygon.js").default|import("./Feature.js").default} polygonGeometry Polygon geometry.
      * @param {import("../Feature.js").FeatureLike} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawPolygon(polygonGeometry: Polygon$1 | RenderFeature, feature: FeatureLike, index?: number | undefined): void;
+    drawPolygon(polygonGeometry: Polygon$1 | RenderFeature, feature: FeatureLike, index?: number): void;
     /**
      * @param {import("../geom/SimpleGeometry.js").default|import("./Feature.js").default} geometry Geometry.
      * @param {import("../Feature.js").FeatureLike} feature Feature.
      * @param {number} [index] Render order index.
      */
-    drawText(geometry: SimpleGeometry | RenderFeature, feature: FeatureLike, index?: number | undefined): void;
+    drawText(geometry: SimpleGeometry | RenderFeature, feature: FeatureLike, index?: number): void;
     /**
      * @param {import("../style/Fill.js").default} fillStyle Fill style.
      * @param {import("../style/Stroke.js").default} strokeStyle Stroke style.
@@ -8698,16 +8749,12 @@ declare class VectorContext {
      * @param {import("../style/Image.js").default} imageStyle Image style.
      * @param {import("../render/canvas.js").DeclutterImageWithText} [declutterImageWithText] Shared data for combined decluttering with a text style.
      */
-    setImageStyle(imageStyle: ImageStyle, declutterImageWithText?: {
-        [x: number]: ReplayImageOrLabelArgs;
-    } | undefined): void;
+    setImageStyle(imageStyle: ImageStyle, declutterImageWithText?: DeclutterImageWithText): void;
     /**
      * @param {import("../style/Text.js").default} textStyle Text style.
      * @param {import("../render/canvas.js").DeclutterImageWithText} [declutterImageWithText] Shared data for combined decluttering with an image style.
      */
-    setTextStyle(textStyle: Text$1, declutterImageWithText?: {
-        [x: number]: ReplayImageOrLabelArgs;
-    } | undefined): void;
+    setTextStyle(textStyle: Text$1, declutterImageWithText?: DeclutterImageWithText): void;
 }
 //# sourceMappingURL=VectorContext.d.ts.map
 
@@ -8788,7 +8835,7 @@ declare function getTolerance(resolution: number, pixelRatio: number): number;
  * @param {number} [index] Render order index..
  * @return {boolean} `true` if style is loading.
  */
-declare function renderFeature(replayGroup: BuilderGroup, feature: FeatureLike, style: Style$2, squaredTolerance: number, listener: (arg0: BaseEvent) => void, transform?: TransformFunction | undefined, declutter?: boolean | undefined, index?: number | undefined): boolean;
+declare function renderFeature(replayGroup: BuilderGroup, feature: FeatureLike, style: Style$2, squaredTolerance: number, listener: (arg0: BaseEvent) => void, transform?: TransformFunction, declutter?: boolean, index?: number): boolean;
 /**
  * Feature callback. The callback will be called with three arguments. The first
  * argument is one {@link module :ol/Feature~Feature feature} or {@link module :ol/render/Feature~RenderFeature render feature}
@@ -8911,7 +8958,7 @@ declare class MapEvent extends BaseEvent {
      * @param {import("./Map.js").default} map Map.
      * @param {?import("./Map.js").FrameState} [frameState] Frame state.
      */
-    constructor(type: string, map: Map, frameState?: FrameState | null | undefined);
+    constructor(type: string, map: Map, frameState?: FrameState | null);
     /**
      * The map where the event occurred.
      * @type {import("./Map.js").default}
@@ -8943,7 +8990,7 @@ type Types = "singleclick" | "click" | "dblclick" | "pointerdrag" | "pointermove
  * `'top-center'`, or `'top-right'`.
  */
 type Positioning = "bottom-left" | "bottom-center" | "bottom-right" | "center-left" | "center-center" | "center-right" | "top-left" | "top-center" | "top-right";
-type Options$1F = {
+type Options$1H = {
     /**
      * Set the overlay id. The overlay id can be used
      * with the {@link module :ol/Map~Map#getOverlayById} method.
@@ -9065,7 +9112,7 @@ declare class Overlay extends BaseObject {
     /**
      * @param {Options} options Overlay options.
      */
-    constructor(options: Options$1F);
+    constructor(options: Options$1H);
     /***
      * @type {OverlayOnSignature<import("./events").EventsKey>}
      */
@@ -9082,7 +9129,7 @@ declare class Overlay extends BaseObject {
      * @protected
      * @type {Options}
      */
-    protected options: Options$1F;
+    protected options: Options$1H;
     /**
      * @protected
      * @type {number|string|undefined}
@@ -9233,7 +9280,7 @@ declare class Overlay extends BaseObject {
      * @param {PanIntoViewOptions} [panIntoViewOptions] Options for the pan action
      * @api
      */
-    panIntoView(panIntoViewOptions?: PanIntoViewOptions | undefined): void;
+    panIntoView(panIntoViewOptions?: PanIntoViewOptions): void;
     /**
      * Get the extent of an element relative to the document
      * @param {HTMLElement} element The element.
@@ -9271,7 +9318,7 @@ declare class Overlay extends BaseObject {
      * returns the options this Overlay has been created with
      * @return {Options} overlay options
      */
-    getOptions(): Options$1F;
+    getOptions(): Options$1H;
 }
 
 /**
@@ -9289,7 +9336,7 @@ declare class MapBrowserEvent<EVENT extends UIEvent> extends MapEvent {
      * @param {import("./Map.js").FrameState} [frameState] Frame state.
      * @param {Array<PointerEvent>} [activePointers] Active pointers.
      */
-    constructor(type: string, map: Map, originalEvent: EVENT, dragging?: boolean | undefined, frameState?: FrameState | undefined, activePointers?: PointerEvent[] | undefined);
+    constructor(type: string, map: Map, originalEvent: EVENT, dragging?: boolean, frameState?: FrameState, activePointers?: Array<PointerEvent>);
     /**
      * The original browser event.
      * @const
@@ -9391,7 +9438,7 @@ declare class Interaction extends BaseObject {
     /**
      * @param {InteractionOptions} [options] Options.
      */
-    constructor(options?: InteractionOptions | undefined);
+    constructor(options?: InteractionOptions);
     /***
      * @type {InteractionOnSignature<import("../events").EventsKey>}
      */
@@ -9445,7 +9492,7 @@ declare class Interaction extends BaseObject {
     setMap(map: Map | null): void;
 }
 
-type Options$1E = {
+type Options$1G = {
     /**
      * The element is the control's
      * container element. This only needs to be specified if you're developing
@@ -9503,7 +9550,7 @@ declare class Control extends BaseObject {
     /**
      * @param {Options} options Control options.
      */
-    constructor(options: Options$1E);
+    constructor(options: Options$1G);
     /**
      * @protected
      * @type {HTMLElement}
@@ -9676,7 +9723,7 @@ declare class PriorityQueue<T> {
     reprioritize(): void;
 }
 
-type PriorityFunction = (arg0: Tile, arg1: string, arg2: Coordinate, arg3: number) => number;
+type PriorityFunction = (arg0: Tile$1, arg1: string, arg2: Coordinate, arg3: number) => number;
 /**
  * @typedef {function(import("./Tile.js").default, string, import("./coordinate.js").Coordinate, number): number} PriorityFunction
  */
@@ -9753,7 +9800,7 @@ type GroupEventType = "addlayer" | "removelayer";
  * *
  */
 type GroupOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes | "change:layers", ObjectEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes | "change:layers", Return>;
-type Options$1D = {
+type Options$1F = {
     /**
      * Opacity (0, 1).
      */
@@ -9818,7 +9865,7 @@ declare class LayerGroup extends BaseLayer {
     /**
      * @param {Options} [options] Layer options.
      */
-    constructor(options?: Options$1D | undefined);
+    constructor(options?: Options$1F);
     /***
      * @type {GroupOnSignature<import("../events").EventsKey>}
      */
@@ -9990,7 +10037,7 @@ type FrameState = {
         [x: string]: boolean;
     };
 };
-type PostRenderFunction = (arg0: Map, arg1: FrameState | null) => any;
+type PostRenderFunction = (arg0: Map, arg1: FrameState) => any;
 type AtPixelOptions = {
     /**
      * Layer filter
@@ -10142,7 +10189,7 @@ declare class Map extends BaseObject {
     /**
      * @param {MapOptions} [options] Map options.
      */
-    constructor(options?: MapOptions | undefined);
+    constructor(options?: MapOptions);
     /***
      * @type {MapEventHandler<import("./events").EventsKey>}
      */
@@ -10372,7 +10419,7 @@ declare class Map extends BaseObject {
      * @template T
      * @api
      */
-    forEachFeatureAtPixel<T>(pixel: Pixel, callback: (arg0: FeatureLike, arg1: Layer<Source>, arg2: SimpleGeometry) => T, options?: AtPixelOptions | undefined): T | undefined;
+    forEachFeatureAtPixel<T>(pixel: Pixel, callback: (arg0: FeatureLike, arg1: Layer<Source>, arg2: SimpleGeometry) => T, options?: AtPixelOptions): T | undefined;
     /**
      * Get all features that intersect a pixel on the viewport.
      * @param {import("./pixel.js").Pixel} pixel Pixel.
@@ -10381,7 +10428,7 @@ declare class Map extends BaseObject {
      * an empty array if none were found.
      * @api
      */
-    getFeaturesAtPixel(pixel: Pixel, options?: AtPixelOptions | undefined): Array<FeatureLike>;
+    getFeaturesAtPixel(pixel: Pixel, options?: AtPixelOptions): Array<FeatureLike>;
     /**
      * Get all layers from all layer groups.
      * @return {Array<import("./layer/Layer.js").default>} Layers.
@@ -10396,7 +10443,7 @@ declare class Map extends BaseObject {
      * @return {boolean} Is there a feature at the given pixel?
      * @api
      */
-    hasFeatureAtPixel(pixel: Pixel, options?: AtPixelOptions | undefined): boolean;
+    hasFeatureAtPixel(pixel: Pixel, options?: AtPixelOptions): boolean;
     /**
      * Returns the coordinate in user projection for a browser event.
      * @param {MouseEvent} event Event.
@@ -10576,12 +10623,12 @@ declare class Map extends BaseObject {
      * @param {number} tileResolution Tile resolution.
      * @return {number} Tile priority.
      */
-    getTilePriority(tile: Tile, tileSourceKey: string, tileCenter: Coordinate, tileResolution: number): number;
+    getTilePriority(tile: Tile$1, tileSourceKey: string, tileCenter: Coordinate, tileResolution: number): number;
     /**
      * @param {UIEvent} browserEvent Browser event.
      * @param {string} [type] Type.
      */
-    handleBrowserEvent(browserEvent: UIEvent, type?: string | undefined): void;
+    handleBrowserEvent(browserEvent: UIEvent, type?: string): void;
     /**
      * @param {MapBrowserEvent} mapBrowserEvent The event to handle.
      */
@@ -10698,7 +10745,7 @@ declare class Map extends BaseObject {
      * @observable
      * @api
      */
-    setTarget(target?: string | HTMLElement | undefined): void;
+    setTarget(target?: HTMLElement | string): void;
     /**
      * Set the view for this map.
      * @param {View|Promise<import("./View.js").ViewOptions>} view The view that controls this map.
@@ -10731,7 +10778,7 @@ declare class RenderEvent extends BaseEvent {
      * @param {import("../Map.js").FrameState} [frameState] Frame state.
      * @param {?(CanvasRenderingContext2D|WebGLRenderingContext)} [context] Context.
      */
-    constructor(type: any, inversePixelTransform?: number[] | undefined, frameState?: FrameState | undefined, context?: CanvasRenderingContext2D | WebGLRenderingContext | null | undefined);
+    constructor(type: any, inversePixelTransform?: Transform, frameState?: FrameState, context?: (CanvasRenderingContext2D | WebGLRenderingContext) | null);
     /**
      * Transform from CSS pixels (relative to the top-left corner of the map viewport)
      * to rendered pixels on this event's `context`. Only available when a Canvas renderer is used, null otherwise.
@@ -10775,7 +10822,7 @@ declare class CanvasImmediateRenderer extends VectorContext {
      * @param {number} [squaredTolerance] Optional squared tolerance for simplification.
      * @param {import("../../proj.js").TransformFunction} [userTransform] Transform from user to view projection.
      */
-    constructor(context: CanvasRenderingContext2D, pixelRatio: number, extent: Extent$1, transform: Transform, viewRotation: number, squaredTolerance?: number | undefined, userTransform?: TransformFunction | undefined);
+    constructor(context: CanvasRenderingContext2D, pixelRatio: number, extent: Extent$1, transform: Transform, viewRotation: number, squaredTolerance?: number, userTransform?: TransformFunction);
     /**
      * @private
      * @type {CanvasRenderingContext2D}
@@ -11162,7 +11209,7 @@ declare class CanvasImmediateRenderer extends VectorContext {
  * @return {CanvasImmediateRenderer} Canvas Immediate.
  * @api
  */
-declare function toContext(context: CanvasRenderingContext2D, options?: ToContextOptions | undefined): CanvasImmediateRenderer;
+declare function toContext(context: CanvasRenderingContext2D, options?: ToContextOptions): CanvasImmediateRenderer;
 /**
  * Gets a vector context for drawing to the event's canvas.
  * @param {import("./render/Event.js").default} event Render event.
@@ -11259,7 +11306,7 @@ type GeometryFunction$1 = (arg0: FeatureLike) => (Geometry$1 | RenderFeature | u
  * 2. The {@link module :ol/render~State} of the layer renderer.
  */
 type RenderFunction = (arg0: (Coordinate | Array<Coordinate> | Array<Array<Coordinate>> | Array<Array<Array<Coordinate>>>), arg1: State) => void;
-type Options$1C = {
+type Options$1E = {
     /**
      * Feature property or geometry
      * or function returning a geometry to render for this style.
@@ -11446,7 +11493,7 @@ declare class Style$2 {
     /**
      * @param {Options} [options] Style options.
      */
-    constructor(options?: Options$1C | undefined);
+    constructor(options?: Options$1E);
     /**
      * @private
      * @type {string|import("../geom/Geometry.js").default|GeometryFunction|null}
@@ -11753,7 +11800,7 @@ declare class RenderFeature {
      * @param {import("../proj.js").TransformFunction} [transform] Optional transform function.
      * @return {RenderFeature} Simplified geometry.
      */
-    simplifyTransformed(squaredTolerance: number, transform?: TransformFunction | undefined): RenderFeature;
+    simplifyTransformed(squaredTolerance: number, transform?: TransformFunction): RenderFeature;
     /**
      * Get the feature properties.
      * @return {Object<string, *>} Feature properties.
@@ -11899,7 +11946,7 @@ declare class Feature$2<Geometry extends Geometry$1 = Geometry$1> extends BaseOb
      *     properties. If you pass an object literal, you may include a Geometry
      *     associated with a `geometry` key.
      */
-    constructor(geometryOrProperties?: Geometry | ObjectWithGeometry<Geometry> | undefined);
+    constructor(geometryOrProperties?: Geometry | ObjectWithGeometry<Geometry>);
     /***
      * @type {FeatureOnSignature<import("./events").EventsKey>}
      */
@@ -12009,7 +12056,7 @@ declare class Feature$2<Geometry extends Geometry$1 = Geometry$1> extends BaseOb
      * @api
      * @fires module:ol/events/Event~BaseEvent#event:change
      */
-    setStyle(style?: StyleLike | undefined): void;
+    setStyle(style?: StyleLike): void;
     /**
      * Set the feature id.  The feature id is considered stable and may be used when
      * requesting features or comparing identifiers returned from a remote source.
@@ -12053,7 +12100,7 @@ declare class GeolocationError extends BaseEvent {
     message: string;
 }
 
-type Options$1B = {
+type Options$1D = {
     /**
      * Start Tracking right after
      * instantiation.
@@ -12128,7 +12175,7 @@ declare class Geolocation extends BaseObject {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1B | undefined);
+    constructor(options?: Options$1D);
     /***
      * @type {GeolocationOnSignature<import("./events").EventsKey>}
      */
@@ -12307,7 +12354,7 @@ declare class ImageCanvas extends ImageWrapper {
      * @param {Loader} [loader] Optional loader function to
      *     support asynchronous canvas drawing.
      */
-    constructor(extent: Extent$1, resolution: number, pixelRatio: number, canvas: HTMLCanvasElement, loader?: Loader$2 | undefined);
+    constructor(extent: Extent$1, resolution: number, pixelRatio: number, canvas: HTMLCanvasElement, loader?: Loader$2);
     /**
      * Optional canvas loader function.
      * @type {?Loader}
@@ -12342,7 +12389,7 @@ declare class ImageCanvas extends ImageWrapper {
     override getImage(): HTMLCanvasElement;
 }
 
-declare class ImageTile extends Tile {
+declare class ImageTile extends Tile$1 {
     /**
      * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {import("./TileState.js").default} state State.
@@ -12351,7 +12398,7 @@ declare class ImageTile extends Tile {
      * @param {import("./Tile.js").LoadFunction} tileLoadFunction Tile load function.
      * @param {import("./Tile.js").Options} [options] Tile options.
      */
-    constructor(tileCoord: TileCoord, state: any, src: string, crossOrigin: string | null, tileLoadFunction: LoadFunction$1, options?: Options$1O | undefined);
+    constructor(tileCoord: TileCoord, state: any, src: string, crossOrigin: string | null, tileLoadFunction: LoadFunction$1, options?: Options$1Q);
     /**
      * @private
      * @type {?string}
@@ -12487,7 +12534,7 @@ declare class MapBrowserEventHandler extends Target {
      * @param {import("./Map.js").default} map The map with the viewport to listen to events on.
      * @param {number} [moveTolerance] The minimal distance the pointer must travel to trigger a move.
      */
-    constructor(map: Map, moveTolerance?: number | undefined);
+    constructor(map: Map, moveTolerance?: number);
     /**
      * This is the element that we will listen to the real events on.
      * @type {import("./Map.js").default}
@@ -12644,7 +12691,7 @@ declare class LRUCache<T> {
     /**
      * @param {number} [highWaterMark] High water mark.
      */
-    constructor(highWaterMark?: number | undefined);
+    constructor(highWaterMark?: number);
     /**
      * Desired max cache size after expireCache(). If set to 0, no cache entries
      * will be pruned at all.
@@ -12671,6 +12718,7 @@ declare class LRUCache<T> {
      * @type {?Entry}
      */
     private newest_;
+    deleteOldest(): void;
     /**
      * @return {boolean} Can expire cache.
      */
@@ -12682,7 +12730,7 @@ declare class LRUCache<T> {
      */
     expireCache(keep?: {
         [x: string]: boolean;
-    } | undefined): void;
+    }): void;
     /**
      * FIXME empty description for jsdoc
      */
@@ -12765,7 +12813,7 @@ declare class LRUCache<T> {
 }
 
 declare class TileCache extends LRUCache<any> {
-    constructor(highWaterMark?: number | undefined);
+    constructor(highWaterMark?: number);
     /**
      * @param {!Object<string, boolean>} usedTiles Used tiles.
      * @override
@@ -12796,7 +12844,7 @@ declare class ExecutorGroup {
      */
     constructor(maxExtent: Extent$1, resolution: number, pixelRatio: number, overlaps: boolean, allInstructions: {
         [x: string]: any;
-    }, renderBuffer?: number | undefined, deferredRendering?: boolean | undefined);
+    }, renderBuffer?: number, deferredRendering?: boolean);
     /**
      * @private
      * @type {import("../../extent.js").Extent}
@@ -12895,7 +12943,7 @@ declare class ExecutorGroup {
      * @param {import("rbush").default<import('./Executor.js').DeclutterEntry>|null} [declutterTree] Declutter tree.
      *     When set to null, no decluttering is done, even when the executor group has a `ZIndexContext`.
      */
-    execute(targetContext: CanvasRenderingContext2D, scaledCanvasSize: Size, transform: Transform, viewRotation: number, snapToPixel: boolean, builderTypes?: BuilderType[] | undefined, declutterTree?: RBush$1<DeclutterEntry> | null | undefined): void;
+    execute(targetContext: CanvasRenderingContext2D, scaledCanvasSize: Size, transform: Transform, viewRotation: number, snapToPixel: boolean, builderTypes?: Array<BuilderType>, declutterTree?: RBush$1<DeclutterEntry> | null): void;
     getDeferredZIndexContexts(): {
         [x: number]: ZIndexContext[];
     };
@@ -13076,7 +13124,7 @@ declare class FeatureFormat<FeatureType extends FeatureLike = Feature$2<Geometry
      * @return {ReadOptions|undefined} Options.
      * @protected
      */
-    protected getReadOptions(source: Document | Element | any | string, options?: ReadOptions | undefined): ReadOptions | undefined;
+    protected getReadOptions(source: Document | Element | any | string, options?: ReadOptions): ReadOptions | undefined;
     /**
      * Sets the `dataProjection` on the options, if no `dataProjection`
      * is set.
@@ -13100,7 +13148,7 @@ declare class FeatureFormat<FeatureType extends FeatureLike = Feature$2<Geometry
      * @param {ReadOptions} [options] Read options.
      * @return {FeatureType|Array<FeatureType>} Feature.
      */
-    readFeature(source: Document | Element | any | string, options?: ReadOptions | undefined): FeatureType | Array<FeatureType>;
+    readFeature(source: Document | Element | any | string, options?: ReadOptions): FeatureType | Array<FeatureType>;
     /**
      * Read all features from a source.
      *
@@ -13109,7 +13157,7 @@ declare class FeatureFormat<FeatureType extends FeatureLike = Feature$2<Geometry
      * @param {ReadOptions} [options] Read options.
      * @return {Array<FeatureType>} Features.
      */
-    readFeatures(source: Document | Element | ArrayBuffer | any | string, options?: ReadOptions | undefined): Array<FeatureType>;
+    readFeatures(source: Document | Element | ArrayBuffer | any | string, options?: ReadOptions): Array<FeatureType>;
     /**
      * Read a single geometry from a source.
      *
@@ -13118,7 +13166,7 @@ declare class FeatureFormat<FeatureType extends FeatureLike = Feature$2<Geometry
      * @param {ReadOptions} [options] Read options.
      * @return {import("../geom/Geometry.js").default} Geometry.
      */
-    readGeometry(source: Document | Element | any | string, options?: ReadOptions | undefined): Geometry$1;
+    readGeometry(source: Document | Element | any | string, options?: ReadOptions): Geometry$1;
     /**
      * Read the projection from a source.
      *
@@ -13135,7 +13183,7 @@ declare class FeatureFormat<FeatureType extends FeatureLike = Feature$2<Geometry
      * @param {WriteOptions} [options] Write options.
      * @return {string|ArrayBuffer} Result.
      */
-    writeFeature(feature: Feature$2, options?: WriteOptions | undefined): string | ArrayBuffer;
+    writeFeature(feature: Feature$2, options?: WriteOptions): string | ArrayBuffer;
     /**
      * Encode an array of features in this format.
      *
@@ -13144,7 +13192,7 @@ declare class FeatureFormat<FeatureType extends FeatureLike = Feature$2<Geometry
      * @param {WriteOptions} [options] Write options.
      * @return {string|ArrayBuffer} Result.
      */
-    writeFeatures(features: Array<Feature$2>, options?: WriteOptions | undefined): string | ArrayBuffer;
+    writeFeatures(features: Array<Feature$2>, options?: WriteOptions): string | ArrayBuffer;
     /**
      * Write a single geometry in this format.
      *
@@ -13153,7 +13201,7 @@ declare class FeatureFormat<FeatureType extends FeatureLike = Feature$2<Geometry
      * @param {WriteOptions} [options] Write options.
      * @return {string|ArrayBuffer} Result.
      */
-    writeGeometry(geometry: Geometry$1, options?: WriteOptions | undefined): string | ArrayBuffer;
+    writeGeometry(geometry: Geometry$1, options?: WriteOptions): string | ArrayBuffer;
 }
 
 type VectorSourceEventTypes = "addfeature" | "changefeature" | "clear" | "removefeature" | "featuresloadstart" | "featuresloadend" | "featuresloaderror";
@@ -13178,7 +13226,7 @@ declare class VectorSourceEvent<FeatureType extends FeatureLike = Feature$2<Geom
      * @param {FeatureType} [feature] Feature.
      * @param {Array<FeatureType>} [features] Features.
      */
-    constructor(type: string, feature?: FeatureType | undefined, features?: FeatureType[] | undefined);
+    constructor(type: string, feature?: FeatureType, features?: Array<FeatureType>);
     /**
      * The added or removed feature for the `ADDFEATURE` and `REMOVEFEATURE` events, `undefined` otherwise.
      * @type {FeatureType|undefined}
@@ -13207,7 +13255,7 @@ type FeatureClassOrArrayOfRenderFeatures<T extends FeatureLike = Feature$2<Geome
  * *
  */
 type VectorSourceOnSignature<Return, FeatureType extends FeatureLike = Feature$2<Geometry$1>> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2, ObjectEvent, Return> & OnSignature<VectorSourceEventTypes, VectorSourceEvent<FeatureType>, Return> & CombinedOnSignature<EventTypes | Types$2 | VectorSourceEventTypes, Return>;
-type Options$1A<FeatureType extends FeatureLike = Feature$2<Geometry$1>> = {
+type Options$1C<FeatureType extends FeatureLike = Feature$2<Geometry$1>> = {
     /**
      * Attributions.
      */
@@ -13439,7 +13487,7 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
     /**
      * @param {Options<FeatureType>} [options] Vector source options.
      */
-    constructor(options?: Options$1A<FeatureType> | undefined);
+    constructor(options?: Options$1C<FeatureType>);
     /***
      * @type {VectorSourceOnSignature<import("../events").EventsKey, FeatureType>}
      */
@@ -13574,7 +13622,7 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
      * @param {boolean} [fast] Skip dispatching of {@link module:ol/source/Vector.VectorSourceEvent#event:removefeature} events.
      * @api
      */
-    clear(fast?: boolean | undefined): void;
+    clear(fast?: boolean): void;
     /**
      * Iterate through all features on the source, calling the provided callback
      * with each one.  If the callback returns any "truthy" value, iteration will
@@ -13658,10 +13706,10 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
     /**
      * Get all features whose geometry intersects the provided coordinate.
      * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
-     * @return {Array<import("../Feature.js").default>} Features.
+     * @return {Array<FeatureType>} Features.
      * @api
      */
-    getFeaturesAtCoordinate(coordinate: Coordinate): Array<Feature$2>;
+    getFeaturesAtCoordinate(coordinate: Coordinate): Array<FeatureType>;
     /**
      * Get all features whose bounding box intersects the provided extent.  Note that this returns an array of
      * all features intersecting the given extent in random order (so it may include
@@ -13676,7 +13724,7 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
      * @return {Array<FeatureType>} Features.
      * @api
      */
-    getFeaturesInExtent(extent: Extent$1, projection?: Projection | undefined): Array<FeatureType>;
+    getFeaturesInExtent(extent: Extent$1, projection?: Projection): Array<FeatureType>;
     /**
      * Get the closest feature to the provided coordinate.
      *
@@ -13690,7 +13738,7 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
      * @return {FeatureType} Closest feature.
      * @api
      */
-    getClosestFeatureToCoordinate(coordinate: Coordinate, filter?: ((arg0: FeatureType) => boolean) | undefined): FeatureType;
+    getClosestFeatureToCoordinate(coordinate: Coordinate, filter?: (arg0: FeatureType) => boolean): FeatureType;
     /**
      * Get the extent of the features currently in the source.
      *
@@ -13701,7 +13749,7 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
      * @return {import("../extent.js").Extent} Extent.
      * @api
      */
-    getExtent(extent?: Extent$1 | undefined): Extent$1;
+    getExtent(extent?: Extent$1): Extent$1;
     /**
      * Get a feature by its identifier (the value returned by feature.getId()). When `RenderFeature`s
      * are used, `getFeatureById()` can return an array of `RenderFeature`s. This allows for handling
@@ -13811,6 +13859,10 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
      * @api
      */
     setUrl(url: string | FeatureUrlFunction): void;
+    /**
+     * @param {boolean} overlaps The source can have overlapping geometries.
+     */
+    setOverlaps(overlaps: boolean): void;
 }
 
 /**
@@ -13910,7 +13962,7 @@ type FeatureUrlFunction = (arg0: Extent$1, arg1: number, arg2: Projection) => st
 /**
  * @template {import('./Feature.js').FeatureLike} FeatureType
  */
-declare class VectorTile$1<FeatureType extends FeatureLike> extends Tile {
+declare class VectorTile$1<FeatureType extends FeatureLike> extends Tile$1 {
     /**
      * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {import("./TileState.js").default} state State.
@@ -13919,7 +13971,7 @@ declare class VectorTile$1<FeatureType extends FeatureLike> extends Tile {
      * @param {import("./Tile.js").LoadFunction} tileLoadFunction Tile load function.
      * @param {import("./Tile.js").Options} [options] Tile options.
      */
-    constructor(tileCoord: TileCoord, state: any, src: string, format: FeatureFormat<FeatureType>, tileLoadFunction: LoadFunction$1, options?: Options$1O | undefined);
+    constructor(tileCoord: TileCoord, state: any, src: string, format: FeatureFormat<FeatureType>, tileLoadFunction: LoadFunction$1, options?: Options$1Q);
     /**
      * Extent of this tile; set by the source.
      * @type {import("./extent.js").Extent}
@@ -14032,7 +14084,7 @@ type ReplayState = {
      */
     renderedTileZ: number;
 };
-declare class VectorRenderTile extends Tile {
+declare class VectorRenderTile extends Tile$1 {
     /**
      * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {import("./TileState.js").default} state State.
@@ -14048,19 +14100,21 @@ declare class VectorRenderTile extends Tile {
     private context_;
     /**
      * Executor groups. Read/written by the renderer.
-     * @type {Array<import("./render/canvas/ExecutorGroup.js").default>}
+     * @type {Object<string, Array<import("./render/canvas/ExecutorGroup.js").default>>}
      */
-    executorGroups: Array<ExecutorGroup>;
+    executorGroups: {
+        [x: string]: ExecutorGroup[];
+    };
     /**
      * Number of loading source tiles. Read/written by the source.
      * @type {number}
      */
     loadingSourceTiles: number;
     /**
-     * @type {Object<number, ImageData>}
+     * @type {Object<string, ImageData>}
      */
     hitDetectionImageData: {
-        [x: number]: ImageData;
+        [x: string]: ImageData;
     };
     /**
      * @private
@@ -14145,7 +14199,7 @@ declare function warn(...args: any[]): void;
 declare function error(...args: any[]): void;
 type Level = "info" | "warn" | "error" | "none";
 
-type Options$1z = {
+type Options$1B = {
     /**
      * CSS class name.
      */
@@ -14246,7 +14300,7 @@ declare class Attribution extends Control {
     /**
      * @param {Options} [options] Attribution options.
      */
-    constructor(options?: Options$1z | undefined);
+    constructor(options?: Options$1B);
     /**
      * @private
      * @type {HTMLElement}
@@ -14357,7 +14411,7 @@ declare class Attribution extends Control {
  * *
  */
 type FullScreenOnSignature<Return> = OnSignature<EventTypes | "enterfullscreen" | "leavefullscreen", BaseEvent, Return> & OnSignature<Types$2, ObjectEvent, Return> & CombinedOnSignature<EventTypes | "enterfullscreen" | "leavefullscreen" | Types$2, Return>;
-type Options$1y = {
+type Options$1A = {
     /**
      * CSS class name.
      */
@@ -14450,7 +14504,7 @@ declare class FullScreen extends Control {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1y | undefined);
+    constructor(options?: Options$1A);
     /***
      * @type {FullScreenOnSignature<import("../events").EventsKey>}
      */
@@ -14546,7 +14600,7 @@ declare class FullScreen extends Control {
  * *
  */
 type MousePositionOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2 | "change:coordinateFormat" | "change:projection", ObjectEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | "change:coordinateFormat" | "change:projection", Return>;
-type Options$1x = {
+type Options$1z = {
     /**
      * CSS class name.
      */
@@ -14626,7 +14680,7 @@ declare class MousePosition extends Control {
     /**
      * @param {Options} [options] Mouse position options.
      */
-    constructor(options?: Options$1x | undefined);
+    constructor(options?: Options$1z);
     /***
      * @type {MousePositionOnSignature<import("../events").EventsKey>}
      */
@@ -14723,7 +14777,7 @@ declare class MousePosition extends Control {
     private updateHTML_;
 }
 
-type Options$1w = {
+type Options$1y = {
     /**
      * CSS class name.
      */
@@ -14804,7 +14858,7 @@ declare class OverviewMap extends Control {
     /**
      * @param {Options} [options] OverviewMap options.
      */
-    constructor(options?: Options$1w | undefined);
+    constructor(options?: Options$1y);
     /**
      * @private
      */
@@ -14972,7 +15026,7 @@ declare class OverviewMap extends Control {
     getOverviewMap(): Map;
 }
 
-type Options$1v = {
+type Options$1x = {
     /**
      * CSS class name.
      */
@@ -15042,7 +15096,7 @@ declare class Rotate extends Control {
     /**
      * @param {Options} [options] Rotate options.
      */
-    constructor(options?: Options$1v | undefined);
+    constructor(options?: Options$1x);
     /**
      * @type {HTMLElement}
      * @private
@@ -15086,7 +15140,7 @@ type Units = "degrees" | "imperial" | "nautical" | "metric" | "us";
  * *
  */
 type ScaleLineOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2 | "change:units", ObjectEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | "change:units", Return>;
-type Options$1u = {
+type Options$1w = {
     /**
      * CSS class name. The default is `ol-scale-bar` when configured with
      * `bar: true`. Otherwise the default is `ol-scale-line`.
@@ -15186,7 +15240,7 @@ declare class ScaleLine extends Control {
     /**
      * @param {Options} [options] Scale line options.
      */
-    constructor(options?: Options$1u | undefined);
+    constructor(options?: Options$1w);
     /***
      * @type {ScaleLineOnSignature<import("../events").EventsKey>}
      */
@@ -15314,7 +15368,7 @@ declare class ScaleLine extends Control {
     getScaleForResolution(): number;
 }
 
-type Options$1t = {
+type Options$1v = {
     /**
      * Animation duration in milliseconds.
      */
@@ -15387,7 +15441,7 @@ declare class Zoom extends Control {
     /**
      * @param {Options} [options] Zoom options.
      */
-    constructor(options?: Options$1t | undefined);
+    constructor(options?: Options$1v);
     /**
      * @type {number}
      * @private
@@ -15406,7 +15460,7 @@ declare class Zoom extends Control {
     private zoomByDelta_;
 }
 
-type Options$1s = {
+type Options$1u = {
     /**
      * CSS class name.
      */
@@ -15449,7 +15503,7 @@ declare class ZoomSlider extends Control {
     /**
      * @param {Options} [options] Zoom slider options.
      */
-    constructor(options?: Options$1s | undefined);
+    constructor(options?: Options$1u);
     /**
      * @type {!Array<import("../events.js").EventsKey>}
      * @private
@@ -15585,7 +15639,7 @@ declare class ZoomSlider extends Control {
     private getPositionForResolution_;
 }
 
-type Options$1r = {
+type Options$1t = {
     /**
      * Class name.
      */
@@ -15632,7 +15686,7 @@ declare class ZoomToExtent extends Control {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1r | undefined);
+    constructor(options?: Options$1t);
     /**
      * @type {?import("../extent.js").Extent|null}
      * @protected
@@ -15676,7 +15730,7 @@ declare class ZoomToExtent extends Control {
  * to be used with the {@link module:ol/Map~Map} constructor's `controls` option.
  * @api
  */
-declare function defaults$1(options?: DefaultsOptions$1 | undefined): Collection<Control>;
+declare function defaults$1(options?: DefaultsOptions$1): Collection<Control>;
 type DefaultsOptions$1 = {
     /**
      * Include
@@ -15686,7 +15740,7 @@ type DefaultsOptions$1 = {
     /**
      * Options for {@link module :ol/control/Attribution~Attribution}.
      */
-    attributionOptions?: Options$1z | undefined;
+    attributionOptions?: Options$1B | undefined;
     /**
      * Include
      * {@link module :ol/control/Rotate~Rotate}.
@@ -15696,7 +15750,7 @@ type DefaultsOptions$1 = {
      * Options
      * for {@link module :ol/control/Rotate~Rotate}.
      */
-    rotateOptions?: Options$1v | undefined;
+    rotateOptions?: Options$1x | undefined;
     /**
      * Include {@link module :ol/control/Zoom~Zoom}.
      */
@@ -15705,7 +15759,7 @@ type DefaultsOptions$1 = {
      * Options for
      * {@link module :ol/control/Zoom~Zoom}.
      */
-    zoomOptions?: Options$1t | undefined;
+    zoomOptions?: Options$1v | undefined;
 };
 
 /**
@@ -15807,7 +15861,7 @@ type FontParameters = {
  * @param {CanvasRenderingContext2DSettings} [settings] CanvasRenderingContext2DSettings
  * @return {CanvasRenderingContext2D} The context.
  */
-declare function createCanvasContext2D(width?: number | undefined, height?: number | undefined, canvasPool?: HTMLCanvasElement[] | undefined, settings?: CanvasRenderingContext2DSettings | undefined): CanvasRenderingContext2D;
+declare function createCanvasContext2D(width?: number, height?: number, canvasPool?: Array<HTMLCanvasElement>, settings?: CanvasRenderingContext2DSettings): CanvasRenderingContext2D;
 /**
  * @return {CanvasRenderingContext2D} Shared canvas context.
  */
@@ -16337,506 +16391,6 @@ type EvaluationContext$1 = {
 type ExpressionEvaluator = (arg0: EvaluationContext$1) => LiteralValue;
 
 /**
- * Anchor unit can be either a fraction of the icon size or in pixels.
- */
-type IconAnchorUnits = "fraction" | "pixels";
-/**
- * Icon origin. One of 'bottom-left', 'bottom-right', 'top-left', 'top-right'.
- */
-type IconOrigin = "bottom-left" | "bottom-right" | "top-left" | "top-right";
-type Options$1q = {
-    /**
-     * Anchor. Default value is the icon center.
-     */
-    anchor?: number[] | undefined;
-    /**
-     * Origin of the anchor: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    anchorOrigin?: IconOrigin | undefined;
-    /**
-     * Units in which the anchor x value is
-     * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
-     * the x value in pixels.
-     */
-    anchorXUnits?: IconAnchorUnits | undefined;
-    /**
-     * Units in which the anchor y value is
-     * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
-     * the y value in pixels.
-     */
-    anchorYUnits?: IconAnchorUnits | undefined;
-    /**
-     * Color to tint the icon. If not specified,
-     * the icon will be left as is.
-     */
-    color?: string | Color | undefined;
-    /**
-     * The `crossOrigin` attribute for loaded images. Note that you must provide a
-     * `crossOrigin` value if you want to access pixel data with the Canvas renderer.
-     * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
-     */
-    crossOrigin?: string | null | undefined;
-    /**
-     * Image object for the icon.
-     */
-    img?: HTMLCanvasElement | HTMLImageElement | ImageBitmap | undefined;
-    /**
-     * Displacement of the icon in pixels.
-     * Positive values will shift the icon right and up.
-     */
-    displacement?: number[] | undefined;
-    /**
-     * Opacity of the icon.
-     */
-    opacity?: number | undefined;
-    /**
-     * The width of the icon in pixels. This can't be used together with `scale`.
-     */
-    width?: number | undefined;
-    /**
-     * The height of the icon in pixels. This can't be used together with `scale`.
-     */
-    height?: number | undefined;
-    /**
-     * Scale.
-     */
-    scale?: number | Size | undefined;
-    /**
-     * Whether to rotate the icon with the view.
-     */
-    rotateWithView?: boolean | undefined;
-    /**
-     * Rotation in radians (positive rotation clockwise).
-     */
-    rotation?: number | undefined;
-    /**
-     * Offset which, together with `size` and `offsetOrigin`, defines the
-     * sub-rectangle to use from the original (sprite) image.
-     */
-    offset?: number[] | undefined;
-    /**
-     * Origin of the offset: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    offsetOrigin?: IconOrigin | undefined;
-    /**
-     * Icon size in pixels. Used together with `offset` to define the
-     * sub-rectangle to use from the original (sprite) image.
-     */
-    size?: Size | undefined;
-    /**
-     * Image source URI.
-     */
-    src?: string | undefined;
-    /**
-     * Declutter mode.
-     */
-    declutterMode?: DeclutterMode | undefined;
-};
-/**
- * @classdesc
- * Set icon style for vector features.
- * @api
- */
-declare class Icon extends ImageStyle {
-    /**
-     * @param {Options} [options] Options.
-     */
-    constructor(options?: Options$1q | undefined);
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private anchor_;
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private normalizedAnchor_;
-    /**
-     * @private
-     * @type {IconOrigin}
-     */
-    private anchorOrigin_;
-    /**
-     * @private
-     * @type {IconAnchorUnits}
-     */
-    private anchorXUnits_;
-    /**
-     * @private
-     * @type {IconAnchorUnits}
-     */
-    private anchorYUnits_;
-    /**
-     * @private
-     * @type {?string}
-     */
-    private crossOrigin_;
-    /**
-     * @private
-     * @type {import("../color.js").Color}
-     */
-    private color_;
-    /**
-     * @private
-     * @type {import("./IconImage.js").default}
-     */
-    private iconImage_;
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private offset_;
-    /**
-     * @private
-     * @type {IconOrigin}
-     */
-    private offsetOrigin_;
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private origin_;
-    /**
-     * @private
-     * @type {import("../size.js").Size}
-     */
-    private size_;
-    initialOptions_: Options$1q | undefined;
-    /**
-     * Clones the style. The underlying Image/HTMLCanvasElement is not cloned.
-     * @return {Icon} The cloned style.
-     * @api
-     * @override
-     */
-    override clone(): Icon;
-    /**
-     * Set the anchor point. The anchor determines the center point for the
-     * symbolizer.
-     *
-     * @param {Array<number>} anchor Anchor.
-     * @api
-     */
-    setAnchor(anchor: Array<number>): void;
-    /**
-     * Get the icon color.
-     * @return {import("../color.js").Color} Color.
-     * @api
-     */
-    getColor(): Color;
-    /**
-     * Get the image icon.
-     * @param {number} pixelRatio Pixel ratio.
-     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image or Canvas element. If the Icon
-     * style was configured with `src` or with a not let loaded `img`, an `ImageBitmap` will be returned.
-     * @api
-     * @override
-     */
-    override getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
-    /**
-     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image element.
-     * @override
-     */
-    override getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
-    /**
-     * Get the image URL.
-     * @return {string|undefined} Image src.
-     * @api
-     */
-    getSrc(): string | undefined;
-    /**
-     * Get the width of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
-     * @return {number} Icon width (in pixels).
-     * @api
-     */
-    getWidth(): number;
-    /**
-     * Get the height of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
-     * @return {number} Icon height (in pixels).
-     * @api
-     */
-    getHeight(): number;
-}
-
-type ExpressionValue = ExpressionValue$1;
-type ColorExpression$1 = Color | string | Array<ExpressionValue>;
-type BaseProps = {
-    /**
-     * Filter expression. If it resolves to a number strictly greater than 0, the
-     * point will be displayed. If undefined, all points will show.
-     */
-    filter?: ExpressionValue$1 | undefined;
-    /**
-     * Style variables; each variable must hold a number.
-     * Note: **this object is meant to be mutated**: changes to the values will immediately be visible on the rendered features
-     */
-    variables?: {
-        [x: string]: string | number | boolean | number[];
-    } | undefined;
-};
-type FillProps = {
-    /**
-     * Fill color.
-     */
-    "fill-color"?: ColorExpression$1 | undefined;
-    /**
-     * Fill pattern image source URI. If `fill-color` is defined as well, it will be used to tint this image.
-     */
-    "fill-pattern-src"?: string | undefined;
-    /**
-     * Offset, which, together with the size and the offset origin, define the
-     * sub-rectangle to use from the original fill pattern image.
-     */
-    "fill-pattern-offset"?: number[] | ExpressionValue$1 | undefined;
-    /**
-     * Origin of the offset: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    "fill-pattern-offset-origin"?: IconOrigin | undefined;
-    /**
-     * Fill pattern image size in pixel. Can be used together with `fill-pattern-offset` to define the
-     * sub-rectangle to use from the origin (sprite) fill pattern image.
-     */
-    "fill-pattern-size"?: Size | ExpressionValue$1 | undefined;
-};
-type StrokeProps = {
-    /**
-     * The stroke color.
-     */
-    "stroke-color"?: ColorExpression$1 | undefined;
-    /**
-     * Stroke pixel width.
-     */
-    "stroke-width"?: ExpressionValue$1 | undefined;
-    /**
-     * Stroke offset in pixel. A positive value offsets the line to the right, relative to the direction of the line.
-     */
-    "stroke-offset"?: ExpressionValue$1 | undefined;
-    /**
-     * Line cap style: `butt`, `round`, or `square`.
-     */
-    "stroke-line-cap"?: string | number | boolean | any[] | Color | undefined;
-    /**
-     * Line join style: `bevel`, `round`, or `miter`.
-     */
-    "stroke-line-join"?: string | number | boolean | any[] | Color | undefined;
-    /**
-     * Line dash pattern.
-     */
-    "stroke-line-dash"?: number[] | ExpressionValue$1[] | undefined;
-    /**
-     * Line dash offset.
-     */
-    "stroke-line-dash-offset"?: ExpressionValue$1 | undefined;
-    /**
-     * Miter limit.
-     */
-    "stroke-miter-limit"?: ExpressionValue$1 | undefined;
-    /**
-     * Stroke pattern image source URI. If `stroke-color` is defined as well, it will be used to tint this image.
-     */
-    "stroke-pattern-src"?: string | undefined;
-    /**
-     * Offset, which, together with the size and the offset origin, define the
-     * sub-rectangle to use from the original fill pattern image.
-     */
-    "stroke-pattern-offset"?: number[] | ExpressionValue$1 | undefined;
-    /**
-     * Origin of the offset: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    "stroke-pattern-offset-origin"?: IconOrigin | undefined;
-    /**
-     * Stroke pattern image size in pixel. Can be used together with `stroke-pattern-offset` to define the
-     * sub-rectangle to use from the origin (sprite) fill pattern image.
-     */
-    "stroke-pattern-size"?: Size | ExpressionValue$1 | undefined;
-    /**
-     * Spacing between each pattern occurrence in pixels; 0 if undefined.
-     */
-    "stroke-pattern-spacing"?: ExpressionValue$1 | undefined;
-};
-type IconProps = {
-    /**
-     * Image source URI.
-     */
-    "icon-src"?: string | undefined;
-    /**
-     * Anchor. Default value is the icon center.
-     */
-    "icon-anchor"?: number[] | ExpressionValue$1 | undefined;
-    /**
-     * Origin of the anchor: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    "icon-anchor-origin"?: IconOrigin | undefined;
-    /**
-     * Units in which the anchor x value is
-     * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
-     * the x value in pixels.
-     */
-    "icon-anchor-x-units"?: IconAnchorUnits | undefined;
-    /**
-     * Units in which the anchor y value is
-     * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
-     * the y value in pixels.
-     */
-    "icon-anchor-y-units"?: IconAnchorUnits | undefined;
-    /**
-     * Color to tint the icon. If not specified,
-     * the icon will be left as is.
-     */
-    "icon-color"?: ColorExpression$1 | undefined;
-    /**
-     * Opacity of the icon.
-     */
-    "icon-opacity"?: ExpressionValue$1 | undefined;
-    /**
-     * The `crossOrigin` attribute for loaded images. Note that you must provide a
-     * `icon-cross-origin` value if you want to access pixel data with the Canvas renderer.
-     * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
-     */
-    "icon-cross-origin"?: string | null | undefined;
-    /**
-     * Displacement of the icon.
-     */
-    "icon-displacement"?: number[] | ExpressionValue$1 | undefined;
-    /**
-     * Scale.
-     */
-    "icon-scale"?: Size | ExpressionValue$1 | undefined;
-    /**
-     * Width of the icon. If not specified, the actual image width will be used. Cannot be combined
-     * with `scale`.
-     */
-    "icon-width"?: ExpressionValue$1 | undefined;
-    /**
-     * Height of the icon. If not specified, the actual image height will be used. Cannot be combined
-     * with `scale`.
-     */
-    "icon-height"?: ExpressionValue$1 | undefined;
-    /**
-     * Rotation in radians (positive rotation clockwise).
-     */
-    "icon-rotation"?: ExpressionValue$1 | undefined;
-    /**
-     * Whether to rotate the icon with the view.
-     */
-    "icon-rotate-with-view"?: boolean | undefined;
-    /**
-     * Offset, which, together with the size and the offset origin, define the
-     * sub-rectangle to use from the original icon image.
-     */
-    "icon-offset"?: number[] | ExpressionValue$1 | undefined;
-    /**
-     * Origin of the offset: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    "icon-offset-origin"?: IconOrigin | undefined;
-    /**
-     * Icon size in pixel. Can be used together with `icon-offset` to define the
-     * sub-rectangle to use from the origin (sprite) icon image.
-     */
-    "icon-size"?: Size | ExpressionValue$1 | undefined;
-};
-type ShapeProps = {
-    /**
-     * Number of points for stars and regular polygons. In case of a polygon, the number of points
-     * is the number of sides.
-     */
-    "shape-points"?: ExpressionValue$1 | undefined;
-    /**
-     * The fill color.
-     */
-    "shape-fill-color"?: ColorExpression$1 | undefined;
-    /**
-     * The stroke color.
-     */
-    "shape-stroke-color"?: ColorExpression$1 | undefined;
-    /**
-     * Stroke pixel width.
-     */
-    "shape-stroke-width"?: ExpressionValue$1 | undefined;
-    /**
-     * Shape opacity.
-     */
-    "shape-opacity"?: ExpressionValue$1 | undefined;
-    /**
-     * Radius of a regular polygon.
-     */
-    "shape-radius"?: ExpressionValue$1 | undefined;
-    /**
-     * Second radius to make a star instead of a regular polygon.
-     */
-    "shape-radius2"?: ExpressionValue$1 | undefined;
-    /**
-     * Shape's angle in radians. A value of 0 will have one of the shape's point facing up.
-     */
-    "shape-angle"?: ExpressionValue$1 | undefined;
-    /**
-     * Displacement of the shape
-     */
-    "shape-displacement"?: number[] | ExpressionValue$1[] | undefined;
-    /**
-     * Rotation in radians (positive rotation clockwise).
-     */
-    "shape-rotation"?: ExpressionValue$1 | undefined;
-    /**
-     * Whether to rotate the shape with the view.
-     */
-    "shape-rotate-with-view"?: boolean | undefined;
-    /**
-     * Scale. Unless two dimensional scaling is required a better
-     * result may be obtained with appropriate settings for `shape-radius` and `shape-radius2`.
-     */
-    "shape-scale"?: Size | ExpressionValue$1 | ExpressionValue$1[] | undefined;
-};
-type CircleProps = {
-    /**
-     * Circle radius.
-     */
-    "circle-radius"?: ExpressionValue$1 | undefined;
-    /**
-     * The fill color.
-     */
-    "circle-fill-color"?: ColorExpression$1 | undefined;
-    /**
-     * The stroke color.
-     */
-    "circle-stroke-color"?: ColorExpression$1 | undefined;
-    /**
-     * Stroke pixel width.
-     */
-    "circle-stroke-width"?: ExpressionValue$1 | undefined;
-    /**
-     * Circle opacity.
-     */
-    "circle-opacity"?: ExpressionValue$1 | undefined;
-    /**
-     * displacement
-     */
-    "circle-displacement"?: number[] | ExpressionValue$1[] | undefined;
-    /**
-     * Scale. A two dimensional scale will produce an ellipse.
-     * Unless two dimensional scaling is required a better result may be obtained with an appropriate setting for `circle-radius`.
-     */
-    "circle-scale"?: Size | ExpressionValue$1 | ExpressionValue$1[] | undefined;
-    /**
-     * Rotation in radians
-     * (positive rotation clockwise, meaningful only when used in conjunction with a two dimensional scale).
-     */
-    "circle-rotation"?: ExpressionValue$1 | undefined;
-    /**
-     * Whether to rotate the shape with the view
-     * (meaningful only when used in conjunction with a two dimensional scale).
-     */
-    "circle-rotate-with-view"?: boolean | undefined;
-};
-type WebGLStyle = BaseProps & IconProps & StrokeProps & FillProps & CircleProps & ShapeProps;
-
-/**
  * @module ol/webgl/PaletteTexture
  */
 declare class PaletteTexture {
@@ -16846,7 +16400,7 @@ declare class PaletteTexture {
      */
     constructor(name: string, data: Uint8Array);
     name: string;
-    data: Uint8Array;
+    data: Uint8Array<ArrayBufferLike>;
     /**
      * @type {WebGLTexture|null}
      * @private
@@ -16925,13 +16479,11 @@ declare function uniformNameForVariable(variableName: string): string;
  * @typedef {Object} CompilationContextProperty
  * @property {string} name Name
  * @property {number} type Resolved property type
- * @property {function(import("../Feature.js").FeatureLike): *} [evaluator] Function used for evaluating the value;
  */
 /**
  * @typedef {Object} CompilationContextVariable
  * @property {string} name Name
  * @property {number} type Resolved variable type
- * @property {function(Object): *} [evaluator] Function used for evaluating the value; argument is the style variables object
  */
 /**
  * @typedef {Object} CompilationContext
@@ -16941,7 +16493,8 @@ declare function uniformNameForVariable(variableName: string): string;
  * @property {Object<string, string>} functions Lookup of functions used by the style.
  * @property {number} [bandCount] Number of bands per pixel.
  * @property {Array<PaletteTexture>} [paletteTextures] List of palettes used by the style.
- * @property {import("../style/webgl.js").WebGLStyle} style Literal style.
+ * @property {boolean} featureId Whether the feature ID is used in the expression
+ * @property {boolean} geometryType Whether the geometry type is used in the expression
  */
 /**
  * @return {CompilationContext} A new compilation context.
@@ -16963,6 +16516,8 @@ declare function newCompilationContext(): CompilationContext;
  */
 declare function buildExpression(encoded: EncodedExpression, type: number, parsingContext: ParsingContext$1, compilationContext: CompilationContext): CompiledExpression;
 declare const PALETTE_TEXTURE_ARRAY: "u_paletteTextures";
+declare const FEATURE_ID_PROPERTY_NAME: "featureId";
+declare const GEOMETRY_TYPE_PROPERTY_NAME: "geometryType";
 type CompilationContextProperty = {
     /**
      * Name
@@ -16972,10 +16527,6 @@ type CompilationContextProperty = {
      * Resolved property type
      */
     type: number;
-    /**
-     * Function used for evaluating the value;
-     */
-    evaluator?: ((arg0: FeatureLike) => any) | undefined;
 };
 type CompilationContextVariable = {
     /**
@@ -16986,10 +16537,6 @@ type CompilationContextVariable = {
      * Resolved variable type
      */
     type: number;
-    /**
-     * Function used for evaluating the value; argument is the style variables object
-     */
-    evaluator?: ((arg0: any) => any) | undefined;
 };
 type CompilationContext = {
     /**
@@ -17023,9 +16570,13 @@ type CompilationContext = {
      */
     paletteTextures?: PaletteTexture[] | undefined;
     /**
-     * Literal style.
+     * Whether the feature ID is used in the expression
      */
-    style: WebGLStyle;
+    featureId: boolean;
+    /**
+     * Whether the geometry type is used in the expression
+     */
+    geometryType: boolean;
 };
 type CompiledExpression = string;
 
@@ -17047,7 +16598,7 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$2<Geometry$1
      * @protected
      * @return {FeatureType|Array<FeatureType>} Feature.
      */
-    protected readFeatureFromObject(object: any, options?: ReadOptions | undefined): FeatureType | Array<FeatureType>;
+    protected readFeatureFromObject(object: any, options?: ReadOptions): FeatureType | Array<FeatureType>;
     /**
      * @abstract
      * @param {Object} object Object.
@@ -17055,7 +16606,7 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$2<Geometry$1
      * @protected
      * @return {Array<FeatureType>} Features.
      */
-    protected readFeaturesFromObject(object: any, options?: ReadOptions | undefined): Array<FeatureType>;
+    protected readFeaturesFromObject(object: any, options?: ReadOptions): Array<FeatureType>;
     /**
      * @abstract
      * @param {Object} object Object.
@@ -17063,7 +16614,7 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$2<Geometry$1
      * @protected
      * @return {import("../geom/Geometry.js").default} Geometry.
      */
-    protected readGeometryFromObject(object: any, options?: ReadOptions | undefined): Geometry$1;
+    protected readGeometryFromObject(object: any, options?: ReadOptions): Geometry$1;
     /**
      * Read the projection.
      *
@@ -17089,14 +16640,14 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$2<Geometry$1
      * @api
      * @override
      */
-    override writeFeature(feature: Feature$2, options?: WriteOptions | undefined): string;
+    override writeFeature(feature: Feature$2, options?: WriteOptions): string;
     /**
      * @abstract
      * @param {import("../Feature.js").default} feature Feature.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {Object} Object.
      */
-    writeFeatureObject(feature: Feature$2, options?: WriteOptions | undefined): any;
+    writeFeatureObject(feature: Feature$2, options?: WriteOptions): any;
     /**
      * Encode an array of features as string.
      *
@@ -17106,14 +16657,14 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$2<Geometry$1
      * @api
      * @override
      */
-    override writeFeatures(features: Array<Feature$2>, options?: WriteOptions | undefined): string;
+    override writeFeatures(features: Array<Feature$2>, options?: WriteOptions): string;
     /**
      * @abstract
      * @param {Array<import("../Feature.js").default>} features Features.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {Object} Object.
      */
-    writeFeaturesObject(features: Array<Feature$2>, options?: WriteOptions | undefined): any;
+    writeFeaturesObject(features: Array<Feature$2>, options?: WriteOptions): any;
     /**
      * Encode a geometry as string.
      *
@@ -17123,20 +16674,20 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$2<Geometry$1
      * @api
      * @override
      */
-    override writeGeometry(geometry: Geometry$1, options?: WriteOptions | undefined): string;
+    override writeGeometry(geometry: Geometry$1, options?: WriteOptions): string;
     /**
      * @abstract
      * @param {import("../geom/Geometry.js").default} geometry Geometry.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
      * @return {Object} Object.
      */
-    writeGeometryObject(geometry: Geometry$1, options?: WriteOptions | undefined): any;
+    writeGeometryObject(geometry: Geometry$1, options?: WriteOptions): any;
 }
 //# sourceMappingURL=JSONFeature.d.ts.map
 
 type EsriJSONFeatureSet = arcgis_rest_api.FeatureSet;
 type EsriJSONGeometry = arcgis_rest_api.Geometry;
-type Options$1p = {
+type Options$1s = {
     /**
      * Geometry name to use when creating features.
      */
@@ -17156,7 +16707,7 @@ declare class EsriJSON extends JSONFeature<Feature$2<Geometry$1>> {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1p | undefined);
+    constructor(options?: Options$1s);
     /**
      * Name of the geometry attribute for features.
      * @type {string|undefined}
@@ -17171,7 +16722,7 @@ declare class EsriJSON extends JSONFeature<Feature$2<Geometry$1>> {
      * @return {import("../Feature.js").default} Feature.
      * @override
      */
-    protected override readFeatureFromObject(object: any, options?: ReadOptions | undefined, idField?: string | undefined): Feature$2;
+    protected override readFeatureFromObject(object: any, options?: ReadOptions, idField?: string): Feature$2;
     /**
      * @param {EsriJSONGeometry} object Object.
      * @param {import("./Feature.js").ReadOptions} [options] Read options.
@@ -17179,7 +16730,7 @@ declare class EsriJSON extends JSONFeature<Feature$2<Geometry$1>> {
      * @return {import("../geom/Geometry.js").default} Geometry.
      * @override
      */
-    protected override readGeometryFromObject(object: EsriJSONGeometry, options?: ReadOptions | undefined): Geometry$1;
+    protected override readGeometryFromObject(object: EsriJSONGeometry, options?: ReadOptions): Geometry$1;
     /**
      * Encode a geometry as a EsriJSON object.
      *
@@ -17189,7 +16740,7 @@ declare class EsriJSON extends JSONFeature<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override writeGeometryObject(geometry: Geometry$1, options?: WriteOptions | undefined): EsriJSONGeometry;
+    override writeGeometryObject(geometry: Geometry$1, options?: WriteOptions): EsriJSONGeometry;
     /**
      * Encode an array of features as a EsriJSON object.
      *
@@ -17199,7 +16750,7 @@ declare class EsriJSON extends JSONFeature<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override writeFeaturesObject(features: Array<Feature$2>, options?: WriteOptions | undefined): EsriJSONFeatureSet;
+    override writeFeaturesObject(features: Array<Feature$2>, options?: WriteOptions): EsriJSONFeatureSet;
 }
 
 /**
@@ -17254,7 +16805,7 @@ declare function parse(xml: string): Document;
  * @return {Parser} Parser.
  * @template T
  */
-declare function makeArrayExtender<T>(valueReader: (this: T, arg1: Node, arg2: Array<any>) => (Array<any> | undefined), thisArg?: T | undefined): Parser;
+declare function makeArrayExtender<T>(valueReader: (this: T, arg1: Node, arg2: Array<any>) => (Array<any> | undefined), thisArg?: T): Parser;
 /**
  * Make an array pusher function for pushing to the array at the top of the
  * object stack.
@@ -17263,7 +16814,7 @@ declare function makeArrayExtender<T>(valueReader: (this: T, arg1: Node, arg2: A
  * @return {Parser} Parser.
  * @template T
  */
-declare function makeArrayPusher<T>(valueReader: (this: T, arg1: Element, arg2: Array<any>) => any, thisArg?: T | undefined): Parser;
+declare function makeArrayPusher<T>(valueReader: (this: T, arg1: Element, arg2: Array<any>) => any, thisArg?: T): Parser;
 /**
  * Make an object stack replacer function for replacing the object at the
  * top of the stack.
@@ -17272,7 +16823,7 @@ declare function makeArrayPusher<T>(valueReader: (this: T, arg1: Element, arg2: 
  * @return {Parser} Parser.
  * @template T
  */
-declare function makeReplacer<T>(valueReader: (this: T, arg1: Node, arg2: Array<any>) => any, thisArg?: T | undefined): Parser;
+declare function makeReplacer<T>(valueReader: (this: T, arg1: Node, arg2: Array<any>) => any, thisArg?: T): Parser;
 /**
  * Make an object property pusher function for adding a property to the
  * object at the top of the stack.
@@ -17282,7 +16833,7 @@ declare function makeReplacer<T>(valueReader: (this: T, arg1: Node, arg2: Array<
  * @return {Parser} Parser.
  * @template T
  */
-declare function makeObjectPropertyPusher<T>(valueReader: (this: T, arg1: Element, arg2: Array<any>) => any, property?: string | undefined, thisArg?: T | undefined): Parser;
+declare function makeObjectPropertyPusher<T>(valueReader: (this: T, arg1: Element, arg2: Array<any>) => any, property?: string, thisArg?: T): Parser;
 /**
  * Make an object property setter function.
  * @param {function(this: T, Element, Array<*>): *} valueReader Value reader.
@@ -17291,7 +16842,7 @@ declare function makeObjectPropertyPusher<T>(valueReader: (this: T, arg1: Elemen
  * @return {Parser} Parser.
  * @template T
  */
-declare function makeObjectPropertySetter<T>(valueReader: (this: T, arg1: Element, arg2: Array<any>) => any, property?: string | undefined, thisArg?: T | undefined): Parser;
+declare function makeObjectPropertySetter<T>(valueReader: (this: T, arg1: Element, arg2: Array<any>) => any, property?: string, thisArg?: T): Parser;
 /**
  * Create a serializer that appends nodes written by its `nodeWriter` to its
  * designated parent. The parent is the `node` of the
@@ -17301,7 +16852,7 @@ declare function makeObjectPropertySetter<T>(valueReader: (this: T, arg1: Elemen
  * @return {Serializer} Serializer.
  * @template T, V
  */
-declare function makeChildAppender<T, V>(nodeWriter: (this: T, arg1: Node, arg2: V, arg3: Array<any>) => void, thisArg?: T | undefined): Serializer;
+declare function makeChildAppender<T, V>(nodeWriter: (this: T, arg1: Node, arg2: V, arg3: Array<any>) => void, thisArg?: T): Serializer;
 /**
  * Create a serializer that calls the provided `nodeWriter` from
  * {@link module:ol/xml.serialize}. This can be used by the parent writer to have the
@@ -17314,7 +16865,7 @@ declare function makeChildAppender<T, V>(nodeWriter: (this: T, arg1: Node, arg2:
  * @return {Serializer} Serializer.
  * @template T, V
  */
-declare function makeArraySerializer<T, V>(nodeWriter: (this: T, arg1: Element, arg2: V, arg3: Array<any>) => void, thisArg?: T | undefined): Serializer;
+declare function makeArraySerializer<T, V>(nodeWriter: (this: T, arg1: Element, arg2: V, arg3: Array<any>) => void, thisArg?: T): Serializer;
 /**
  * Create a node factory which can use the `keys` passed to
  * {@link module:ol/xml.serialize} or {@link module:ol/xml.pushSerializeAndPop} as node names,
@@ -17328,7 +16879,7 @@ declare function makeArraySerializer<T, V>(nodeWriter: (this: T, arg1: Element, 
  *     be used.
  * @return {function(*, Array<*>, string=): (Node|undefined)} Node factory.
  */
-declare function makeSimpleNodeFactory(fixedNodeName?: string | undefined, fixedNamespaceURI?: string | undefined): (arg0: any, arg1: Array<any>, arg2: string | undefined) => (Node | undefined);
+declare function makeSimpleNodeFactory(fixedNodeName?: string, fixedNamespaceURI?: string): (arg0: any, arg1: Array<any>, arg2: string | undefined) => (Node | undefined);
 /**
  * Create an array of `values` to be used with {@link module:ol/xml.serialize} or
  * {@link module:ol/xml.pushSerializeAndPop}, where `orderedKeys` has to be provided as
@@ -17355,7 +16906,7 @@ declare function makeSequence(object: {
  */
 declare function makeStructureNS<T>(namespaceURIs: Array<string>, structure: T, structureNS?: {
     [x: string]: T;
-} | undefined): {
+}): {
     [x: string]: T;
 };
 /**
@@ -17413,7 +16964,7 @@ declare function serialize<T>(serializersNS: {
     [x: string]: {
         [x: string]: Serializer;
     };
-}, nodeFactory: (this: T, arg1: any, arg2: Array<any>, arg3: (string | undefined)) => (Node | undefined), values: Array<any>, objectStack: Array<any>, keys?: string[] | undefined, thisArg?: T | undefined): void;
+}, nodeFactory: (this: T, arg1: any, arg2: Array<any>, arg3: (string | undefined)) => (Node | undefined), values: Array<any>, objectStack: Array<any>, keys?: Array<string>, thisArg?: T): void;
 /**
  * @param {O} object Object.
  * @param {Object<string, Object<string, Serializer>>} serializersNS
@@ -17441,7 +16992,7 @@ declare function pushSerializeAndPop<O, T>(object: O, serializersNS: {
     [x: string]: {
         [x: string]: Serializer;
     };
-}, nodeFactory: (this: T, arg1: any, arg2: Array<any>, arg3: (string | undefined)) => (Node | undefined), values: Array<any>, objectStack: Array<any>, keys?: string[] | undefined, thisArg?: T | undefined): O | undefined;
+}, nodeFactory: (this: T, arg1: any, arg2: Array<any>, arg3: (string | undefined)) => (Node | undefined), values: Array<any>, objectStack: Array<any>, keys?: Array<string>, thisArg?: T): O | undefined;
 /**
  * Register a XMLSerializer. Can be used  to inject a XMLSerializer
  * where there is no globally available implementation.
@@ -17519,26 +17070,26 @@ declare class XMLFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override readFeature(source: Document | Element | any | string, options?: ReadOptions | undefined): Feature$2;
+    override readFeature(source: Document | Element | any | string, options?: ReadOptions): Feature$2;
     /**
      * @param {Document} doc Document.
      * @param {import("./Feature.js").ReadOptions} [options] Options.
      * @return {import("../Feature.js").default} Feature.
      */
-    readFeatureFromDocument(doc: Document, options?: ReadOptions | undefined): Feature$2;
+    readFeatureFromDocument(doc: Document, options?: ReadOptions): Feature$2;
     /**
      * @param {Element} node Node.
      * @param {import("./Feature.js").ReadOptions} [options] Options.
      * @return {import("../Feature.js").default} Feature.
      */
-    readFeatureFromNode(node: Element, options?: ReadOptions | undefined): Feature$2;
+    readFeatureFromNode(node: Element, options?: ReadOptions): Feature$2;
     /**
      * @param {Document} doc Document.
      * @param {import("./Feature.js").ReadOptions} [options] Options.
      * @protected
      * @return {Array<import("../Feature.js").default>} Features.
      */
-    protected readFeaturesFromDocument(doc: Document, options?: ReadOptions | undefined): Array<Feature$2>;
+    protected readFeaturesFromDocument(doc: Document, options?: ReadOptions): Array<Feature$2>;
     /**
      * @abstract
      * @param {Element} node Node.
@@ -17546,21 +17097,21 @@ declare class XMLFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @protected
      * @return {Array<import("../Feature.js").default>} Features.
      */
-    protected readFeaturesFromNode(node: Element, options?: ReadOptions | undefined): Array<Feature$2>;
+    protected readFeaturesFromNode(node: Element, options?: ReadOptions): Array<Feature$2>;
     /**
      * @param {Document} doc Document.
      * @param {import("./Feature.js").ReadOptions} [options] Options.
      * @protected
      * @return {import("../geom/Geometry.js").default} Geometry.
      */
-    protected readGeometryFromDocument(doc: Document, options?: ReadOptions | undefined): Geometry$1;
+    protected readGeometryFromDocument(doc: Document, options?: ReadOptions): Geometry$1;
     /**
      * @param {Element} node Node.
      * @param {import("./Feature.js").ReadOptions} [options] Options.
      * @protected
      * @return {import("../geom/Geometry.js").default} Geometry.
      */
-    protected readGeometryFromNode(node: Element, options?: ReadOptions | undefined): Geometry$1;
+    protected readGeometryFromNode(node: Element, options?: ReadOptions): Geometry$1;
     /**
      * Read the projection from the source.
      *
@@ -17590,14 +17141,14 @@ declare class XMLFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @return {string} Encoded feature.
      * @override
      */
-    override writeFeature(feature: Feature$2, options?: WriteOptions | undefined): string;
+    override writeFeature(feature: Feature$2, options?: WriteOptions): string;
     /**
      * @param {import("../Feature.js").default} feature Feature.
      * @param {import("./Feature.js").WriteOptions} [options] Options.
      * @protected
      * @return {Node} Node.
      */
-    protected writeFeatureNode(feature: Feature$2, options?: WriteOptions | undefined): Node;
+    protected writeFeatureNode(feature: Feature$2, options?: WriteOptions): Node;
     /**
      * Encode an array of features as string.
      *
@@ -17607,13 +17158,13 @@ declare class XMLFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override writeFeatures(features: Array<Feature$2>, options?: WriteOptions | undefined): string;
+    override writeFeatures(features: Array<Feature$2>, options?: WriteOptions): string;
     /**
      * @param {Array<import("../Feature.js").default>} features Features.
      * @param {import("./Feature.js").WriteOptions} [options] Options.
      * @return {Node} Node.
      */
-    writeFeaturesNode(features: Array<Feature$2>, options?: WriteOptions | undefined): Node;
+    writeFeaturesNode(features: Array<Feature$2>, options?: WriteOptions): Node;
     /**
      * Encode a geometry as string.
      *
@@ -17622,17 +17173,17 @@ declare class XMLFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @return {string} Encoded geometry.
      * @override
      */
-    override writeGeometry(geometry: Geometry$1, options?: WriteOptions | undefined): string;
+    override writeGeometry(geometry: Geometry$1, options?: WriteOptions): string;
     /**
      * @param {import("../geom/Geometry.js").default} geometry Geometry.
      * @param {import("./Feature.js").WriteOptions} [options] Options.
      * @return {Node} Node.
      */
-    writeGeometryNode(geometry: Geometry$1, options?: WriteOptions | undefined): Node;
+    writeGeometryNode(geometry: Geometry$1, options?: WriteOptions): Node;
 }
 //# sourceMappingURL=XMLFeature.d.ts.map
 
-type Options$1o = {
+type Options$1r = {
     /**
      * Feature
      * namespace. If not defined will be derived from GML. If multiple
@@ -17737,7 +17288,7 @@ declare class GMLBase extends XMLFeature {
     /**
      * @param {Options} [options] Optional configuration object.
      */
-    constructor(options?: Options$1o | undefined);
+    constructor(options?: Options$1r);
     /**
      * @protected
      * @type {Array<string>|string|undefined}
@@ -18255,7 +17806,7 @@ declare class GML3 extends GMLBase {
      * @api
      * @override
      */
-    override writeFeaturesNode(features: Array<Feature$2>, options?: WriteOptions | undefined): Element;
+    override writeFeaturesNode(features: Array<Feature$2>, options?: WriteOptions): Element;
     /**
      * @const
      * @type {Object<string, Object<string, import("../xml.js").Parser>>}
@@ -18705,7 +18256,7 @@ type GPXMetadata = {
      */
     extensions?: any;
 };
-type Options$1n = {
+type Options$1q = {
     /**
      * Callback function
      * to process `extensions` nodes. To prevent memory leaks, this callback function must
@@ -18750,7 +18301,7 @@ declare class GPX extends XMLFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1n | undefined);
+    constructor(options?: Options$1q);
     /**
      * @type {function(Feature, Node): void|undefined}
      * @private
@@ -18842,7 +18393,10 @@ interface GeoJsonObject {
 /**
  * Union of GeoJSON objects.
  */
-type GeoJSON$1 = Geometry | Feature$1 | FeatureCollection;
+type GeoJSON$1<G extends Geometry | null = Geometry, P = GeoJsonProperties> =
+    | G
+    | Feature$1<G, P>
+    | FeatureCollection<G, P>;
 
 /**
  * Geometry object.
@@ -18949,7 +18503,7 @@ type GeoJSONFeature = Feature$1;
 type GeoJSONFeatureCollection = FeatureCollection;
 type GeoJSONGeometry = Geometry;
 type GeoJSONGeometryCollection = GeometryCollection;
-type Options$1m<FeatureType extends FeatureLike = Feature$2<Geometry$1>> = {
+type Options$1p<FeatureType extends FeatureLike = Feature$2<Geometry$1>> = {
     /**
      * Default data projection.
      */
@@ -19020,7 +18574,7 @@ declare class GeoJSON<FeatureType extends FeatureLike = Feature$2<Geometry$1>> e
     /**
      * @param {Options<FeatureType>} [options] Options.
      */
-    constructor(options?: Options$1m<FeatureType> | undefined);
+    constructor(options?: Options$1p<FeatureType>);
     /**
      * Name of the geometry attribute for features.
      * @type {string|undefined}
@@ -19040,7 +18594,7 @@ declare class GeoJSON<FeatureType extends FeatureLike = Feature$2<Geometry$1>> e
      * @return {import("../geom/Geometry.js").default} Geometry.
      * @override
      */
-    protected override readGeometryFromObject(object: GeoJSONGeometry, options?: ReadOptions | undefined): Geometry$1;
+    protected override readGeometryFromObject(object: GeoJSONGeometry, options?: ReadOptions): Geometry$1;
     /**
      * Encode a feature as a GeoJSON Feature object.
      *
@@ -19050,7 +18604,7 @@ declare class GeoJSON<FeatureType extends FeatureLike = Feature$2<Geometry$1>> e
      * @api
      * @override
      */
-    override writeFeatureObject(feature: Feature$2, options?: WriteOptions | undefined): GeoJSONFeature;
+    override writeFeatureObject(feature: Feature$2, options?: WriteOptions): GeoJSONFeature;
     /**
      * Encode an array of features as a GeoJSON object.
      *
@@ -19060,7 +18614,7 @@ declare class GeoJSON<FeatureType extends FeatureLike = Feature$2<Geometry$1>> e
      * @api
      * @override
      */
-    override writeFeaturesObject(features: Array<Feature$2>, options?: WriteOptions | undefined): GeoJSONFeatureCollection;
+    override writeFeaturesObject(features: Array<Feature$2>, options?: WriteOptions): GeoJSONFeatureCollection;
     /**
      * Encode a geometry as a GeoJSON object.
      *
@@ -19070,7 +18624,7 @@ declare class GeoJSON<FeatureType extends FeatureLike = Feature$2<Geometry$1>> e
      * @api
      * @override
      */
-    override writeGeometryObject(geometry: Geometry$1, options?: WriteOptions | undefined): GeoJSONGeometry | GeoJSONGeometryCollection;
+    override writeGeometryObject(geometry: Geometry$1, options?: WriteOptions): GeoJSONGeometry | GeoJSONGeometryCollection;
 }
 
 /**
@@ -19092,7 +18646,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override readFeature(source: Document | Element | any | string, options?: ReadOptions | undefined): Feature$2;
+    override readFeature(source: Document | Element | any | string, options?: ReadOptions): Feature$2;
     /**
      * @abstract
      * @param {string} text Text.
@@ -19100,7 +18654,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @protected
      * @return {import("../Feature.js").default} Feature.
      */
-    protected readFeatureFromText(text: string, options?: ReadOptions | undefined): Feature$2;
+    protected readFeatureFromText(text: string, options?: ReadOptions): Feature$2;
     /**
      * @abstract
      * @param {string} text Text.
@@ -19108,7 +18662,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @protected
      * @return {Array<import("../Feature.js").default>} Features.
      */
-    protected readFeaturesFromText(text: string, options?: ReadOptions | undefined): Array<Feature$2>;
+    protected readFeaturesFromText(text: string, options?: ReadOptions): Array<Feature$2>;
     /**
      * @abstract
      * @param {string} text Text.
@@ -19116,7 +18670,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @protected
      * @return {import("../geom/Geometry.js").default} Geometry.
      */
-    protected readGeometryFromText(text: string, options?: ReadOptions | undefined): Geometry$1;
+    protected readGeometryFromText(text: string, options?: ReadOptions): Geometry$1;
     /**
      * @param {string} text Text.
      * @protected
@@ -19132,7 +18686,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override writeFeature(feature: Feature$2, options?: WriteOptions | undefined): string;
+    override writeFeature(feature: Feature$2, options?: WriteOptions): string;
     /**
      * @abstract
      * @param {import("../Feature.js").default} feature Features.
@@ -19140,7 +18694,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @protected
      * @return {string} Text.
      */
-    protected writeFeatureText(feature: Feature$2, options?: WriteOptions | undefined): string;
+    protected writeFeatureText(feature: Feature$2, options?: WriteOptions): string;
     /**
      * Encode an array of features as string.
      *
@@ -19150,7 +18704,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override writeFeatures(features: Array<Feature$2>, options?: WriteOptions | undefined): string;
+    override writeFeatures(features: Array<Feature$2>, options?: WriteOptions): string;
     /**
      * @abstract
      * @param {Array<import("../Feature.js").default>} features Features.
@@ -19158,7 +18712,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @protected
      * @return {string} Text.
      */
-    protected writeFeaturesText(features: Array<Feature$2>, options?: WriteOptions | undefined): string;
+    protected writeFeaturesText(features: Array<Feature$2>, options?: WriteOptions): string;
     /**
      * Write a single geometry.
      *
@@ -19168,7 +18722,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override writeGeometry(geometry: Geometry$1, options?: WriteOptions | undefined): string;
+    override writeGeometry(geometry: Geometry$1, options?: WriteOptions): string;
     /**
      * @abstract
      * @param {import("../geom/Geometry.js").default} geometry Geometry.
@@ -19176,7 +18730,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
      * @protected
      * @return {string} Text.
      */
-    protected writeGeometryText(geometry: Geometry$1, options?: WriteOptions | undefined): string;
+    protected writeGeometryText(geometry: Geometry$1, options?: WriteOptions): string;
 }
 //# sourceMappingURL=TextFeature.d.ts.map
 
@@ -19184,7 +18738,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
  * IGC altitude/z. One of 'barometric', 'gps', 'none'.
  */
 type IGCZ = "barometric" | "gps" | "none";
-type Options$1l = {
+type Options$1o = {
     /**
      * Altitude mode. Possible
      * values are `'barometric'`, `'gps'`, and `'none'`.
@@ -19210,7 +18764,7 @@ declare class IGC extends TextFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1l | undefined);
+    constructor(options?: Options$1o);
     /**
      * @private
      * @type {IGCZ}
@@ -19248,7 +18802,7 @@ declare class IGC extends TextFeature {
     private lodStop_;
 }
 
-type Options$1k = {
+type Options$1n = {
     /**
      * Extent for the tile grid. No tiles
      * outside this extent will be requested by {@link module :ol/source/Tile~TileSource} sources.
@@ -19342,7 +18896,7 @@ declare class WMTSTileGrid extends TileGrid {
     /**
      * @param {Options} options WMTS options.
      */
-    constructor(options: Options$1k);
+    constructor(options: Options$1n);
     /**
      * @private
      * @type {!Array<string>}
@@ -19383,7 +18937,7 @@ declare function wrapX(tileGrid: TileGrid, tileCoord: TileCoord, projection: Pro
  * @param {import("./extent.js").Corner} [corner] Extent corner (default is `'top-left'`).
  * @return {!TileGrid} TileGrid instance.
  */
-declare function createForExtent(extent: Extent$1, maxZoom?: number | undefined, tileSize?: number | Size | undefined, corner?: Corner | undefined): TileGrid;
+declare function createForExtent(extent: Extent$1, maxZoom?: number, tileSize?: number | Size, corner?: Corner): TileGrid;
 /**
  * @typedef {Object} XYZOptions
  * @property {import("./extent.js").Extent} [extent] Extent for the tile grid. The origin for an XYZ tile grid is the
@@ -19401,7 +18955,7 @@ declare function createForExtent(extent: Extent$1, maxZoom?: number | undefined,
  * @return {!TileGrid} Tile grid instance.
  * @api
  */
-declare function createXYZ(options?: XYZOptions | undefined): TileGrid;
+declare function createXYZ(options?: XYZOptions): TileGrid;
 /**
  * @param {import("./proj.js").ProjectionLike} projection Projection.
  * @param {number} [maxZoom] Maximum zoom level (default is
@@ -19411,7 +18965,7 @@ declare function createXYZ(options?: XYZOptions | undefined): TileGrid;
  * @param {import("./extent.js").Corner} [corner] Extent corner (default is `'top-left'`).
  * @return {!TileGrid} TileGrid instance.
  */
-declare function createForProjection(projection: ProjectionLike, maxZoom?: number | undefined, tileSize?: number | Size | undefined, corner?: Corner | undefined): TileGrid;
+declare function createForProjection(projection: ProjectionLike, maxZoom?: number, tileSize?: number | Size, corner?: Corner): TileGrid;
 /**
  * Generate a tile grid extent from a projection.  If the projection has an
  * extent, it is used.  If not, a global extent is assumed.
@@ -19458,20 +19012,20 @@ declare class TileSourceEvent extends BaseEvent {
      * @param {string} type Type.
      * @param {import("../Tile.js").default} tile The tile.
      */
-    constructor(type: string, tile: Tile);
+    constructor(type: string, tile: Tile$1);
     /**
      * The tile related to the event.
      * @type {import("../Tile.js").default}
      * @api
      */
-    tile: Tile;
+    tile: Tile$1;
 }
 
 /**
  * *
  */
 type TileSourceOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2, ObjectEvent, Return> & OnSignature<TileSourceEventTypes, TileSourceEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | TileSourceEventTypes, Return>;
-type Options$1j = {
+type Options$1m = {
     /**
      * Attributions.
      */
@@ -19557,11 +19111,11 @@ type Options$1j = {
  * @abstract
  * @api
  */
-declare class TileSource<TileType extends Tile = Tile> extends Source {
+declare class TileSource<TileType extends Tile$1 = Tile$1> extends Source {
     /**
      * @param {Options} options SourceTile source options.
      */
-    constructor(options: Options$1j);
+    constructor(options: Options$1m);
     /***
      * @type {TileSourceOnSignature<import("../events").EventsKey>}
      */
@@ -19598,7 +19152,7 @@ declare class TileSource<TileType extends Tile = Tile> extends Source {
      * @protected
      * @type {import("../Tile.js").Options}
      */
-    protected tileOptions: Options$1O;
+    protected tileOptions: Options$1Q;
     /**
      * zDirection hint, read by the renderer. Indicates which resolution should be used
      * by a renderer if the views resolution does not match any resolution of the tile source.
@@ -19668,7 +19222,7 @@ declare class TileSource<TileType extends Tile = Tile> extends Source {
      * @return {import("../tilecoord.js").TileCoord} Tile coordinate to be passed to the tileUrlFunction or
      *     null if no tile URL should be created for the passed `tileCoord`.
      */
-    getTileCoordForTileUrlFunction(tileCoord: TileCoord, projection?: Projection | undefined): TileCoord;
+    getTileCoordForTileUrlFunction(tileCoord: TileCoord, projection?: Projection): TileCoord;
     /**
      * Remove all cached reprojected tiles from the source. The next render cycle will create new tiles.
      * @api
@@ -19676,7 +19230,7 @@ declare class TileSource<TileType extends Tile = Tile> extends Source {
     clear(): void;
 }
 
-type Options$1i = {
+type Options$1l = {
     /**
      * Attributions.
      */
@@ -19770,11 +19324,11 @@ type Options$1i = {
  *
  * @fires import("./Tile.js").TileSourceEvent
  */
-declare class UrlTile extends TileSource<Tile> {
+declare class UrlTile extends TileSource<Tile$1> {
     /**
      * @param {Options} options Image tile options.
      */
-    constructor(options: Options$1i);
+    constructor(options: Options$1l);
     /**
      * @private
      * @type {boolean}
@@ -19845,7 +19399,7 @@ declare class UrlTile extends TileSource<Tile> {
      * @param {string} [key] Optional new tile key for the source.
      * @api
      */
-    setTileUrlFunction(tileUrlFunction: UrlFunction, key?: string | undefined): void;
+    setTileUrlFunction(tileUrlFunction: UrlFunction, key?: string): void;
     /**
      * Set the URL to use for requests.
      * @param {string} url URL.
@@ -19876,7 +19430,7 @@ type FunctionType$2 = (arg0: number, arg1: number, arg2: number, arg3: number) =
  * See {@link module:ol/source/TileImage~TileImage}.
  *
  */
-declare class ReprojTile extends Tile {
+declare class ReprojTile extends Tile$1 {
     /**
      * @param {import("../proj/Projection.js").default} sourceProj Source projection.
      * @param {import("../tilegrid/TileGrid.js").default} sourceTileGrid Source tile grid.
@@ -19892,7 +19446,7 @@ declare class ReprojTile extends Tile {
      * @param {boolean} [renderEdges] Render reprojection edges.
      * @param {import("../Tile.js").Options} [options] Tile options.
      */
-    constructor(sourceProj: Projection, sourceTileGrid: TileGrid, targetProj: Projection, targetTileGrid: TileGrid, tileCoord: TileCoord, wrappedTileCoord: TileCoord, pixelRatio: number, gutter: number, getTileFunction: FunctionType$2, errorThreshold?: number | undefined, renderEdges?: boolean | undefined, options?: Options$1O | undefined);
+    constructor(sourceProj: Projection, sourceTileGrid: TileGrid, targetProj: Projection, targetTileGrid: TileGrid, tileCoord: TileCoord, wrappedTileCoord: TileCoord, pixelRatio: number, gutter: number, getTileFunction: FunctionType$2, errorThreshold?: number, renderEdges?: boolean, options?: Options$1Q);
     /**
      * @private
      * @type {boolean}
@@ -19968,7 +19522,7 @@ declare class ReprojTile extends Tile {
     private unlistenSources_;
 }
 
-type Options$1h = {
+type Options$1k = {
     /**
      * Attributions.
      */
@@ -20121,7 +19675,7 @@ declare class TileImage extends UrlTile {
     /**
      * @param {!Options} options Image tile options.
      */
-    constructor(options: Options$1h);
+    constructor(options: Options$1k);
     /**
      * @protected
      * @type {?string}
@@ -20205,7 +19759,7 @@ declare class TileImage extends UrlTile {
     setTileGridForProjection(projection: ProjectionLike, tilegrid: TileGrid): void;
 }
 
-type Options$1g = {
+type Options$1j = {
     /**
      * Attributions.
      */
@@ -20313,7 +19867,7 @@ declare class IIIF extends TileImage {
      * to parse Image API service information responses into constructor options.
      * @api
      */
-    constructor(options?: Options$1g | undefined);
+    constructor(options?: Options$1j);
 }
 
 /**
@@ -20395,9 +19949,9 @@ type IiifProfile = {
     maxWidth?: number | undefined;
 };
 type ImageInformationResponse = {
-    [x: string]: string | number | Array<number | string | IiifProfile | {
+    [x: string]: string | number | (string | number | IiifProfile | {
         [x: string]: number;
-    } | TileInfo>;
+    } | TileInfo)[];
 };
 /**
  * @classdesc
@@ -20445,7 +19999,231 @@ declare class IIIFInfo {
      * @return {import("../source/IIIF.js").Options|undefined} IIIF tile source ready constructor options.
      * @api
      */
-    getTileSourceOptions(preferredOptions?: PreferredOptions | undefined): Options$1g | undefined;
+    getTileSourceOptions(preferredOptions?: PreferredOptions): Options$1j | undefined;
+}
+
+/**
+ * Anchor unit can be either a fraction of the icon size or in pixels.
+ */
+type IconAnchorUnits = "fraction" | "pixels";
+/**
+ * Icon origin. One of 'bottom-left', 'bottom-right', 'top-left', 'top-right'.
+ */
+type IconOrigin = "bottom-left" | "bottom-right" | "top-left" | "top-right";
+type Options$1i = {
+    /**
+     * Anchor. Default value is the icon center.
+     */
+    anchor?: number[] | undefined;
+    /**
+     * Origin of the anchor: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    anchorOrigin?: IconOrigin | undefined;
+    /**
+     * Units in which the anchor x value is
+     * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
+     * the x value in pixels.
+     */
+    anchorXUnits?: IconAnchorUnits | undefined;
+    /**
+     * Units in which the anchor y value is
+     * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
+     * the y value in pixels.
+     */
+    anchorYUnits?: IconAnchorUnits | undefined;
+    /**
+     * Color to tint the icon. If not specified,
+     * the icon will be left as is.
+     */
+    color?: string | Color | undefined;
+    /**
+     * The `crossOrigin` attribute for loaded images. Note that you must provide a
+     * `crossOrigin` value if you want to access pixel data with the Canvas renderer.
+     * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+     */
+    crossOrigin?: string | null | undefined;
+    /**
+     * Image object for the icon.
+     */
+    img?: HTMLCanvasElement | HTMLImageElement | ImageBitmap | undefined;
+    /**
+     * Displacement of the icon in pixels.
+     * Positive values will shift the icon right and up.
+     */
+    displacement?: number[] | undefined;
+    /**
+     * Opacity of the icon.
+     */
+    opacity?: number | undefined;
+    /**
+     * The width of the icon in pixels. This can't be used together with `scale`.
+     */
+    width?: number | undefined;
+    /**
+     * The height of the icon in pixels. This can't be used together with `scale`.
+     */
+    height?: number | undefined;
+    /**
+     * Scale.
+     */
+    scale?: number | Size | undefined;
+    /**
+     * Whether to rotate the icon with the view.
+     */
+    rotateWithView?: boolean | undefined;
+    /**
+     * Rotation in radians (positive rotation clockwise).
+     */
+    rotation?: number | undefined;
+    /**
+     * Offset which, together with `size` and `offsetOrigin`, defines the
+     * sub-rectangle to use from the original (sprite) image.
+     */
+    offset?: number[] | undefined;
+    /**
+     * Origin of the offset: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    offsetOrigin?: IconOrigin | undefined;
+    /**
+     * Icon size in pixels. Used together with `offset` to define the
+     * sub-rectangle to use from the original (sprite) image.
+     */
+    size?: Size | undefined;
+    /**
+     * Image source URI.
+     */
+    src?: string | undefined;
+    /**
+     * Declutter mode.
+     */
+    declutterMode?: DeclutterMode | undefined;
+};
+/**
+ * @classdesc
+ * Set icon style for vector features.
+ * @api
+ */
+declare class Icon extends ImageStyle {
+    /**
+     * @param {Options} [options] Options.
+     */
+    constructor(options?: Options$1i);
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private anchor_;
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private normalizedAnchor_;
+    /**
+     * @private
+     * @type {IconOrigin}
+     */
+    private anchorOrigin_;
+    /**
+     * @private
+     * @type {IconAnchorUnits}
+     */
+    private anchorXUnits_;
+    /**
+     * @private
+     * @type {IconAnchorUnits}
+     */
+    private anchorYUnits_;
+    /**
+     * @private
+     * @type {?string}
+     */
+    private crossOrigin_;
+    /**
+     * @private
+     * @type {import("../color.js").Color}
+     */
+    private color_;
+    /**
+     * @private
+     * @type {import("./IconImage.js").default}
+     */
+    private iconImage_;
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private offset_;
+    /**
+     * @private
+     * @type {IconOrigin}
+     */
+    private offsetOrigin_;
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private origin_;
+    /**
+     * @private
+     * @type {import("../size.js").Size}
+     */
+    private size_;
+    initialOptions_: Options$1i | undefined;
+    /**
+     * Clones the style. The underlying Image/HTMLCanvasElement is not cloned.
+     * @return {Icon} The cloned style.
+     * @api
+     * @override
+     */
+    override clone(): Icon;
+    /**
+     * Set the anchor point. The anchor determines the center point for the
+     * symbolizer.
+     *
+     * @param {Array<number>} anchor Anchor.
+     * @api
+     */
+    setAnchor(anchor: Array<number>): void;
+    /**
+     * Get the icon color.
+     * @return {import("../color.js").Color} Color.
+     * @api
+     */
+    getColor(): Color;
+    /**
+     * Get the image icon.
+     * @param {number} pixelRatio Pixel ratio.
+     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image or Canvas element. If the Icon
+     * style was configured with `src` or with a not let loaded `img`, an `ImageBitmap` will be returned.
+     * @api
+     * @override
+     */
+    override getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    /**
+     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image element.
+     * @override
+     */
+    override getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    /**
+     * Get the image URL.
+     * @return {string|undefined} Image src.
+     * @api
+     */
+    getSrc(): string | undefined;
+    /**
+     * Get the width of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
+     * @return {number} Icon width (in pixels).
+     * @api
+     */
+    getWidth(): number;
+    /**
+     * Get the height of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
+     * @return {number} Icon height (in pixels).
+     * @api
+     */
+    getHeight(): number;
 }
 
 /**
@@ -20454,7 +20232,7 @@ declare class IIIFInfo {
  * data url obtained from a KMZ array buffer.
  */
 type IconUrlFunction = (arg0: string) => string;
-type Options$1f = {
+type Options$1h = {
     /**
      * Extract styles from the KML.
      */
@@ -20513,7 +20291,7 @@ declare class KML extends XMLFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1f | undefined);
+    constructor(options?: Options$1h);
     /**
      * @private
      * @type {Array<Style>}
@@ -20745,7 +20523,7 @@ declare class KML extends XMLFeature {
     }>;
 }
 
-type Options$1e<FeatureType extends FeatureLike = RenderFeature> = {
+type Options$1g<FeatureType extends FeatureLike = RenderFeature> = {
     /**
      * Class for features returned by
      * {@link module :ol/format/MVT~MVT#readFeatures}. Set to {@link module :ol/Feature~Feature} to get full editing and geometry
@@ -20796,7 +20574,7 @@ declare class MVT<FeatureType extends FeatureLike = RenderFeature> extends Featu
     /**
      * @param {Options<FeatureType>} [options] Options.
      */
-    constructor(options?: Options$1e<FeatureType> | undefined);
+    constructor(options?: Options$1g<FeatureType>);
     /**
      * @private
      * @type {string|undefined}
@@ -20844,7 +20622,7 @@ declare class MVT<FeatureType extends FeatureLike = RenderFeature> extends Featu
      * @api
      * @override
      */
-    override readFeatures(source: ArrayBuffer, options?: ReadOptions | undefined): Array<FeatureType>;
+    override readFeatures(source: ArrayBuffer, options?: ReadOptions): Array<FeatureType>;
     /**
      * Read the projection from the source.
      *
@@ -20906,7 +20684,7 @@ declare class OWS extends XML {
 }
 //# sourceMappingURL=OWS.d.ts.map
 
-type Options$1d = {
+type Options$1f = {
     /**
      * The factor by which the coordinates values will be scaled.
      */
@@ -20941,7 +20719,7 @@ declare class Polyline extends TextFeature {
     /**
      * @param {Options} [options] Optional configuration object.
      */
-    constructor(options?: Options$1d | undefined);
+    constructor(options?: Options$1f);
     /**
      * @private
      * @type {number}
@@ -20959,7 +20737,7 @@ declare class Polyline extends TextFeature {
      * @return {string} Text.
      * @override
      */
-    protected override writeFeatureText(feature: Feature$2<LineString$1>, options?: WriteOptions | undefined): string;
+    protected override writeFeatureText(feature: Feature$2<LineString$1>, options?: WriteOptions): string;
     /**
      * @param {Array<import("../Feature.js").default<LineString>>} features Features.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
@@ -20967,7 +20745,7 @@ declare class Polyline extends TextFeature {
      * @return {string} Text.
      * @override
      */
-    protected override writeFeaturesText(features: Array<Feature$2<LineString$1>>, options?: WriteOptions | undefined): string;
+    protected override writeFeaturesText(features: Array<Feature$2<LineString$1>>, options?: WriteOptions): string;
     /**
      * @param {LineString} geometry Geometry.
      * @param {import("./Feature.js").WriteOptions} [options] Write options.
@@ -20975,10 +20753,10 @@ declare class Polyline extends TextFeature {
      * @return {string} Text.
      * @override
      */
-    protected override writeGeometryText(geometry: LineString$1, options?: WriteOptions | undefined): string;
+    protected override writeGeometryText(geometry: LineString$1, options?: WriteOptions): string;
 }
 
-type Options$1c = {
+type Options$1e = {
     /**
      * Default data projection.
      */
@@ -21053,7 +20831,7 @@ declare class TopoJSON extends JSONFeature<Feature$2<Geometry$1>> {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1c | undefined);
+    constructor(options?: Options$1e);
     /**
      * @private
      * @type {string|undefined}
@@ -21094,7 +20872,7 @@ declare class Filter {
 }
 //# sourceMappingURL=Filter.d.ts.map
 
-type Options$1b = {
+type Options$1d = {
     /**
      * The namespace URI used for features.
      */
@@ -21238,7 +21016,7 @@ type WriteTransactionOptions = {
     /**
      * GML options for the WFS transaction writer.
      */
-    gmlOptions?: Options$1o | undefined;
+    gmlOptions?: Options$1r | undefined;
     /**
      * WFS version to use for the transaction. Can be either `1.0.0`, `1.1.0` or `2.0.0`.
      */
@@ -21297,7 +21075,7 @@ declare class WFS extends XMLFeature {
     /**
      * @param {Options} [options] Optional configuration object.
      */
-    constructor(options?: Options$1b | undefined);
+    constructor(options?: Options$1d);
     /**
      * @private
      * @type {string}
@@ -21388,7 +21166,7 @@ declare class WFS extends XMLFeature {
      * @param {import("./filter/Filter.js").default} [filter] Filter condition.
      * @return {import("./filter/Filter.js").default} The filter.
      */
-    combineBboxAndFilter(geometryName: string, extent: Extent$1, srsName?: string | undefined, filter?: Filter | undefined): Filter;
+    combineBboxAndFilter(geometryName: string, extent: Extent$1, srsName?: string, filter?: Filter): Filter;
     /**
      * Encode format as WFS `Transaction` and return the Node.
      *
@@ -21402,7 +21180,7 @@ declare class WFS extends XMLFeature {
     writeTransaction(inserts: Array<Feature$2>, updates: Array<Feature$2>, deletes: Array<Feature$2>, options: WriteTransactionOptions): Node;
 }
 
-type Options$1a = {
+type Options$1c = {
     /**
      * Whether to split GeometryCollections into multiple features on reading.
      */
@@ -21458,9 +21236,9 @@ declare class WKB extends FeatureFormat<Feature$2<Geometry$1>> {
     /**
      * @param {Options} [options] Optional configuration object.
      */
-    constructor(options?: Options$1a | undefined);
+    constructor(options?: Options$1c);
     splitCollection: boolean;
-    viewCache_: DataView | null;
+    viewCache_: DataView<ArrayBufferLike> | null;
     hex_: boolean;
     littleEndian_: boolean;
     ewkb_: boolean;
@@ -21477,7 +21255,7 @@ declare class WKB extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override readFeature(source: string | ArrayBuffer | ArrayBufferView, options?: ReadOptions | undefined): Feature$2;
+    override readFeature(source: string | ArrayBuffer | ArrayBufferView, options?: ReadOptions): Feature$2;
     /**
      * Read all features from a source.
      *
@@ -21487,7 +21265,7 @@ declare class WKB extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override readFeatures(source: string | ArrayBuffer | ArrayBufferView, options?: ReadOptions | undefined): Array<Feature$2>;
+    override readFeatures(source: string | ArrayBuffer | ArrayBufferView, options?: ReadOptions): Array<Feature$2>;
     /**
      * Read a single geometry from a source.
      *
@@ -21497,7 +21275,7 @@ declare class WKB extends FeatureFormat<Feature$2<Geometry$1>> {
      * @api
      * @override
      */
-    override readGeometry(source: string | ArrayBuffer | ArrayBufferView, options?: ReadOptions | undefined): Geometry$1;
+    override readGeometry(source: string | ArrayBuffer | ArrayBufferView, options?: ReadOptions): Geometry$1;
     /**
      * Read the projection from a source.
      *
@@ -21509,7 +21287,7 @@ declare class WKB extends FeatureFormat<Feature$2<Geometry$1>> {
     override readProjection(source: string | ArrayBuffer | ArrayBufferView): Projection | undefined;
 }
 
-type Options$19 = {
+type Options$1b = {
     /**
      * Whether to split GeometryCollections into
      * multiple features on reading.
@@ -21527,7 +21305,7 @@ declare class WKT extends TextFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$19 | undefined);
+    constructor(options?: Options$1b);
     /**
      * Split GeometryCollection into multiple features.
      * @type {boolean}
@@ -21562,7 +21340,7 @@ declare class WMSCapabilities extends XML {
     version: string | undefined;
 }
 
-type Options$18 = {
+type Options$1a = {
     /**
      * If set, only features of the given layers will be returned by the format when read.
      */
@@ -21579,7 +21357,7 @@ declare class WMSGetFeatureInfo extends XMLFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$18 | undefined);
+    constructor(options?: Options$1a);
     /**
      * @private
      * @type {string}
@@ -21675,7 +21453,7 @@ declare class Bbox extends Filter {
      * @param {string} [srsName] SRS name. No srsName attribute will be set
      * on geometries when this is not provided.
      */
-    constructor(geometryName: string, extent: Extent$1, srsName?: string | undefined);
+    constructor(geometryName: string, extent: Extent$1, srsName?: string);
     /**
      * @type {!string}
      */
@@ -21725,7 +21503,7 @@ declare class ComparisonBinary extends Comparison {
      * @param {!(string|number)} expression The value to compare.
      * @param {boolean} [matchCase] Case-sensitive?
      */
-    constructor(tagName: string, propertyName: string, expression: (string | number), matchCase?: boolean | undefined);
+    constructor(tagName: string, propertyName: string, expression: (string | number), matchCase?: boolean);
     /**
      * @type {!(string|number)}
      */
@@ -21753,7 +21531,7 @@ declare class Spatial extends Filter {
      * @param {string} [srsName] SRS name. No srsName attribute will be
      *    set on geometries when this is not provided.
      */
-    constructor(tagName: string, geometryName: string, geometry: Geometry$1, srsName?: string | undefined);
+    constructor(tagName: string, geometryName: string, geometry: Geometry$1, srsName?: string);
     /**
      * @type {!string}
      */
@@ -21782,7 +21560,7 @@ declare class Contains extends Spatial {
      * @param {string} [srsName] SRS name. No srsName attribute will be
      *    set on geometries when this is not provided.
      */
-    constructor(geometryName: string, geometry: Geometry$1, srsName?: string | undefined);
+    constructor(geometryName: string, geometry: Geometry$1, srsName?: string);
 }
 //# sourceMappingURL=Contains.d.ts.map
 
@@ -21801,7 +21579,7 @@ declare class DWithin extends Spatial {
      * @param {string} [srsName] SRS name. No srsName attribute will be
      *    set on geometries when this is not provided.
      */
-    constructor(geometryName: string, geometry: Geometry$1, distance: number, unit: string, srsName?: string | undefined);
+    constructor(geometryName: string, geometry: Geometry$1, distance: number, unit: string, srsName?: string);
     /**
      * @public
      * @type {!number}
@@ -21828,7 +21606,7 @@ declare class Disjoint extends Spatial {
      * @param {string} [srsName] SRS name. No srsName attribute will be
      *    set on geometries when this is not provided.
      */
-    constructor(geometryName: string, geometry: Geometry$1, srsName?: string | undefined);
+    constructor(geometryName: string, geometry: Geometry$1, srsName?: string);
 }
 //# sourceMappingURL=Disjoint.d.ts.map
 
@@ -21866,7 +21644,7 @@ declare class EqualTo extends ComparisonBinary {
      * @param {!(string|number)} expression The value to compare.
      * @param {boolean} [matchCase] Case-sensitive?
      */
-    constructor(propertyName: string, expression: (string | number), matchCase?: boolean | undefined);
+    constructor(propertyName: string, expression: (string | number), matchCase?: boolean);
 }
 //# sourceMappingURL=EqualTo.d.ts.map
 
@@ -21911,7 +21689,7 @@ declare class Intersects extends Spatial {
      * @param {string} [srsName] SRS name. No srsName attribute will be
      *    set on geometries when this is not provided.
      */
-    constructor(geometryName: string, geometry: Geometry$1, srsName?: string | undefined);
+    constructor(geometryName: string, geometry: Geometry$1, srsName?: string);
 }
 //# sourceMappingURL=Intersects.d.ts.map
 
@@ -21956,7 +21734,7 @@ declare class IsLike extends Comparison {
      *    the pattern characters. Default is '!'.
      * @param {boolean} [matchCase] Case-sensitive?
      */
-    constructor(propertyName: string, pattern: string, wildCard?: string | undefined, singleChar?: string | undefined, escapeChar?: string | undefined, matchCase?: boolean | undefined);
+    constructor(propertyName: string, pattern: string, wildCard?: string, singleChar?: string, escapeChar?: string, matchCase?: boolean);
     /**
      * @type {!string}
      */
@@ -22049,7 +21827,7 @@ declare class NotEqualTo extends ComparisonBinary {
      * @param {!(string|number)} expression The value to compare.
      * @param {boolean} [matchCase] Case-sensitive?
      */
-    constructor(propertyName: string, expression: (string | number), matchCase?: boolean | undefined);
+    constructor(propertyName: string, expression: (string | number), matchCase?: boolean);
 }
 //# sourceMappingURL=NotEqualTo.d.ts.map
 
@@ -22092,7 +21870,7 @@ declare class Within extends Spatial {
      * @param {string} [srsName] SRS name. No srsName attribute will be
      *    set on geometries when this is not provided.
      */
-    constructor(geometryName: string, geometry: Geometry$1, srsName?: string | undefined);
+    constructor(geometryName: string, geometry: Geometry$1, srsName?: string);
 }
 //# sourceMappingURL=Within.d.ts.map
 
@@ -22131,7 +21909,7 @@ declare function not(condition: Filter): Not;
  * @return {!Bbox} `<BBOX>` operator.
  * @api
  */
-declare function bbox$1(geometryName: string, extent: Extent$1, srsName?: string | undefined): Bbox;
+declare function bbox$1(geometryName: string, extent: Extent$1, srsName?: string): Bbox;
 /**
  * Create a `<Contains>` operator to test whether a geometry-valued property
  * contains a given geometry.
@@ -22143,7 +21921,7 @@ declare function bbox$1(geometryName: string, extent: Extent$1, srsName?: string
  * @return {!Contains} `<Contains>` operator.
  * @api
  */
-declare function contains(geometryName: string, geometry: Geometry$1, srsName?: string | undefined): Contains;
+declare function contains(geometryName: string, geometry: Geometry$1, srsName?: string): Contains;
 /**
  * Create a `<Intersects>` operator to test whether a geometry-valued property
  * intersects a given geometry.
@@ -22155,7 +21933,7 @@ declare function contains(geometryName: string, geometry: Geometry$1, srsName?: 
  * @return {!Intersects} `<Intersects>` operator.
  * @api
  */
-declare function intersects(geometryName: string, geometry: Geometry$1, srsName?: string | undefined): Intersects;
+declare function intersects(geometryName: string, geometry: Geometry$1, srsName?: string): Intersects;
 /**
  * Create a `<Disjoint>` operator to test whether a geometry-valued property
  * is disjoint to a given geometry.
@@ -22167,7 +21945,7 @@ declare function intersects(geometryName: string, geometry: Geometry$1, srsName?
  * @return {!Disjoint} `<Disjoint>` operator.
  * @api
  */
-declare function disjoint(geometryName: string, geometry: Geometry$1, srsName?: string | undefined): Disjoint;
+declare function disjoint(geometryName: string, geometry: Geometry$1, srsName?: string): Disjoint;
 /**
  * Create a `<Within>` operator to test whether a geometry-valued property
  * is within a given geometry.
@@ -22179,7 +21957,7 @@ declare function disjoint(geometryName: string, geometry: Geometry$1, srsName?: 
  * @return {!Within} `<Within>` operator.
  * @api
  */
-declare function within(geometryName: string, geometry: Geometry$1, srsName?: string | undefined): Within;
+declare function within(geometryName: string, geometry: Geometry$1, srsName?: string): Within;
 /**
  * Create a `<DWithin>` operator to test whether a geometry-valued property
  * is within a distance to a given geometry.
@@ -22193,7 +21971,7 @@ declare function within(geometryName: string, geometry: Geometry$1, srsName?: st
  * @return {!DWithin} `<DWithin>` operator.
  * @api
  */
-declare function dwithin(geometryName: string, geometry: Geometry$1, distance: number, unit: string, srsName?: string | undefined): DWithin;
+declare function dwithin(geometryName: string, geometry: Geometry$1, distance: number, unit: string, srsName?: string): DWithin;
 /**
  * Creates a `<PropertyIsEqualTo>` comparison operator.
  *
@@ -22203,7 +21981,7 @@ declare function dwithin(geometryName: string, geometry: Geometry$1, distance: n
  * @return {!EqualTo} `<PropertyIsEqualTo>` operator.
  * @api
  */
-declare function equalTo(propertyName: string, expression: (string | number), matchCase?: boolean | undefined): EqualTo;
+declare function equalTo(propertyName: string, expression: (string | number), matchCase?: boolean): EqualTo;
 /**
  * Creates a `<PropertyIsNotEqualTo>` comparison operator.
  *
@@ -22213,7 +21991,7 @@ declare function equalTo(propertyName: string, expression: (string | number), ma
  * @return {!NotEqualTo} `<PropertyIsNotEqualTo>` operator.
  * @api
  */
-declare function notEqualTo(propertyName: string, expression: (string | number), matchCase?: boolean | undefined): NotEqualTo;
+declare function notEqualTo(propertyName: string, expression: (string | number), matchCase?: boolean): NotEqualTo;
 /**
  * Creates a `<PropertyIsLessThan>` comparison operator.
  *
@@ -22286,7 +22064,7 @@ declare function between(propertyName: string, lowerBoundary: number, upperBound
  * @return {!IsLike} `<PropertyIsLike>` operator.
  * @api
  */
-declare function like(propertyName: string, pattern: string, wildCard?: string | undefined, singleChar?: string | undefined, escapeChar?: string | undefined, matchCase?: boolean | undefined): IsLike;
+declare function like(propertyName: string, pattern: string, wildCard?: string, singleChar?: string, escapeChar?: string, matchCase?: boolean): IsLike;
 /**
  * Create a `<During>` temporal operator.
  *
@@ -22456,7 +22234,7 @@ declare function multiArrayMaxSquaredDelta(flatCoordinates: Array<number>, offse
  * @param {Array<number>} [tmpPoint] Temporary point object.
  * @return {number} Minimum squared distance.
  */
-declare function assignClosestPoint(flatCoordinates: Array<number>, offset: number, end: number, stride: number, maxDelta: number, isRing: boolean, x: number, y: number, closestPoint: Array<number>, minSquaredDistance: number, tmpPoint?: number[] | undefined): number;
+declare function assignClosestPoint(flatCoordinates: Array<number>, offset: number, end: number, stride: number, maxDelta: number, isRing: boolean, x: number, y: number, closestPoint: Array<number>, minSquaredDistance: number, tmpPoint?: Array<number>): number;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -22471,7 +22249,7 @@ declare function assignClosestPoint(flatCoordinates: Array<number>, offset: numb
  * @param {Array<number>} [tmpPoint] Temporary point object.
  * @return {number} Minimum squared distance.
  */
-declare function assignClosestArrayPoint(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, maxDelta: number, isRing: boolean, x: number, y: number, closestPoint: Array<number>, minSquaredDistance: number, tmpPoint?: number[] | undefined): number;
+declare function assignClosestArrayPoint(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, maxDelta: number, isRing: boolean, x: number, y: number, closestPoint: Array<number>, minSquaredDistance: number, tmpPoint?: Array<number>): number;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -22486,7 +22264,7 @@ declare function assignClosestArrayPoint(flatCoordinates: Array<number>, offset:
  * @param {Array<number>} [tmpPoint] Temporary point object.
  * @return {number} Minimum squared distance.
  */
-declare function assignClosestMultiArrayPoint(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number, maxDelta: number, isRing: boolean, x: number, y: number, closestPoint: Array<number>, minSquaredDistance: number, tmpPoint?: number[] | undefined): number;
+declare function assignClosestMultiArrayPoint(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number, maxDelta: number, isRing: boolean, x: number, y: number, closestPoint: Array<number>, minSquaredDistance: number, tmpPoint?: Array<number>): number;
 
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
@@ -22555,7 +22333,7 @@ declare function deflateCoordinates(flatCoordinates: Array<number>, offset: numb
  * @param {Array<number>} [ends] Ends.
  * @return {Array<number>} Ends.
  */
-declare function deflateCoordinatesArray(flatCoordinates: Array<number>, offset: number, coordinatess: Array<Array<Coordinate>>, stride: number, ends?: number[] | undefined): Array<number>;
+declare function deflateCoordinatesArray(flatCoordinates: Array<number>, offset: number, coordinatess: Array<Array<Coordinate>>, stride: number, ends?: Array<number>): Array<number>;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -22564,7 +22342,7 @@ declare function deflateCoordinatesArray(flatCoordinates: Array<number>, offset:
  * @param {Array<Array<number>>} [endss] Endss.
  * @return {Array<Array<number>>} Endss.
  */
-declare function deflateMultiCoordinatesArray(flatCoordinates: Array<number>, offset: number, coordinatesss: Array<Array<Array<Coordinate>>>, stride: number, endss?: number[][] | undefined): Array<Array<number>>;
+declare function deflateMultiCoordinatesArray(flatCoordinates: Array<number>, offset: number, coordinatesss: Array<Array<Array<Coordinate>>>, stride: number, endss?: Array<Array<number>>): Array<Array<number>>;
 
 /**
  * @module ol/geom/flat/flip
@@ -22578,7 +22356,7 @@ declare function deflateMultiCoordinatesArray(flatCoordinates: Array<number>, of
  * @param {number} [destOffset] Destination offset.
  * @return {Array<number>} Flat coordinates.
  */
-declare function flipXY(flatCoordinates: Array<number>, offset: number, end: number, stride: number, dest?: number[] | undefined, destOffset?: number | undefined): Array<number>;
+declare function flipXY(flatCoordinates: Array<number>, offset: number, end: number, stride: number, dest?: Array<number>, destOffset?: number): Array<number>;
 
 /**
  * Generate a great-circle arcs between two lat/lon points.
@@ -22623,7 +22401,7 @@ declare function parallel(lat: number, lon1: number, lon2: number, projection: P
  * @param {Array<import("../../coordinate.js").Coordinate>} [coordinates] Coordinates.
  * @return {Array<import("../../coordinate.js").Coordinate>} Coordinates.
  */
-declare function inflateCoordinates(flatCoordinates: Array<number>, offset: number, end: number, stride: number, coordinates?: Coordinate[] | undefined): Array<Coordinate>;
+declare function inflateCoordinates(flatCoordinates: Array<number>, offset: number, end: number, stride: number, coordinates?: Array<Coordinate>): Array<Coordinate>;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -22632,7 +22410,7 @@ declare function inflateCoordinates(flatCoordinates: Array<number>, offset: numb
  * @param {Array<Array<import("../../coordinate.js").Coordinate>>} [coordinatess] Coordinatess.
  * @return {Array<Array<import("../../coordinate.js").Coordinate>>} Coordinatess.
  */
-declare function inflateCoordinatesArray(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, coordinatess?: Coordinate[][] | undefined): Array<Array<Coordinate>>;
+declare function inflateCoordinatesArray(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, coordinatess?: Array<Array<Coordinate>>): Array<Array<Coordinate>>;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -22642,7 +22420,7 @@ declare function inflateCoordinatesArray(flatCoordinates: Array<number>, offset:
  *     Coordinatesss.
  * @return {Array<Array<Array<import("../../coordinate.js").Coordinate>>>} Coordinatesss.
  */
-declare function inflateMultiCoordinatesArray(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number, coordinatesss?: Coordinate[][][] | undefined): Array<Array<Array<Coordinate>>>;
+declare function inflateMultiCoordinatesArray(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number, coordinatesss?: Array<Array<Array<Coordinate>>>): Array<Array<Array<Coordinate>>>;
 
 /**
  * Calculates a point that is likely to lie in the interior of the linear rings.
@@ -22657,7 +22435,7 @@ declare function inflateMultiCoordinatesArray(flatCoordinates: Array<number>, of
  * @return {Array<number>} Destination point as XYM coordinate, where M is the
  * length of the horizontal intersection that the point belongs to.
  */
-declare function getInteriorPointOfArray(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, flatCenters: Array<number>, flatCentersOffset: number, dest?: number[] | undefined): Array<number>;
+declare function getInteriorPointOfArray(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, flatCenters: Array<number>, flatCentersOffset: number, dest?: Array<number>): Array<number>;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -22679,7 +22457,7 @@ declare function getInteriorPointsOfMultiArray(flatCoordinates: Array<number>, o
  * @param {number} [dimension] Destination dimension (default is `2`)
  * @return {Array<number>} Destination.
  */
-declare function interpolatePoint(flatCoordinates: Array<number>, offset: number, end: number, stride: number, fraction: number, dest?: number[] | undefined, dimension?: number | undefined): Array<number>;
+declare function interpolatePoint(flatCoordinates: Array<number>, offset: number, end: number, stride: number, fraction: number, dest?: Array<number>, dimension?: number): Array<number>;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -22792,7 +22570,7 @@ declare function linearRingIsClockwise(flatCoordinates: Array<number>, offset: n
  *     (counter-clockwise exterior ring and clockwise interior rings).
  * @return {boolean} Rings are correctly oriented.
  */
-declare function linearRingsAreOriented(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, right?: boolean | undefined): boolean;
+declare function linearRingsAreOriented(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, right?: boolean): boolean;
 /**
  * Determines if linear rings are oriented.  By default, left-hand orientation
  * is tested (first ring must be clockwise, remaining rings counter-clockwise).
@@ -22806,7 +22584,7 @@ declare function linearRingsAreOriented(flatCoordinates: Array<number>, offset: 
  *     (counter-clockwise exterior ring and clockwise interior rings).
  * @return {boolean} Rings are correctly oriented.
  */
-declare function linearRingssAreOriented(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number, right?: boolean | undefined): boolean;
+declare function linearRingssAreOriented(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number, right?: boolean): boolean;
 /**
  * Orient coordinates in a flat array of linear rings.  By default, rings
  * are oriented following the left-hand rule (clockwise for exterior and
@@ -22820,7 +22598,7 @@ declare function linearRingssAreOriented(flatCoordinates: Array<number>, offset:
  * @param {boolean} [right] Follow the right-hand rule for orientation.
  * @return {number} End.
  */
-declare function orientLinearRings(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, right?: boolean | undefined): number;
+declare function orientLinearRings(flatCoordinates: Array<number>, offset: number, ends: Array<number>, stride: number, right?: boolean): number;
 /**
  * Orient coordinates in a flat array of linear rings.  By default, rings
  * are oriented following the left-hand rule (clockwise for exterior and
@@ -22834,7 +22612,7 @@ declare function orientLinearRings(flatCoordinates: Array<number>, offset: numbe
  * @param {boolean} [right] Follow the right-hand rule for orientation.
  * @return {number} End.
  */
-declare function orientLinearRingsArray(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number, right?: boolean | undefined): number;
+declare function orientLinearRingsArray(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number, right?: boolean): number;
 /**
  * Return a two-dimensional endss
  * @param {Array<number>} flatCoordinates Flat coordinates
@@ -22884,7 +22662,7 @@ declare function forEach<T>(flatCoordinates: Array<number>, offset: number, end:
  *     coordinates.
  * @return {Array<number>} Simplified line string.
  */
-declare function simplifyLineString(flatCoordinates: Array<number>, offset: number, end: number, stride: number, squaredTolerance: number, highQuality: boolean, simplifiedFlatCoordinates?: number[] | undefined): Array<number>;
+declare function simplifyLineString(flatCoordinates: Array<number>, offset: number, end: number, stride: number, squaredTolerance: number, highQuality: boolean, simplifiedFlatCoordinates?: Array<number>): Array<number>;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -23015,6 +22793,7 @@ declare function matchingChunk(maxAngle: number, flatCoordinates: Array<number>,
  * @param {string} font The font.
  * @param {Object<string, number>} cache A cache of measured widths.
  * @param {number} rotation Rotation to apply to the flatCoordinates to determine whether text needs to be reversed.
+ * @param {boolean} keepUpright Whether the text needs to be kept upright
  * @return {Array<Array<*>>|null} The result array (or null if `maxAngle` was
  * exceeded). Entries of the array are x, y, anchorX, angle, chunk.
  */
@@ -23022,7 +22801,7 @@ declare function drawTextOnPath(flatCoordinates: Array<number>, offset: number, 
     [x: string]: number;
 }) => number, font: string, cache: {
     [x: string]: number;
-}, rotation: number): Array<Array<any>> | null;
+}, rotation: number, keepUpright?: boolean): Array<Array<any>> | null;
 
 /**
  * Check if the linestring is a boundary.
@@ -23047,7 +22826,7 @@ declare function lineStringIsClosed(flatCoordinates: Array<number>, offset: numb
  * @param {number} [destinationStride] Stride of destination coordinates; if unspecified, assumed to be 2.
  * @return {Array<number>} Transformed coordinates.
  */
-declare function transform2D(flatCoordinates: Array<number>, offset: number, end: number, stride: number, transform: Transform, dest?: number[] | undefined, destinationStride?: number | undefined): Array<number>;
+declare function transform2D(flatCoordinates: Array<number>, offset: number, end: number, stride: number, transform: Transform, dest?: Array<number>, destinationStride?: number): Array<number>;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -23058,7 +22837,7 @@ declare function transform2D(flatCoordinates: Array<number>, offset: number, end
  * @param {Array<number>} [dest] Destination.
  * @return {Array<number>} Transformed coordinates.
  */
-declare function rotate(flatCoordinates: Array<number>, offset: number, end: number, stride: number, angle: number, anchor: Array<number>, dest?: number[] | undefined): Array<number>;
+declare function rotate(flatCoordinates: Array<number>, offset: number, end: number, stride: number, angle: number, anchor: Array<number>, dest?: Array<number>): Array<number>;
 /**
  * Scale the coordinates.
  * @param {Array<number>} flatCoordinates Flat coordinates.
@@ -23071,7 +22850,7 @@ declare function rotate(flatCoordinates: Array<number>, offset: number, end: num
  * @param {Array<number>} [dest] Destination.
  * @return {Array<number>} Transformed coordinates.
  */
-declare function scale(flatCoordinates: Array<number>, offset: number, end: number, stride: number, sx: number, sy: number, anchor: Array<number>, dest?: number[] | undefined): Array<number>;
+declare function scale$1(flatCoordinates: Array<number>, offset: number, end: number, stride: number, sx: number, sy: number, anchor: Array<number>, dest?: Array<number>): Array<number>;
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
  * @param {number} offset Offset.
@@ -23082,7 +22861,7 @@ declare function scale(flatCoordinates: Array<number>, offset: number, end: numb
  * @param {Array<number>} [dest] Destination.
  * @return {Array<number>} Transformed coordinates.
  */
-declare function translate(flatCoordinates: Array<number>, offset: number, end: number, stride: number, deltaX: number, deltaY: number, dest?: number[] | undefined): Array<number>;
+declare function translate$1(flatCoordinates: Array<number>, offset: number, end: number, stride: number, deltaX: number, deltaY: number, dest?: Array<number>): Array<number>;
 
 /**
  * User agent string says we are dealing with Firefox as browser.
@@ -23138,7 +22917,7 @@ declare const CREATE_IMAGE_BITMAP: boolean;
  */
 declare const PASSIVE_EVENT_LISTENERS: boolean;
 
-type Options$17 = {
+type Options$19 = {
     /**
      * Animation duration in milliseconds. *
      */
@@ -23171,7 +22950,7 @@ declare class DblClickDragZoom extends Interaction {
     /**
      * @param {Options} [opt_options] Options.
      */
-    constructor(opt_options?: Options$17 | undefined);
+    constructor(opt_options?: Options$19);
     /**
      * This function is used to determine if "down" events should be propagated
      * to other interactions or should be stopped.
@@ -23251,7 +23030,7 @@ declare class DblClickDragZoom extends Interaction {
     private endInteraction_;
 }
 
-type Options$16 = {
+type Options$18 = {
     /**
      * Animation duration in milliseconds.
      */
@@ -23275,7 +23054,7 @@ declare class DoubleClickZoom extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$16 | undefined);
+    constructor(options?: Options$18);
     /**
      * @private
      * @type {number}
@@ -23300,7 +23079,7 @@ declare class DragAndDropEvent extends BaseEvent {
      * @param {Array<import("../Feature.js").default>} [features] Features.
      * @param {import("../proj/Projection.js").default} [projection] Projection.
      */
-    constructor(type: DragAndDropEventType, file: File, features?: Feature$2<Geometry$1>[] | undefined, projection?: Projection | undefined);
+    constructor(type: DragAndDropEventType, file: File, features?: Array<Feature$2>, projection?: Projection);
     /**
      * The features parsed from dropped data.
      * @type {Array<import("../Feature.js").FeatureLike>|undefined}
@@ -23321,7 +23100,7 @@ declare class DragAndDropEvent extends BaseEvent {
     projection: Projection | undefined;
 }
 
-type Options$15 = {
+type Options$17 = {
     /**
      * Format constructors
      * (and/or formats pre-constructed with options).
@@ -23374,7 +23153,7 @@ declare class DragAndDrop extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$15 | undefined);
+    constructor(options?: Options$17);
     /***
      * @type {DragAndDropOnSignature<import("../events").EventsKey>}
      */
@@ -23457,7 +23236,7 @@ declare class DragAndDrop extends Interaction {
     handleStop(event: DragEvent): void;
 }
 
-type Options$14 = {
+type Options$16 = {
     /**
      * Function handling "down" events. If the function returns `true` then a drag
      * sequence is started.
@@ -23535,7 +23314,7 @@ declare class PointerInteraction extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$14 | undefined);
+    constructor(options?: Options$16);
     /**
      * Handle pointer down events.
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
@@ -23626,7 +23405,7 @@ declare class DragBoxEvent extends BaseEvent {
  * true should be returned.
  */
 type EndCondition = (this: unknown, arg1: MapBrowserEvent<any>, arg2: Pixel, arg3: Pixel) => boolean;
-type Options$13 = {
+type Options$15 = {
     /**
      * CSS class name for styling the box.
      */
@@ -23684,7 +23463,7 @@ declare class DragBox extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$13 | undefined);
+    constructor(options?: Options$15);
     /***
      * @type {DragBoxOnSignature<import("../events").EventsKey>}
      */
@@ -23745,7 +23524,7 @@ declare class DragBox extends PointerInteraction {
     getGeometry(): Polygon$1;
 }
 
-type Options$12 = {
+type Options$14 = {
     /**
      * A function that takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a boolean
      * to indicate whether that event should be handled.
@@ -23780,7 +23559,7 @@ declare class DragPan extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$12 | undefined);
+    constructor(options?: Options$14);
     /**
      * @private
      * @type {import("../Kinetic.js").default|undefined}
@@ -23812,7 +23591,7 @@ declare class DragPan extends PointerInteraction {
     private noKinetic_;
 }
 
-type Options$11 = {
+type Options$13 = {
     /**
      * A function that takes a
      * {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a boolean
@@ -23846,7 +23625,7 @@ declare class DragRotate extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$11 | undefined);
+    constructor(options?: Options$13);
     /**
      * @private
      * @type {import("../events/condition.js").Condition}
@@ -23864,7 +23643,7 @@ declare class DragRotate extends PointerInteraction {
     private duration_;
 }
 
-type Options$10 = {
+type Options$12 = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -23900,7 +23679,7 @@ declare class DragRotateAndZoom extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$10 | undefined);
+    constructor(options?: Options$12);
     /**
      * @private
      * @type {import("../events/condition.js").Condition}
@@ -23928,7 +23707,7 @@ declare class DragRotateAndZoom extends PointerInteraction {
     private duration_;
 }
 
-type Options$$ = {
+type Options$11 = {
     /**
      * CSS class name for styling the
      * box.
@@ -23982,7 +23761,7 @@ declare class DragZoom extends DragBox {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$$ | undefined);
+    constructor(options?: Options$11);
     /**
      * @private
      * @type {number}
@@ -24273,7 +24052,7 @@ type NumberExpression = number | any[];
  * A CSS named color (e.g. `'blue'`), an array of 3 RGB values (e.g. `[0, 255, 0]`), an array of 4 RGBA values
  * (e.g. `[0, 255, 0, 0.5]`), or an expression that evaluates to one of these color types (e.g. `['get', 'color']`).
  */
-type ColorExpression = Color | string | any[];
+type ColorExpression$1 = Color | string | any[];
 /**
  * An array of numbers (e.g. `[1, 2, 3]`) or an expression that evaluates to the same (e.g. `['get', 'values']`).
  */
@@ -24298,7 +24077,7 @@ type FlatFill = {
     /**
      * The fill color. `'none'` means no fill and no hit detection.
      */
-    "fill-color"?: ColorExpression | undefined;
+    "fill-color"?: ColorExpression$1 | undefined;
     /**
      * Fill pattern image URL.
      */
@@ -24322,7 +24101,7 @@ type FlatStroke = {
     /**
      * The stroke color.
      */
-    "stroke-color"?: ColorExpression | undefined;
+    "stroke-color"?: ColorExpression$1 | undefined;
     /**
      * Stroke pixel width.
      */
@@ -24429,15 +24208,15 @@ type FlatText = {
     /**
      * The fill color. `'none'` means no fill and no hit detection.
      */
-    "text-fill-color"?: ColorExpression | undefined;
+    "text-fill-color"?: ColorExpression$1 | undefined;
     /**
      * The fill color. `'none'` means no fill and no hit detection.
      */
-    "text-background-fill-color"?: ColorExpression | undefined;
+    "text-background-fill-color"?: ColorExpression$1 | undefined;
     /**
      * The stroke color.
      */
-    "text-stroke-color"?: ColorExpression | undefined;
+    "text-stroke-color"?: ColorExpression$1 | undefined;
     /**
      * Line cap style: `butt`, `round`, or `square`.
      */
@@ -24465,7 +24244,7 @@ type FlatText = {
     /**
      * The stroke color.
      */
-    "text-background-stroke-color"?: ColorExpression | undefined;
+    "text-background-stroke-color"?: ColorExpression$1 | undefined;
     /**
      * Line cap style: `butt`, `round`, or `square`.
      */
@@ -24606,11 +24385,11 @@ type FlatShape = {
     /**
      * The fill color. `'none'` means no fill and no hit detection.
      */
-    "shape-fill-color"?: ColorExpression | undefined;
+    "shape-fill-color"?: ColorExpression$1 | undefined;
     /**
      * The stroke color.
      */
-    "shape-stroke-color"?: ColorExpression | undefined;
+    "shape-stroke-color"?: ColorExpression$1 | undefined;
     /**
      * Stroke pixel width.
      */
@@ -24684,11 +24463,11 @@ type FlatCircle = {
     /**
      * The fill color. `'none'` means no fill and no hit detection.
      */
-    "circle-fill-color"?: ColorExpression | undefined;
+    "circle-fill-color"?: ColorExpression$1 | undefined;
     /**
      * The stroke color.
      */
-    "circle-stroke-color"?: ColorExpression | undefined;
+    "circle-stroke-color"?: ColorExpression$1 | undefined;
     /**
      * Stroke pixel width.
      */
@@ -24795,6 +24574,14 @@ type Rule = {
      */
     else?: boolean | undefined;
 };
+/**
+ * Style variables are provided as an object. The variables can be read in a {@link import ("../expr/expression.js").ExpressionValue style expression}
+ * using the `['var', 'varName']` operator.
+ * Each variable must hold a literal value (not an expression).
+ */
+type StyleVariables = {
+    [x: string]: string | number | boolean | number[];
+};
 
 /**
  * @classdesc
@@ -24806,7 +24593,7 @@ declare class WebGLRenderTarget {
      * @param {import("./Helper.js").default} helper WebGL helper; mandatory.
      * @param {Array<number>} [size] Expected size of the render target texture; note: this can be changed later on.
      */
-    constructor(helper: WebGLHelper, size?: number[] | undefined);
+    constructor(helper: WebGLHelper, size?: Array<number>);
     /**
      * @private
      * @type {import("./Helper.js").default}
@@ -24987,7 +24774,7 @@ declare class WebGLArrayBuffer {
      * @param {number} [usage] Intended usage, either `STATIC_DRAW`, `STREAM_DRAW` or `DYNAMIC_DRAW`.
      * Default is `STATIC_DRAW`.
      */
-    constructor(type: number, usage?: number | undefined);
+    constructor(type: number, usage?: number);
     /**
      * @private
      * @type {Float32Array|Uint32Array|null}
@@ -25100,7 +24887,7 @@ type PostProcessesOptions$1 = {
         [x: string]: UniformValue;
     } | undefined;
 };
-type Options$_ = {
+type Options$10 = {
     /**
      * Uniform definitions; property names must match the uniform
      * names in the provided or default shaders.
@@ -25245,7 +25032,7 @@ declare class WebGLHelper extends Disposable {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$_ | undefined);
+    constructor(options?: Options$10);
     /** @private */
     private boundHandleWebGLContextLost_;
     /** @private */
@@ -25379,12 +25166,12 @@ declare class WebGLHelper extends Disposable {
      * @param {boolean} [disableAlphaBlend] If true, no alpha blending will happen.
      * @param {boolean} [enableDepth] If true, enables depth testing.
      */
-    prepareDraw(frameState: FrameState, disableAlphaBlend?: boolean | undefined, enableDepth?: boolean | undefined): void;
+    prepareDraw(frameState: FrameState, disableAlphaBlend?: boolean, enableDepth?: boolean): void;
     /**
      * @param {WebGLFramebuffer|null} frameBuffer The frame buffer.
      * @param {WebGLTexture} [texture] The texture.
      */
-    bindFrameBuffer(frameBuffer: WebGLFramebuffer | null, texture?: WebGLTexture | undefined): void;
+    bindFrameBuffer(frameBuffer: WebGLFramebuffer | null, texture?: WebGLTexture): void;
     /**
      * Bind the frame buffer from the initial render.
      */
@@ -25412,7 +25199,7 @@ declare class WebGLHelper extends Disposable {
      * @param {boolean} [disableAlphaBlend] If true, no alpha blending will happen.
      * @param {boolean} [enableDepth] If true, enables depth testing.
      */
-    prepareDrawToRenderTarget(frameState: FrameState, renderTarget: WebGLRenderTarget, disableAlphaBlend?: boolean | undefined, enableDepth?: boolean | undefined): void;
+    prepareDrawToRenderTarget(frameState: FrameState, renderTarget: WebGLRenderTarget, disableAlphaBlend?: boolean, enableDepth?: boolean): void;
     /**
      * Execute a draw call based on the currently bound program, texture, buffers, attributes.
      * @param {number} start Start index.
@@ -25425,7 +25212,7 @@ declare class WebGLHelper extends Disposable {
      * @param {function(WebGLRenderingContext, import("../Map.js").FrameState):void} [preCompose] Called before composing.
      * @param {function(WebGLRenderingContext, import("../Map.js").FrameState):void} [postCompose] Called before composing.
      */
-    finalizeDraw(frameState: FrameState, preCompose?: ((arg0: WebGLRenderingContext, arg1: FrameState) => void) | undefined, postCompose?: ((arg0: WebGLRenderingContext, arg1: FrameState) => void) | undefined): void;
+    finalizeDraw(frameState: FrameState, preCompose?: (arg0: WebGLRenderingContext, arg1: FrameState) => void, postCompose?: (arg0: WebGLRenderingContext, arg1: FrameState) => void): void;
     /**
      * @return {HTMLCanvasElement} Canvas.
      */
@@ -25456,7 +25243,7 @@ declare class WebGLHelper extends Disposable {
      * @param {WebGLProgram} program Program.
      * @param {import("../Map.js").FrameState} [frameState] Frame state.
      */
-    useProgram(program: WebGLProgram, frameState?: FrameState | undefined): void;
+    useProgram(program: WebGLProgram, frameState?: FrameState): void;
     /**
      * Will attempt to compile a vertex or fragment shader based on source
      * On error, the shader will be returned but
@@ -25563,7 +25350,7 @@ declare class WebGLHelper extends Disposable {
      * @param {boolean} [nearest] Use gl.NEAREST for min/mag filter.
      * @return {WebGLTexture} The generated texture
      */
-    createTexture(size: Array<number>, data: ImageData | HTMLImageElement | HTMLCanvasElement | Uint8Array | null, texture?: WebGLTexture | undefined, nearest?: boolean | undefined): WebGLTexture;
+    createTexture(size: Array<number>, data: ImageData | HTMLImageElement | HTMLCanvasElement | Uint8Array | null, texture?: WebGLTexture, nearest?: boolean): WebGLTexture;
 }
 
 type PostProcessesOptions = {
@@ -25587,7 +25374,7 @@ type PostProcessesOptions = {
         [x: string]: UniformValue;
     } | undefined;
 };
-type Options$Z = {
+type Options$$ = {
     /**
      * Uniform definitions for the post process steps
      */
@@ -25624,7 +25411,7 @@ declare class WebGLLayerRenderer<LayerType extends Layer> extends LayerRenderer<
      * @param {LayerType} layer Layer.
      * @param {Options} [options] Options.
      */
-    constructor(layer: LayerType, options?: Options$Z | undefined);
+    constructor(layer: LayerType, options?: Options$$);
     /**
      * The transform for viewport CSS pixels to rendered pixels.  This transform is only
      * set before dispatching rendering events.
@@ -25662,7 +25449,7 @@ declare class WebGLLayerRenderer<LayerType extends Layer> extends LayerRenderer<
      * Reset options (only handles uniforms).
      * @param {Options} options Options.
      */
-    reset(options: Options$Z): void;
+    reset(options: Options$$): void;
     /**
      * @protected
      */
@@ -25720,7 +25507,7 @@ type CustomAttribute = {
         [x: string]: any;
     }) => number;
 };
-type Options$Y = {
+type Options$_ = {
     /**
      * A CSS class name to set to the canvas element.
      */
@@ -25854,7 +25641,7 @@ declare class WebGLPointsLayerRenderer extends WebGLLayerRenderer<any> {
      * @param {import("../../layer/Layer.js").default} layer Layer.
      * @param {Options} options Options.
      */
-    constructor(layer: Layer, options: Options$Y);
+    constructor(layer: Layer, options: Options$_);
     /**
      * @private
      */
@@ -25995,7 +25782,7 @@ declare class WebGLPointsLayerRenderer extends WebGLLayerRenderer<any> {
     renderDeclutter(): void;
 }
 
-type Options$X<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSourceType extends VectorSource<FeatureType> = VectorSource<FeatureType>> = {
+type Options$Z<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType$1<VectorSourceType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -26095,8 +25882,8 @@ type Options$X<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSo
     } | undefined;
 };
 /**
- * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../Feature.js").default]
- * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<FeatureType>]
+ * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<*>]
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=import("./BaseVector.js").ExtractedFeatureType<VectorSourceType>]
  * @typedef {Object} Options
  * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
  * @property {number} [opacity=1] Opacity (0, 1).
@@ -26151,16 +25938,16 @@ type Options$X<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSo
  * property on the layer object; for example, setting `title: 'My Title'` in the
  * options means that `title` is observable, and has get/set accessors.
  *
- * @template {import("../Feature.js").default} [FeatureType=import("../Feature.js").default]
- * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<FeatureType>]
+ * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<*>]
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=import("./BaseVector.js").ExtractedFeatureType<VectorSourceType>]
  * @extends {BaseVectorLayer<FeatureType, VectorSourceType, CanvasVectorImageLayerRenderer>}
  * @api
  */
-declare class VectorImageLayer<FeatureType extends Feature$2 = Feature$2<Geometry$1>, VectorSourceType extends VectorSource<FeatureType> = VectorSource<FeatureType>> extends BaseVectorLayer<FeatureType, VectorSourceType, CanvasVectorImageLayerRenderer> {
+declare class VectorImageLayer<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType$1<VectorSourceType>> extends BaseVectorLayer<FeatureType, VectorSourceType, CanvasVectorImageLayerRenderer> {
     /**
-     * @param {Options<FeatureType, VectorSourceType>} [options] Options.
+     * @param {Options<VectorSourceType, FeatureType>} [options] Options.
      */
-    constructor(options?: Options$X<FeatureType, VectorSourceType> | undefined);
+    constructor(options?: Options$Z<VectorSourceType, FeatureType>);
     /**
      * @type {number}
      * @private
@@ -26199,7 +25986,7 @@ type ImageSourceEventTypes = "imageloadend" | "imageloaderror" | "imageloadstart
  * *
  */
 type ImageSourceOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2, ObjectEvent, Return> & OnSignature<ImageSourceEventTypes, ImageSourceEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | ImageSourceEventTypes, Return>;
-type Options$W = {
+type Options$Y = {
     /**
      * Attributions.
      */
@@ -26261,7 +26048,7 @@ declare class ImageSource extends Source {
     /**
      * @param {Options} options Single image source options.
      */
-    constructor(options: Options$W);
+    constructor(options: Options$Y);
     /***
      * @type {ImageSourceOnSignature<import("../events").EventsKey>}
      */
@@ -26360,7 +26147,7 @@ declare class ImageSource extends Source {
     protected handleImageChange(event: BaseEvent): void;
 }
 
-type Options$V<ImageSourceType extends ImageSource> = {
+type Options$X<ImageSourceType extends ImageSource> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -26467,7 +26254,7 @@ declare class BaseImageLayer<ImageSourceType extends ImageSource, RendererType e
     /**
      * @param {Options<ImageSourceType>} [options] Layer options.
      */
-    constructor(options?: Options$V<ImageSourceType> | undefined);
+    constructor(options?: Options$X<ImageSourceType>);
 }
 
 /**
@@ -26486,7 +26273,7 @@ declare class ImageLayer<ImageSourceType extends ImageSource> extends BaseImageL
     /**
      * @param {import("./BaseImage.js").Options<ImageSourceType>} [options] Layer options.
      */
-    constructor(options?: Options$V<ImageSourceType> | undefined);
+    constructor(options?: Options$X<ImageSourceType>);
 }
 //# sourceMappingURL=Image.d.ts.map
 
@@ -26563,7 +26350,7 @@ declare class CanvasLayerRenderer<LayerType extends Layer> extends LayerRenderer
      * @param {string} transform CSS Transform.
      * @param {string} [backgroundColor] Background color.
      */
-    useContainer(target: HTMLElement, transform: string, backgroundColor?: string | undefined): void;
+    useContainer(target: HTMLElement, transform: string, backgroundColor?: string): void;
     /**
      * @param {CanvasRenderingContext2D} context Context.
      * @param {import("../../Map.js").FrameState} frameState Frame state.
@@ -26707,7 +26494,7 @@ declare class CanvasVectorImageLayerRenderer extends CanvasImageLayerRenderer {
 }
 //# sourceMappingURL=VectorImageLayer.d.ts.map
 
-type Options$U = {
+type Options$W = {
     /**
      * Deprecated.  Use the cacheSize option on the layer instead.
      */
@@ -26919,7 +26706,7 @@ declare class BingMaps extends TileImage {
     /**
      * @param {Options} options Bing Maps options.
      */
-    constructor(options: Options$U);
+    constructor(options: Options$W);
     /**
      * @private
      * @type {boolean}
@@ -26970,7 +26757,7 @@ declare class BingMaps extends TileImage {
     handleImageryMetadataResponse(response: BingMapsImageryMetadataResponse): void;
 }
 
-type Options$T = {
+type Options$V = {
     /**
      * Attributions.
      */
@@ -27146,7 +26933,7 @@ declare class XYZ extends TileImage {
     /**
      * @param {Options} [options] XYZ options.
      */
-    constructor(options?: Options$T | undefined);
+    constructor(options?: Options$V);
     /**
      * @private
      * @type {number}
@@ -27154,7 +26941,7 @@ declare class XYZ extends TileImage {
     private gutter_;
 }
 
-type Options$S = {
+type Options$U = {
     /**
      * Attributions.
      */
@@ -27256,7 +27043,7 @@ declare class CartoDB extends XYZ {
     /**
      * @param {Options} options CartoDB options.
      */
-    constructor(options: Options$S);
+    constructor(options: Options$U);
     /**
      * @type {string}
      * @private
@@ -27324,7 +27111,7 @@ declare class CartoDB extends XYZ {
     private applyTemplate_;
 }
 
-type Options$R<FeatureType extends FeatureLike> = {
+type Options$T<FeatureType extends FeatureLike> = {
     /**
      * Attributions.
      */
@@ -27436,7 +27223,7 @@ declare class Cluster<FeatureType extends FeatureLike> extends VectorSource<Feat
     /**
      * @param {Options<FeatureType>} [options] Cluster options.
      */
-    constructor(options?: Options$R<FeatureType> | undefined);
+    constructor(options?: Options$T<FeatureType>);
     /**
      * @type {number|undefined}
      * @protected
@@ -27559,7 +27346,7 @@ type LoaderOptions$4 = {
  * returns {@link import ("../DataTile.js").Data data} for a tile or a promise for the same.
  */
 type Loader$1 = (arg0: number, arg1: number, arg2: number, arg3: LoaderOptions$4) => (Data | Promise<Data>);
-type Options$Q = {
+type Options$S = {
     /**
      * Data loader.  Called with z, x, and y tile coordinates.
      * Returns {@link import ("../DataTile.js").Data data} for a tile or a promise for the same.
@@ -27634,6 +27421,11 @@ type Options$Q = {
      * Key for use in caching tiles.
      */
     key?: string | undefined;
+    /**
+     * Choose whether to use tiles with a higher or lower zoom level when between integer
+     * zoom levels. See {@link module :ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
+     */
+    zDirection?: number | NearestDirectionFunction | undefined;
 };
 /**
  * @typedef {'anonymous'|'use-credentials'} CrossOriginAttribute
@@ -27675,6 +27467,9 @@ type Options$Q = {
  * the nearest neighbor is used when resampling.
  * @property {CrossOriginAttribute} [crossOrigin='anonymous'] The crossOrigin property to pass to loaders for image data.
  * @property {string} [key] Key for use in caching tiles.
+ * @property {number|import("../array.js").NearestDirectionFunction} [zDirection=0]
+ * Choose whether to use tiles with a higher or lower zoom level when between integer
+ * zoom levels. See {@link module:ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
  */
 /**
  * @classdesc
@@ -27685,11 +27480,11 @@ type Options$Q = {
  * @extends TileSource<TileType>
  * @api
  */
-declare class DataTileSource<TileType extends Tile = DataTile> extends TileSource<TileType> {
+declare class DataTileSource<TileType extends Tile$1 = DataTile> extends TileSource<TileType> {
     /**
      * @param {Options} options DataTile source options.
      */
-    constructor(options: Options$Q);
+    constructor(options: Options$S);
     /**
      * @private
      * @type {number}
@@ -27734,6 +27529,10 @@ declare class DataTileSource<TileType extends Tile = DataTile> extends TileSourc
      */
     private crossOrigin_;
     /**
+     * @type {import("../transform.js").Transform|null}
+     */
+    transformMatrix: Transform | null;
+    /**
      * Set the source tile sizes.  The length of the array is expected to match the number of
      * levels in the tile grid.
      * @protected
@@ -27762,6 +27561,16 @@ declare class DataTileSource<TileType extends Tile = DataTile> extends TileSourc
      * @return {!TileType} Tile.
      */
     getReprojTile_(z: number, x: number, y: number, targetProj: Projection, sourceProj: Projection): TileType;
+    /**
+     * @param {number} z Tile coordinate z.
+     * @param {number} x Tile coordinate x.
+     * @param {number} y Tile coordinate y.
+     * @param {number} pixelRatio Pixel ratio.
+     * @param {import("../proj/Projection.js").default} [projection] Projection.
+     * @return {TileType|null} Tile (or null if outside source extent).
+     * @override
+     */
+    override getTile(z: number, x: number, y: number, pixelRatio: number, projection?: Projection): TileType | null;
     /**
      * Sets the tile grid to use when reprojecting the tiles to the given
      * projection instead of the default tile grid for the projection.
@@ -28206,7 +28015,7 @@ type GeoTIFFSourceOptions = {
      */
     cacheSize?: number | undefined;
 };
-type Options$P = {
+type Options$R = {
     /**
      * List of information about GeoTIFF sources.
      * Multiple sources can be combined when their resolution sets are equal after applying a scale.
@@ -28308,7 +28117,7 @@ declare class GeoTIFFSource extends DataTileSource<DataTile> {
     /**
      * @param {Options} options Data tile options.
      */
-    constructor(options: Options$P);
+    constructor(options: Options$R);
     /**
      * @type {Array<SourceInfo>}
      * @private
@@ -28393,6 +28202,13 @@ declare class GeoTIFFSource extends DataTileSource<DataTile> {
      */
     determineProjection(sources: Array<Array<GeoTIFFImage>>): void;
     /**
+     * Determine any transform matrix for the images in this GeoTIFF.
+     *
+     * @param {Array<Array<GeoTIFFImage>>} sources Each source is a list of images
+     * from a single GeoTIFF.
+     */
+    determineTransformMatrix(sources: Array<Array<GeoTIFFImage>>): void;
+    /**
      * Configure the tile grid based on images within the source GeoTIFFs.  Each GeoTIFF
      * must have the same internal tiled structure.
      * @param {Array<Array<GeoTIFFImage>>} sources Each source is a list of images
@@ -28418,7 +28234,7 @@ declare class GeoTIFFSource extends DataTileSource<DataTile> {
     private composeTile_;
 }
 
-type Options$O = {
+type Options$Q = {
     /**
      * Google Map Tiles API key. Get yours at https://developers.google.com/maps/documentation/tile/get-api-key.
      */
@@ -28570,7 +28386,7 @@ declare class Google extends TileImage {
     /**
      * @param {Options} options Google Maps options.
      */
-    constructor(options: Options$O);
+    constructor(options: Options$Q);
     /**
      * @type {string}
      * @private
@@ -28639,7 +28455,7 @@ declare class Google extends TileImage {
     private fetchAttributions_;
 }
 
-type Options$N = {
+type Options$P = {
     /**
      * Attributions.
      */
@@ -28742,7 +28558,7 @@ declare class ImageArcGISRest extends ImageSource {
     /**
      * @param {Options} [options] Image ArcGIS Rest Options.
      */
-    constructor(options?: Options$N | undefined);
+    constructor(options?: Options$P);
     /**
      * @private
      * @type {?string}
@@ -28837,7 +28653,7 @@ declare class ImageArcGISRest extends ImageSource {
  * references the {@link module :ol/source/ImageCanvas~ImageCanvasSource}.
  */
 type FunctionType$1 = (this: ImageCanvas, arg1: Extent$1, arg2: number, arg3: number, arg4: Size, arg5: Projection) => HTMLCanvasElement;
-type Options$M = {
+type Options$O = {
     /**
      * Attributions.
      */
@@ -28920,7 +28736,7 @@ declare class ImageCanvasSource extends ImageSource {
     /**
      * @param {Options} [options] ImageCanvas options.
      */
-    constructor(options?: Options$M | undefined);
+    constructor(options?: Options$O);
     /**
      * @private
      * @type {FunctionType}
@@ -28952,7 +28768,7 @@ declare class ImageCanvasSource extends ImageSource {
     override getImageInternal(extent: Extent$1, resolution: number, pixelRatio: number, projection: Projection): ImageCanvas;
 }
 
-type Options$L = {
+type Options$N = {
     /**
      * The mapagent url.
      */
@@ -29040,7 +28856,7 @@ declare class ImageMapGuide extends ImageSource {
     /**
      * @param {Options} options ImageMapGuide options.
      */
-    constructor(options: Options$L);
+    constructor(options: Options$N);
     /**
      * @private
      * @type {?string}
@@ -29123,7 +28939,7 @@ declare class ImageMapGuide extends ImageSource {
     setImageLoadFunction(imageLoadFunction: LoadFunction): void;
 }
 
-type Options$K = {
+type Options$M = {
     /**
      * Attributions.
      */
@@ -29180,7 +28996,7 @@ declare class Static extends ImageSource {
     /**
      * @param {Options} options ImageStatic options.
      */
-    constructor(options: Options$K);
+    constructor(options: Options$M);
     /**
      * @private
      * @type {string}
@@ -29212,7 +29028,7 @@ declare class Static extends ImageSource {
 type Loader = (arg0: number, arg1: number, arg2: number, arg3: LoaderOptions$4) => (ImageLike | Promise<ImageLike>);
 type UrlGetter = (arg0: number, arg1: number, arg2: number, arg3: LoaderOptions$4) => string;
 type UrlLike = string | Array<string> | UrlGetter;
-type Options$J = {
+type Options$L = {
     /**
      * The image URL template.  In addition to a single URL template, an array of URL templates or a function
      * can be provided.  If a function is provided, it will be called with z, x, y tile coordinates and loader options and should
@@ -29284,6 +29100,11 @@ type Options$J = {
      * The crossOrigin property to pass to loaders for image data.
      */
     crossOrigin?: CrossOriginAttribute | undefined;
+    /**
+     * Choose whether to use tiles with a higher or lower zoom level when between integer
+     * zoom levels. See {@link module :ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
+     */
+    zDirection?: number | NearestDirectionFunction | undefined;
 };
 /**
  * @classdesc
@@ -29297,7 +29118,7 @@ declare class ImageTileSource extends DataTileSource<ImageTile> {
     /**
      * @param {Options} [options] DataTile source options.
      */
-    constructor(options?: Options$J | undefined);
+    constructor(options?: Options$L);
     /**
      * @param {UrlLike} url The new URL.
      * @api
@@ -29393,7 +29214,7 @@ declare function getFeatureInfoUrl(options: LoaderOptions$3, coordinate: Coordin
  * @return {string|undefined} GetLegendGraphic URL.
  * @api
  */
-declare function getLegendUrl(options: LoaderOptions$3, resolution?: number | undefined): string | undefined;
+declare function getLegendUrl(options: LoaderOptions$3, resolution?: number): string | undefined;
 /**
  * Default WMS version.
  * @type {string}
@@ -29455,7 +29276,7 @@ type LoaderOptions$3 = {
     load?: ((arg0: HTMLImageElement, arg1: string) => Promise<ImageLike>) | undefined;
 };
 
-type Options$I = {
+type Options$K = {
     /**
      * Attributions.
      */
@@ -29550,7 +29371,7 @@ declare class ImageWMS extends ImageSource {
     /**
      * @param {Options} [options] ImageWMS options.
      */
-    constructor(options?: Options$I | undefined);
+    constructor(options?: Options$K);
     /**
      * @private
      * @type {?string}
@@ -29625,7 +29446,7 @@ declare class ImageWMS extends ImageSource {
      * @return {string|undefined} GetLegendGraphic URL.
      * @api
      */
-    getLegendUrl(resolution?: number | undefined, params?: any): string | undefined;
+    getLegendUrl(resolution?: number, params?: any): string | undefined;
     /**
      * Get the user-provided params, i.e. those passed to the constructor through
      * the "params" option, and possibly updated using the updateParams method.
@@ -29665,7 +29486,7 @@ declare class ImageWMS extends ImageSource {
     updateParams(params: any): void;
 }
 
-type Options$H = {
+type Options$J = {
     /**
      * URL to the OGC Map Tileset endpoint.
      */
@@ -29778,7 +29599,7 @@ declare class OGCMapTile extends TileImage {
     /**
      * @param {Options} options OGC map tile options.
      */
-    constructor(options: Options$H);
+    constructor(options: Options$J);
     /**
      * @param {import("./ogcTileUtil.js").TileSetInfo} tileSetInfo Tile set info.
      * @private
@@ -29791,7 +29612,7 @@ declare class OGCMapTile extends TileImage {
     private handleError_;
 }
 
-type Options$G<FeatureType extends FeatureLike = RenderFeature> = {
+type Options$I<FeatureType extends FeatureLike = RenderFeature> = {
     /**
      * Attributions.
      */
@@ -29998,7 +29819,7 @@ declare class VectorTile<FeatureType extends FeatureLike = RenderFeature> extend
     /**
      * @param {!Options<FeatureType>} options Vector tile options.
      */
-    constructor(options: Options$G<FeatureType>);
+    constructor(options: Options$I<FeatureType>);
     /**
      * @private
      * @type {import("../format/Feature.js").default<FeatureType>|null}
@@ -30055,9 +29876,13 @@ declare class VectorTile<FeatureType extends FeatureLike = RenderFeature> extend
      * @override
      */
     override getTile(z: number, x: number, y: number, pixelRatio: number, projection: Projection): VectorRenderTile;
+    /**
+     * @param {boolean} overlaps The source has overlapping geometries.
+     */
+    setOverlaps(overlaps: boolean): void;
 }
 
-type Options$F<FeatureType extends FeatureLike = RenderFeature> = {
+type Options$H<FeatureType extends FeatureLike = RenderFeature> = {
     /**
      * URL to the OGC Vector Tileset endpoint.
      */
@@ -30177,7 +30002,7 @@ declare class OGCVectorTile<FeatureType extends FeatureLike = RenderFeature> ext
     /**
      * @param {Options<FeatureType>} options OGC vector tile options.
      */
-    constructor(options: Options$F<FeatureType>);
+    constructor(options: Options$H<FeatureType>);
     /**
      * @param {import("./ogcTileUtil.js").TileSetInfo} tileSetInfo Tile set info.
      * @private
@@ -30190,7 +30015,7 @@ declare class OGCVectorTile<FeatureType extends FeatureLike = RenderFeature> ext
     private handleError_;
 }
 
-type Options$E = {
+type Options$G = {
     /**
      * Attributions.
      */
@@ -30284,7 +30109,7 @@ declare class OSM extends XYZ {
     /**
      * @param {Options} [options] Open Street Map options.
      */
-    constructor(options?: Options$E | undefined);
+    constructor(options?: Options$G);
 }
 
 /**
@@ -30349,7 +30174,7 @@ type Operation = (arg0: (Array<Array<number>> | Array<ImageData>), arg1: any) =>
  */
 type RasterOperationType = "pixel" | "image";
 type RasterSourceEventTypes = ImageSourceEventTypes | "beforeoperations" | "afteroperations";
-type Options$D = {
+type Options$F = {
     /**
      * Input
      * sources or layers.  For vector data, use an VectorImage layer.
@@ -30437,7 +30262,7 @@ declare class RasterSource extends ImageSource {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$D);
+    constructor(options: Options$F);
     /***
      * @type {RasterSourceOnSignature<import("../events").EventsKey>}
      */
@@ -30554,10 +30379,10 @@ declare class RasterSource extends ImageSource {
      * @return {Array<number>|null} Resolutions.
      * @override
      */
-    override getResolutions(projection?: Projection | undefined): Array<number> | null;
+    override getResolutions(projection?: Projection): Array<number> | null;
 }
 
-type Options$C = {
+type Options$E = {
     /**
      * Deprecated.  Use the cacheSize option on the layer instead.
      */
@@ -30656,10 +30481,10 @@ declare class StadiaMaps extends XYZ {
     /**
      * @param {Options} options StadiaMaps options.
      */
-    constructor(options: Options$C);
+    constructor(options: Options$E);
 }
 
-type Options$B = {
+type Options$D = {
     /**
      * Attributions.
      */
@@ -30809,7 +30634,7 @@ declare class TileArcGISRest extends TileImage {
     /**
      * @param {Options} [options] Tile ArcGIS Rest options.
      */
-    constructor(options?: Options$B | undefined);
+    constructor(options?: Options$D);
     /**
      * @private
      * @type {!Object}
@@ -30856,7 +30681,7 @@ declare class TileArcGISRest extends TileImage {
     updateParams(params: any): void;
 }
 
-type Options$A = {
+type Options$C = {
     /**
      * Optional projection.
      */
@@ -30876,6 +30701,12 @@ type Options$A = {
      */
     zDirection?: number | NearestDirectionFunction | undefined;
     /**
+     * Tile source.
+     * This allows `projection`, `tileGrid`, `wrapX` and `zDirection` to be copied from another source.
+     * If both `source` and individual options are specified the individual options will have precedence.
+     */
+    source?: TileSource<Tile$1> | undefined;
+    /**
      * Template for labeling the tiles.
      * Should include `{x}`, `{y}` or `{-y}`, and `{z}` placeholders.
      */
@@ -30890,6 +30721,9 @@ type Options$A = {
  * Set to `1` when debugging `VectorTile` sources with a default configuration.
  * Choose whether to use tiles with a higher or lower zoom level when between integer
  * zoom levels. See {@link module:ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
+ * @property {import("./Tile.js").default} [source] Tile source.
+ * This allows `projection`, `tileGrid`, `wrapX` and `zDirection` to be copied from another source.
+ * If both `source` and individual options are specified the individual options will have precedence.
  * @property {string} [template='z:{z} x:{x} y:{y}'] Template for labeling the tiles.
  * Should include `{x}`, `{y}` or `{-y}`, and `{z}` placeholders.
  */
@@ -30900,11 +30734,11 @@ type Options$A = {
  * each tile. See examples/canvas-tiles for an example.
  * @api
  */
-declare class TileDebug extends XYZ {
+declare class TileDebug extends ImageTileSource {
     /**
      * @param {Options} [options] Debug tile options.
      */
-    constructor(options?: Options$A | undefined);
+    constructor(options?: Options$C);
 }
 
 type Config = {
@@ -30961,7 +30795,7 @@ type Config = {
      */
     center?: number[] | undefined;
 };
-type Options$z = {
+type Options$B = {
     /**
      * Attributions.
      */
@@ -31085,7 +30919,7 @@ declare class TileJSON extends TileImage {
     /**
      * @param {Options} options TileJSON options.
      */
-    constructor(options: Options$z);
+    constructor(options: Options$B);
     /**
      * @type {Config}
      * @private
@@ -31122,7 +30956,7 @@ declare class TileJSON extends TileImage {
     protected handleTileJSONError(): void;
 }
 
-type Options$y = {
+type Options$A = {
     /**
      * Attributions.
      */
@@ -31301,7 +31135,7 @@ declare class TileWMS extends TileImage {
     /**
      * @param {Options} [options] Tile WMS options.
      */
-    constructor(options?: Options$y | undefined);
+    constructor(options?: Options$A);
     /**
      * @private
      * @type {number}
@@ -31361,7 +31195,7 @@ declare class TileWMS extends TileImage {
      * @return {string|undefined} GetLegendGraphic URL.
      * @api
      */
-    getLegendUrl(resolution?: number | undefined, params?: any): string | undefined;
+    getLegendUrl(resolution?: number, params?: any): string | undefined;
     /**
      * Get the user-provided params, i.e. those passed to the constructor through
      * the "params" option, and possibly updated using the updateParams method.
@@ -31402,7 +31236,7 @@ declare class TileWMS extends TileImage {
  * @property {Array<string>} keys The keys.
  * @property {Object<string, Object>} [data] Optional data.
  */
-declare class CustomTile extends Tile {
+declare class CustomTile extends Tile$1 {
     /**
      * @param {import("../tilecoord.js").TileCoord} tileCoord Tile coordinate.
      * @param {import("../TileState.js").default} state State.
@@ -31466,7 +31300,7 @@ declare class CustomTile extends Tile {
      * @param {boolean} [request] If `true` the callback is always async.
      *                               The tile data is requested if not yet loaded.
      */
-    forDataAtCoordinate(coordinate: Coordinate, callback: (arg0: any) => void, request?: boolean | undefined): void;
+    forDataAtCoordinate(coordinate: Coordinate, callback: (arg0: any) => void, request?: boolean): void;
     /**
      * @private
      */
@@ -31492,7 +31326,7 @@ declare class CustomTile extends Tile {
     private onXHRError_;
 }
 
-type Options$x = {
+type Options$z = {
     /**
      * If `true` the UTFGrid source loads the tiles based on their "visibility".
      * This improves the speed of response, but increases traffic.
@@ -31551,11 +31385,11 @@ type Options$x = {
  * Layer source for UTFGrid interaction data loaded from TileJSON format.
  * @api
  */
-declare class UTFGrid extends TileSource<Tile> {
+declare class UTFGrid extends TileSource<Tile$1> {
     /**
      * @param {Options} options Source options.
      */
-    constructor(options: Options$x);
+    constructor(options: Options$z);
     /**
      * @private
      * @type {boolean}
@@ -31603,7 +31437,7 @@ declare class UTFGrid extends TileSource<Tile> {
      *                               The tile data is requested if not yet loaded.
      * @api
      */
-    forDataAtCoordinateAndResolution(coordinate: Coordinate, resolution: number, callback: (arg0: any) => void, request?: boolean | undefined): void;
+    forDataAtCoordinateAndResolution(coordinate: Coordinate, resolution: number, callback: (arg0: any) => void, request?: boolean): void;
     /**
      * @protected
      */
@@ -31630,7 +31464,7 @@ declare class UTFGrid extends TileSource<Tile> {
  * Request encoding. One of 'KVP', 'REST'.
  */
 type RequestEncoding = "KVP" | "REST";
-type Options$w = {
+type Options$y = {
     /**
      * Attributions.
      */
@@ -31804,7 +31638,7 @@ declare class WMTS extends TileImage {
     /**
      * @param {Options} options WMTS options.
      */
-    constructor(options: Options$w);
+    constructor(options: Options$y);
     /**
      * @private
      * @type {string}
@@ -31903,7 +31737,7 @@ declare class WMTS extends TileImage {
 }
 
 type TierSizeCalculation = "default" | "truncated";
-type Options$v = {
+type Options$x = {
     /**
      * Attributions.
      */
@@ -32030,7 +31864,7 @@ declare class Zoomify extends TileImage {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$v);
+    constructor(options: Options$x);
 }
 
 /**
@@ -32240,8 +32074,8 @@ type VectorTileRenderType = "hybrid" | "vector";
 /**
  * *
  */
-type ExtractedFeatureType$1<T> = T extends VectorTile<infer U extends FeatureLike> ? U : never;
-type Options$u<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile<any>, FeatureType extends FeatureLike = ExtractedFeatureType$1<VectorTileSourceType>> = {
+type ExtractedFeatureType$2<T> = T extends VectorTile<infer U extends FeatureLike> ? U : never;
+type Options$w<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile<any>, FeatureType extends FeatureLike = ExtractedFeatureType$2<VectorTileSourceType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -32467,11 +32301,11 @@ type Options$u<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile
  * @extends {BaseVectorLayer<FeatureType, VectorTileSourceType, CanvasVectorTileLayerRenderer>}
  * @api
  */
-declare class VectorTileLayer<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile<any>, FeatureType extends FeatureLike = ExtractedFeatureType$1<VectorTileSourceType>> extends BaseVectorLayer<FeatureType, VectorTileSourceType, CanvasVectorTileLayerRenderer> {
+declare class VectorTileLayer<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile<any>, FeatureType extends FeatureLike = ExtractedFeatureType$2<VectorTileSourceType>> extends BaseVectorLayer<FeatureType, VectorTileSourceType, CanvasVectorTileLayerRenderer> {
     /**
      * @param {Options<VectorTileSourceType, FeatureType>} [options] Options.
      */
-    constructor(options?: Options$u<VectorTileSourceType, FeatureType> | undefined);
+    constructor(options?: Options$w<VectorTileSourceType, FeatureType>);
     /***
      * @type {VectorTileLayerOnSignature<import("../events").EventsKey>}
      */
@@ -32545,7 +32379,7 @@ declare class VectorTileLayer<VectorTileSourceType extends VectorTile<FeatureTyp
  * *
  */
 type BaseTileLayerOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes | LayerEventType | "change:preload" | "change:useInterimTilesOnError", ObjectEvent, Return> & OnSignature<LayerRenderEventTypes, RenderEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes | LayerEventType | "change:preload" | "change:useInterimTilesOnError" | LayerRenderEventTypes, Return>;
-type Options$t<TileSourceType extends TileSource> = {
+type Options$v<TileSourceType extends TileSource> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -32607,6 +32441,11 @@ type Options$t<TileSourceType extends TileSource> = {
      */
     map?: Map | undefined;
     /**
+     * Background color for the layer. If not specified, no background
+     * will be rendered.
+     */
+    background?: BackgroundColor | undefined;
+    /**
      * Deprecated.  Use interim tiles on error.
      */
     useInterimTilesOnError?: boolean | undefined;
@@ -32658,6 +32497,8 @@ type Options$t<TileSourceType extends TileSource> = {
  * this layer in its layers collection, and the layer will be rendered on top. This is useful for
  * temporary layers. The standard way to add a layer to a map and have it managed by the map is to
  * use {@link import("../Map.js").default#addLayer map.addLayer()}.
+ * @property {import("./Base.js").BackgroundColor} [background] Background color for the layer. If not specified, no background
+ * will be rendered.
  * @property {boolean} [useInterimTilesOnError=true] Deprecated.  Use interim tiles on error.
  * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
  * @property {number} [cacheSize=512] The internal tile cache size.  This needs to be large enough to render
@@ -32680,7 +32521,7 @@ declare class BaseTileLayer<TileSourceType extends TileSource, RendererType exte
     /**
      * @param {Options<TileSourceType>} [options] Tile layer options.
      */
-    constructor(options?: Options$t<TileSourceType> | undefined);
+    constructor(options?: Options$v<TileSourceType>);
     /***
      * @type {BaseTileLayerOnSignature<import("../events").EventsKey>}
      */
@@ -32745,11 +32586,11 @@ declare class BaseTileLayer<TileSourceType extends TileSource, RendererType exte
  * @extends BaseTileLayer<TileSourceType, CanvasTileLayerRenderer>
  * @api
  */
-declare class TileLayer<TileSourceType extends TileSource = TileSource<Tile>> extends BaseTileLayer<TileSourceType, CanvasTileLayerRenderer<TileLayer<TileSource<Tile>> | VectorTileLayer<VectorTile<any>, any>>> {
+declare class TileLayer<TileSourceType extends TileSource = TileSource<Tile$1>> extends BaseTileLayer<TileSourceType, CanvasTileLayerRenderer<TileLayer<TileSource<Tile$1>> | VectorTileLayer<VectorTile<any>, any>>> {
     /**
      * @param {import("./BaseTile.js").Options<TileSourceType>} [options] Tile layer options.
      */
-    constructor(options?: Options$t<TileSourceType> | undefined);
+    constructor(options?: Options$v<TileSourceType>);
     /**
      * @override
      */
@@ -32758,9 +32599,9 @@ declare class TileLayer<TileSourceType extends TileSource = TileSource<Tile>> ex
 //# sourceMappingURL=Tile.d.ts.map
 
 type TileLookup = {
-    [x: number]: Set<Tile>;
+    [x: number]: Set<Tile$1>;
 };
-type Options$s = {
+type Options$u = {
     /**
      * The cache size.
      */
@@ -32777,12 +32618,12 @@ type Options$s = {
  * @template {import("../../layer/Tile.js").default|import("../../layer/VectorTile.js").default} [LayerType=import("../../layer/Tile.js").default<import("../../source/Tile.js").default>|import("../../layer/VectorTile.js").default]
  * @extends {CanvasLayerRenderer<LayerType>}
  */
-declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLayer = TileLayer<TileSource<Tile>> | VectorTileLayer<VectorTile<any>, any>> extends CanvasLayerRenderer<LayerType> {
+declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLayer = TileLayer<TileSource<Tile$1>> | VectorTileLayer<VectorTile<any>, any>> extends CanvasLayerRenderer<LayerType> {
     /**
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} [options] Options.
      */
-    constructor(tileLayer: LayerType, options?: Options$s | undefined);
+    constructor(tileLayer: LayerType, options?: Options$u);
     /**
      * Rendered extent has changed since the previous `renderFrame()` call
      * @type {boolean}
@@ -32805,9 +32646,9 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
     protected renderedPixelRatio: number;
     /**
      * @protected
-     * @type {import("../../proj/Projection.js").default}
+     * @type {import("../../proj/Projection.js").default|null}
      */
-    protected renderedProjection: Projection;
+    protected renderedProjection: Projection | null;
     /**
      * @protected
      * @type {number}
@@ -32817,7 +32658,7 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      * @protected
      * @type {!Array<import("../../Tile.js").default>}
      */
-    protected renderedTiles: Array<Tile>;
+    protected renderedTiles: Array<Tile$1>;
     /**
      * @private
      * @type {string}
@@ -32849,11 +32690,6 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      */
     private tileCache_;
     /**
-     * @private
-     * @type {import("../../proj/Projection.js").default}
-     */
-    private renderedProjection_;
-    /**
      * @return {LRUCache} Tile cache.
      */
     getTileCache(): LRUCache<any>;
@@ -32867,7 +32703,7 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      * @return {import("../../Tile.js").default|null} Tile (or null if outside source extent).
      * @protected
      */
-    protected getOrCreateTile(z: number, x: number, y: number, frameState: FrameState): Tile | null;
+    protected getOrCreateTile(z: number, x: number, y: number, frameState: FrameState): Tile$1 | null;
     /**
      * @param {number} z Tile coordinate z.
      * @param {number} x Tile coordinate x.
@@ -32876,7 +32712,7 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      * @return {import("../../Tile.js").default|null} Tile (or null if outside source extent).
      * @protected
      */
-    protected getTile(z: number, x: number, y: number, frameState: FrameState): Tile | null;
+    protected getTile(z: number, x: number, y: number, frameState: FrameState): Tile$1 | null;
     /**
      * @param {import("../../pixel.js").Pixel} pixel Pixel.
      * @return {Uint8ClampedArray} Data at the pixel location.
@@ -32943,7 +32779,7 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      * @param {boolean} transition Apply an alpha transition.
      * @protected
      */
-    protected drawTile(tile: Tile, frameState: FrameState, x: number, y: number, w: number, h: number, gutter: number, transition: boolean): void;
+    protected drawTile(tile: Tile$1, frameState: FrameState, x: number, y: number, w: number, h: number, gutter: number, transition: boolean): void;
     /**
      * @return {HTMLCanvasElement} Image
      */
@@ -32965,7 +32801,7 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
         [x: string]: {
             [x: string]: boolean;
         };
-    }, tileSource: TileSource, tile: Tile): void;
+    }, tileSource: TileSource, tile: Tile$1): void;
 }
 
 /**
@@ -32979,7 +32815,7 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
      * @param {import("../../layer/VectorTile.js").default} layer VectorTile layer.
      * @param {import("./TileLayer.js").Options} options Options.
      */
-    constructor(layer: VectorTileLayer, options: Options$s);
+    constructor(layer: VectorTileLayer, options: Options$u);
     /** @private */
     private boundHandleStyleImageChange_;
     /**
@@ -33048,7 +32884,12 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
      * @param {import("../../layer/Layer.js").State} layerState Layer state.
      */
     renderDeclutter(frameState: FrameState, layerState: State$1): void;
-    getTileRenderTransform(tile: any, frameState: any): number[];
+    /**
+     * @param {import("../../VectorRenderTile.js").default} tile The tile
+     * @param {import('../../Map.js').FrameState} frameState Current frame state
+     * @return {import('../../transform.js').Transform} Transform to use to render this tile
+     */
+    getTileRenderTransform(tile: VectorRenderTile, frameState: FrameState): Transform;
     /**
      * @param {import("../../Feature.js").FeatureLike} feature Feature.
      * @param {number} squaredTolerance Squared tolerance.
@@ -33058,7 +32899,7 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
      * @param {number} [index] Render order index.
      * @return {boolean} `true` if an image is loading.
      */
-    renderFeature(feature: FeatureLike, squaredTolerance: number, styles: Style$2 | Array<Style$2>, builderGroup: BuilderGroup, declutter?: boolean | undefined, index?: number | undefined): boolean;
+    renderFeature(feature: FeatureLike, squaredTolerance: number, styles: Style$2 | Array<Style$2>, builderGroup: BuilderGroup, declutter?: boolean, index?: number): boolean;
     /**
      * @param {import("../../VectorRenderTile.js").default} tile Tile.
      * @return {boolean} A new tile image was rendered.
@@ -33074,7 +32915,166 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
 }
 //# sourceMappingURL=VectorTileLayer.d.ts.map
 
-type Options$r<FeatureType extends FeatureLike, VectorSourceType extends VectorSource<FeatureType> | VectorTile<FeatureType>> = {
+/**
+ * @classdesc
+ * Canvas renderer for vector layers.
+ * @api
+ */
+declare class CanvasVectorLayerRenderer extends CanvasLayerRenderer<any> {
+    /**
+     * @param {import("../../layer/BaseVector.js").default} vectorLayer Vector layer.
+     */
+    constructor(vectorLayer: BaseVectorLayer<any, any, any>);
+    /** @private */
+    private boundHandleStyleImageChange_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private animatingOrInteracting_;
+    /**
+     * @private
+     * @type {ImageData|null}
+     */
+    private hitDetectionImageData_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private clipped_;
+    /**
+     * @private
+     * @type {Array<import("../../Feature.js").default>}
+     */
+    private renderedFeatures_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private renderedRevision_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private renderedResolution_;
+    /**
+     * @private
+     * @type {import("../../extent.js").Extent}
+     */
+    private renderedExtent_;
+    /**
+     * @private
+     * @type {import("../../extent.js").Extent}
+     */
+    private wrappedRenderedExtent_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private renderedRotation_;
+    /**
+     * @private
+     * @type {import("../../coordinate").Coordinate}
+     */
+    private renderedCenter_;
+    /**
+     * @private
+     * @type {import("../../proj/Projection").default}
+     */
+    private renderedProjection_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private renderedPixelRatio_;
+    /**
+     * @private
+     * @type {function(import("../../Feature.js").default, import("../../Feature.js").default): number|null}
+     */
+    private renderedRenderOrder_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private renderedFrameDeclutter_;
+    /**
+     * @private
+     * @type {import("../../render/canvas/ExecutorGroup").default}
+     */
+    private replayGroup_;
+    /**
+     * A new replay group had to be created by `prepareFrame()`
+     * @type {boolean}
+     */
+    replayGroupChanged: boolean;
+    /**
+     * Clipping to be performed by `renderFrame()`
+     * @type {boolean}
+     */
+    clipping: boolean;
+    /**
+     * @private
+     * @type {CanvasRenderingContext2D}
+     */
+    private targetContext_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private opacity_;
+    /**
+     * @param {ExecutorGroup} executorGroup Executor group.
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     * @param {boolean} [declutterable] `true` to only render declutterable items,
+     *     `false` to only render non-declutterable items, `undefined` to render all.
+     */
+    renderWorlds(executorGroup: ExecutorGroup, frameState: FrameState, declutterable?: boolean): void;
+    /**
+     * @private
+     */
+    private setDrawContext_;
+    /**
+     * @private
+     */
+    private resetDrawContext_;
+    /**
+     * Render declutter items for this layer
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     */
+    renderDeclutter(frameState: FrameState): void;
+    /**
+     * Asynchronous layer level hit detection.
+     * @param {import("../../pixel.js").Pixel} pixel Pixel.
+     * @return {Promise<Array<import("../../Feature").default>>} Promise
+     * that resolves with an array of features.
+     * @override
+     */
+    override getFeatures(pixel: Pixel): Promise<Array<Feature$2>>;
+    /**
+     * Handle changes in image style state.
+     * @param {import("../../events/Event.js").default} event Image style change event.
+     * @private
+     */
+    private handleStyleImageChange_;
+    /**
+     * @param {import("../../Feature.js").default} feature Feature.
+     * @param {number} squaredTolerance Squared render tolerance.
+     * @param {import("../../style/Style.js").default|Array<import("../../style/Style.js").default>} styles The style or array of styles.
+     * @param {import("../../render/canvas/BuilderGroup.js").default} builderGroup Builder group.
+     * @param {import("../../proj.js").TransformFunction} [transform] Transform from user to view projection.
+     * @param {boolean} [declutter] Enable decluttering.
+     * @param {number} [index] Render order index.
+     * @return {boolean} `true` if an image is loading.
+     */
+    renderFeature(feature: Feature$2, squaredTolerance: number, styles: Style$2 | Array<Style$2>, builderGroup: BuilderGroup, transform?: TransformFunction, declutter?: boolean, index?: number): boolean;
+}
+//# sourceMappingURL=VectorLayer.d.ts.map
+
+/**
+ * *
+ */
+type ExtractedFeatureType$1<T> = T extends VectorSource<infer U extends FeatureLike> ? U : never;
+type Options$t<FeatureType extends FeatureLike, VectorSourceType extends VectorSource<FeatureType> | VectorTile<FeatureType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -33197,7 +33197,7 @@ declare class BaseVectorLayer<FeatureType extends FeatureLike, VectorSourceType 
     /**
      * @param {Options<FeatureType, VectorSourceType>} [options] Options.
      */
-    constructor(options?: Options$r<FeatureType, VectorSourceType> | undefined);
+    constructor(options?: Options$t<FeatureType, VectorSourceType>);
     /**
      * @private
      * @type {string}
@@ -33288,169 +33288,15 @@ declare class BaseVectorLayer<FeatureType extends FeatureLike, VectorSourceType 
      * @param {import("../style/Style.js").StyleLike|import("../style/flat.js").FlatStyleLike|null} [style] Layer style.
      * @api
      */
-    setStyle(style?: StyleLike | FlatStyleLike | null | undefined): void;
+    setStyle(style?: StyleLike | FlatStyleLike | null): void;
+    /**
+     * @param {boolean|string|number} declutter Declutter images and text.
+     * @api
+     */
+    setDeclutter(declutter: boolean | string | number): void;
 }
 
-/**
- * @classdesc
- * Canvas renderer for vector layers.
- * @api
- */
-declare class CanvasVectorLayerRenderer extends CanvasLayerRenderer<any> {
-    /**
-     * @param {import("../../layer/BaseVector.js").default} vectorLayer Vector layer.
-     */
-    constructor(vectorLayer: BaseVectorLayer<any, any, any>);
-    /** @private */
-    private boundHandleStyleImageChange_;
-    /**
-     * @private
-     * @type {boolean}
-     */
-    private animatingOrInteracting_;
-    /**
-     * @private
-     * @type {ImageData|null}
-     */
-    private hitDetectionImageData_;
-    /**
-     * @private
-     * @type {boolean}
-     */
-    private clipped_;
-    /**
-     * @private
-     * @type {Array<import("../../Feature.js").default>}
-     */
-    private renderedFeatures_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private renderedRevision_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private renderedResolution_;
-    /**
-     * @private
-     * @type {import("../../extent.js").Extent}
-     */
-    private renderedExtent_;
-    /**
-     * @private
-     * @type {import("../../extent.js").Extent}
-     */
-    private wrappedRenderedExtent_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private renderedRotation_;
-    /**
-     * @private
-     * @type {import("../../coordinate").Coordinate}
-     */
-    private renderedCenter_;
-    /**
-     * @private
-     * @type {import("../../proj/Projection").default}
-     */
-    private renderedProjection_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private renderedPixelRatio_;
-    /**
-     * @private
-     * @type {function(import("../../Feature.js").default, import("../../Feature.js").default): number|null}
-     */
-    private renderedRenderOrder_;
-    /**
-     * @private
-     * @type {boolean}
-     */
-    private renderedFrameDeclutter_;
-    /**
-     * @private
-     * @type {import("../../render/canvas/ExecutorGroup").default}
-     */
-    private replayGroup_;
-    /**
-     * A new replay group had to be created by `prepareFrame()`
-     * @type {boolean}
-     */
-    replayGroupChanged: boolean;
-    /**
-     * Clipping to be performed by `renderFrame()`
-     * @type {boolean}
-     */
-    clipping: boolean;
-    /**
-     * @private
-     * @type {CanvasRenderingContext2D}
-     */
-    private targetContext_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private opacity_;
-    /**
-     * @param {ExecutorGroup} executorGroup Executor group.
-     * @param {import("../../Map.js").FrameState} frameState Frame state.
-     * @param {boolean} [declutterable] `true` to only render declutterable items,
-     *     `false` to only render non-declutterable items, `undefined` to render all.
-     */
-    renderWorlds(executorGroup: ExecutorGroup, frameState: FrameState, declutterable?: boolean | undefined): void;
-    /**
-     * @private
-     */
-    private setDrawContext_;
-    /**
-     * @private
-     */
-    private resetDrawContext_;
-    /**
-     * Render declutter items for this layer
-     * @param {import("../../Map.js").FrameState} frameState Frame state.
-     */
-    renderDeclutter(frameState: FrameState): void;
-    /**
-     * Asynchronous layer level hit detection.
-     * @param {import("../../pixel.js").Pixel} pixel Pixel.
-     * @return {Promise<Array<import("../../Feature").default>>} Promise
-     * that resolves with an array of features.
-     * @override
-     */
-    override getFeatures(pixel: Pixel): Promise<Array<Feature$2>>;
-    /**
-     * Handle changes in image style state.
-     * @param {import("../../events/Event.js").default} event Image style change event.
-     * @private
-     */
-    private handleStyleImageChange_;
-    /**
-     * @param {import("../../Feature.js").default} feature Feature.
-     * @param {number} squaredTolerance Squared render tolerance.
-     * @param {import("../../style/Style.js").default|Array<import("../../style/Style.js").default>} styles The style or array of styles.
-     * @param {import("../../render/canvas/BuilderGroup.js").default} builderGroup Builder group.
-     * @param {import("../../proj.js").TransformFunction} [transform] Transform from user to view projection.
-     * @param {boolean} [declutter] Enable decluttering.
-     * @param {number} [index] Render order index.
-     * @return {boolean} `true` if an image is loading.
-     */
-    renderFeature(feature: Feature$2, squaredTolerance: number, styles: Style$2 | Array<Style$2>, builderGroup: BuilderGroup, transform?: TransformFunction | undefined, declutter?: boolean | undefined, index?: number | undefined): boolean;
-}
-//# sourceMappingURL=VectorLayer.d.ts.map
-
-/**
- * *
- */
-type ExtractedFeatureType<T> = T extends VectorSource<infer U extends FeatureLike> ? U : never;
-type Options$q<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType<VectorSourceType>> = {
+type Options$s<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType$1<VectorSourceType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -33556,13 +33402,9 @@ type Options$q<VectorSourceType extends VectorSource<FeatureType> = VectorSource
         [x: string]: any;
     } | undefined;
 };
-/***
- * @template T
- * @typedef {T extends import("../source/Vector.js").default<infer U extends import("../Feature.js").FeatureLike> ? U : never} ExtractedFeatureType
- */
 /**
  * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<*>]
- * @template {import('../Feature.js').FeatureLike} [FeatureType=ExtractedFeatureType<VectorSourceType>]
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=import("./BaseVector.js").ExtractedFeatureType<VectorSourceType>]
  * @typedef {Object} Options
  * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
  * @property {number} [opacity=1] Opacity (0, 1).
@@ -33622,15 +33464,15 @@ type Options$q<VectorSourceType extends VectorSource<FeatureType> = VectorSource
  * options means that `title` is observable, and has get/set accessors.
  *
  * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<*>]
- * @template {import('../Feature.js').FeatureLike} [FeatureType=ExtractedFeatureType<VectorSourceType>]
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=import("./BaseVector.js").ExtractedFeatureType<VectorSourceType>]
  * @extends {BaseVectorLayer<FeatureType, VectorSourceType, CanvasVectorLayerRenderer>}
  * @api
  */
-declare class VectorLayer<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType<VectorSourceType>> extends BaseVectorLayer<FeatureType, VectorSourceType, CanvasVectorLayerRenderer> {
+declare class VectorLayer<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType$1<VectorSourceType>> extends BaseVectorLayer<FeatureType, VectorSourceType, CanvasVectorLayerRenderer> {
     /**
      * @param {Options<VectorSourceType, FeatureType>} [options] Options.
      */
-    constructor(options?: Options$q<VectorSourceType, FeatureType> | undefined);
+    constructor(options?: Options$s<VectorSourceType, FeatureType>);
 }
 
 /**
@@ -33652,7 +33494,7 @@ declare class DrawEvent extends BaseEvent {
     feature: Feature$2;
 }
 
-type Options$p = {
+type Options$r = {
     /**
      * Geometry type of
      * the geometries being drawn with this instance.
@@ -33828,7 +33670,7 @@ declare class Draw extends PointerInteraction {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$p);
+    constructor(options: Options$r);
     /***
      * @type {DrawOnSignature<import("../events").EventsKey>}
      */
@@ -34207,7 +34049,7 @@ declare class ExtentEvent extends BaseEvent {
     extent: Extent$1;
 }
 
-type Options$o = {
+type Options$q = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -34268,7 +34110,7 @@ declare class Extent extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$o | undefined);
+    constructor(options?: Options$q);
     /***
      * @type {ExtentOnSignature<import("../events").EventsKey>}
      */
@@ -34390,7 +34232,7 @@ declare class Extent extends PointerInteraction {
     setExtent(extent: Extent$1): void;
 }
 
-type Options$n = {
+type Options$p = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -34437,7 +34279,7 @@ declare class KeyboardPan extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$n | undefined);
+    constructor(options?: Options$p);
     /**
      * @private
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Browser event.
@@ -34461,7 +34303,7 @@ declare class KeyboardPan extends Interaction {
     private pixelDelta_;
 }
 
-type Options$m = {
+type Options$o = {
     /**
      * Animation duration in milliseconds.
      */
@@ -34508,7 +34350,7 @@ declare class KeyboardZoom extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$m | undefined);
+    constructor(options?: Options$o);
     /**
      * @private
      * @type {import("../events/condition.js").Condition}
@@ -34528,7 +34370,7 @@ declare class KeyboardZoom extends Interaction {
 
 type Params = "x" | "y" | "z" | "r" | "l";
 type Callback = (arg0: string) => void;
-type Options$l = {
+type Options$n = {
     /**
      * Animate view transitions.
      */
@@ -34575,7 +34417,7 @@ declare class Link$1 extends Interaction {
     /**
      * @param {Options} [options] Link options.
      */
-    constructor(options?: Options$l | undefined);
+    constructor(options?: Options$n);
     /**
      * @type {import('../View.js').AnimationOptions|null}
      * @private
@@ -34702,6 +34544,9 @@ declare class Link$1 extends Interaction {
  * @property {Array<SegmentData>} [featureSegments] FeatureSegments.
  */
 /**
+ * @typedef {[SegmentData, number]} DragSegment
+ */
+/**
  * @typedef {Object} Options
  * @property {import("../events/condition.js").Condition} [condition] A function that
  * takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -34723,7 +34568,8 @@ declare class Link$1 extends Interaction {
  * Style used for the modification point or vertex. For linestrings and polygons, this will
  * be the affected vertex, for circles a point along the circle, and for points the actual
  * point. If not configured, the default edit style is used (see {@link module:ol/style/Style~Style}).
- * When using a style function, the point feature passed to the function will have a `features`
+ * When using a style function, the point feature passed to the function will have an `existing` property -
+ * indicating whether there is an existing vertex underneath or not, a `features`
  * property - an array whose entries are the features that are being modified, and a `geometries`
  * property - an array whose entries are the geometries that are being modified. Both arrays are
  * in the same order. The `geometries` are only useful when modifying geometry collections, where
@@ -34771,7 +34617,33 @@ declare class ModifyEvent extends BaseEvent {
     mapBrowserEvent: MapBrowserEvent<any>;
 }
 
-type Options$k = {
+type SegmentData = {
+    /**
+     * Depth.
+     */
+    depth?: number[] | undefined;
+    /**
+     * Feature.
+     */
+    feature: Feature$2;
+    /**
+     * Geometry.
+     */
+    geometry: SimpleGeometry;
+    /**
+     * Index.
+     */
+    index?: number | undefined;
+    /**
+     * Segment.
+     */
+    segment: Array<Array<number>>;
+    /**
+     * FeatureSegments.
+     */
+    featureSegments?: SegmentData[] | undefined;
+};
+type Options$m = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -34804,7 +34676,8 @@ type Options$k = {
      * Style used for the modification point or vertex. For linestrings and polygons, this will
      * be the affected vertex, for circles a point along the circle, and for points the actual
      * point. If not configured, the default edit style is used (see {@link module :ol/style/Style~Style}).
-     * When using a style function, the point feature passed to the function will have a `features`
+     * When using a style function, the point feature passed to the function will have an `existing` property -
+     * indicating whether there is an existing vertex underneath or not, a `features`
      * property - an array whose entries are the features that are being modified, and a `geometries`
      * property - an array whose entries are the geometries that are being modified. Both arrays are
      * in the same order. The `geometries` are only useful when modifying geometry collections, where
@@ -34884,7 +34757,7 @@ declare class Modify extends PointerInteraction {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$k);
+    constructor(options: Options$m);
     /***
      * @type {ModifyOnSignature<import("../events").EventsKey>}
      */
@@ -34973,7 +34846,7 @@ declare class Modify extends PointerInteraction {
      */
     private changingFeature_;
     /**
-     * @type {Array}
+     * @type {Array<DragSegment>}
      * @private
      */
     private dragSegments_;
@@ -35026,7 +34899,7 @@ declare class Modify extends PointerInteraction {
     private addFeature_;
     /**
      * @param {import("../MapBrowserEvent.js").default} evt Map browser event.
-     * @param {Array<Array<SegmentData>>} segments The segments subject to modification.
+     * @param {Array<SegmentData>} segments The segments subject to modification.
      * @private
      */
     private willModifyFeatures_;
@@ -35137,40 +35010,71 @@ declare class Modify extends PointerInteraction {
      * @param {import("../coordinate.js").Coordinate} coordinates Coordinates.
      * @param {Array<Feature>} features The features being modified.
      * @param {Array<import("../geom/SimpleGeometry.js").default>} geometries The geometries being modified.
+     * @param {boolean} existing The vertex represents an existing vertex.
      * @return {Feature} Vertex feature.
      * @private
      */
     private createOrUpdateVertexFeature_;
+    findInsertVerticesAndUpdateDragSegments_(pixelCoordinate: any): SegmentData[] | undefined;
     /**
      * @param {import("../MapBrowserEvent.js").default} evt Event.
      * @private
      */
     private handlePointerMove_;
     /**
-     * @param {import("../pixel.js").Pixel} pixel Pixel
-     * @param {import("../Map.js").default} map Map.
-     * @param {import("../coordinate.js").Coordinate} [coordinate] The pixel Coordinate.
+     * @param {import("../coordinate.js").Coordinate} pixelCoordinate The pixel Coordinate.
      * @private
      */
     private handlePointerAtPixel_;
     /**
      * @param {SegmentData} segmentData Segment data.
      * @param {import("../coordinate.js").Coordinate} vertex Vertex.
+     * @return {boolean} A vertex was inserted.
      * @private
      */
     private insertVertex_;
+    updatePointer_(coordinate: any): Coordinate;
     /**
-     * Removes the vertex currently being pointed.
+     * Get the current pointer position.
+     * @return {import("../coordinate.js").Coordinate | null} The current pointer coordinate.
+     */
+    getPoint(): Coordinate | null;
+    /**
+     * Check if a point can be removed from the current linestring or polygon at the current
+     * pointer position.
+     * @return {boolean} A point can be deleted at the current pointer position.
+     * @api
+     */
+    canRemovePoint(): boolean;
+    /**
+     * Removes the vertex currently being pointed from the current linestring or polygon.
+     * @param {import('../coordinate.js').Coordinate} [coordinate] If provided, the pointer
+     * will be set to the provided coordinate. If not, the current pointer coordinate will be used.
      * @return {boolean} True when a vertex was removed.
      * @api
      */
-    removePoint(): boolean;
+    removePoint(coordinate?: Coordinate): boolean;
     /**
      * Removes a vertex from all matching features.
      * @return {boolean} True when a vertex was removed.
      * @private
      */
     private removeVertex_;
+    /**
+     * Check if a point can be inserted to the current linestring or polygon at the current
+     * pointer position.
+     * @return {boolean} A point can be inserted at the current pointer position.
+     * @api
+     */
+    canInsertPoint(): boolean;
+    /**
+     * Inserts the vertex currently being pointed to the current linestring or polygon.
+     * @param {import('../coordinate.js').Coordinate} [coordinate] If provided, the pointer
+     * will be set to the provided coordinate. If not, the current pointer coordinate will be used.
+     * @return {boolean} A vertex was inserted.
+     * @api
+     */
+    insertPoint(coordinate?: Coordinate): boolean;
     /**
      * @param {import("../geom/SimpleGeometry.js").default} geometry Geometry.
      * @param {Array} coordinates Coordinates.
@@ -35187,7 +35091,7 @@ declare class Modify extends PointerInteraction {
     private updateSegmentIndices_;
 }
 
-type Options$j = {
+type Options$l = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -35255,7 +35159,7 @@ declare class MouseWheelZoom extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$j | undefined);
+    constructor(options?: Options$l);
     /**
      * @private
      * @type {number}
@@ -35352,7 +35256,7 @@ declare class MouseWheelZoom extends Interaction {
     setMouseAnchor(useAnchor: boolean): void;
 }
 
-type Options$i = {
+type Options$k = {
     /**
      * The duration of the animation in
      * milliseconds.
@@ -35379,7 +35283,7 @@ declare class PinchRotate extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$i | undefined);
+    constructor(options?: Options$k);
     /**
      * @private
      * @type {import("../coordinate.js").Coordinate}
@@ -35412,7 +35316,7 @@ declare class PinchRotate extends PointerInteraction {
     private duration_;
 }
 
-type Options$h = {
+type Options$j = {
     /**
      * Animation duration in milliseconds.
      */
@@ -35432,7 +35336,7 @@ declare class PinchZoom extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$h | undefined);
+    constructor(options?: Options$j);
     /**
      * @private
      * @type {import("../coordinate.js").Coordinate}
@@ -35554,7 +35458,7 @@ declare class SelectEvent extends BaseEvent {
  * selected or `false` otherwise.
  */
 type FilterFunction$1 = (arg0: Feature$2, arg1: Layer<Source>) => boolean;
-type Options$g = {
+type Options$i = {
     /**
      * A function
      * that takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -35670,7 +35574,7 @@ declare class Select extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$g | undefined);
+    constructor(options?: Options$i);
     /***
      * @type {SelectOnSignature<import("../events").EventsKey>}
      */
@@ -35830,7 +35734,7 @@ type Result = {
      */
     segment: Array<Coordinate> | null;
 };
-type Options$f = {
+type Options$h = {
     /**
      * Snap to these features. Either this option or source should be provided.
      */
@@ -35894,7 +35798,7 @@ declare class Snap extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$f | undefined);
+    constructor(options?: Options$h);
     /***
      * @type {SnapOnSignature<import("../events").EventsKey>}
      */
@@ -35976,7 +35880,7 @@ declare class Snap extends PointerInteraction {
      *     Defaults to `true`.
      * @api
      */
-    addFeature(feature: Feature$2, register?: boolean | undefined): void;
+    addFeature(feature: Feature$2, register?: boolean): void;
     /**
      * @return {import("../Collection.js").default<import("../Feature.js").default>|Array<import("../Feature.js").default>} Features.
      * @private
@@ -36004,7 +35908,7 @@ declare class Snap extends PointerInteraction {
      *     or not. Defaults to `true`.
      * @api
      */
-    removeFeature(feature: Feature$2, unlisten?: boolean | undefined): void;
+    removeFeature(feature: Feature$2, unlisten?: boolean): void;
     /**
      * Remove the interaction from its current map and attach it to the new map.
      * Subclasses may set up event handlers to get notified about changes to
@@ -36151,7 +36055,7 @@ declare class TranslateEvent extends BaseEvent {
  * translated or `false` otherwise.
  */
 type FilterFunction = (arg0: Feature$2, arg1: Layer<Source>) => boolean;
-type Options$e = {
+type Options$g = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -36219,7 +36123,7 @@ declare class Translate extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$e | undefined);
+    constructor(options?: Options$g);
     /***
      * @type {TranslateOnSignature<import("../events").EventsKey>}
      */
@@ -36362,7 +36266,7 @@ declare class Translate extends PointerInteraction {
  * constructor's `interactions` option.
  * @api
  */
-declare function defaults(options?: DefaultsOptions | undefined): Collection<Interaction>;
+declare function defaults(options?: DefaultsOptions): Collection<Interaction>;
 type DefaultsOptions = {
     /**
      * Whether Alt-Shift-drag rotate is
@@ -36460,7 +36364,7 @@ type Style$1 = {
      */
     gamma?: ExpressionValue$1 | undefined;
 };
-type Options$d = {
+type Options$f = {
     /**
      * Style to apply to the layer.
      */
@@ -36558,14 +36462,15 @@ type Options$d = {
  * options means that `title` is observable, and has get/set accessors.
  *
  * @extends BaseTileLayer<SourceType, WebGLTileLayerRenderer>
- * @fires import("../render/Event.js").RenderEvent
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
  * @api
  */
 declare class WebGLTileLayer extends BaseTileLayer<DataTileSource<DataTile | ImageTile>, WebGLTileLayerRenderer<any>> {
     /**
      * @param {Options} options Tile layer options.
      */
-    constructor(options: Options$d);
+    constructor(options: Options$f);
     /**
      * @type {Array<SourceType>|function(import("../extent.js").Extent, number):Array<SourceType>}
      * @private
@@ -36649,7 +36554,7 @@ declare class WebGLTileLayer extends BaseTileLayer<DataTileSource<DataTile | Ima
     }): void;
 }
 
-type BaseTileType = Tile;
+type BaseTileType = Tile$1;
 type TileRepresentationOptions<TileType extends BaseTileType> = {
     /**
      * The tile.
@@ -36685,7 +36590,7 @@ type TileRepresentationOptions<TileType extends BaseTileType> = {
  * @template {import("../Tile.js").default} TileType
  * @abstract
  */
-declare class BaseTileRepresentation<TileType extends Tile> extends Target {
+declare class BaseTileRepresentation<TileType extends Tile$1> extends Target {
     /**
      * @param {TileRepresentationOptions<TileType>} options The tile representation options.
      */
@@ -36778,7 +36683,6 @@ declare class TileTexture extends BaseTileRepresentation<TileType$1> {
     getPixelData(renderCol: number, renderRow: number): ArrayLike | null;
 }
 
-type AbstractTileRepresentation = BaseTileRepresentation<Tile>;
 type TileRepresentationLookup = {
     /**
      * The set of tile ids in the lookup.
@@ -36788,10 +36692,10 @@ type TileRepresentationLookup = {
      * Tile representations by zoom level.
      */
     representationsByZ: {
-        [x: number]: Set<AbstractTileRepresentation>;
+        [x: number]: Set<BaseTileRepresentation<Tile$1>>;
     };
 };
-type Options$c = {
+type Options$e = {
     /**
      * Additional uniforms
      * made available to shaders.
@@ -36827,12 +36731,12 @@ type BaseLayerType = BaseTileLayer<any, any>;
  * @template {import("../../webgl/BaseTileRepresentation.js").default<TileType>} TileRepresentation
  * @extends {WebGLLayerRenderer<LayerType>}
  */
-declare class WebGLBaseTileLayerRenderer<LayerType extends BaseLayerType, TileType extends Tile, TileRepresentation extends BaseTileRepresentation<TileType>> extends WebGLLayerRenderer<LayerType> {
+declare class WebGLBaseTileLayerRenderer<LayerType extends BaseLayerType, TileType extends Tile$1, TileRepresentation extends BaseTileRepresentation<TileType>> extends WebGLLayerRenderer<LayerType> {
     /**
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} options Options.
      */
-    constructor(tileLayer: LayerType, options: Options$c);
+    constructor(tileLayer: LayerType, options: Options$e);
     /**
      * The last call to `renderFrame` was completed with all tiles loaded
      * @type {boolean}
@@ -36883,7 +36787,7 @@ declare class WebGLBaseTileLayerRenderer<LayerType extends BaseLayerType, TileTy
      * @param {Options} options Options.
      * @override
      */
-    override reset(options: Options$c): void;
+    override reset(options: Options$e): void;
     /**
      * @abstract
      * @param {import("../../webgl/BaseTileRepresentation.js").TileRepresentationOptions<TileType>} options tile representation options
@@ -36961,7 +36865,7 @@ declare class WebGLBaseTileLayerRenderer<LayerType extends BaseLayerType, TileTy
     private findAltTiles_;
 }
 
-type Options$b = {
+type Options$d = {
     /**
      * Vertex shader source.
      */
@@ -37018,7 +36922,7 @@ declare class WebGLTileLayerRenderer<LayerType extends WebGLTileLayer | FlowLaye
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} options Options.
      */
-    constructor(tileLayer: LayerType, options: Options$b);
+    constructor(tileLayer: LayerType, options: Options$d);
     /**
      * @type {WebGLProgram}
      * @private
@@ -37059,7 +36963,7 @@ declare class WebGLTileLayerRenderer<LayerType extends WebGLTileLayer | FlowLaye
      * @param {Options} options Options.
      * @override
      */
-    override reset(options: Options$b): void;
+    override reset(options: Options$d): void;
     /**
      * @override
      */
@@ -37081,7 +36985,7 @@ declare class WebGLTileLayerRenderer<LayerType extends WebGLTileLayer | FlowLaye
 }
 
 type LayerType$1 = FlowLayer;
-type Options$a = {
+type Options$c = {
     /**
      * The maximum particle speed in the input data.
      */
@@ -37141,7 +37045,7 @@ declare class FlowLayerRenderer extends WebGLTileLayerRenderer<FlowLayer> {
      * @param {LayerType} layer The tiled field layer.
      * @param {Options} options The renderer options.
      */
-    constructor(layer: LayerType$1, options: Options$a);
+    constructor(layer: LayerType$1, options: Options$c);
     /**
      * @type {string}
      * @private
@@ -37267,7 +37171,7 @@ declare class FlowLayerRenderer extends WebGLTileLayerRenderer<FlowLayer> {
      * @private
      */
     private renderedHeight_;
-    framebuffer_: WebGLFramebuffer | null | undefined;
+    framebuffer_: WebGLFramebuffer | undefined;
     createSizeDependentTextures_(): void;
     /**
      * @param {import("../../Map.js").FrameState} frameState Frame state.
@@ -37306,7 +37210,7 @@ type Style = {
      */
     color?: ExpressionValue$1 | undefined;
 };
-type Options$9 = {
+type Options$b = {
     /**
      * The maximum particle speed.
      */
@@ -37398,13 +37302,14 @@ type Options$9 = {
  * Experimental layer that renders particles moving through a vector field.
  *
  * @extends BaseTileLayer<SourceType, FlowLayerRenderer>
- * @fires import("../render/Event.js").RenderEvent
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
  */
 declare class FlowLayer extends BaseTileLayer<DataTileSource<DataTile>, FlowLayerRenderer> {
     /**
      * @param {Options} options Flow layer options.
      */
-    constructor(options: Options$9);
+    constructor(options: Options$b);
     /**
      * @type {Style}
      * @private
@@ -37450,7 +37355,7 @@ declare class FlowLayer extends BaseTileLayer<DataTileSource<DataTile>, FlowLaye
     getSources(extent: Extent$1, resolution: number): Array<SourceType>;
 }
 
-type Options$8 = {
+type Options$a = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -37714,7 +37619,8 @@ type Options$8 = {
  * Layer that renders a grid for a coordinate system (currently only EPSG:4326 is supported).
  * Note that the view projection must define both extent and worldExtent.
  *
- * @fires import("../render/Event.js").RenderEvent
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
  * @extends {VectorLayer<VectorSource<Feature>>}
  * @api
  */
@@ -37722,7 +37628,7 @@ declare class Graticule extends VectorLayer<VectorSource<Feature$2<Geometry$1>>,
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$8 | undefined);
+    constructor(options?: Options$a);
     /**
      * @type {import("../proj/Projection.js").default}
      * @private
@@ -38026,7 +37932,7 @@ declare class Graticule extends VectorLayer<VectorSource<Feature$2<Geometry$1>>,
     private updateProjectionInfo_;
 }
 
-type Options$7<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSourceType extends VectorSource<FeatureType> = VectorSource<FeatureType>> = {
+type Options$9<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSourceType extends VectorSource<FeatureType> = VectorSource<FeatureType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -38108,7 +38014,8 @@ type Options$7<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSo
  * property on the layer object; for example, setting `title: 'My Title'` in the
  * options means that `title` is observable, and has get/set accessors.
  *
- * @fires import("../render/Event.js").RenderEvent
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
  * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../Feature.js").default]
  * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<FeatureType>]
  * @extends {BaseVector<FeatureType, VectorSourceType, WebGLPointsLayerRenderer>}
@@ -38118,7 +38025,7 @@ declare class Heatmap<FeatureType extends FeatureLike = Feature$2<Geometry$1>, V
     /**
      * @param {Options<FeatureType, VectorSourceType>} [options] Options.
      */
-    constructor(options?: Options$7<FeatureType, VectorSourceType> | undefined);
+    constructor(options?: Options$9<FeatureType, VectorSourceType>);
     /**
      * @private
      * @type {HTMLCanvasElement}
@@ -38180,11 +38087,289 @@ declare class Heatmap<FeatureType extends FeatureLike = Feature$2<Geometry$1>, V
     override renderDeclutter(): void;
 }
 
-type Options$6<VectorSourceType extends VectorSource<FeatureLike>> = {
+type ExpressionValue = ExpressionValue$1;
+type ColorExpression = Color | string | Array<ExpressionValue>;
+type BaseProps = {
+    /**
+     * Filter expression. If it resolves to a number strictly greater than 0, the
+     * point will be displayed. If undefined, all points will show.
+     */
+    filter?: ExpressionValue$1 | undefined;
+};
+type FillProps = {
+    /**
+     * Fill color.
+     */
+    "fill-color"?: ColorExpression | undefined;
+    /**
+     * Fill pattern image source URI. If `fill-color` is defined as well, it will be used to tint this image.
+     */
+    "fill-pattern-src"?: string | undefined;
+    /**
+     * Offset, which, together with the size and the offset origin, define the
+     * sub-rectangle to use from the original fill pattern image.
+     */
+    "fill-pattern-offset"?: number[] | ExpressionValue$1 | undefined;
+    /**
+     * Origin of the offset: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    "fill-pattern-offset-origin"?: IconOrigin | undefined;
+    /**
+     * Fill pattern image size in pixel. Can be used together with `fill-pattern-offset` to define the
+     * sub-rectangle to use from the origin (sprite) fill pattern image.
+     */
+    "fill-pattern-size"?: Size | ExpressionValue$1 | undefined;
+};
+type StrokeProps = {
+    /**
+     * The stroke color.
+     */
+    "stroke-color"?: ColorExpression | undefined;
+    /**
+     * Stroke pixel width.
+     */
+    "stroke-width"?: ExpressionValue$1 | undefined;
+    /**
+     * Stroke offset in pixel. A positive value offsets the line to the right, relative to the direction of the line.
+     */
+    "stroke-offset"?: ExpressionValue$1 | undefined;
+    /**
+     * Line cap style: `butt`, `round`, or `square`.
+     */
+    "stroke-line-cap"?: string | number | boolean | any[] | Color | undefined;
+    /**
+     * Line join style: `bevel`, `round`, or `miter`.
+     */
+    "stroke-line-join"?: string | number | boolean | any[] | Color | undefined;
+    /**
+     * Line dash pattern.
+     */
+    "stroke-line-dash"?: number[] | ExpressionValue$1[] | undefined;
+    /**
+     * Line dash offset.
+     */
+    "stroke-line-dash-offset"?: ExpressionValue$1 | undefined;
+    /**
+     * Miter limit.
+     */
+    "stroke-miter-limit"?: ExpressionValue$1 | undefined;
+    /**
+     * Stroke pattern image source URI. If `stroke-color` is defined as well, it will be used to tint this image.
+     */
+    "stroke-pattern-src"?: string | undefined;
+    /**
+     * Offset, which, together with the size and the offset origin, define the
+     * sub-rectangle to use from the original fill pattern image.
+     */
+    "stroke-pattern-offset"?: number[] | ExpressionValue$1 | undefined;
+    /**
+     * Origin of the offset: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    "stroke-pattern-offset-origin"?: IconOrigin | undefined;
+    /**
+     * Stroke pattern image size in pixel. Can be used together with `stroke-pattern-offset` to define the
+     * sub-rectangle to use from the origin (sprite) fill pattern image.
+     */
+    "stroke-pattern-size"?: Size | ExpressionValue$1 | undefined;
+    /**
+     * Spacing between each pattern occurrence in pixels; 0 if undefined.
+     */
+    "stroke-pattern-spacing"?: ExpressionValue$1 | undefined;
+};
+type IconProps = {
+    /**
+     * Image source URI.
+     */
+    "icon-src"?: string | undefined;
+    /**
+     * Anchor. Default value is the icon center.
+     */
+    "icon-anchor"?: number[] | ExpressionValue$1 | undefined;
+    /**
+     * Origin of the anchor: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    "icon-anchor-origin"?: IconOrigin | undefined;
+    /**
+     * Units in which the anchor x value is
+     * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
+     * the x value in pixels.
+     */
+    "icon-anchor-x-units"?: IconAnchorUnits | undefined;
+    /**
+     * Units in which the anchor y value is
+     * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
+     * the y value in pixels.
+     */
+    "icon-anchor-y-units"?: IconAnchorUnits | undefined;
+    /**
+     * Color to tint the icon. If not specified,
+     * the icon will be left as is.
+     */
+    "icon-color"?: ColorExpression | undefined;
+    /**
+     * Opacity of the icon.
+     */
+    "icon-opacity"?: ExpressionValue$1 | undefined;
+    /**
+     * The `crossOrigin` attribute for loaded images. Note that you must provide a
+     * `icon-cross-origin` value if you want to access pixel data with the Canvas renderer.
+     * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+     */
+    "icon-cross-origin"?: string | null | undefined;
+    /**
+     * Displacement of the icon.
+     */
+    "icon-displacement"?: number[] | ExpressionValue$1 | undefined;
+    /**
+     * Scale.
+     */
+    "icon-scale"?: Size | ExpressionValue$1 | undefined;
+    /**
+     * Width of the icon. If not specified, the actual image width will be used. Cannot be combined
+     * with `scale`.
+     */
+    "icon-width"?: ExpressionValue$1 | undefined;
+    /**
+     * Height of the icon. If not specified, the actual image height will be used. Cannot be combined
+     * with `scale`.
+     */
+    "icon-height"?: ExpressionValue$1 | undefined;
+    /**
+     * Rotation in radians (positive rotation clockwise).
+     */
+    "icon-rotation"?: ExpressionValue$1 | undefined;
+    /**
+     * Whether to rotate the icon with the view.
+     */
+    "icon-rotate-with-view"?: boolean | undefined;
+    /**
+     * Offset, which, together with the size and the offset origin, define the
+     * sub-rectangle to use from the original icon image.
+     */
+    "icon-offset"?: number[] | ExpressionValue$1 | undefined;
+    /**
+     * Origin of the offset: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    "icon-offset-origin"?: IconOrigin | undefined;
+    /**
+     * Icon size in pixel. Can be used together with `icon-offset` to define the
+     * sub-rectangle to use from the origin (sprite) icon image.
+     */
+    "icon-size"?: Size | ExpressionValue$1 | undefined;
+};
+type ShapeProps = {
+    /**
+     * Number of points for stars and regular polygons. In case of a polygon, the number of points
+     * is the number of sides.
+     */
+    "shape-points"?: ExpressionValue$1 | undefined;
+    /**
+     * The fill color.
+     */
+    "shape-fill-color"?: ColorExpression | undefined;
+    /**
+     * The stroke color.
+     */
+    "shape-stroke-color"?: ColorExpression | undefined;
+    /**
+     * Stroke pixel width.
+     */
+    "shape-stroke-width"?: ExpressionValue$1 | undefined;
+    /**
+     * Shape opacity.
+     */
+    "shape-opacity"?: ExpressionValue$1 | undefined;
+    /**
+     * Radius of a regular polygon.
+     */
+    "shape-radius"?: ExpressionValue$1 | undefined;
+    /**
+     * Second radius to make a star instead of a regular polygon.
+     */
+    "shape-radius2"?: ExpressionValue$1 | undefined;
+    /**
+     * Shape's angle in radians. A value of 0 will have one of the shape's point facing up.
+     */
+    "shape-angle"?: ExpressionValue$1 | undefined;
+    /**
+     * Displacement of the shape
+     */
+    "shape-displacement"?: number[] | ExpressionValue$1[] | undefined;
+    /**
+     * Rotation in radians (positive rotation clockwise).
+     */
+    "shape-rotation"?: ExpressionValue$1 | undefined;
+    /**
+     * Whether to rotate the shape with the view.
+     */
+    "shape-rotate-with-view"?: boolean | undefined;
+    /**
+     * Scale. Unless two dimensional scaling is required a better
+     * result may be obtained with appropriate settings for `shape-radius` and `shape-radius2`.
+     */
+    "shape-scale"?: Size | ExpressionValue$1 | ExpressionValue$1[] | undefined;
+};
+type CircleProps = {
+    /**
+     * Circle radius.
+     */
+    "circle-radius"?: ExpressionValue$1 | undefined;
+    /**
+     * The fill color.
+     */
+    "circle-fill-color"?: ColorExpression | undefined;
+    /**
+     * The stroke color.
+     */
+    "circle-stroke-color"?: ColorExpression | undefined;
+    /**
+     * Stroke pixel width.
+     */
+    "circle-stroke-width"?: ExpressionValue$1 | undefined;
+    /**
+     * Circle opacity.
+     */
+    "circle-opacity"?: ExpressionValue$1 | undefined;
+    /**
+     * displacement
+     */
+    "circle-displacement"?: number[] | ExpressionValue$1[] | undefined;
+    /**
+     * Scale. A two dimensional scale will produce an ellipse.
+     * Unless two dimensional scaling is required a better result may be obtained with an appropriate setting for `circle-radius`.
+     */
+    "circle-scale"?: Size | ExpressionValue$1 | ExpressionValue$1[] | undefined;
+    /**
+     * Rotation in radians
+     * (positive rotation clockwise, meaningful only when used in conjunction with a two dimensional scale).
+     */
+    "circle-rotation"?: ExpressionValue$1 | undefined;
+    /**
+     * Whether to rotate the shape with the view
+     * (meaningful only when used in conjunction with a two dimensional scale).
+     */
+    "circle-rotate-with-view"?: boolean | undefined;
+};
+type WebGLStyle = BaseProps & IconProps & StrokeProps & FillProps & CircleProps & ShapeProps;
+
+type Options$8<VectorSourceType extends VectorSource<FeatureLike>> = {
     /**
      * Literal style to apply to the layer features.
      */
     style: WebGLStyle;
+    /**
+     * Style variables. Each variable must hold a literal value (not
+     * an expression). These variables can be used as {@link import ("../expr/expression.js").ExpressionValue expressions} in the styles properties
+     * using the `['var', 'varName']` operator.
+     * To update style variables, use the {@link import ("./WebGLPoints.js").default#updateStyleVariables} method.
+     */
+    variables?: {
+        [x: string]: string | number | boolean | number[];
+    } | undefined;
     /**
      * A CSS class name to set to the layer element.
      */
@@ -38249,6 +38434,10 @@ type Options$6<VectorSourceType extends VectorSource<FeatureLike>> = {
  * @template {import("../source/Vector.js").default<import('../Feature').FeatureLike>} VectorSourceType
  * @typedef {Object} Options
  * @property {import('../style/webgl.js').WebGLStyle} style Literal style to apply to the layer features.
+ * @property {import('../style/flat.js').StyleVariables} [variables] Style variables. Each variable must hold a literal value (not
+ * an expression). These variables can be used as {@link import("../expr/expression.js").ExpressionValue expressions} in the styles properties
+ * using the `['var', 'varName']` operator.
+ * To update style variables, use the {@link import("./WebGLPoints.js").default#updateStyleVariables} method.
  * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
  * @property {number} [opacity=1] Opacity (0, 1).
  * @property {boolean} [visible=true] Visibility.
@@ -38303,23 +38492,24 @@ type Options$6<VectorSourceType extends VectorSource<FeatureLike>> = {
  *
  * @template {import("../source/Vector.js").default<import('../Feature').FeatureLike>} VectorSourceType
  * @extends {Layer<VectorSourceType, WebGLPointsLayerRenderer>}
- * @fires import("../render/Event.js").RenderEvent
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
  */
 declare class WebGLPointsLayer<VectorSourceType extends VectorSource<FeatureLike>> extends Layer<VectorSourceType, WebGLPointsLayerRenderer> {
     /**
      * @param {Options<VectorSourceType>} options Options.
      */
-    constructor(options: Options$6<VectorSourceType>);
+    constructor(options: Options$8<VectorSourceType>);
+    /**
+     * @type {import('../style/flat.js').StyleVariables}
+     * @private
+     */
+    private styleVariables_;
     /**
      * @private
      * @type {import('../webgl/styleparser.js').StyleParseResult}
      */
     private parseResult_;
-    /**
-     * @type {Object<string, (string|number|Array<number>|boolean)>}
-     * @private
-     */
-    private styleVariables_;
     /**
      * @private
      * @type {boolean}
@@ -38332,6 +38522,1215 @@ declare class WebGLPointsLayer<VectorSourceType extends VectorSource<FeatureLike
     updateStyleVariables(variables: {
         [x: string]: number;
     }): void;
+}
+
+declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_screenToWorldMatrix;\nuniform vec2 u_viewportSizePx;\nuniform float u_pixelRatio;\nuniform float u_globalAlpha;\nuniform float u_time;\nuniform float u_zoom;\nuniform float u_resolution;\nuniform float u_rotation;\nuniform vec4 u_renderExtent;\nuniform vec2 u_patternOrigin;\nuniform float u_depth;\nuniform mediump int u_hitDetection;\n\nconst float PI = 3.141592653589793238;\nconst float TWO_PI = 2.0 * PI;\nfloat currentLineMetric = 0.; // an actual value will be used in the stroke shaders\n";
+/**
+ * @typedef {Object} VaryingDescription
+ * @property {string} name Varying name, as will be declared in the header.
+ * @property {string} type Varying type, either `float`, `vec2`, `vec4`...
+ * @property {string} expression Expression which will be assigned to the varying in the vertex shader, and
+ * passed on to the fragment shader.
+ */
+/**
+ * @classdesc
+ * This class implements a classic builder pattern for generating many different types of shaders.
+ * Methods can be chained, e. g.:
+ *
+ * ```js
+ * const shader = new ShaderBuilder()
+ *   .addVarying('v_width', 'float', 'a_width')
+ *   .addUniform('u_time')
+ *   .setColorExpression('...')
+ *   .setSymbolSizeExpression('...')
+ *   .getSymbolFragmentShader();
+ * ```
+ *
+ * A note on [alpha premultiplication](https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied):
+ * The ShaderBuilder class expects all colors to **not having been alpha-premultiplied!** This is because alpha
+ * premultiplication is done at the end of each fragment shader.
+ */
+declare class ShaderBuilder {
+    /**
+     * Uniforms; these will be declared in the header (should include the type).
+     * @type {Array<string>}
+     * @private
+     */
+    private uniforms_;
+    /**
+     * Attributes; these will be declared in the header (should include the type).
+     * @type {Array<string>}
+     * @private
+     */
+    private attributes_;
+    /**
+     * Varyings with a name, a type and an expression.
+     * @type {Array<VaryingDescription>}
+     * @private
+     */
+    private varyings_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasSymbol_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private symbolSizeExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private symbolRotationExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private symbolOffsetExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private symbolColorExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private texCoordExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private discardExpression_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private symbolRotateWithView_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasStroke_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private strokeWidthExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private strokeColorExpression_;
+    /**
+     * @private
+     */
+    private strokeOffsetExpression_;
+    /**
+     * @private
+     */
+    private strokeCapExpression_;
+    /**
+     * @private
+     */
+    private strokeJoinExpression_;
+    /**
+     * @private
+     */
+    private strokeMiterLimitExpression_;
+    /**
+     * @private
+     */
+    private strokeDistanceFieldExpression_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasFill_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private fillColorExpression_;
+    /**
+     * @type {Array<string>}
+     * @private
+     */
+    private vertexShaderFunctions_;
+    /**
+     * @type {Array<string>}
+     * @private
+     */
+    private fragmentShaderFunctions_;
+    /**
+     * Adds a uniform accessible in both fragment and vertex shaders.
+     * The given name should include a type, such as `sampler2D u_texture`.
+     * @param {string} name Uniform name
+     * @return {ShaderBuilder} the builder object
+     */
+    addUniform(name: string): ShaderBuilder;
+    /**
+     * Adds an attribute accessible in the vertex shader, read from the geometry buffer.
+     * The given name should include a type, such as `vec2 a_position`.
+     * @param {string} name Attribute name
+     * @return {ShaderBuilder} the builder object
+     */
+    addAttribute(name: string): ShaderBuilder;
+    /**
+     * Adds a varying defined in the vertex shader and accessible from the fragment shader.
+     * The type and expression of the varying have to be specified separately.
+     * @param {string} name Varying name
+     * @param {'float'|'vec2'|'vec3'|'vec4'} type Type
+     * @param {string} expression Expression used to assign a value to the varying.
+     * @return {ShaderBuilder} the builder object
+     */
+    addVarying(name: string, type: "float" | "vec2" | "vec3" | "vec4", expression: string): ShaderBuilder;
+    /**
+     * Sets an expression to compute the size of the shape.
+     * This expression can use all the uniforms and attributes available
+     * in the vertex shader, and should evaluate to a `vec2` value.
+     * @param {string} expression Size expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolSizeExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current symbol size expression
+     */
+    getSymbolSizeExpression(): string;
+    /**
+     * Sets an expression to compute the rotation of the shape.
+     * This expression can use all the uniforms and attributes available
+     * in the vertex shader, and should evaluate to a `float` value in radians.
+     * @param {string} expression Size expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolRotationExpression(expression: string): ShaderBuilder;
+    /**
+     * Sets an expression to compute the offset of the symbol from the point center.
+     * This expression can use all the uniforms and attributes available
+     * in the vertex shader, and should evaluate to a `vec2` value.
+     * @param {string} expression Offset expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolOffsetExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current symbol offset expression
+     */
+    getSymbolOffsetExpression(): string;
+    /**
+     * Sets an expression to compute the color of the shape.
+     * This expression can use all the uniforms, varyings and attributes available
+     * in the fragment shader, and should evaluate to a `vec4` value.
+     * @param {string} expression Color expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolColorExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current symbol color expression
+     */
+    getSymbolColorExpression(): string;
+    /**
+     * Sets an expression to compute the texture coordinates of the vertices.
+     * This expression can use all the uniforms and attributes available
+     * in the vertex shader, and should evaluate to a `vec4` value.
+     * @param {string} expression Texture coordinate expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setTextureCoordinateExpression(expression: string): ShaderBuilder;
+    /**
+     * Sets an expression to determine whether a fragment (pixel) should be discarded,
+     * i.e. not drawn at all.
+     * This expression can use all the uniforms, varyings and attributes available
+     * in the fragment shader, and should evaluate to a `bool` value (it will be
+     * used in an `if` statement)
+     * @param {string} expression Fragment discard expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setFragmentDiscardExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current fragment discard expression
+     */
+    getFragmentDiscardExpression(): string;
+    /**
+     * Sets whether the symbols should rotate with the view or stay aligned with the map.
+     * Note: will only be used for point geometry shaders.
+     * @param {boolean} rotateWithView Rotate with view
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolRotateWithView(rotateWithView: boolean): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke width expression, returning value in pixels
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeWidthExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke color expression, evaluate to `vec4`: can rely on currentLengthPx and currentRadiusPx
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeColorExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current stroke color expression
+     */
+    getStrokeColorExpression(): string;
+    /**
+     * @param {string} expression Stroke color expression, evaluate to `float`
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeOffsetExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke line cap expression, evaluate to `float`
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeCapExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke line join expression, evaluate to `float`
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeJoinExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke miter limit expression, evaluate to `float`
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeMiterLimitExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke distance field expression, evaluate to `float`
+     * This can override the default distance field; can rely on currentLengthPx and currentRadiusPx
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeDistanceFieldExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Fill color expression, evaluate to `vec4`
+     * @return {ShaderBuilder} the builder object
+     */
+    setFillColorExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current fill color expression
+     */
+    getFillColorExpression(): string;
+    addVertexShaderFunction(code: any): void;
+    addFragmentShaderFunction(code: any): void;
+    /**
+     * Generates a symbol vertex shader from the builder parameters
+     * @return {string|null} The full shader as a string; null if no size or color specified
+     */
+    getSymbolVertexShader(): string | null;
+    /**
+     * Generates a symbol fragment shader from the builder parameters
+     * @return {string|null} The full shader as a string; null if no size or color specified
+     */
+    getSymbolFragmentShader(): string | null;
+    /**
+     * Generates a stroke vertex shader from the builder parameters
+     * @return {string|null} The full shader as a string; null if no size or color specified
+     */
+    getStrokeVertexShader(): string | null;
+    /**
+     * Generates a stroke fragment shader from the builder parameters
+     *
+     * @return {string|null} The full shader as a string; null if no size or color specified
+     */
+    getStrokeFragmentShader(): string | null;
+    /**
+     * Generates a fill vertex shader from the builder parameters
+     *
+     * @return {string|null} The full shader as a string; null if no color specified
+     */
+    getFillVertexShader(): string | null;
+    /**
+     * Generates a fill fragment shader from the builder parameters
+     * @return {string|null} The full shader as a string; null if no color specified
+     */
+    getFillFragmentShader(): string | null;
+}
+
+type Feature = Feature$2;
+/**
+ * Object that holds a reference to a feature as well as the raw coordinates of its various geometries
+ */
+type GeometryBatchItem = {
+    /**
+     * Feature
+     */
+    feature: Feature | RenderFeature;
+    /**
+     * Array of flat coordinates arrays, one for each geometry related to the feature
+     */
+    flatCoordss: Array<Array<number>>;
+    /**
+     * Only defined for linestring and polygon batches
+     */
+    verticesCount?: number | undefined;
+    /**
+     * Only defined for polygon batches
+     */
+    ringsCount?: number | undefined;
+    /**
+     * Array of vertices counts in each ring for each geometry; only defined for polygons batches
+     */
+    ringsVerticesCounts?: number[][] | undefined;
+    /**
+     * The reference in the global batch (used for hit detection)
+     */
+    ref?: number | undefined;
+};
+/**
+ * A geometry batch specific to polygons
+ */
+type PolygonGeometryBatch = {
+    /**
+     * Dictionary of all entries in the batch with associated computed values.
+     * One entry corresponds to one feature. Key is feature uid.
+     */
+    entries: {
+        [x: string]: GeometryBatchItem;
+    };
+    /**
+     * Amount of geometries in the batch.
+     */
+    geometriesCount: number;
+    /**
+     * Amount of vertices from geometries in the batch.
+     */
+    verticesCount: number;
+    /**
+     * How many outer and inner rings in this batch.
+     */
+    ringsCount: number;
+};
+/**
+ * A geometry batch specific to lines
+ */
+type LineStringGeometryBatch = {
+    /**
+     * Dictionary of all entries in the batch with associated computed values.
+     * One entry corresponds to one feature. Key is feature uid.
+     */
+    entries: {
+        [x: string]: GeometryBatchItem;
+    };
+    /**
+     * Amount of geometries in the batch.
+     */
+    geometriesCount: number;
+    /**
+     * Amount of vertices from geometries in the batch.
+     */
+    verticesCount: number;
+};
+/**
+ * A geometry batch specific to points
+ */
+type PointGeometryBatch = {
+    /**
+     * Dictionary of all entries in the batch with associated computed values.
+     * One entry corresponds to one feature. Key is feature uid.
+     */
+    entries: {
+        [x: string]: GeometryBatchItem;
+    };
+    /**
+     * Amount of geometries in the batch.
+     */
+    geometriesCount: number;
+};
+/**
+ * @typedef {import("../../Feature.js").default} Feature
+ */
+/**
+ * @typedef {import("../../geom/Geometry.js").Type} GeometryType
+ */
+/**
+ * @typedef {Object} GeometryBatchItem Object that holds a reference to a feature as well as the raw coordinates of its various geometries
+ * @property {Feature|RenderFeature} feature Feature
+ * @property {Array<Array<number>>} flatCoordss Array of flat coordinates arrays, one for each geometry related to the feature
+ * @property {number} [verticesCount] Only defined for linestring and polygon batches
+ * @property {number} [ringsCount] Only defined for polygon batches
+ * @property {Array<Array<number>>} [ringsVerticesCounts] Array of vertices counts in each ring for each geometry; only defined for polygons batches
+ * @property {number} [ref] The reference in the global batch (used for hit detection)
+ */
+/**
+ * @typedef {PointGeometryBatch|LineStringGeometryBatch|PolygonGeometryBatch} GeometryBatch
+ */
+/**
+ * @typedef {Object} PolygonGeometryBatch A geometry batch specific to polygons
+ * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
+ * One entry corresponds to one feature. Key is feature uid.
+ * @property {number} geometriesCount Amount of geometries in the batch.
+ * @property {number} verticesCount Amount of vertices from geometries in the batch.
+ * @property {number} ringsCount How many outer and inner rings in this batch.
+ */
+/**
+ * @typedef {Object} LineStringGeometryBatch A geometry batch specific to lines
+ * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
+ * One entry corresponds to one feature. Key is feature uid.
+ * @property {number} geometriesCount Amount of geometries in the batch.
+ * @property {number} verticesCount Amount of vertices from geometries in the batch.
+ */
+/**
+ * @typedef {Object} PointGeometryBatch A geometry batch specific to points
+ * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
+ * One entry corresponds to one feature. Key is feature uid.
+ * @property {number} geometriesCount Amount of geometries in the batch.
+ */
+/**
+ * @classdesc This class is used to group several geometries of various types together for faster rendering.
+ * Three inner batches are maintained for polygons, lines and points. Each time a feature is added, changed or removed
+ * from the batch, these inner batches are modified accordingly in order to keep them up-to-date.
+ *
+ * A feature can be present in several inner batches, for example a polygon geometry will be present in the polygon batch
+ * and its linear rings will be present in the line batch. Multi geometries are also broken down into individual geometries
+ * and added to the corresponding batches in a recursive manner.
+ *
+ * Corresponding {@link module:ol/render/webgl/BatchRenderer} instances are then used to generate the render instructions
+ * and WebGL buffers (vertices and indices) for each inner batches; render instructions are stored on the inner batches,
+ * alongside the transform used to convert world coords to screen coords at the time these instructions were generated.
+ * The resulting WebGL buffers are stored on the batches as well.
+ *
+ * An important aspect of geometry batches is that there is no guarantee that render instructions and WebGL buffers
+ * are synchronized, i.e. render instructions can describe a new state while WebGL buffers might not have been written yet.
+ * This is why two world-to-screen transforms are stored on each batch: one for the render instructions and one for
+ * the WebGL buffers.
+ */
+declare class MixedGeometryBatch {
+    /**
+     * @private
+     */
+    private globalCounter_;
+    /**
+     * Refs are used as keys for hit detection.
+     * @type {Map<number, Feature|RenderFeature>}
+     * @private
+     */
+    private refToFeature_;
+    /**
+     * Features are split in "entries", which are individual geometries. We use the following map to share a single ref for all those entries.
+     * @type {Map<string, number>}
+     * @private
+     */
+    private uidToRef_;
+    /**
+     * The precision in WebGL shaders is limited.
+     * To keep the refs as small as possible we maintain an array of returned references.
+     * @type {Array<number>}
+     * @private
+     */
+    private freeGlobalRef_;
+    /**
+     * @type {PolygonGeometryBatch}
+     */
+    polygonBatch: PolygonGeometryBatch;
+    /**
+     * @type {PointGeometryBatch}
+     */
+    pointBatch: PointGeometryBatch;
+    /**
+     * @type {LineStringGeometryBatch}
+     */
+    lineStringBatch: LineStringGeometryBatch;
+    /**
+     * @param {Array<Feature|RenderFeature>} features Array of features to add to the batch
+     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
+     */
+    addFeatures(features: Array<Feature | RenderFeature>, projectionTransform?: TransformFunction): void;
+    /**
+     * @param {Feature|RenderFeature} feature Feature to add to the batch
+     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
+     */
+    addFeature(feature: Feature | RenderFeature, projectionTransform?: TransformFunction): void;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
+     * @private
+     */
+    private clearFeatureEntryInPointBatch_;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
+     * @private
+     */
+    private clearFeatureEntryInLineStringBatch_;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
+     * @private
+     */
+    private clearFeatureEntryInPolygonBatch_;
+    /**
+     * @param {import("../../geom.js").Geometry|RenderFeature} geometry Geometry
+     * @param {Feature|RenderFeature} feature Feature
+     * @private
+     */
+    private addGeometry_;
+    /**
+     * @param {GeometryType} type Geometry type
+     * @param {Array<number>} flatCoords Flat coordinates
+     * @param {Array<number> | Array<Array<number>> | null} ends Coordinate ends
+     * @param {Feature|RenderFeature} feature Feature
+     * @param {string} featureUid Feature uid
+     * @param {number} stride Stride
+     * @param {import('../../geom/Geometry.js').GeometryLayout} [layout] Layout
+     * @private
+     */
+    private addCoordinates_;
+    /**
+     * @param {string} featureUid Feature uid
+     * @param {GeometryBatchItem} entry The entry to add
+     * @return {GeometryBatchItem} the added entry
+     * @private
+     */
+    private addRefToEntry_;
+    /**
+     * Return a ref to the pool of available refs.
+     * @param {number} ref the ref to return
+     * @param {string} featureUid the feature uid
+     * @private
+     */
+    private returnRef_;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     */
+    changeFeature(feature: Feature | RenderFeature): void;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     */
+    removeFeature(feature: Feature | RenderFeature): void;
+    clear(): void;
+    /**
+     * Resolve the feature associated to a ref.
+     * @param {number} ref Hit detected ref
+     * @return {Feature|RenderFeature} feature
+     */
+    getFeatureFromRef(ref: number): Feature | RenderFeature;
+}
+
+/**
+ * A description of a custom attribute to be passed on to the GPU, with a value different
+ * for each feature.
+ */
+type AttributeDefinition = {
+    /**
+     * Amount of numerical values composing the attribute, either 1, 2, 3 or 4; in case size is > 1, the return value
+     * of the callback should be an array; if unspecified, assumed to be a single float value
+     */
+    size?: number | undefined;
+    /**
+     * This callback computes the numerical value of the
+     * attribute for a given feature.
+     */
+    callback: (this: GeometryBatchItem, arg1: FeatureLike) => number | Array<number>;
+};
+type AttributeDefinitions = {
+    [x: string]: AttributeDefinition;
+};
+type UniformDefinitions = {
+    [x: string]: UniformValue;
+};
+type WebGLBuffers = {
+    /**
+     * Array containing indices and vertices buffers for polygons
+     */
+    polygonBuffers: Array<WebGLArrayBuffer>;
+    /**
+     * Array containing indices and vertices buffers for line strings
+     */
+    lineStringBuffers: Array<WebGLArrayBuffer>;
+    /**
+     * Array containing indices and vertices buffers for points
+     */
+    pointBuffers: Array<WebGLArrayBuffer>;
+    /**
+     * Inverse of the transform applied when generating buffers
+     */
+    invertVerticesTransform: Transform;
+};
+type StyleShaders = {
+    /**
+     * Shader builder with the appropriate presets.
+     */
+    builder: ShaderBuilder;
+    /**
+     * Custom attributes made available in the vertex shaders.
+     * Default shaders rely on the attributes in {@link Attributes}.
+     */
+    attributes?: {
+        [x: string]: AttributeDefinition;
+    } | undefined;
+    /**
+     * Additional uniforms usable in shaders.
+     */
+    uniforms?: {
+        [x: string]: UniformValue;
+    } | undefined;
+};
+type VectorStyle$2 = WebGLStyle | StyleShaders;
+/**
+ * @typedef {Object} AttributeDefinition A description of a custom attribute to be passed on to the GPU, with a value different
+ * for each feature.
+ * @property {number} [size] Amount of numerical values composing the attribute, either 1, 2, 3 or 4; in case size is > 1, the return value
+ * of the callback should be an array; if unspecified, assumed to be a single float value
+ * @property {function(this:import("./MixedGeometryBatch.js").GeometryBatchItem, import("../../Feature").FeatureLike):number|Array<number>} callback This callback computes the numerical value of the
+ * attribute for a given feature.
+ */
+/**
+ * @typedef {Object<string, AttributeDefinition>} AttributeDefinitions
+ * @typedef {Object<string, import("../../webgl/Helper").UniformValue>} UniformDefinitions
+ */
+/**
+ * @typedef {Object} WebGLBuffers
+ * @property {Array<WebGLArrayBuffer>} polygonBuffers Array containing indices and vertices buffers for polygons
+ * @property {Array<WebGLArrayBuffer>} lineStringBuffers Array containing indices and vertices buffers for line strings
+ * @property {Array<WebGLArrayBuffer>} pointBuffers Array containing indices and vertices buffers for points
+ * @property {import("../../transform.js").Transform} invertVerticesTransform Inverse of the transform applied when generating buffers
+ */
+/**
+ * @typedef {Object} RenderInstructions
+ * @property {Float32Array|null} polygonInstructions Polygon instructions; null if nothing to render
+ * @property {Float32Array|null} lineStringInstructions LineString instructions; null if nothing to render
+ * @property {Float32Array|null} pointInstructions Point instructions; null if nothing to render
+ */
+/**
+ * @typedef {Object} ShaderProgram An object containing both shaders (vertex and fragment)
+ * @property {string} vertex Vertex shader source
+ * @property {string} fragment Fragment shader source
+ */
+/**
+ * @typedef {Object} StyleShaders
+ * @property {import("../../webgl/ShaderBuilder.js").ShaderBuilder} builder Shader builder with the appropriate presets.
+ * @property {AttributeDefinitions} [attributes] Custom attributes made available in the vertex shaders.
+ * Default shaders rely on the attributes in {@link Attributes}.
+ * @property {UniformDefinitions} [uniforms] Additional uniforms usable in shaders.
+ */
+/**
+ * @typedef {import('../../style/webgl.js').WebGLStyle|StyleShaders} VectorStyle
+ */
+/**
+ * @classdesc This class is responsible for:
+ * 1. generate WebGL buffers according to a provided style, using a MixedGeometryBatch as input
+ * 2. rendering geometries contained in said buffers
+ *
+ * A layer renderer will typically maintain several of these in order to have several styles rendered separately.
+ *
+ * A VectorStyleRenderer instance can be created either from a literal style or from shaders using either
+ * `VectorStyleRenderer.fromStyle` or `VectorStyleRenderer.fromShaders`. The shaders should not be provided explicitly
+ * but instead as a preconfigured ShaderBuilder instance.
+ *
+ * The `generateBuffers` method returns a promise resolving to WebGL buffers that are intended to be rendered by the
+ * same renderer.
+ */
+declare class VectorStyleRenderer {
+    /**
+     * @param {VectorStyle} styleOrShaders Literal style or custom shaders
+     * @param {import('../../style/flat.js').StyleVariables} variables Style variables
+     * @param {import('../../webgl/Helper.js').default} helper Helper
+     * @param {boolean} enableHitDetection Whether to enable the hit detection (needs compatible shader)
+     */
+    constructor(styleOrShaders: VectorStyle$2, variables: StyleVariables, helper: WebGLHelper, enableHitDetection: boolean);
+    /**
+     * @private
+     * @type {import('../../webgl/Helper.js').default}
+     */
+    private helper_;
+    /**
+     * @private
+     */
+    private hitDetectionEnabled_;
+    /**
+     * @private
+     * @type {WebGLProgram}
+     */
+    private fillProgram_;
+    /**
+     * @private
+     * @type {WebGLProgram}
+     */
+    private strokeProgram_;
+    /**
+     * @private
+     * @type {WebGLProgram}
+     */
+    private symbolProgram_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasFill_;
+    /**
+     * @private
+     */
+    private fillVertexShader_;
+    /**
+     * @private
+     */
+    private fillFragmentShader_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasStroke_;
+    /**
+     * @private
+     */
+    private strokeVertexShader_;
+    /**
+     * @private
+     */
+    private strokeFragmentShader_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasSymbol_;
+    /**
+     * @private
+     */
+    private symbolVertexShader_;
+    /**
+     * @private
+     */
+    private symbolFragmentShader_;
+    /**
+     * @private
+     */
+    private customAttributes_;
+    /**
+     * @private
+     */
+    private uniforms_;
+    /**
+     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     * @private
+     */
+    private polygonAttributesDesc_;
+    /**
+     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     * @private
+     */
+    private lineStringAttributesDesc_;
+    /**
+     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     * @private
+     */
+    private pointAttributesDesc_;
+    /**
+     * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
+     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+     * @return {Promise<WebGLBuffers>} A promise resolving to WebGL buffers
+     */
+    generateBuffers(geometryBatch: MixedGeometryBatch, transform: Transform): Promise<WebGLBuffers>;
+    /**
+     * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
+     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+     * @return {RenderInstructions} Render instructions
+     * @private
+     */
+    private generateRenderInstructions_;
+    /**
+     * @param {Float32Array|null} renderInstructions Render instructions
+     * @param {import("../../geom/Geometry.js").Type} geometryType Geometry type
+     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+     * @return {Promise<Array<WebGLArrayBuffer>>|null} Indices buffer and vertices buffer; null if nothing to render
+     * @private
+     */
+    private generateBuffersForType_;
+    /**
+     * Render the geometries in the given buffers.
+     * @param {WebGLBuffers} buffers WebGL Buffers to draw
+     * @param {import("../../Map.js").FrameState} frameState Frame state
+     * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
+     */
+    render(buffers: WebGLBuffers, frameState: FrameState, preRenderCallback: () => void): void;
+    /**
+     * @param {WebGLArrayBuffer} indicesBuffer Indices buffer
+     * @param {WebGLArrayBuffer} verticesBuffer Vertices buffer
+     * @param {WebGLProgram} program Program
+     * @param {Array<import('../../webgl/Helper.js').AttributeDescription>} attributes Attribute descriptions
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
+     * @private
+     */
+    private renderInternal_;
+    /**
+     * @param {import('../../webgl/Helper.js').default} helper Helper
+     * @param {WebGLBuffers} buffers WebGL Buffers to reload if any
+     */
+    setHelper(helper: WebGLHelper, buffers?: WebGLBuffers): void;
+}
+
+type VectorStyle$1 = VectorStyle$2;
+type Options$7 = {
+    /**
+     * A CSS class name to set to the canvas element.
+     */
+    className?: string | undefined;
+    /**
+     * Vector style as literal style or shaders; can also accept an array of styles
+     */
+    style: VectorStyle$1 | Array<VectorStyle$1>;
+    /**
+     * Style variables
+     */
+    variables: {
+        [x: string]: string | number | boolean | number[];
+    };
+    /**
+     * Setting this to true will provide a slight performance boost, but will
+     * prevent all hit detection on the layer.
+     */
+    disableHitDetection?: boolean | undefined;
+    /**
+     * Post-processes definitions
+     */
+    postProcesses?: PostProcessesOptions[] | undefined;
+};
+/**
+ * @typedef {import('../../render/webgl/VectorStyleRenderer.js').VectorStyle} VectorStyle
+ */
+/**
+ * @typedef {Object} Options
+ * @property {string} [className='ol-layer'] A CSS class name to set to the canvas element.
+ * @property {VectorStyle|Array<VectorStyle>} style Vector style as literal style or shaders; can also accept an array of styles
+ * @property {Object<string, number|Array<number>|string|boolean>} variables Style variables
+ * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
+ * prevent all hit detection on the layer.
+ * @property {Array<import("./Layer").PostProcessesOptions>} [postProcesses] Post-processes definitions
+ */
+/**
+ * @classdesc
+ * Experimental WebGL vector renderer. Supports polygons, lines and points:
+ *  * Polygons are broken down into triangles
+ *  * Lines are rendered as strips of quads
+ *  * Points are rendered as quads
+ *
+ * You need to provide vertex and fragment shaders as well as custom attributes for each type of geometry. All shaders
+ * can access the uniforms in the {@link module:ol/webgl/Helper~DefaultUniform} enum.
+ * The vertex shaders can access the following attributes depending on the geometry type:
+ *  * For polygons: {@link module:ol/render/webgl/PolygonBatchRenderer~Attributes}
+ *  * For line strings: {@link module:ol/render/webgl/LineStringBatchRenderer~Attributes}
+ *  * For points: {@link module:ol/render/webgl/PointBatchRenderer~Attributes}
+ *
+ * Please note that the fragment shaders output should have premultiplied alpha, otherwise visual anomalies may occur.
+ *
+ * Note: this uses {@link module:ol/webgl/Helper~WebGLHelper} internally.
+ */
+declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
+    /**
+     * @param {import("../../layer/Layer.js").default} layer Layer.
+     * @param {Options} options Options.
+     */
+    constructor(layer: Layer, options: Options$7);
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hitDetectionEnabled_;
+    /**
+     * @type {WebGLRenderTarget}
+     * @private
+     */
+    private hitRenderTarget_;
+    /**
+     * @private
+     */
+    private sourceRevision_;
+    /**
+     * @private
+     */
+    private previousExtent_;
+    /**
+     * This transform is updated on every frame and is the composition of:
+     * - invert of the world->screen transform that was used when rebuilding buffers (see `this.renderTransform_`)
+     * - current world->screen transform
+     * @type {import("../../transform.js").Transform}
+     * @private
+     */
+    private currentTransform_;
+    /**
+     * @private
+     */
+    private tmpCoords_;
+    /**
+     * @private
+     */
+    private tmpTransform_;
+    /**
+     * @private
+     */
+    private tmpMat4_;
+    /**
+     * @type {import("../../transform.js").Transform}
+     * @private
+     */
+    private currentFrameStateTransform_;
+    /**
+     * @type {import('../../style/flat.js').StyleVariables}
+     * @private
+     */
+    private styleVariables_;
+    /**
+     * @type {Array<VectorStyle>}
+     * @private
+     */
+    private styles_;
+    /**
+     * @type {Array<VectorStyleRenderer>}
+     * @private
+     */
+    private styleRenderers_;
+    /**
+     * @type {Array<import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers>}
+     * @private
+     */
+    private buffers_;
+    /**
+     * @private
+     */
+    private batch_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private initialFeaturesAdded_;
+    /**
+     * @private
+     * @type {Array<import("../../events.js").EventsKey|null>}
+     */
+    private sourceListenKeys_;
+    /**
+     * @private
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     */
+    private addInitialFeatures_;
+    /**
+     * @param {Options} options Options.
+     * @private
+     */
+    private applyOptions_;
+    /**
+     * @private
+     */
+    private createRenderers_;
+    /**
+     * @override
+     */
+    override reset(options: any): void;
+    /**
+     * @param {import("../../proj.js").TransformFunction} projectionTransform Transform function.
+     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
+     * @private
+     */
+    private handleSourceFeatureAdded_;
+    /**
+     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
+     * @private
+     */
+    private handleSourceFeatureChanged_;
+    /**
+     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
+     * @private
+     */
+    private handleSourceFeatureDelete_;
+    /**
+     * @private
+     */
+    private handleSourceFeatureClear_;
+    /**
+     * @param {import("../../transform.js").Transform} batchInvertTransform Inverse of the transformation in which geometries are expressed
+     * @private
+     */
+    private applyUniforms_;
+    /**
+     * Render the layer.
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     * @return {HTMLElement} The rendered element.
+     * @override
+     */
+    override renderFrame(frameState: FrameState): HTMLElement;
+    /**
+     * Render the world, either to the main framebuffer or to the hit framebuffer
+     * @param {import("../../Map.js").FrameState} frameState current frame state
+     * @param {boolean} forHitDetection whether the rendering is for hit detection
+     * @param {number} startWorld the world to render in the first iteration
+     * @param {number} endWorld the last world to render
+     * @param {number} worldWidth the width of the worlds being rendered
+     */
+    renderWorlds(frameState: FrameState, forHitDetection: boolean, startWorld: number, endWorld: number, worldWidth: number): void;
+    /**
+     * Will release a set of Webgl buffers
+     * @param {import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers} buffers Buffers
+     */
+    disposeBuffers(buffers: WebGLBuffers): void;
+}
+
+/**
+ * *
+ */
+type ExtractedFeatureType<T> = T extends VectorSource<infer U extends FeatureLike> ? U : never;
+type Options$6<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType<VectorSourceType>> = {
+    /**
+     * A CSS class name to set to the layer element.
+     */
+    className?: string | undefined;
+    /**
+     * Opacity (0, 1).
+     */
+    opacity?: number | undefined;
+    /**
+     * Visibility.
+     */
+    visible?: boolean | undefined;
+    /**
+     * The bounding extent for layer rendering.  The layer will not be
+     * rendered outside of this extent.
+     * FIXME: not supported yet
+     */
+    extent?: Extent$1 | undefined;
+    /**
+     * The z-index for layer rendering.  At rendering time, the layers
+     * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
+     * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
+     * method was used.
+     */
+    zIndex?: number | undefined;
+    /**
+     * The minimum resolution (inclusive) at which this layer will be
+     * visible.
+     */
+    minResolution?: number | undefined;
+    /**
+     * The maximum resolution (exclusive) below which this layer will
+     * be visible.
+     */
+    maxResolution?: number | undefined;
+    /**
+     * The minimum view zoom level (exclusive) above which this layer will be
+     * visible.
+     */
+    minZoom?: number | undefined;
+    /**
+     * The maximum view zoom level (inclusive) at which this layer will
+     * be visible.
+     */
+    maxZoom?: number | undefined;
+    /**
+     * Source.
+     */
+    source?: VectorSourceType | undefined;
+    /**
+     * Layer style.
+     */
+    style: WebGLStyle;
+    /**
+     * Style variables. Each variable must hold a literal value (not
+     * an expression). These variables can be used as {@link import ("../expr/expression.js").ExpressionValue expressions} in the styles properties
+     * using the `['var', 'varName']` operator.
+     * To update style variables, use the {@link import ("./WebGLVector.js").default#updateStyleVariables} method.
+     */
+    variables?: {
+        [x: string]: string | number | boolean | number[];
+    } | undefined;
+    /**
+     * Background color for the layer. If not specified, no background
+     * will be rendered.
+     * FIXME: not supported yet
+     */
+    background?: BackgroundColor | undefined;
+    /**
+     * Setting this to true will provide a slight performance boost, but will
+     * prevent all hit detection on the layer.
+     */
+    disableHitDetection?: boolean | undefined;
+    /**
+     * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+     */
+    properties?: {
+        [x: string]: any;
+    } | undefined;
+};
+/***
+ * @template T
+ * @typedef {T extends import("../source/Vector.js").default<infer U extends import("../Feature.js").FeatureLike> ? U : never} ExtractedFeatureType
+ */
+/**
+ * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<*>]
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=ExtractedFeatureType<VectorSourceType>]
+ * @typedef {Object} Options
+ * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
+ * @property {number} [opacity=1] Opacity (0, 1).
+ * @property {boolean} [visible=true] Visibility.
+ * @property {import("../extent.js").Extent} [extent] The bounding extent for layer rendering.  The layer will not be
+ * rendered outside of this extent.
+ * FIXME: not supported yet
+ * @property {number} [zIndex] The z-index for layer rendering.  At rendering time, the layers
+ * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
+ * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
+ * method was used.
+ * @property {number} [minResolution] The minimum resolution (inclusive) at which this layer will be
+ * visible.
+ * @property {number} [maxResolution] The maximum resolution (exclusive) below which this layer will
+ * be visible.
+ * @property {number} [minZoom] The minimum view zoom level (exclusive) above which this layer will be
+ * visible.
+ * @property {number} [maxZoom] The maximum view zoom level (inclusive) at which this layer will
+ * be visible.
+ * @property {VectorSourceType} [source] Source.
+ * @property {import('../style/webgl.js').WebGLStyle} style Layer style.
+ * @property {import('../style/flat.js').StyleVariables} [variables] Style variables. Each variable must hold a literal value (not
+ * an expression). These variables can be used as {@link import("../expr/expression.js").ExpressionValue expressions} in the styles properties
+ * using the `['var', 'varName']` operator.
+ * To update style variables, use the {@link import("./WebGLVector.js").default#updateStyleVariables} method.
+ * @property {import("./Base.js").BackgroundColor} [background] Background color for the layer. If not specified, no background
+ * will be rendered.
+ * FIXME: not supported yet
+ * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
+ * prevent all hit detection on the layer.
+ * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+ */
+/**
+ * @classdesc
+ * Layer optimized for rendering large vector datasets.
+ *
+ * **Important: a `WebGLVector` layer must be manually disposed when removed, otherwise the underlying WebGL context
+ * will not be garbage collected.**
+ *
+ * Note that any property set in the options is set as a {@link module:ol/Object~BaseObject}
+ * property on the layer object; for example, setting `title: 'My Title'` in the
+ * options means that `title` is observable, and has get/set accessors.
+ *
+ * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<*>]
+ * @template {import('../Feature.js').FeatureLike} [FeatureType=ExtractedFeatureType<VectorSourceType>]
+ * @extends {Layer<VectorSourceType, WebGLVectorLayerRenderer>}
+ */
+declare class WebGLVectorLayer<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType<VectorSourceType>> extends Layer<VectorSourceType, WebGLVectorLayerRenderer> {
+    /**
+     * @param {Options<VectorSourceType, FeatureType>} [options] Options.
+     */
+    constructor(options?: Options$6<VectorSourceType, FeatureType>);
+    /**
+     * @type {import('../style/flat.js').StyleVariables}
+     * @private
+     */
+    private styleVariables_;
+    /**
+     * @private
+     */
+    private style_;
+    /**
+     * @private
+     */
+    private hitDetectionDisabled_;
+    /**
+     * Update any variables used by the layer style and trigger a re-render.
+     * @param {import('../style/flat.js').StyleVariables} variables Variables to update.
+     */
+    updateStyleVariables(variables: StyleVariables): void;
+    /**
+     * Set the layer style.
+     * @param {import('../style/webgl.js').WebGLStyle} style Layer style.
+     */
+    setStyle(style: WebGLStyle): void;
+    style: WebGLStyle | undefined;
 }
 
 /**
@@ -38462,6 +39861,14 @@ declare function floor(n: number, decimals: number): number;
  * @return {number} The next bigger integer.
  */
 declare function ceil(n: number, decimals: number): number;
+/**
+ * Wraps a number between some minimum and maximum values.
+ * @param {number} n The number to wrap.
+ * @param {number} min The minimum of the range (inclusive).
+ * @param {number} max The maximum of the range (exclusive).
+ * @return {number} The wrapped number.
+ */
+declare function wrap(n: number, min: number, max: number): number;
 
 /**
  * Simple JSONP helper. Supports error callbacks and a custom callback param.
@@ -38474,7 +39881,7 @@ declare function ceil(n: number, decimals: number): number;
  * @param {string} [callbackParam] Custom query parameter for the JSONP
  *     callback. Default is 'callback'.
  */
-declare function jsonp(url: string, callback: Function, errback?: Function | undefined, callbackParam?: string | undefined): void;
+declare function jsonp(url: string, callback: Function, errback?: Function, callbackParam?: string): void;
 /**
  * @param {string} url The URL.
  * @return {Promise<Object>} A promise that resolves to the JSON response.
@@ -38535,7 +39942,7 @@ declare function isEmpty(object: any): boolean;
  * @param {number} [stride] Stride (default is `dimension`).
  * @return {Array<number>} Output array of coordinate values.
  */
-declare function fromEPSG4326(input: Array<number>, output?: number[] | undefined, dimension?: number | undefined, stride?: number | undefined): Array<number>;
+declare function fromEPSG4326(input: Array<number>, output?: Array<number>, dimension?: number, stride?: number): Array<number>;
 /**
  * Transformation from EPSG:3857 to EPSG:4326.
  *
@@ -38545,7 +39952,7 @@ declare function fromEPSG4326(input: Array<number>, output?: number[] | undefine
  * @param {number} [stride] Stride (default is `dimension`).
  * @return {Array<number>} Output array of coordinate values.
  */
-declare function toEPSG4326(input: Array<number>, output?: number[] | undefined, dimension?: number | undefined, stride?: number | undefined): Array<number>;
+declare function toEPSG4326(input: Array<number>, output?: Array<number>, dimension?: number, stride?: number): Array<number>;
 /**
  * Radius of WGS84 sphere
  *
@@ -38679,9 +40086,9 @@ declare function clear$1(): void;
 /**
  * Get a cached projection by code.
  * @param {string} code The code for the projection.
- * @return {import("./Projection.js").default} The projection (if cached).
+ * @return {import("./Projection.js").default|null} The projection (if cached).
  */
-declare function get$1(code: string): Projection;
+declare function get$1(code: string): Projection | null;
 /**
  * Add a projection to the cache.
  * @param {string} code The projection code.
@@ -38716,9 +40123,35 @@ declare function remove(source: Projection, destination: Projection): TransformF
  * Get a transform given a source code and a destination code.
  * @param {string} sourceCode The code for the source projection.
  * @param {string} destinationCode The code for the destination projection.
- * @return {import("../proj.js").TransformFunction|undefined} The transform function (if found).
+ * @return {import("../proj.js").TransformFunction|null} The transform function (if found).
  */
-declare function get(sourceCode: string, destinationCode: string): TransformFunction | undefined;
+declare function get(sourceCode: string, destinationCode: string): TransformFunction | null;
+
+/**
+ * @param {string} code The projection code.
+ * @return {UTMZone|null} The UTM zone info (or null if not UTM).
+ */
+declare function zoneFromCode(code: string): UTMZone | null;
+/**
+ * @param {string} code The projection code.
+ * @return {import('./Projection.js').default|null} A projection or null if unable to create one.
+ */
+declare function makeProjection(code: string): Projection | null;
+/**
+ * @param {import('./Projection.js').default} projection The projection.
+ * @return {import('../proj.js').Transforms|null} The transforms lookup or null if unable to handle projection.
+ */
+declare function makeTransforms(projection: Projection): Transforms | null;
+type UTMZone = {
+    /**
+     * The zone number (1 - 60).
+     */
+    number: number;
+    /**
+     * The northern hemisphere.
+     */
+    north: boolean;
+};
 
 declare class RenderBox extends Disposable {
     /**
@@ -39114,6 +40547,11 @@ declare class CanvasTextBuilder extends CanvasBuilder {
     private textRotateWithView_;
     /**
      * @private
+     * @type {boolean|undefined}
+     */
+    private textKeepUpright_;
+    /**
+     * @private
      * @type {number}
      */
     private textRotation_;
@@ -39210,7 +40648,7 @@ declare class CanvasTextBuilder extends CanvasBuilder {
  * @param {import("../../proj/Projection.js").default} [projection] Render projection.
  * @return {ImageData} Hit detection image data.
  */
-declare function createHitDetectionImageData(size: Size, transforms: Array<Transform>, features: Array<FeatureLike>, styleFunction: StyleFunction | undefined, extent: Extent$1, resolution: number, rotation: number, squaredTolerance?: number | undefined, projection?: Projection | undefined): ImageData;
+declare function createHitDetectionImageData(size: Size, transforms: Array<Transform>, features: Array<FeatureLike>, styleFunction: StyleFunction | undefined, extent: Extent$1, resolution: number, rotation: number, squaredTolerance?: number, projection?: Projection): ImageData;
 /**
  * @param {import("../../pixel").Pixel} pixel Pixel coordinate on the hit
  * detection canvas in css pixels.
@@ -39272,839 +40710,6 @@ type EvaluationContext = EvaluationContext$1;
 type RuleSetEvaluator = (arg0: EvaluationContext) => Array<Style$2>;
 type StyleEvaluator = (arg0: EvaluationContext) => Style$2 | null;
 
-type Feature = Feature$2;
-/**
- * Object that holds a reference to a feature as well as the raw coordinates of its various geometries
- */
-type GeometryBatchItem = {
-    /**
-     * Feature
-     */
-    feature: Feature | RenderFeature;
-    /**
-     * Array of flat coordinates arrays, one for each geometry related to the feature
-     */
-    flatCoordss: Array<Array<number>>;
-    /**
-     * Only defined for linestring and polygon batches
-     */
-    verticesCount?: number | undefined;
-    /**
-     * Only defined for polygon batches
-     */
-    ringsCount?: number | undefined;
-    /**
-     * Array of vertices counts in each ring for each geometry; only defined for polygons batches
-     */
-    ringsVerticesCounts?: number[][] | undefined;
-    /**
-     * The reference in the global batch (used for hit detection)
-     */
-    ref?: number | undefined;
-};
-/**
- * A geometry batch specific to polygons
- */
-type PolygonGeometryBatch = {
-    /**
-     * Dictionary of all entries in the batch with associated computed values.
-     * One entry corresponds to one feature. Key is feature uid.
-     */
-    entries: {
-        [x: string]: GeometryBatchItem;
-    };
-    /**
-     * Amount of geometries in the batch.
-     */
-    geometriesCount: number;
-    /**
-     * Amount of vertices from geometries in the batch.
-     */
-    verticesCount: number;
-    /**
-     * How many outer and inner rings in this batch.
-     */
-    ringsCount: number;
-};
-/**
- * A geometry batch specific to lines
- */
-type LineStringGeometryBatch = {
-    /**
-     * Dictionary of all entries in the batch with associated computed values.
-     * One entry corresponds to one feature. Key is feature uid.
-     */
-    entries: {
-        [x: string]: GeometryBatchItem;
-    };
-    /**
-     * Amount of geometries in the batch.
-     */
-    geometriesCount: number;
-    /**
-     * Amount of vertices from geometries in the batch.
-     */
-    verticesCount: number;
-};
-/**
- * A geometry batch specific to points
- */
-type PointGeometryBatch = {
-    /**
-     * Dictionary of all entries in the batch with associated computed values.
-     * One entry corresponds to one feature. Key is feature uid.
-     */
-    entries: {
-        [x: string]: GeometryBatchItem;
-    };
-    /**
-     * Amount of geometries in the batch.
-     */
-    geometriesCount: number;
-};
-/**
- * @typedef {import("../../Feature.js").default} Feature
- */
-/**
- * @typedef {import("../../geom/Geometry.js").Type} GeometryType
- */
-/**
- * @typedef {Object} GeometryBatchItem Object that holds a reference to a feature as well as the raw coordinates of its various geometries
- * @property {Feature|RenderFeature} feature Feature
- * @property {Array<Array<number>>} flatCoordss Array of flat coordinates arrays, one for each geometry related to the feature
- * @property {number} [verticesCount] Only defined for linestring and polygon batches
- * @property {number} [ringsCount] Only defined for polygon batches
- * @property {Array<Array<number>>} [ringsVerticesCounts] Array of vertices counts in each ring for each geometry; only defined for polygons batches
- * @property {number} [ref] The reference in the global batch (used for hit detection)
- */
-/**
- * @typedef {PointGeometryBatch|LineStringGeometryBatch|PolygonGeometryBatch} GeometryBatch
- */
-/**
- * @typedef {Object} PolygonGeometryBatch A geometry batch specific to polygons
- * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
- * One entry corresponds to one feature. Key is feature uid.
- * @property {number} geometriesCount Amount of geometries in the batch.
- * @property {number} verticesCount Amount of vertices from geometries in the batch.
- * @property {number} ringsCount How many outer and inner rings in this batch.
- */
-/**
- * @typedef {Object} LineStringGeometryBatch A geometry batch specific to lines
- * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
- * One entry corresponds to one feature. Key is feature uid.
- * @property {number} geometriesCount Amount of geometries in the batch.
- * @property {number} verticesCount Amount of vertices from geometries in the batch.
- */
-/**
- * @typedef {Object} PointGeometryBatch A geometry batch specific to points
- * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
- * One entry corresponds to one feature. Key is feature uid.
- * @property {number} geometriesCount Amount of geometries in the batch.
- */
-/**
- * @classdesc This class is used to group several geometries of various types together for faster rendering.
- * Three inner batches are maintained for polygons, lines and points. Each time a feature is added, changed or removed
- * from the batch, these inner batches are modified accordingly in order to keep them up-to-date.
- *
- * A feature can be present in several inner batches, for example a polygon geometry will be present in the polygon batch
- * and its linear rings will be present in the line batch. Multi geometries are also broken down into individual geometries
- * and added to the corresponding batches in a recursive manner.
- *
- * Corresponding {@link module:ol/render/webgl/BatchRenderer} instances are then used to generate the render instructions
- * and WebGL buffers (vertices and indices) for each inner batches; render instructions are stored on the inner batches,
- * alongside the transform used to convert world coords to screen coords at the time these instructions were generated.
- * The resulting WebGL buffers are stored on the batches as well.
- *
- * An important aspect of geometry batches is that there is no guarantee that render instructions and WebGL buffers
- * are synchronized, i.e. render instructions can describe a new state while WebGL buffers might not have been written yet.
- * This is why two world-to-screen transforms are stored on each batch: one for the render instructions and one for
- * the WebGL buffers.
- */
-declare class MixedGeometryBatch {
-    /**
-     * @private
-     */
-    private globalCounter_;
-    /**
-     * Refs are used as keys for hit detection.
-     * @type {Map<number, Feature|RenderFeature>}
-     * @private
-     */
-    private refToFeature_;
-    /**
-     * Features are split in "entries", which are individual geometries. We use the following map to share a single ref for all those entries.
-     * @type {Map<string, number>}
-     * @private
-     */
-    private uidToRef_;
-    /**
-     * The precision in WebGL shaders is limited.
-     * To keep the refs as small as possible we maintain an array of returned references.
-     * @type {Array<number>}
-     * @private
-     */
-    private freeGlobalRef_;
-    /**
-     * @type {PolygonGeometryBatch}
-     */
-    polygonBatch: PolygonGeometryBatch;
-    /**
-     * @type {PointGeometryBatch}
-     */
-    pointBatch: PointGeometryBatch;
-    /**
-     * @type {LineStringGeometryBatch}
-     */
-    lineStringBatch: LineStringGeometryBatch;
-    /**
-     * @param {Array<Feature|RenderFeature>} features Array of features to add to the batch
-     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
-     */
-    addFeatures(features: Array<Feature | RenderFeature>, projectionTransform?: TransformFunction | undefined): void;
-    /**
-     * @param {Feature|RenderFeature} feature Feature to add to the batch
-     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
-     */
-    addFeature(feature: Feature | RenderFeature, projectionTransform?: TransformFunction | undefined): void;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     * @return {GeometryBatchItem|void} the cleared entry
-     * @private
-     */
-    private clearFeatureEntryInPointBatch_;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     * @return {GeometryBatchItem|void} the cleared entry
-     * @private
-     */
-    private clearFeatureEntryInLineStringBatch_;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     * @return {GeometryBatchItem|void} the cleared entry
-     * @private
-     */
-    private clearFeatureEntryInPolygonBatch_;
-    /**
-     * @param {import("../../geom.js").Geometry|RenderFeature} geometry Geometry
-     * @param {Feature|RenderFeature} feature Feature
-     * @private
-     */
-    private addGeometry_;
-    /**
-     * @param {GeometryType} type Geometry type
-     * @param {Array<number>} flatCoords Flat coordinates
-     * @param {Array<number> | Array<Array<number>> | null} ends Coordinate ends
-     * @param {Feature|RenderFeature} feature Feature
-     * @param {string} featureUid Feature uid
-     * @param {number} stride Stride
-     * @param {import('../../geom/Geometry.js').GeometryLayout} [layout] Layout
-     * @private
-     */
-    private addCoordinates_;
-    /**
-     * @param {string} featureUid Feature uid
-     * @param {GeometryBatchItem} entry The entry to add
-     * @return {GeometryBatchItem} the added entry
-     * @private
-     */
-    private addRefToEntry_;
-    /**
-     * Return a ref to the pool of available refs.
-     * @param {number} ref the ref to return
-     * @param {string} featureUid the feature uid
-     * @private
-     */
-    private returnRef_;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     */
-    changeFeature(feature: Feature | RenderFeature): void;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     */
-    removeFeature(feature: Feature | RenderFeature): void;
-    clear(): void;
-    /**
-     * Resolve the feature associated to a ref.
-     * @param {number} ref Hit detected ref
-     * @return {Feature|RenderFeature} feature
-     */
-    getFeatureFromRef(ref: number): Feature | RenderFeature;
-}
-
-declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_screenToWorldMatrix;\nuniform vec2 u_viewportSizePx;\nuniform float u_pixelRatio;\nuniform float u_globalAlpha;\nuniform float u_time;\nuniform float u_zoom;\nuniform float u_resolution;\nuniform float u_rotation;\nuniform vec4 u_renderExtent;\nuniform vec2 u_patternOrigin;\nuniform float u_depth;\nuniform mediump int u_hitDetection;\n\nconst float PI = 3.141592653589793238;\nconst float TWO_PI = 2.0 * PI;\nfloat currentLineMetric = 0.; // an actual value will be used in the stroke shaders\n";
-/**
- * @typedef {Object} VaryingDescription
- * @property {string} name Varying name, as will be declared in the header.
- * @property {string} type Varying type, either `float`, `vec2`, `vec4`...
- * @property {string} expression Expression which will be assigned to the varying in the vertex shader, and
- * passed on to the fragment shader.
- */
-/**
- * @classdesc
- * This class implements a classic builder pattern for generating many different types of shaders.
- * Methods can be chained, e. g.:
- *
- * ```js
- * const shader = new ShaderBuilder()
- *   .addVarying('v_width', 'float', 'a_width')
- *   .addUniform('u_time')
- *   .setColorExpression('...')
- *   .setSymbolSizeExpression('...')
- *   .getSymbolFragmentShader();
- * ```
- *
- * A note on [alpha premultiplication](https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied):
- * The ShaderBuilder class expects all colors to **not having been alpha-premultiplied!** This is because alpha
- * premultiplication is done at the end of each fragment shader.
- */
-declare class ShaderBuilder {
-    /**
-     * Uniforms; these will be declared in the header (should include the type).
-     * @type {Array<string>}
-     * @private
-     */
-    private uniforms_;
-    /**
-     * Attributes; these will be declared in the header (should include the type).
-     * @type {Array<string>}
-     * @private
-     */
-    private attributes_;
-    /**
-     * Varyings with a name, a type and an expression.
-     * @type {Array<VaryingDescription>}
-     * @private
-     */
-    private varyings_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasSymbol_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private symbolSizeExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private symbolRotationExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private symbolOffsetExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private symbolColorExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private texCoordExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private discardExpression_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private symbolRotateWithView_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasStroke_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private strokeWidthExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private strokeColorExpression_;
-    /**
-     * @private
-     */
-    private strokeOffsetExpression_;
-    /**
-     * @private
-     */
-    private strokeCapExpression_;
-    /**
-     * @private
-     */
-    private strokeJoinExpression_;
-    /**
-     * @private
-     */
-    private strokeMiterLimitExpression_;
-    /**
-     * @private
-     */
-    private strokeDistanceFieldExpression_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasFill_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private fillColorExpression_;
-    /**
-     * @type {Array<string>}
-     * @private
-     */
-    private vertexShaderFunctions_;
-    /**
-     * @type {Array<string>}
-     * @private
-     */
-    private fragmentShaderFunctions_;
-    /**
-     * Adds a uniform accessible in both fragment and vertex shaders.
-     * The given name should include a type, such as `sampler2D u_texture`.
-     * @param {string} name Uniform name
-     * @return {ShaderBuilder} the builder object
-     */
-    addUniform(name: string): ShaderBuilder;
-    /**
-     * Adds an attribute accessible in the vertex shader, read from the geometry buffer.
-     * The given name should include a type, such as `vec2 a_position`.
-     * @param {string} name Attribute name
-     * @return {ShaderBuilder} the builder object
-     */
-    addAttribute(name: string): ShaderBuilder;
-    /**
-     * Adds a varying defined in the vertex shader and accessible from the fragment shader.
-     * The type and expression of the varying have to be specified separately.
-     * @param {string} name Varying name
-     * @param {'float'|'vec2'|'vec3'|'vec4'} type Type
-     * @param {string} expression Expression used to assign a value to the varying.
-     * @return {ShaderBuilder} the builder object
-     */
-    addVarying(name: string, type: "float" | "vec2" | "vec3" | "vec4", expression: string): ShaderBuilder;
-    /**
-     * Sets an expression to compute the size of the shape.
-     * This expression can use all the uniforms and attributes available
-     * in the vertex shader, and should evaluate to a `vec2` value.
-     * @param {string} expression Size expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolSizeExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current symbol size expression
-     */
-    getSymbolSizeExpression(): string;
-    /**
-     * Sets an expression to compute the rotation of the shape.
-     * This expression can use all the uniforms and attributes available
-     * in the vertex shader, and should evaluate to a `float` value in radians.
-     * @param {string} expression Size expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolRotationExpression(expression: string): ShaderBuilder;
-    /**
-     * Sets an expression to compute the offset of the symbol from the point center.
-     * This expression can use all the uniforms and attributes available
-     * in the vertex shader, and should evaluate to a `vec2` value.
-     * @param {string} expression Offset expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolOffsetExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current symbol offset expression
-     */
-    getSymbolOffsetExpression(): string;
-    /**
-     * Sets an expression to compute the color of the shape.
-     * This expression can use all the uniforms, varyings and attributes available
-     * in the fragment shader, and should evaluate to a `vec4` value.
-     * @param {string} expression Color expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolColorExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current symbol color expression
-     */
-    getSymbolColorExpression(): string;
-    /**
-     * Sets an expression to compute the texture coordinates of the vertices.
-     * This expression can use all the uniforms and attributes available
-     * in the vertex shader, and should evaluate to a `vec4` value.
-     * @param {string} expression Texture coordinate expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setTextureCoordinateExpression(expression: string): ShaderBuilder;
-    /**
-     * Sets an expression to determine whether a fragment (pixel) should be discarded,
-     * i.e. not drawn at all.
-     * This expression can use all the uniforms, varyings and attributes available
-     * in the fragment shader, and should evaluate to a `bool` value (it will be
-     * used in an `if` statement)
-     * @param {string} expression Fragment discard expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setFragmentDiscardExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current fragment discard expression
-     */
-    getFragmentDiscardExpression(): string;
-    /**
-     * Sets whether the symbols should rotate with the view or stay aligned with the map.
-     * Note: will only be used for point geometry shaders.
-     * @param {boolean} rotateWithView Rotate with view
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolRotateWithView(rotateWithView: boolean): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke width expression, returning value in pixels
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeWidthExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke color expression, evaluate to `vec4`: can rely on currentLengthPx and currentRadiusPx
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeColorExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current stroke color expression
-     */
-    getStrokeColorExpression(): string;
-    /**
-     * @param {string} expression Stroke color expression, evaluate to `float`
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeOffsetExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke line cap expression, evaluate to `float`
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeCapExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke line join expression, evaluate to `float`
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeJoinExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke miter limit expression, evaluate to `float`
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeMiterLimitExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke distance field expression, evaluate to `float`
-     * This can override the default distance field; can rely on currentLengthPx and currentRadiusPx
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeDistanceFieldExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Fill color expression, evaluate to `vec4`
-     * @return {ShaderBuilder} the builder object
-     */
-    setFillColorExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current fill color expression
-     */
-    getFillColorExpression(): string;
-    addVertexShaderFunction(code: any): void;
-    addFragmentShaderFunction(code: any): void;
-    /**
-     * Generates a symbol vertex shader from the builder parameters
-     * @return {string|null} The full shader as a string; null if no size or color specified
-     */
-    getSymbolVertexShader(): string | null;
-    /**
-     * Generates a symbol fragment shader from the builder parameters
-     * @return {string|null} The full shader as a string; null if no size or color specified
-     */
-    getSymbolFragmentShader(): string | null;
-    /**
-     * Generates a stroke vertex shader from the builder parameters
-     * @return {string|null} The full shader as a string; null if no size or color specified
-     */
-    getStrokeVertexShader(): string | null;
-    /**
-     * Generates a stroke fragment shader from the builder parameters
-     *
-     * @return {string|null} The full shader as a string; null if no size or color specified
-     */
-    getStrokeFragmentShader(): string | null;
-    /**
-     * Generates a fill vertex shader from the builder parameters
-     *
-     * @return {string|null} The full shader as a string; null if no color specified
-     */
-    getFillVertexShader(): string | null;
-    /**
-     * Generates a fill fragment shader from the builder parameters
-     * @return {string|null} The full shader as a string; null if no color specified
-     */
-    getFillFragmentShader(): string | null;
-}
-
-/**
- * A description of a custom attribute to be passed on to the GPU, with a value different
- * for each feature.
- */
-type AttributeDefinition = {
-    /**
-     * Amount of numerical values composing the attribute, either 1, 2, 3 or 4; in case size is > 1, the return value
-     * of the callback should be an array; if unspecified, assumed to be a single float value
-     */
-    size?: number | undefined;
-    /**
-     * This callback computes the numerical value of the
-     * attribute for a given feature.
-     */
-    callback: (this: GeometryBatchItem, arg1: FeatureLike) => number | Array<number>;
-};
-type AttributeDefinitions = {
-    [x: string]: AttributeDefinition;
-};
-type UniformDefinitions = {
-    [x: string]: UniformValue;
-};
-type WebGLBuffers = {
-    /**
-     * Array containing indices and vertices buffers for polygons
-     */
-    polygonBuffers: Array<WebGLArrayBuffer>;
-    /**
-     * Array containing indices and vertices buffers for line strings
-     */
-    lineStringBuffers: Array<WebGLArrayBuffer>;
-    /**
-     * Array containing indices and vertices buffers for points
-     */
-    pointBuffers: Array<WebGLArrayBuffer>;
-    /**
-     * Inverse of the transform applied when generating buffers
-     */
-    invertVerticesTransform: Transform;
-};
-type StyleShaders = {
-    /**
-     * Shader builder with the appropriate presets.
-     */
-    builder: ShaderBuilder;
-    /**
-     * Custom attributes made available in the vertex shaders.
-     * Default shaders rely on the attributes in {@link Attributes}.
-     */
-    attributes?: {
-        [x: string]: AttributeDefinition;
-    } | undefined;
-    /**
-     * Additional uniforms usable in shaders.
-     */
-    uniforms?: {
-        [x: string]: UniformValue;
-    } | undefined;
-};
-type VectorStyle$2 = WebGLStyle | StyleShaders;
-/**
- * @typedef {Object} AttributeDefinition A description of a custom attribute to be passed on to the GPU, with a value different
- * for each feature.
- * @property {number} [size] Amount of numerical values composing the attribute, either 1, 2, 3 or 4; in case size is > 1, the return value
- * of the callback should be an array; if unspecified, assumed to be a single float value
- * @property {function(this:import("./MixedGeometryBatch.js").GeometryBatchItem, import("../../Feature").FeatureLike):number|Array<number>} callback This callback computes the numerical value of the
- * attribute for a given feature.
- */
-/**
- * @typedef {Object<string, AttributeDefinition>} AttributeDefinitions
- * @typedef {Object<string, import("../../webgl/Helper").UniformValue>} UniformDefinitions
- */
-/**
- * @typedef {Object} WebGLBuffers
- * @property {Array<WebGLArrayBuffer>} polygonBuffers Array containing indices and vertices buffers for polygons
- * @property {Array<WebGLArrayBuffer>} lineStringBuffers Array containing indices and vertices buffers for line strings
- * @property {Array<WebGLArrayBuffer>} pointBuffers Array containing indices and vertices buffers for points
- * @property {import("../../transform.js").Transform} invertVerticesTransform Inverse of the transform applied when generating buffers
- */
-/**
- * @typedef {Object} RenderInstructions
- * @property {Float32Array|null} polygonInstructions Polygon instructions; null if nothing to render
- * @property {Float32Array|null} lineStringInstructions LineString instructions; null if nothing to render
- * @property {Float32Array|null} pointInstructions Point instructions; null if nothing to render
- */
-/**
- * @typedef {Object} ShaderProgram An object containing both shaders (vertex and fragment)
- * @property {string} vertex Vertex shader source
- * @property {string} fragment Fragment shader source
- */
-/**
- * @typedef {Object} StyleShaders
- * @property {import("../../webgl/ShaderBuilder.js").ShaderBuilder} builder Shader builder with the appropriate presets.
- * @property {AttributeDefinitions} [attributes] Custom attributes made available in the vertex shaders.
- * Default shaders rely on the attributes in {@link Attributes}.
- * @property {UniformDefinitions} [uniforms] Additional uniforms usable in shaders.
- */
-/**
- * @typedef {import('../../style/webgl.js').WebGLStyle|StyleShaders} VectorStyle
- */
-/**
- * @classdesc This class is responsible for:
- * 1. generate WebGL buffers according to a provided style, using a MixedGeometryBatch as input
- * 2. rendering geometries contained in said buffers
- *
- * A layer renderer will typically maintain several of these in order to have several styles rendered separately.
- *
- * A VectorStyleRenderer instance can be created either from a literal style or from shaders using either
- * `VectorStyleRenderer.fromStyle` or `VectorStyleRenderer.fromShaders`. The shaders should not be provided explicitly
- * but instead as a preconfigured ShaderBuilder instance.
- *
- * The `generateBuffers` method returns a promise resolving to WebGL buffers that are intended to be rendered by the
- * same renderer.
- */
-declare class VectorStyleRenderer {
-    /**
-     * @param {VectorStyle} styleOrShaders Literal style or custom shaders
-     * @param {import('../../webgl/Helper.js').default} helper Helper
-     * @param {boolean} enableHitDetection Whether to enable the hit detection (needs compatible shader)
-     */
-    constructor(styleOrShaders: VectorStyle$2, helper: WebGLHelper, enableHitDetection: boolean);
-    /**
-     * @private
-     * @type {import('../../webgl/Helper.js').default}
-     */
-    private helper_;
-    /**
-     * @private
-     */
-    private hitDetectionEnabled_;
-    /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private fillProgram_;
-    /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private strokeProgram_;
-    /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private symbolProgram_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasFill_;
-    /**
-     * @private
-     */
-    private fillVertexShader_;
-    /**
-     * @private
-     */
-    private fillFragmentShader_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasStroke_;
-    /**
-     * @private
-     */
-    private strokeVertexShader_;
-    /**
-     * @private
-     */
-    private strokeFragmentShader_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasSymbol_;
-    /**
-     * @private
-     */
-    private symbolVertexShader_;
-    /**
-     * @private
-     */
-    private symbolFragmentShader_;
-    /**
-     * @private
-     */
-    private customAttributes_;
-    /**
-     * @private
-     */
-    private uniforms_;
-    /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
-     * @private
-     */
-    private polygonAttributesDesc_;
-    /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
-     * @private
-     */
-    private lineStringAttributesDesc_;
-    /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
-     * @private
-     */
-    private pointAttributesDesc_;
-    /**
-     * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
-     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
-     * @return {Promise<WebGLBuffers>} A promise resolving to WebGL buffers
-     */
-    generateBuffers(geometryBatch: MixedGeometryBatch, transform: Transform): Promise<WebGLBuffers>;
-    /**
-     * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
-     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
-     * @return {RenderInstructions} Render instructions
-     * @private
-     */
-    private generateRenderInstructions_;
-    /**
-     * @param {Float32Array|null} renderInstructions Render instructions
-     * @param {import("../../geom/Geometry.js").Type} geometryType Geometry type
-     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
-     * @return {Promise<Array<WebGLArrayBuffer>>|null} Indices buffer and vertices buffer; null if nothing to render
-     * @private
-     */
-    private generateBuffersForType_;
-    /**
-     * Render the geometries in the given buffers.
-     * @param {WebGLBuffers} buffers WebGL Buffers to draw
-     * @param {import("../../Map.js").FrameState} frameState Frame state
-     * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
-     */
-    render(buffers: WebGLBuffers, frameState: FrameState, preRenderCallback: () => void): void;
-    /**
-     * @param {WebGLArrayBuffer} indicesBuffer Indices buffer
-     * @param {WebGLArrayBuffer} verticesBuffer Vertices buffer
-     * @param {WebGLProgram} program Program
-     * @param {Array<import('../../webgl/Helper.js').AttributeDescription>} attributes Attribute descriptions
-     * @param {import("../../Map.js").FrameState} frameState Frame state.
-     * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
-     * @private
-     */
-    private renderInternal_;
-    /**
-     * @param {import('../../webgl/Helper.js').default} helper Helper
-     * @param {WebGLBuffers} buffers WebGL Buffers to reload if any
-     */
-    setHelper(helper: WebGLHelper, buffers?: WebGLBuffers): void;
-}
-
 /**
  * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
  * @return {number} Cumulated size of all attributes
@@ -40154,7 +40759,7 @@ declare function generatePolygonRenderInstructions(batch: PolygonGeometryBatch, 
  * @property {number} indexPosition New position in the index buffer where future writes should start.
  * @private
  */
-declare function writePointFeatureToBuffers(instructions: Float32Array, elementIndex: number, vertexBuffer: Float32Array, indexBuffer: Uint32Array, customAttributesSize: number, bufferPositions?: BufferPositions | undefined): BufferPositions;
+declare function writePointFeatureToBuffers(instructions: Float32Array, elementIndex: number, vertexBuffer: Float32Array, indexBuffer: Uint32Array, customAttributesSize: number, bufferPositions?: BufferPositions): BufferPositions;
 /**
  * Pushes a single quad to form a line segment; also includes a computation for the join angles with previous and next
  * segment, in order to be able to offset the vertices correctly in the shader.
@@ -40217,7 +40822,7 @@ declare function getBlankImageData(): ImageData;
  * @param {Array<number>} [array] Reusable array
  * @return {Array<number>} Color array containing the encoded id
  */
-declare function colorEncodeId(id: number, array?: number[] | undefined): Array<number>;
+declare function colorEncodeId(id: number, array?: Array<number>): Array<number>;
 /**
  * Reads an id from a color-encoded array
  * Note: the expected range for each component is 0 to 1 with 256 steps.
@@ -40274,199 +40879,6 @@ declare class CompositeMapRenderer extends MapRenderer {
 }
 //# sourceMappingURL=Composite.d.ts.map
 
-type VectorStyle$1 = VectorStyle$2;
-type Options$5 = {
-    /**
-     * A CSS class name to set to the canvas element.
-     */
-    className?: string | undefined;
-    /**
-     * Vector style as literal style or shaders; can also accept an array of styles
-     */
-    style: VectorStyle$1 | Array<VectorStyle$1>;
-    /**
-     * Setting this to true will provide a slight performance boost, but will
-     * prevent all hit detection on the layer.
-     */
-    disableHitDetection?: boolean | undefined;
-    /**
-     * Post-processes definitions
-     */
-    postProcesses?: PostProcessesOptions[] | undefined;
-};
-/**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').VectorStyle} VectorStyle
- */
-/**
- * @typedef {Object} Options
- * @property {string} [className='ol-layer'] A CSS class name to set to the canvas element.
- * @property {VectorStyle|Array<VectorStyle>} style Vector style as literal style or shaders; can also accept an array of styles
- * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
- * prevent all hit detection on the layer.
- * @property {Array<import("./Layer").PostProcessesOptions>} [postProcesses] Post-processes definitions
- */
-/**
- * @classdesc
- * Experimental WebGL vector renderer. Supports polygons, lines and points:
- *  * Polygons are broken down into triangles
- *  * Lines are rendered as strips of quads
- *  * Points are rendered as quads
- *
- * You need to provide vertex and fragment shaders as well as custom attributes for each type of geometry. All shaders
- * can access the uniforms in the {@link module:ol/webgl/Helper~DefaultUniform} enum.
- * The vertex shaders can access the following attributes depending on the geometry type:
- *  * For polygons: {@link module:ol/render/webgl/PolygonBatchRenderer~Attributes}
- *  * For line strings: {@link module:ol/render/webgl/LineStringBatchRenderer~Attributes}
- *  * For points: {@link module:ol/render/webgl/PointBatchRenderer~Attributes}
- *
- * Please note that the fragment shaders output should have premultiplied alpha, otherwise visual anomalies may occur.
- *
- * Note: this uses {@link module:ol/webgl/Helper~WebGLHelper} internally.
- */
-declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
-    /**
-     * @param {import("../../layer/Layer.js").default} layer Layer.
-     * @param {Options} options Options.
-     */
-    constructor(layer: Layer, options: Options$5);
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hitDetectionEnabled_;
-    /**
-     * @type {WebGLRenderTarget}
-     * @private
-     */
-    private hitRenderTarget_;
-    /**
-     * @private
-     */
-    private sourceRevision_;
-    /**
-     * @private
-     */
-    private previousExtent_;
-    /**
-     * This transform is updated on every frame and is the composition of:
-     * - invert of the world->screen transform that was used when rebuilding buffers (see `this.renderTransform_`)
-     * - current world->screen transform
-     * @type {import("../../transform.js").Transform}
-     * @private
-     */
-    private currentTransform_;
-    /**
-     * @private
-     */
-    private tmpCoords_;
-    /**
-     * @private
-     */
-    private tmpTransform_;
-    /**
-     * @private
-     */
-    private tmpMat4_;
-    /**
-     * @type {import("../../transform.js").Transform}
-     * @private
-     */
-    private currentFrameStateTransform_;
-    /**
-     * @type {Array<VectorStyle>}
-     * @private
-     */
-    private styles_;
-    /**
-     * @type {Array<VectorStyleRenderer>}
-     * @private
-     */
-    private styleRenderers_;
-    /**
-     * @type {Array<import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers>}
-     * @private
-     */
-    private buffers_;
-    /**
-     * @private
-     */
-    private batch_;
-    /**
-     * @private
-     * @type {boolean}
-     */
-    private initialFeaturesAdded_;
-    /**
-     * @private
-     * @type {Array<import("../../events.js").EventsKey|null>}
-     */
-    private sourceListenKeys_;
-    /**
-     * @private
-     * @param {import("../../Map.js").FrameState} frameState Frame state.
-     */
-    private addInitialFeatures_;
-    /**
-     * @param {Options} options Options.
-     * @private
-     */
-    private applyOptions_;
-    /**
-     * @private
-     */
-    private createRenderers_;
-    /**
-     * @override
-     */
-    override reset(options: any): void;
-    /**
-     * @param {import("../../proj.js").TransformFunction} projectionTransform Transform function.
-     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
-     * @private
-     */
-    private handleSourceFeatureAdded_;
-    /**
-     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
-     * @private
-     */
-    private handleSourceFeatureChanged_;
-    /**
-     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
-     * @private
-     */
-    private handleSourceFeatureDelete_;
-    /**
-     * @private
-     */
-    private handleSourceFeatureClear_;
-    /**
-     * @param {import("../../transform.js").Transform} batchInvertTransform Inverse of the transformation in which geometries are expressed
-     * @private
-     */
-    private applyUniforms_;
-    /**
-     * Render the layer.
-     * @param {import("../../Map.js").FrameState} frameState Frame state.
-     * @return {HTMLElement} The rendered element.
-     * @override
-     */
-    override renderFrame(frameState: FrameState): HTMLElement;
-    /**
-     * Render the world, either to the main framebuffer or to the hit framebuffer
-     * @param {import("../../Map.js").FrameState} frameState current frame state
-     * @param {boolean} forHitDetection whether the rendering is for hit detection
-     * @param {number} startWorld the world to render in the first iteration
-     * @param {number} endWorld the last world to render
-     * @param {number} worldWidth the width of the worlds being rendered
-     */
-    renderWorlds(frameState: FrameState, forHitDetection: boolean, startWorld: number, endWorld: number, worldWidth: number): void;
-    /**
-     * Will release a set of Webgl buffers
-     * @param {import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers} buffers Buffers
-     */
-    disposeBuffers(buffers: WebGLBuffers): void;
-}
-
 type TileType = VectorRenderTile;
 /**
  * @typedef {import("../VectorRenderTile").default} TileType
@@ -40505,11 +40917,19 @@ declare class TileGeometry extends BaseTileRepresentation<VectorRenderTile> {
 }
 
 type VectorStyle = VectorStyle$2;
-type Options$4 = {
+type Options$5 = {
     /**
      * Vector style as literal style or shaders; can also accept an array of styles
      */
     style: VectorStyle | Array<VectorStyle>;
+    /**
+     * Style variables. Each variable must hold a literal value (not
+     * an expression). These variables can be used as {@link import ("../../expr/expression.js").ExpressionValue expressions} in the styles properties
+     * using the `['var', 'varName']` operator.
+     */
+    variables?: {
+        [x: string]: string | number | boolean | number[];
+    } | undefined;
     /**
      * Setting this to true will provide a slight performance boost, but will
      * prevent all hit detection on the layer.
@@ -40527,6 +40947,9 @@ type LayerType = BaseTileLayer<any, any>;
 /**
  * @typedef {Object} Options
  * @property {VectorStyle|Array<VectorStyle>} style Vector style as literal style or shaders; can also accept an array of styles
+ * @property {import('../../style/flat.js').StyleVariables} [variables] Style variables. Each variable must hold a literal value (not
+ * an expression). These variables can be used as {@link import("../../expr/expression.js").ExpressionValue expressions} in the styles properties
+ * using the `['var', 'varName']` operator.
  * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
  * prevent all hit detection on the layer.
  * @property {number} [cacheSize=512] The vector tile cache size.
@@ -40544,7 +40967,7 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<Ba
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} options Options.
      */
-    constructor(tileLayer: LayerType, options: Options$4);
+    constructor(tileLayer: LayerType, options: Options$5);
     /**
      * @type {boolean}
      * @private
@@ -40555,6 +40978,11 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<Ba
      * @private
      */
     private styles_;
+    /**
+     * @type {import('../../style/flat.js').StyleVariables}
+     * @private
+     */
+    private styleVariables_;
     /**
      * @type {Array<VectorStyleRenderer>}
      * @private
@@ -40599,7 +41027,7 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<Ba
      * @param {Options} options Options.
      * @override
      */
-    override reset(options: Options$4): void;
+    override reset(options: Options$5): void;
     /**
      * @param {Options} options Options.
      * @private
@@ -40650,7 +41078,7 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<Ba
 }
 
 type TileGetter = (arg0: number, arg1: number, arg2: number, arg3: number) => DataTile;
-type Options$3 = {
+type Options$4 = {
     /**
      * Source projection.
      */
@@ -40701,6 +41129,14 @@ type Options$3 = {
      * transitions in milliseconds. A duration of 0 disables the opacity transition.
      */
     transition?: number | undefined;
+    /**
+     * Source transform matrix.
+     */
+    transformMatrix?: number[] | undefined;
+    /**
+     * Render reprojection edges.
+     */
+    renderEdges?: boolean | undefined;
 };
 /**
  * @typedef {function(number, number, number, number) : import("../DataTile.js").default} TileGetter
@@ -40726,6 +41162,8 @@ type Options$3 = {
  * @property {number} [errorThreshold] Acceptable reprojection error (in px).
  * @property {number} [transition=250] A duration for tile opacity
  * transitions in milliseconds. A duration of 0 disables the opacity transition.
+ * @property {import("../transform.js").Transform} [transformMatrix] Source transform matrix.
+ * @property {boolean} [renderEdges] Render reprojection edges.
  */
 /**
  * @classdesc
@@ -40737,7 +41175,12 @@ declare class ReprojDataTile extends DataTile {
     /**
      * @param {Options} options Tile options.
      */
-    constructor(options: Options$3);
+    constructor(options: Options$4);
+    /**
+     * @private
+     * @type {boolean | Array<number>}
+     */
+    private renderEdges_;
     /**
      * @private
      * @type {number}
@@ -40929,8 +41372,9 @@ declare class Triangulation {
      * @param {import("../extent.js").Extent} maxSourceExtent Maximal source extent that can be used.
      * @param {number} errorThreshold Acceptable error (in source units).
      * @param {?number} destinationResolution The (optional) resolution of the destination.
+     * @param {import("../transform.js").Transform} [sourceMatrix] Source transform matrix.
      */
-    constructor(sourceProj: Projection, targetProj: Projection, targetExtent: Extent$1, maxSourceExtent: Extent$1, errorThreshold: number, destinationResolution: number | null);
+    constructor(sourceProj: Projection, targetProj: Projection, targetExtent: Extent$1, maxSourceExtent: Extent$1, errorThreshold: number, destinationResolution: number | null, sourceMatrix?: Transform);
     /**
      * @type {import("../proj/Projection.js").default}
      * @private
@@ -41074,12 +41518,12 @@ declare function calculateSourceExtentResolution(sourceProj: Projection, targetP
  * @param {boolean} [clipExtent] Clip stitchContext to sourceExtent.
  * @return {HTMLCanvasElement} Canvas with reprojected data.
  */
-declare function render(width: number, height: number, pixelRatio: number, sourceResolution: number, sourceExtent: Extent$1, targetResolution: number, targetExtent: Extent$1, triangulation: Triangulation, sources: Array<ImageExtent>, gutter: number, renderEdges?: boolean | undefined, interpolate?: boolean | undefined, drawSingle?: boolean | undefined, clipExtent?: boolean | undefined): HTMLCanvasElement;
+declare function render$1(width: number, height: number, pixelRatio: number, sourceResolution: number, sourceExtent: Extent$1, targetResolution: number, targetExtent: Extent$1, triangulation: Triangulation, sources: Array<ImageExtent$1>, gutter: number, renderEdges?: boolean, interpolate?: boolean, drawSingle?: boolean, clipExtent?: boolean): HTMLCanvasElement;
 /**
  * @type {Array<HTMLCanvasElement>}
  */
 declare const canvasPool: Array<HTMLCanvasElement>;
-type ImageExtent = {
+type ImageExtent$1 = {
     /**
      * Extent.
      */
@@ -41105,6 +41549,473 @@ type ImageExtent = {
 declare const ERROR_THRESHOLD: number;
 
 /**
+ * Create an html canvas element and returns its webgl context.
+ * @param {number} [width] Canvas width.
+ * @param {number} [height] Canvas height.
+ * @param {Array<HTMLCanvasElement | OffscreenCanvas>} [canvasPool] Canvas pool to take existing canvas from.
+ * @param {WebGLContextAttributes} [settings] CanvasRenderingContext2DSettings
+ * @return {WebGLRenderingContext} The context.
+ */
+declare function createCanvasContextWebGL(width?: number, height?: number, canvasPool?: Array<HTMLCanvasElement | OffscreenCanvas>, settings?: WebGLContextAttributes): WebGLRenderingContext;
+/**
+ * Releases canvas memory to avoid exceeding memory limits in Safari.
+ * See https://pqina.nl/blog/total-canvas-memory-use-exceeds-the-maximum-limit/
+ * @param {WebGLRenderingContext} gl Context.
+ */
+declare function releaseGLCanvas(gl: WebGLRenderingContext): void;
+/**
+ * @typedef {Object} ImageExtent
+ * @property {import("../extent.js").Extent} extent Extent.
+ * @property {import("../extent.js").Extent} [clipExtent] Clip extent.
+ * @property {WebGLTexture} texture Texture.
+ * @property {number} width Width of texture.
+ * @property {number} height Height of texture.
+ */
+/**
+ * Renders the source data into new canvas based on the triangulation.
+ *
+ * @param {WebGLRenderingContext} gl the context to render in.
+ * @param {number} width_ Width of the canvas.
+ * @param {number} height_ Height of the canvas.
+ * @param {number} pixelRatio Pixel ratio.
+ * @param {number} sourceResolution Source resolution.
+ * @param {number} targetResolution Target resolution.
+ * @param {import("../extent.js").Extent} targetExtent Target extent (tile).
+ * @param {import("../reproj/Triangulation.js").default} triangulation Calculated triangulation.
+ * @param {Array<ImageExtent>} sources Array of sources.
+ * @param {number} gutter Gutter of the sources.
+ * @param {number} dataType What kind of data is the textures, must be gl.FLOAT or gl.UNSIGNED_BYTE
+ * TODO: Allow setting renderEdges value in the data as this is done in "data-space".
+ * @param {boolean | Array<number>} [renderEdges] Render reprojection edges.
+ * @param {boolean} [interpolate] Use linear interpolation when resampling.
+ * @param {boolean} [drawSingle] Draw single source images directly without stitchTexture.
+ * @return {{framebuffer: WebGLFramebuffer, width: number, height: number, texture: WebGLTexture}} Canvas with reprojected data.
+ */
+declare function render(gl: WebGLRenderingContext, width_: number, height_: number, pixelRatio: number, sourceResolution: number, targetResolution: number, targetExtent: Extent$1, triangulation: Triangulation, sources: Array<ImageExtent>, gutter: number, dataType: number, renderEdges?: boolean | Array<number>, interpolate?: boolean, drawSingle?: boolean): {
+    framebuffer: WebGLFramebuffer;
+    width: number;
+    height: number;
+    texture: WebGLTexture;
+};
+/**
+ * @type {Array<HTMLCanvasElement | OffscreenCanvas>}
+ */
+declare const canvasGLPool: Array<HTMLCanvasElement | OffscreenCanvas>;
+type ImageExtent = {
+    /**
+     * Extent.
+     */
+    extent: Extent$1;
+    /**
+     * Clip extent.
+     */
+    clipExtent?: Extent$1 | undefined;
+    /**
+     * Texture.
+     */
+    texture: WebGLTexture;
+    /**
+     * Width of texture.
+     */
+    width: number;
+    /**
+     * Height of texture.
+     */
+    height: number;
+};
+
+type AuthConfig = {
+    /**
+     * The URL to get the authentication token.
+     */
+    tokenUrl?: string | undefined;
+    /**
+     * The client ID.
+     */
+    clientId: string;
+    /**
+     * The client secret.
+     */
+    clientSecret: string;
+};
+type Evalscript = {
+    /**
+     * The setup function.
+     */
+    setup: Setup;
+    /**
+     * The function to transform input samples into output values.
+     */
+    evaluatePixel: EvaluatePixel;
+    /**
+     * Optional function to adjust the output bands.
+     */
+    updateOutput?: UpdateOutput | undefined;
+    /**
+     * Optional function to update the output metadata.
+     */
+    updateOutputMetadata?: UpdateOutputMetadata | undefined;
+    /**
+     * Optional function called before processing.
+     */
+    preProcessScenes?: Collections | undefined;
+    /**
+     * The Evalscript version.
+     */
+    version?: string | undefined;
+};
+type Setup = () => SetupResult;
+type EvaluatePixel = (arg0: Sample | Array<Sample>, arg1: Scenes, arg2: InputMetadata, arg3: CustomData, arg4: OutputMetadata) => OutputValues | Array<number> | void;
+type UpdateOutput = (arg0: {
+    [x: string]: UpdatedOutputDescription;
+}) => void;
+type UpdateOutputMetadata = (arg0: Scenes, arg1: InputMetadata, arg2: OutputMetadata) => void;
+type SetupResult = {
+    /**
+     * Description of the input data.
+     */
+    input: Array<string> | Array<InputDescription>;
+    /**
+     * Description of the output data.
+     */
+    output: OutputDescription | Array<OutputDescription>;
+    /**
+     * Control how samples from input scenes are composed.
+     */
+    mosaicking?: "SIMPLE" | "ORBIT" | "TILE" | undefined;
+};
+type InputDescription = {
+    /**
+     * Input band identifiers.
+     */
+    bands: Array<string>;
+    /**
+     * Input band units.
+     */
+    units?: string | string[] | undefined;
+    /**
+     * Properties to include in the input metadata.
+     */
+    metadata?: string[] | undefined;
+};
+type OutputDescription = {
+    /**
+     * Output identifier.
+     */
+    id?: string | undefined;
+    /**
+     * Number of output bands.
+     */
+    bands: number;
+    /**
+     * Output sample type.
+     */
+    sampleType?: SampleType | undefined;
+    /**
+     * Output nodata value.
+     */
+    nodataValue?: number | undefined;
+};
+type UpdatedOutputDescription = {
+    /**
+     * Number of output bands.
+     */
+    bands: number;
+};
+type SampleType = "INT8" | "UINT8" | "INT16" | "UINT16" | "FLOAT32" | "AUTO";
+type Sample = {
+    [x: string]: number;
+};
+type Collections = {
+    /**
+     * For 'ORBIT' mosaicking, this will be the start of the search interval.
+     */
+    from?: string | undefined;
+    /**
+     * For 'ORBIT' mosaicking, this will be the end of the search interval.
+     */
+    to?: string | undefined;
+    /**
+     * The scenes in the collection.
+     */
+    scenes: Scenes;
+};
+type Scenes = {
+    /**
+     * Information about scenes included in the tile when 'mosaicking' is 'ORBIT'.
+     */
+    orbit?: Orbit[] | undefined;
+    /**
+     * Information about scenes included in the tile when 'mosaicking' is 'TILE'.
+     */
+    tiles?: Tile[] | undefined;
+};
+type Orbit = {
+    /**
+     * The earliest date for all scenes included in the tile.
+     */
+    dateFrom: string;
+    /**
+     * The latest date for scenes included in the tile.
+     */
+    dateTo: string;
+    /**
+     * Metadata for each tile.
+     */
+    tiles: any[];
+};
+type Tile = {
+    /**
+     * The date of scene used in the tile.
+     */
+    date: string;
+    /**
+     * The estimated percentage of pixels obscured by clouds in the scene.
+     */
+    cloudCoverage: number;
+    /**
+     * The path to the data in storage.
+     */
+    dataPath: string;
+    /**
+     * The internal identifier for the scene.
+     */
+    shId: number;
+};
+type InputMetadata = {
+    /**
+     * The version of the service used for processing.
+     */
+    serviceVersion: string;
+    /**
+     * The factor used to convert digital number (DN) values to reflectance.
+     */
+    normalizationFactor: number;
+};
+type CustomData = {
+    [x: string]: unknown;
+};
+type OutputMetadata = {
+    /**
+     * Arbitrary user data.
+     */
+    userData: any;
+};
+type OutputValues = {
+    [x: string]: number[];
+};
+type ProcessRequestInputDataItem = {
+    /**
+     * The type of the input data.
+     */
+    type?: string | undefined;
+    /**
+     * The identifier of the input data.
+     */
+    id?: string | undefined;
+    /**
+     * The filter to apply to the input data.
+     */
+    dataFilter?: DataFilter | undefined;
+    /**
+     * The processing to apply to the input data.
+     */
+    processing?: {
+        [x: string]: unknown;
+    } | undefined;
+};
+type DataFilter = {
+    /**
+     * The data time range.
+     */
+    timeRange?: TimeRange | undefined;
+    /**
+     * The maximum cloud coverage (0-100).
+     */
+    maxCloudCoverage?: number | undefined;
+};
+type TimeRange = {
+    /**
+     * The start time (inclusive).
+     */
+    from?: string | undefined;
+    /**
+     * The end time (inclusive).
+     */
+    to?: string | undefined;
+};
+type Options$3 = {
+    /**
+     * The authentication configuration with `clientId` and `clientSecret` or an access token.
+     * See [Sentinel Hub authentication](https://docs.sentinel-hub.com/api/latest/api/overview/authentication/)
+     * for details.  If not provided in the constructor, the source will not be rendered until {@link module :ol/source/SentinelHub~SentinelHub#setAuth}is called.
+     */
+    auth?: string | AuthConfig | undefined;
+    /**
+     * The input data configuration.  If not provided in the constructor,
+     * the source will not be rendered until {@link module :ol/source/SentinelHub~SentinelHub#setData} is called.
+     */
+    data?: ProcessRequestInputDataItem[] | undefined;
+    /**
+     * The process applied to the input data.  If not provided in the constructor,
+     * the source will not be rendered until {@link module :ol/source/SentinelHub~SentinelHub#setEvalscript} is called.  See the
+     * `setEvalscript` documentation for details on the restrictions when passing process functions.
+     */
+    evalscript?: string | Evalscript | undefined;
+    /**
+     * The pixel width and height of the source tiles.
+     */
+    tileSize?: number | Size | undefined;
+    /**
+     * The Sentinel Hub Processing API URL.
+     */
+    url?: string | undefined;
+    /**
+     * Projection. Default is the view projection.
+     */
+    projection?: ProjectionLike;
+    /**
+     * Allow the attributions to be collapsed.
+     */
+    attributionsCollapsible?: boolean | undefined;
+    /**
+     * Use interpolated values when resampling.  By default,
+     * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
+     */
+    interpolate?: boolean | undefined;
+    /**
+     * Wrap the world horizontally.
+     */
+    wrapX?: boolean | undefined;
+    /**
+     * Duration of the opacity transition for rendering.
+     * To disable the opacity transition, pass `transition: 0`.
+     */
+    transition?: number | undefined;
+};
+/**
+ * @typedef {Object} Options
+ * @property {AuthConfig|string} [auth] The authentication configuration with `clientId` and `clientSecret` or an access token.
+ * See [Sentinel Hub authentication](https://docs.sentinel-hub.com/api/latest/api/overview/authentication/)
+ * for details.  If not provided in the constructor, the source will not be rendered until {@link module:ol/source/SentinelHub~SentinelHub#setAuth}
+ * is called.
+ * @property {Array<ProcessRequestInputDataItem>} [data] The input data configuration.  If not provided in the constructor,
+ * the source will not be rendered until {@link module:ol/source/SentinelHub~SentinelHub#setData} is called.
+ * @property {Evalscript|string} [evalscript] The process applied to the input data.  If not provided in the constructor,
+ * the source will not be rendered until {@link module:ol/source/SentinelHub~SentinelHub#setEvalscript} is called.  See the
+ * `setEvalscript` documentation for details on the restrictions when passing process functions.
+ * @property {number|import("../size.js").Size} [tileSize=[512, 512]] The pixel width and height of the source tiles.
+ * @property {string} [url='https://services.sentinel-hub.com/api/v1/process'] The Sentinel Hub Processing API URL.
+ * @property {import("../proj.js").ProjectionLike} [projection] Projection. Default is the view projection.
+ * @property {boolean} [attributionsCollapsible=true] Allow the attributions to be collapsed.
+ * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
+ * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
+ * @property {boolean} [wrapX=true] Wrap the world horizontally.
+ * @property {number} [transition] Duration of the opacity transition for rendering.
+ * To disable the opacity transition, pass `transition: 0`.
+ */
+/**
+ * @classdesc
+ * A tile source that generates tiles using the Sentinel Hub [Processing API](https://docs.sentinel-hub.com/api/latest/api/process/).
+ * All of the constructor options are optional, however the source will not be ready for rendering until the `auth`, `data`,
+ * and `evalscript` properties are provided.  These can be set after construction with the {@link module:ol/source/SentinelHub~SentinelHub#setAuth},
+ * {@link module:ol/source/SentinelHub~SentinelHub#setData}, and {@link module:ol/source/SentinelHub~SentinelHub#setEvalscript}
+ * methods.
+ *
+ * If there are errors while configuring the source or fetching an access token, the `change` event will be fired and the
+ * source state will be set to `error`.  See the {@link module:ol/source/SentinelHub~SentinelHub#getError} method for
+ * details on handling these errors.
+ * @api
+ */
+declare class SentinelHub extends DataTileSource<DataTile> {
+    /**
+     * @param {Options} [options] Sentinel Hub options.
+     */
+    constructor(options?: Options$3);
+    /**
+     * @type {Error|null}
+     */
+    error_: Error | null;
+    /**
+     * @type {string}
+     * @private
+     */
+    private evalscript_;
+    /**
+     * @type {Array<ProcessRequestInputDataItem>|null}
+     * @private
+     */
+    private inputData_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private processUrl_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private token_;
+    /**
+     * @type {ReturnType<typeof setTimeout>}
+     * @private
+     */
+    private tokenRenewalId_;
+    /**
+     * Set the authentication configuration for the source (if not provided in the constructor).
+     * If an object with `clientId` and `clientSecret` is provided, an access token will be fetched
+     * and used with processing requests.  Alternatively, an access token can be supplied directly.
+     *
+     * @param {AuthConfig|string} auth The auth config or access token.
+     * @api
+     */
+    setAuth(auth: AuthConfig | string): Promise<void>;
+    /**
+     * Set or update the input data used.
+     *
+     * @param {Array<ProcessRequestInputDataItem>} data The input data configuration.
+     * @api
+     */
+    setData(data: Array<ProcessRequestInputDataItem>): void;
+    /**
+     * Set or update the Evalscript used to process the data.  Either a process object or a string
+     * Evalscript can be provided.  If a process object is provided, it will be serialized to produce the
+     * Evalscript string.  Because these functions will be serialized and executed by the Processing API,
+     * they cannot refer to other variables or functions that are not provided by the Processing API
+     * context.
+     *
+     * @param {Evalscript|string} evalscript The process to apply to the input data.
+     * @api
+     */
+    setEvalscript(evalscript: Evalscript | string): void;
+    fireWhenReady_(): void;
+    /**
+     * @param {number} z The z tile index.
+     * @param {number} x The x tile index.
+     * @param {number} y The y tile index.
+     * @param {number} attempt The attempt number (starting with 1).  Incremented with retries.
+     * @return {Promise<import('../DataTile.js').Data>} The composed tile data.
+     * @private
+     */
+    private loadTile_;
+    /**
+     * When the source state is `error`, use this function to get more information about the error.
+     * To debug a faulty configuration, you may want to use a listener like this:
+     * ```js
+     * source.on('change', () => {
+     *   if (source.getState() === 'error') {
+     *     console.error(source.getError());
+     *   }
+     * });
+     * ```
+     *
+     * @return {Error|null} A source loading error.
+     * @api
+     */
+    getError(): Error | null;
+}
+
+/**
  * @module ol/source/common
  */
 /**
@@ -41121,6 +42032,7 @@ declare const DECIMALS: number;
 /**
  * @typedef {Object} TileSetInfo
  * @property {string} urlTemplate The tile URL template.
+ * @property {import("../proj/Projection.js").default} projection The source projection.
  * @property {import("../tilegrid/TileGrid.js").default} grid The tile grid.
  * @property {import("../Tile.js").UrlFunction} urlFunction The tile URL function.
  */
@@ -41145,7 +42057,7 @@ declare function appendCollectionsQueryParam(tileUrlTemplate: string, collection
  * @param {Array<string>} [collections] Optional collections to append the URL with.
  * @return {string} The tile URL template.
  */
-declare function getMapTileUrlTemplate(links: Array<Link>, mediaType?: string | undefined, collections?: string[] | undefined): string;
+declare function getMapTileUrlTemplate(links: Array<Link>, mediaType?: string, collections?: Array<string>): string;
 /**
  * @param {Array<Link>} links Tileset links.
  * @param {string} [mediaType] The preferred media type.
@@ -41153,7 +42065,7 @@ declare function getMapTileUrlTemplate(links: Array<Link>, mediaType?: string | 
  * @param {Array<string>} [collections] Optional collections to append the URL with.
  * @return {string} The tile URL template.
  */
-declare function getVectorTileUrlTemplate(links: Array<Link>, mediaType?: string | undefined, supportedMediaTypes?: string[] | undefined, collections?: string[] | undefined): string;
+declare function getVectorTileUrlTemplate(links: Array<Link>, mediaType?: string, supportedMediaTypes?: Array<string>, collections?: Array<string>): string;
 /**
  * @param {SourceInfo} sourceInfo Source info.
  * @return {Promise<TileSetInfo>} Tile set info.
@@ -41164,6 +42076,10 @@ type TileSetInfo = {
      * The tile URL template.
      */
     urlTemplate: string;
+    /**
+     * The source projection.
+     */
+    projection: Projection;
     /**
      * The tile grid.
      */
@@ -41223,7 +42139,7 @@ type Link = {
  * @return {number} The great circle distance between the points (in meters).
  * @api
  */
-declare function getDistance(c1: any[], c2: any[], radius?: number | undefined): number;
+declare function getDistance(c1: any[], c2: any[], radius?: number): number;
 /**
  * Get the spherical length of a geometry.  This length is the sum of the
  * great circle distances between coordinates.  For polygons, the length is
@@ -41236,7 +42152,7 @@ declare function getDistance(c1: any[], c2: any[], radius?: number | undefined):
  * @return {number} The spherical length (in meters).
  * @api
  */
-declare function getLength(geometry: Geometry$1, options?: SphereMetricOptions | undefined): number;
+declare function getLength(geometry: Geometry$1, options?: SphereMetricOptions): number;
 /**
  * Get the spherical area of a geometry.  This is the area (in meters) assuming
  * that polygon edges are segments of great circles on a sphere.
@@ -41247,7 +42163,7 @@ declare function getLength(geometry: Geometry$1, options?: SphereMetricOptions |
  * @return {number} The spherical area (in square meters).
  * @api
  */
-declare function getArea(geometry: Geometry$1, options?: SphereMetricOptions | undefined): number;
+declare function getArea(geometry: Geometry$1, options?: SphereMetricOptions): number;
 /**
  * Returns the coordinate at the given distance and bearing from `c1`.
  *
@@ -41259,7 +42175,7 @@ declare function getArea(geometry: Geometry$1, options?: SphereMetricOptions | u
  *     mean radius using the WGS84 ellipsoid.
  * @return {import("./coordinate.js").Coordinate} The target point.
  */
-declare function offset(c1: Coordinate, distance: number, bearing: number, radius?: number | undefined): Coordinate;
+declare function offset(c1: Coordinate, distance: number, bearing: number, radius?: number): Coordinate;
 /**
  * Object literal with options for the {@link getLength} or {@link getArea}
  * functions.
@@ -41304,7 +42220,7 @@ type SphereMetricOptions = {
  * @param {number} [precision] Precision of the output string (i.e. number of decimal places)
  * @return {string} Formatted string
  */
-declare function padNumber(number: number, width: number, precision?: number | undefined): string;
+declare function padNumber(number: number, width: number, precision?: number): string;
 /**
  * Adapted from https://github.com/omichelsen/compare-versions/blob/master/index.js
  * @param {string|number} v1 First version
@@ -41440,11 +42356,6 @@ declare class RegularShape extends ImageStyle {
      * @param {Options} options Options.
      */
     constructor(options: Options$2);
-    /**
-     * @private
-     * @type {Object<number, HTMLCanvasElement>}
-     */
-    private canvases_;
     /**
      * @private
      * @type {HTMLCanvasElement|null}
@@ -41671,7 +42582,7 @@ declare class CircleStyle extends RegularShape {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1 | undefined);
+    constructor(options?: Options$1);
     /**
      * Clones the style.
      * @return {CircleStyle} The cloned style.
@@ -41864,10 +42775,10 @@ declare class IconImageCache {
      * @param {import("./IconImage.js").default|null} iconImage Icon image.
      * @param {boolean} [pattern] Also cache a `'repeat'` pattern with this `iconImage`.
      */
-    set(src: string, crossOrigin: string | null, color: Color | string | null, iconImage: IconImage | null, pattern?: boolean | undefined): void;
+    set(src: string, crossOrigin: string | null, color: Color | string | null, iconImage: IconImage | null, pattern?: boolean): void;
     /**
-     * Set the cache size of the icon cache. Default is `32`. Change this value when
-     * your map uses more than 32 different icon images and you are not caching icon
+     * Set the cache size of the icon cache. Default is `1024`. Change this value when
+     * your map uses more than 1024 different icon images and you are not caching icon
      * styles on the application level.
      * @param {number} maxCacheSize Cache max size.
      * @api
@@ -41907,7 +42818,7 @@ declare function appendParams(uri: string, params: any): string;
  * @param {number} [maxY] The maximum y coordinate at the given z level.
  * @return {string} The URL.
  */
-declare function renderXYZTemplate(template: string, z: number, x: number, y: number, maxY?: number | undefined): string;
+declare function renderXYZTemplate(template: string, z: number, x: number, y: number, maxY?: number): string;
 /**
  * @param {Array<string>} urls List of URLs.
  * @param {number} z The tile z coordinate.
@@ -41973,16 +42884,118 @@ declare const VERSION: string;
 /**
  * @module ol/vec/mat4
  */
+/** @typedef {Array<number>} Mat4 */
 /**
- * @return {Array<number>} "4x4 matrix representing a 3D identity transform."
+ * @return {Mat4} "4x4 matrix representing a 3D identity transform."
  */
-declare function create(): Array<number>;
+declare function create(): Mat4;
 /**
- * @param {Array<number>} mat4 Flattened 4x4 matrix receiving the result.
+ * @param {Mat4} mat4 Flattened 4x4 matrix receiving the result.
  * @param {import("../transform.js").Transform} transform Transformation matrix.
- * @return {Array<number>} "2D transformation matrix as flattened 4x4 matrix."
+ * @return {Mat4} "2D transformation matrix as flattened 4x4 matrix."
  */
-declare function fromTransform(mat4: Array<number>, transform: Transform): Array<number>;
+declare function fromTransform(mat4: Mat4, transform: Transform): Mat4;
+/**
+ * Generates a orthogonal projection matrix with the given bounds
+ *
+ * @param {number} left Left bound of the frustum
+ * @param {number} right Right bound of the frustum
+ * @param {number} bottom Bottom bound of the frustum
+ * @param {number} top Top bound of the frustum
+ * @param {number} near Near bound of the frustum
+ * @param {number} far Far bound of the frustum
+ * @param {Mat4} [out] mat4 frustum matrix will be written into
+ * @return {Mat4} out
+ */
+declare function orthographic(left: number, right: number, bottom: number, top: number, near: number, far: number, out?: Mat4): Mat4;
+/**
+ * Scales the mat4 by the dimensions in the given vec3
+ *
+ * @param {Mat4} m The matrix to scale.
+ * @param {number} x How much to scale in the x direction.
+ * @param {number} y How much to scale in the y direction.
+ * @param {number} z How much to scale in the z direction.
+ * @param {Mat4} [out] The matrix to write to.
+ * @return {Mat4} out
+ **/
+declare function scale(m: Mat4, x: number, y: number, z: number, out?: Mat4): Mat4;
+/**
+ * Translate a matrix.
+ *
+ * @param {Mat4} m the matrix to translate
+ * @param {number} x How much to translate in the x direction.
+ * @param {number} y How much to translate in the y direction.
+ * @param {number} z How much to translate in the z direction.
+ * @param {Mat4} [out] the receiving matrix
+ * @return {Mat4} out
+ */
+declare function translate(m: Mat4, x: number, y: number, z: number, out?: Mat4): Mat4;
+/**
+ * @param {number} x x translation.
+ * @param {number} y y translation.
+ * @param {number} z z translation.
+ * @param {Mat4} [out] optional matrix to store result
+ * @return {Mat4} out
+ */
+declare function translation(x: number, y: number, z: number, out?: Mat4): Mat4;
+type Mat4 = Array<number>;
+
+/**
+ * @param {WebGLRenderingContext} gl Rendering Context.
+ * @param {string} fragmentSource Fragment shader source.
+ * @param {string} vertexSource Vertex shader source.
+ * @return {WebGLProgram} [progam] The program.
+ */
+declare function createProgram(gl: WebGLRenderingContext, fragmentSource: string, vertexSource: string): WebGLProgram;
+/** @typedef {import("../transform.js").Transform} Matrix */
+/**
+ * Canvas-like operations implemented in webgl.
+ */
+declare class Canvas {
+    /**
+     * @param {WebGLRenderingContext} gl Context to render in.
+     */
+    constructor(gl: WebGLRenderingContext);
+    /**
+     * @private
+     * @type {WebGLRenderingContext}
+     */
+    private gl_;
+    /**
+     * @private
+     * @type {WebGLProgram}
+     */
+    private program_;
+    positionLocation: number;
+    texcoordLocation: number;
+    matrixLocation: WebGLUniformLocation | null;
+    textureMatrixLocation: WebGLUniformLocation | null;
+    textureLocation: WebGLUniformLocation | null;
+    positionBuffer: WebGLBuffer;
+    positions: number[];
+    texcoordBuffer: WebGLBuffer;
+    texcoords: number[];
+    /**
+     * 2dContext drawImage call implemented in webgl.
+     * Unlike images, textures do not have a width and height associated
+     * with them so we'll pass in the width and height of the texture.
+     *
+     * @param {WebGLTexture} tex Image to draw.
+     * @param {number} texWidth Image width.
+     * @param {number} texHeight Image height.
+     * @param {number} srcX Top-left x-point to read src image.
+     * @param {number} srcY Top-left y-point to read src image.
+     * @param {number} [srcWidth] Width of source to read.
+     * @param {number} [srcHeight] Height of source to read.
+     * @param {number} [dstX] Top-left x-point of destination.
+     * @param {number} [dstY] Top-left y-point of destination.
+     * @param {number} [dstWidth] Width of written image in destination.
+     * @param {number} [dstHeight] Height of written image in destination.
+     * @param {number} [width] Width of canvas.
+     * @param {number} [height] Height of canvas.
+     */
+    drawImage(tex: WebGLTexture, texWidth: number, texHeight: number, srcX: number, srcY: number, srcWidth?: number, srcHeight?: number, dstX?: number, dstY?: number, dstWidth?: number, dstHeight?: number, width?: number, height?: number): void;
+}
 
 type Options = {
     /**
@@ -42153,7 +43166,7 @@ declare class WebGLPostProcessingPass {
      * @param {function(WebGLRenderingContext, import("../Map.js").FrameState):void} [preCompose] Called before composing.
      * @param {function(WebGLRenderingContext, import("../Map.js").FrameState):void} [postCompose] Called before composing.
      */
-    apply(frameState: FrameState, nextPass?: WebGLPostProcessingPass | undefined, preCompose?: ((arg0: WebGLRenderingContext, arg1: FrameState) => void) | undefined, postCompose?: ((arg0: WebGLRenderingContext, arg1: FrameState) => void) | undefined): void;
+    apply(frameState: FrameState, nextPass?: WebGLPostProcessingPass, preCompose?: (arg0: WebGLRenderingContext, arg1: FrameState) => void, postCompose?: (arg0: WebGLRenderingContext, arg1: FrameState) => void): void;
     /**
      * @return {WebGLFramebuffer} Frame buffer
      */
@@ -42178,7 +43191,7 @@ declare class WebGLPostProcessingPass {
  * @param {number} [expectedType] Expected final type (can be several types combined)
  * @return {string} GLSL-compatible output
  */
-declare function expressionToGlsl(compilationContext: CompilationContext, value: EncodedExpression, expectedType?: number | undefined): string;
+declare function expressionToGlsl(compilationContext: CompilationContext, value: EncodedExpression, expectedType?: number): string;
 /**
  * Packs all components of a color into a two-floats array
  * @param {import("../color.js").Color|string} color Color as array of numbers or string
@@ -42206,9 +43219,10 @@ declare function computeHash(input: any | string): string;
  * {@link module:ol/renderer/webgl/PointsLayer~WebGLPointsLayerRenderer}.
  *
  * @param {import("../style/webgl.js").WebGLStyle} style Literal style.
+ * @param {import('../style/flat.js').StyleVariables} variables Style variables.
  * @return {StyleParseResult} Result containing shader params, attributes and uniforms.
  */
-declare function parseLiteralStyle(style: WebGLStyle): StyleParseResult;
+declare function parseLiteralStyle(style: WebGLStyle, variables: StyleVariables): StyleParseResult;
 type StyleParseResult = {
     /**
      * Shader builder pre-configured according to a given style
@@ -42241,7 +43255,7 @@ type StyleParseResult = {
     export { BaseObject as Object };
     export { Observable };
     export { Overlay };
-    export { Tile };
+    export { Tile$1 as Tile };
     export { TileCache };
     export { TileQueue };
     export { TileRange };
@@ -42314,7 +43328,7 @@ type StyleParseResult = {
         export { format };
         export { getWorldsAway };
         export { rotate$1 as rotate };
-        export { scale$1 as scale };
+        export { scale$2 as scale };
         export { squaredDistance$1 as squaredDistance };
         export { squaredDistanceToSegment };
         export { toStringHDMS };
@@ -42406,6 +43420,8 @@ type StyleParseResult = {
             export { typeName };
         }
         namespace gpu {
+            export { FEATURE_ID_PROPERTY_NAME };
+            export { GEOMETRY_TYPE_PROPERTY_NAME };
             export { PALETTE_TEXTURE_ARRAY };
             export { arrayToGlsl };
             export { buildExpression };
@@ -42685,9 +43701,9 @@ type StyleParseResult = {
             }
             namespace transform {
                 export { rotate };
-                export { scale };
+                export { scale$1 as scale };
                 export { transform2D };
-                export { translate };
+                export { translate$1 as translate };
             }
         }
     }
@@ -42747,6 +43763,7 @@ type StyleParseResult = {
         export { VectorTileLayer as VectorTile };
         export { WebGLPointsLayer as WebGLPoints };
         export { WebGLTileLayer as WebGLTile };
+        export { WebGLVectorLayer as WebGLVector };
     }
     export namespace loadingstrategy {
         export { all };
@@ -42766,6 +43783,7 @@ type StyleParseResult = {
         export { toDegrees };
         export { toFixed };
         export { toRadians };
+        export { wrap };
     }
     export namespace net {
         export { ClientError };
@@ -42855,6 +43873,11 @@ type StyleParseResult = {
             export { remove };
         }
         export { useGeographic };
+        export namespace utm {
+            export { makeProjection };
+            export { makeTransforms };
+            export { zoneFromCode };
+        }
     }
     export namespace render {
         export { RenderBox as Box };
@@ -42973,7 +43996,13 @@ type StyleParseResult = {
         export namespace common {
             export { ERROR_THRESHOLD };
         }
-        export { render };
+        export namespace glreproj {
+            export { canvasGLPool };
+            export { createCanvasContextWebGL };
+            export { releaseGLCanvas };
+            export { render };
+        }
+        export { render$1 as render };
     }
     export namespace resolution {
         export { fromResolutionLike };
@@ -42992,7 +44021,7 @@ type StyleParseResult = {
     export namespace size {
         export { buffer$1 as buffer };
         export { hasArea };
-        export { scale$3 as scale };
+        export { scale$4 as scale };
         export { toSize };
     }
     export namespace source {
@@ -43014,6 +44043,7 @@ type StyleParseResult = {
         export { OGCVectorTile };
         export { OSM };
         export { RasterSource as Raster };
+        export { SentinelHub };
         export { Source };
         export { StadiaMaps };
         export { TileSource as Tile };
@@ -43134,11 +44164,11 @@ type StyleParseResult = {
         export { multiply };
         export { reset };
         export { rotate$2 as rotate };
-        export { scale$2 as scale };
+        export { scale$3 as scale };
         export { set };
         export { setFromArray };
         export { toString$1 as toString };
-        export { translate$1 as translate };
+        export { translate$2 as translate };
     }
     export namespace uri {
         export { appendParams };
@@ -43155,12 +44185,20 @@ type StyleParseResult = {
         namespace mat4 {
             export { create };
             export { fromTransform };
+            export { orthographic };
+            export { scale };
+            export { translate };
+            export { translation };
         }
     }
     export namespace webgl {
         export { ARRAY_BUFFER };
         export { BaseTileRepresentation };
         export { WebGLArrayBuffer as Buffer };
+        export namespace Canvas {
+            export { Canvas };
+            export { createProgram };
+        }
         export { DYNAMIC_DRAW };
         export { ELEMENT_ARRAY_BUFFER };
         export { FLOAT };
@@ -43216,8 +44254,6 @@ type StyleParseResult = {
         export { registerXMLSerializer };
         export { serialize };
     }
-    export { VERSION };
-    export { getUid };
 }
 //# sourceMappingURL=ol.d.ts.map
 declare var map: ol.Map;

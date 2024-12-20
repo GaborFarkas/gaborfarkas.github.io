@@ -11,7 +11,6 @@ import { PageUrlMapping } from '../../../models/page-url-mapping.model';
  */
 @Component({
     selector: 'nav.navbar',
-    standalone: true,
     imports: [NavDropdownComponent, FontAwesomeModule, CommonModule],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.css'

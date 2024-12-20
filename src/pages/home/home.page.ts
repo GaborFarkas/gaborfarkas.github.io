@@ -16,7 +16,6 @@ import { PageUrlMapping, StoryUrlMapping } from '@/models/page-url-mapping.model
  */
 @Component({
     selector: 'home-page',
-    standalone: true,
     templateUrl: './home.page.html',
     imports: [CommonModule, CarouselComponent, HeroSceneComponent, HeroSectionComponent],
     styleUrl: './home.page.css'

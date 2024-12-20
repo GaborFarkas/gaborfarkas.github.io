@@ -10,7 +10,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
  */
 @Component({
     selector: 'div.col-decorated',
-    standalone: true,
     imports: [CommonModule, ReferenceComponent, RangePipe, FontAwesomeModule],
     templateUrl: './decorated-column.component.html',
     styleUrl: './decorated-column.component.css'

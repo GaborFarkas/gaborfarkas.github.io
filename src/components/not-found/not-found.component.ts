@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
  */
 @Component({
     selector: 'not-found',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './not-found.component.html'
 })

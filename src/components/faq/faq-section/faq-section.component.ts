@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
  */
 @Component({
     selector: 'div.faq-section',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './faq-section.component.html',
     styleUrl: './faq-section.component.css'

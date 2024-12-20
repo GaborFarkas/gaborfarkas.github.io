@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
  */
 @Component({
     selector: 'div.typewriter',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './typewriter.component.html'
 })

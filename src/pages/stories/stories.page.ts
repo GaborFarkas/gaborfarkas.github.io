@@ -11,7 +11,6 @@ import { CardComponent } from '@/components/card/card.component';
  */
 @Component({
     selector: 'stories-page',
-    standalone: true,
     imports: [CardComponent],
     providers: [StoryService, FileService],
     templateUrl: './stories.page.html',

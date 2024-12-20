@@ -9,7 +9,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
  */
 @Component({
     selector: 'div.hero-section',
-    standalone: true,
     imports: [CommonModule, ReferenceComponent, FontAwesomeModule],
     templateUrl: './hero-section.component.html',
     styleUrl: './hero-section.component.css'

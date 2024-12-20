@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
  */
 @Component({
     selector: 'nav-dropdown',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './nav-dropdown.component.html',
     styleUrl: './nav-dropdown.component.css'

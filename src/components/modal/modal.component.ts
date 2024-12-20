@@ -10,7 +10,6 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
  */
 @Component({
     selector: 'dialog.modal',
-    standalone: true,
     templateUrl: './modal.component.html',
     host: {
         class: 'w-full lg:w-4/5 h-full lg:h-4/5 outline-none'

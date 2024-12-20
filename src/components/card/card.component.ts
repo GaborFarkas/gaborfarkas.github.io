@@ -6,7 +6,6 @@ import { Component, HostBinding, Input } from '@angular/core';
  */
 @Component({
     selector: 'div.card',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './card.component.html',
     styleUrl: './card.component.css'

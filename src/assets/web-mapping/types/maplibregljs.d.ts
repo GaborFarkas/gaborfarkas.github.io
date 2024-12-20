@@ -2221,7 +2221,10 @@ interface GeoJsonObject {
 /**
  * Union of GeoJSON objects.
  */
-type GeoJSON$1 = Geometry | Feature | FeatureCollection;
+type GeoJSON$1<G extends Geometry | null = Geometry, P = GeoJsonProperties> =
+    | G
+    | Feature<G, P>
+    | FeatureCollection<G, P>;
 
 /**
  * Geometry object.

@@ -20,7 +20,6 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
  */
 @Component({
     selector: 'feature-matrix-page',
-    standalone: true,
     templateUrl: './feature-matrix.page.html',
     styleUrl: './feature-matrix.page.css',
     imports: [CommonModule, FontAwesomeModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, OpenLayersMapComponent, MaplibreMapComponent, CesiumMapComponent],
