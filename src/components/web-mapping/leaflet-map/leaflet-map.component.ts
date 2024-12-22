@@ -3,6 +3,8 @@ import * as L from 'leaflet';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 
+type LeafletExampleFunc = (this: L.Map, lib: typeof L, map: L.Map) => void;
+
 /**
  * Leaflet web map component.
  */
@@ -64,7 +66,7 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
 
     public playExample(feature: string): void {
         import('@/examples/leaflet').then(module => {
-            const examples = module.default;
+            const examples = module.default as unknown as Record<FeatureSupportFeature, LeafletExampleFunc>;
             if (examples[feature as FeatureSupportFeature]) {
                 this.play(examples[feature as FeatureSupportFeature]);
             }
@@ -75,7 +77,7 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
      * Executes a user function in the context of the Leaflet map. Passes the Leaflet library and the map object as arguments.
      * @param func The user function.
      */
-    public play(func: (this: L.Map, lib: typeof L, map: L.Map) => void) {
+    public play(func: LeafletExampleFunc) {
         if (this.map) {
             func.bind(this.map)(L, this.map);
         }

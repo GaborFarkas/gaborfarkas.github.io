@@ -3,6 +3,8 @@ import { OpenLayers } from '@/utils/openlayers';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 
+type OpenLayersExampleFunc = (this: OpenLayers.Map, lib: typeof OpenLayers, map: OpenLayers.Map) => void;
+
 /**
  * OpenLayers web map component.
  */
@@ -61,7 +63,7 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
 
     public playExample(feature: string): void {
         import('@/examples/openlayers').then(module => {
-            const examples = module.default;
+            const examples = module.default as unknown as Record<FeatureSupportFeature, OpenLayersExampleFunc>;
             if (examples[feature as FeatureSupportFeature]) {
                 this.play(examples[feature as FeatureSupportFeature]);
             }
@@ -72,7 +74,7 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
      * Executes a user function in the context of the OpenLayers map. Passes the OpenLayers library and the map object as arguments.
      * @param func The user function.
      */
-    public play(func: (this: OpenLayers.Map, lib: typeof OpenLayers, map: OpenLayers.Map) => void) {
+    public play(func: OpenLayersExampleFunc) {
         if (this.map) {
             func.bind(this.map)(OpenLayers, this.map);
         }

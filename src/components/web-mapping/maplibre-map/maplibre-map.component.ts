@@ -3,6 +3,8 @@ import * as Maplibre from 'maplibre-gl';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 
+type MaplibreExampleFunc = (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void;
+
 /**
  * MapLibre GL JS web map component.
  */
@@ -57,7 +59,7 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
 
     public playExample(feature: string): void {
         import('@/examples/maplibregljs').then(module => {
-            const examples = module.default;
+            const examples = module.default as unknown as Record<FeatureSupportFeature, MaplibreExampleFunc>;
             if (examples[feature as FeatureSupportFeature]) {
                 this.play(examples[feature as FeatureSupportFeature]);
             }
@@ -68,7 +70,7 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
      * Executes a user function in the context of the Maplibre GL JS map. Passes the Maplibre GL JS library and the map object as arguments.
      * @param func The user function.
      */
-    public play(func: (this: Maplibre.Map, lib: typeof Maplibre, map: Maplibre.Map) => void) {
+    public play(func: MaplibreExampleFunc) {
         if (this.map) {
             func.bind(this.map)(Maplibre, this.map);
         }

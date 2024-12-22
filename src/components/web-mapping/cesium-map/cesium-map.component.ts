@@ -3,6 +3,8 @@ import * as Cesium from 'cesium';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
 
+type CesiumExampleFunc = (this: Cesium.Viewer, lib: typeof Cesium, map: Cesium.Viewer) => void;
+
 /**
  * Cesium JS web map component.
  */
@@ -57,7 +59,7 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
 
     public playExample(feature: string): void {
         import('@/examples/cesiumjs').then(module => {
-            const examples = module.default;
+            const examples = module.default as unknown as Record<FeatureSupportFeature, CesiumExampleFunc>;
             if (examples[feature as FeatureSupportFeature]) {
                 this.play(examples[feature as FeatureSupportFeature]);
             }
@@ -68,7 +70,7 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
      * Executes a user function in the context of the Cesium map. Passes the Cesium library and the map object as arguments.
      * @param func The user function.
      */
-    public play(func: (this: Cesium.Viewer, lib: typeof Cesium, map: Cesium.Viewer) => void) {
+    public play(func: CesiumExampleFunc) {
         if (this.map) {
             func.bind(this.map)(Cesium, this.map);
         }
