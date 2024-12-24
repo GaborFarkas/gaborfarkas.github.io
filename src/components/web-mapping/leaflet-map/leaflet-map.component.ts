@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
 import * as L from 'leaflet';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
@@ -19,16 +19,16 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
     /**
      * The HTML element for the map canvas.
      */
-    @ViewChild('map') private mapElem?: ElementRef<HTMLDivElement>;
+    private mapElem = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     /**
      * The Leaflet map object.
      */
     private map?: L.Map;
 
-    @Input() public example?: string;
+    public example = input<string>();
 
-    @Input() public exposePlay = false;
+    public exposePlay = input(false);
 
     constructor() {
         // Update icon paths
@@ -42,25 +42,24 @@ export class LeafletMapComponent implements AfterViewInit, WebMap {
      * Loads the base map with a simple style and positions it to Pécs.
      */
     ngAfterViewInit(): void {
-        if (this.mapElem?.nativeElement) {
-            // Load the small base map.
-            this.map = new L.Map(this.mapElem.nativeElement)
-                .setView([46.0756, 18.2210], 5);
+        // Load the small base map.
+        this.map = new L.Map(this.mapElem().nativeElement)
+            .setView([46.0756, 18.2210], 5);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(this.map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(this.map);
 
-            if (this.example) {
-                this.playExample(this.example);
-            }
+        const example = this.example();
+        if (example) {
+            this.playExample(example);
+        }
 
-            if (this.exposePlay) {
-                (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
-                (document as unknown as Record<string, unknown>)['playLoaded'] = true;
-                document.dispatchEvent(new Event('playLoaded'));
-            }
+        if (this.exposePlay()) {
+            (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
+            (document as unknown as Record<string, unknown>)['playLoaded'] = true;
+            document.dispatchEvent(new Event('playLoaded'));
         }
     }
 

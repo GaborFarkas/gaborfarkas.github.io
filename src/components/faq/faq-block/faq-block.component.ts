@@ -1,4 +1,4 @@
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { Component, input, signal, viewChildren } from '@angular/core';
 import { FaqSectionComponent } from '@/components/faq/faq-section/faq-section.component';
 import { FaqSectionModel } from '@/models/faq.model';
 import { CommonModule } from '@angular/common';
@@ -16,35 +16,35 @@ export class FaqBlockComponent {
     /**
      * The question prefix of the current FAQ group.
      */
-    @Input() prefix = '';
+    public prefix = input('');
 
     /**
      * The section models for this FAQ group.
      */
-    @Input() sections: FaqSectionModel[] = [];
+    public sections = input<FaqSectionModel[]>([]);
 
     /**
      * Gets or sets if any FAQ section is expanded.
      */
-    protected expanded = false;
+    protected expanded = signal(false);
 
     /**
      * Gets the component reference of all FAQ sections.
      */
-    @ViewChildren(FaqSectionComponent) private sectionComponents?: QueryList<FaqSectionComponent>;
+    private sectionComponents = viewChildren(FaqSectionComponent);
 
     /**
      * Toggles the expanded state of the block component based on the sections.
      */
     protected toggle(evtSection: FaqSectionComponent) {
-        if (this.sectionComponents) {
-            for (const section of this.sectionComponents) {
+        if (this.sectionComponents().length) {
+            for (const section of this.sectionComponents()) {
                 if (section !== evtSection) {
                     section.close();
                 }
             }
 
-            this.expanded = this.sectionComponents.some(section => section.expanded);
+            this.expanded.set(this.sectionComponents().some(section => section.expanded));
         }
     }
 }

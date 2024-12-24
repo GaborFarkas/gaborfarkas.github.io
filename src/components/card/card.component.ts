@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 
 /**
  * A general card component with 2 faces, capable of flipping with an animation.
@@ -8,25 +8,21 @@ import { Component, HostBinding, Input } from '@angular/core';
     selector: 'div.card',
     imports: [CommonModule],
     templateUrl: './card.component.html',
-    styleUrl: './card.component.css'
+    styleUrl: './card.component.css',
+    host: {
+        '[style.--item-color]': 'color()'
+    }
 })
 export class CardComponent {
     /**
      * The color class of this item.
      */
-    @Input() color = '#ffffff';
-
-    /**
-     * The host element's item color CSS variable.
-     */
-    @HostBinding('style.--item-color') protected get itemColor(): string {
-        return this.color;
-    }
+    public color = input('#ffffff');
 
     /**
      * The card is flipped.
      */
-    protected flipped = false;
+    protected flipped = signal(false);
 
     /**
      * Event count counting the number of interactions with the card in a single flip session.
@@ -42,7 +38,7 @@ export class CardComponent {
 
         // Reset the counter, mouse enters -> new session.
         this.evtCount = 0;
-        this.flipped = true;
+        this.flipped.set(true);
         // Increase the counter after a few milliseconds so every deliberate click results in a flip.
         setTimeout(function (this: CardComponent) {
             this.evtCount++;
@@ -56,7 +52,7 @@ export class CardComponent {
         // Filter out the mouseenter + click constellation to avoid flipping back instantly on the first flip.
         // As the counter is increased after 10ms, the first real click flips the card.
         if (this.evtCount > 0) {
-            this.flipped = !this.flipped;
+            this.flipped.update(value => !value);
         }
         this.evtCount++;
     }
@@ -67,7 +63,7 @@ export class CardComponent {
     protected onKeypress(evt: KeyboardEvent) {
         // Act on the default activation keys (https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role).
         if (evt.key === ' ' || evt.key === 'Enter') {
-            this.flipped = !this.flipped;
+            this.flipped.update(value => !value);
         }
     }
 }

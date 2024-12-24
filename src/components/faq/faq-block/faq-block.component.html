@@ -1,6 +1,6 @@
 <div class="header w-full flex justify-between items-center bg-primary-accent text-primary rounded-t-lg px-5 py-2">
     <h1 class="p-0">
-        <span class="prefix inline-block" [ngClass]="{'expanded': expanded}">{{prefix}}</span>
+        <span class="prefix inline-block" [ngClass]="{'expanded': expanded()}">{{prefix()}}</span>
         <span>?</span>
     </h1>
     <div class="q-decoration cabin-sketch text-6xl font-black">
@@ -9,6 +9,6 @@
         <span class="inline-block">?</span>
     </div>
 </div>
-@for(section of sections; track section) {
-<div class="faq-section" [groupPrefix]="prefix" [sectionModel]="section" (toggled)="toggle($event)"></div>
+@for(section of sections(); track section) {
+<div class="faq-section" [groupPrefix]="prefix()" [sectionModel]="section" (toggled)="toggle($event)"></div>
 }

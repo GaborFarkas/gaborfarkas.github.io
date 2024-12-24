@@ -1,4 +1,4 @@
-import { Directive, Input, TemplateRef } from "@angular/core";
+import { Directive, input, TemplateRef } from "@angular/core";
 
 /**
  * Directive for typing context variables in an ngTemplate.
@@ -17,7 +17,7 @@ export class TypedTemplateDirective<T> {
      * // In template
      * <ng-template let-title="title" let-count="count"></ng-template>
      */
-    @Input({ required: true }) public types!: T;
+    public types = input.required<T>();
 
     // the directive gets the template from Angular
     constructor(private contentTemplate: TemplateRef<T>) {

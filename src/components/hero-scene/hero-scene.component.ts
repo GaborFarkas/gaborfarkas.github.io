@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, computed, ElementRef, input, OnDestroy, OnInit, output, signal, viewChild, viewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TypewriterComponent } from '@/components/typewriter/typewriter.component';
 import { HeroScene } from '@/models/hero.model';
@@ -21,47 +21,42 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     /**
      * The hero image used in the animation.
      */
-    @Input() heroImg = '';
+    public heroImg = input('');
 
     /**
      * The scene of this animation.
      */
-    @Input() heroScene: HeroScene = HeroScene.LONGTERM;
+    public heroScene = input(HeroScene.LONGTERM);
 
     /**
      * The frequency the animation should be restarted automatically in ms.
      */
-    @Input() autoRestartInterval = 0;
+    public autoRestartInterval = input(0);
 
     /**
      * Fires an event when a hero change is requested.
      */
-    @Output() heroChanged = new EventEmitter<void>();
+    public heroChanged = output();
 
     /**
      * Gets or sets if the current hero is animating and cannot be clicked.
      */
-    protected animating = false;
+    protected animating = signal(false);
 
     /**
      * Gets the element reference of the scene's container div.
      */
-    @ViewChild('sceneContainer') sceneContainer?: ElementRef<HTMLDivElement>;
+    public sceneContainer = viewChild.required<ElementRef<HTMLDivElement>>('sceneContainer');
 
     /**
      * Gets the component reference of all typewriter animations.
      */
-    @ViewChildren(TypewriterComponent) private typewriters?: QueryList<TypewriterComponent>;
+    private typewriters = viewChildren(TypewriterComponent);
 
     /**
      * Gets the element reference of the research scene's canvas element.
      */
-    @ViewChild('wallOfFame') wallOfFame?: ElementRef<HTMLCanvasElement>;
-
-    /**
-     * Backing cache field for the companyMonths getter.
-     */
-    private companyMonths_: string[] = [];
+    private wallOfFame = viewChild<ElementRef<HTMLCanvasElement>>('wallOfFame');
 
     /**
      * Key of the animation restart interval.
@@ -71,9 +66,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     /**
      * Calculates month labels from the start of the company and returns them in an array.
      */
-    private get companyMonths(): string[] {
-        if (this.companyMonths_.length) return this.companyMonths_;
-
+    private companyMonths = computed(() => {
         const today = new Date();
         const endDate = +new Date(`${today.getFullYear()}-${today.getMonth()}-01`);
         const cursor = new Date('2018-08-01');
@@ -84,18 +77,17 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
             // Note: months are 0-indexed, and 12 sets next year automatically.
             cursor.setMonth(cursor.getMonth() + 1);
         }
-        this.companyMonths_ = monthLbls;
 
         return monthLbls;
-    }
+    });
 
     /**
      * Gets the width of the wall of fame canvas in ceiled rems.
      */
-    protected get wallOfFameWidth(): number {
-        const cols = Math.ceil(this.companyMonths.length / 3) + 1;
+    protected wallOfFameWidth = computed(() => {
+        const cols = Math.ceil(this.companyMonths().length / 3) + 1;
         return Math.ceil(cols * HeroSceneComponent.frameDims[0] + (cols - 2) * HeroSceneComponent.gap);
-    }
+    });
 
     /**
      * The frame dimensions on the wall of fame in rems.
@@ -113,11 +105,11 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     private static gap = 0.75;
 
     ngOnInit(): void {
-        if (this.autoRestartInterval) {
+        if (this.autoRestartInterval()) {
             this.restartIntervalKey_ = setInterval(function (this: HeroSceneComponent) {
                 // Use a small delay for the auto restart, as mobiles can choke on the animations.
                 this.restart(50);
-            }.bind(this), this.autoRestartInterval) as unknown as number;
+            }.bind(this), this.autoRestartInterval()) as unknown as number;
         }
     }
 
@@ -128,9 +120,10 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        if (this.wallOfFame?.nativeElement) {
+        const wallOfFrameElem = this.wallOfFame()?.nativeElement;
+        if (wallOfFrameElem) {
             // Draw wall of fame with canvas methods.
-            this.initializeWallOfFame(this.wallOfFame.nativeElement);
+            this.initializeWallOfFame(wallOfFrameElem);
         }
     }
 
@@ -138,11 +131,11 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
      * Toggles the hero image.
      */
     toggleHero() {
-        if (!this.animating) {
-            this.animating = true;
+        if (!this.animating()) {
+            this.animating.set(true);
             setTimeout(function (this: HeroSceneComponent) {
                 this.heroChanged.emit();
-                this.animating = false;
+                this.animating.set(false);
             }.bind(this), 500);
         }
     }
@@ -152,20 +145,18 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
      * @param [timeout=0] Restart delay, increase this if the browser cannot restart the CSS animations on small devices.
      */
     restart(timeout = 0) {
-        if (this.sceneContainer?.nativeElement) {
-            // Restart CSS animations
-            this.sceneContainer.nativeElement.style.display = 'none';
-            setTimeout(function (this: HeroSceneComponent) {
-                this.sceneContainer!.nativeElement.style.display = '';
+        // Restart CSS animations
+        this.sceneContainer().nativeElement.style.display = 'none';
+        setTimeout(function (this: HeroSceneComponent) {
+            this.sceneContainer().nativeElement.style.display = '';
 
-                // Restart typewriter (JS) animations
-                if (this.typewriters) {
-                    for (const typewriter of this.typewriters) {
-                        typewriter.startAnimation();
-                    }
+            // Restart typewriter (JS) animations
+            if (this.typewriters) {
+                for (const typewriter of this.typewriters()) {
+                    typewriter.startAnimation();
                 }
-            }.bind(this), timeout);
-        }
+            }
+        }.bind(this), timeout);
     }
 
     /**
@@ -197,7 +188,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
             frameImg.onload = () => {
                 const employeeImg = new Image();
                 employeeImg.onload = () => {
-                    for (const monthLbl of this.companyMonths) {
+                    for (const monthLbl of this.companyMonths()) {
                         ctx.drawImage(employeeImg, xCursor + picInset[0], yCursor + picInset[1],
                             picDimsPx[0], picDimsPx[1]);
                         ctx.drawImage(frameImg, xCursor, yCursor, frameDimsPx[0], frameDimsPx[1]);

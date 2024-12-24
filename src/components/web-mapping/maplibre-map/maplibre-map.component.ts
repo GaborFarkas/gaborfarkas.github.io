@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, viewChild } from '@angular/core';
 import * as Maplibre from 'maplibre-gl';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
@@ -17,43 +17,42 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
     /**
      * The HTML element for the map canvas.
      */
-    @ViewChild('map') private mapElem?: ElementRef<HTMLDivElement>;
+    private mapElem = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     /**
      * The Maplibre GL JS map object.
      */
     private map?: Maplibre.Map;
 
-    @Input() public example?: string;
+    public example = input<string>();
 
-    @Input() public exposePlay = false;
+    public exposePlay = input(false);
 
     /**
      * Loads the base map with a simple style and positions it to Pécs.
      */
     ngAfterViewInit(): void {
-        if (this.mapElem?.nativeElement) {
-            // Load the small base map.
-            this.map = new Maplibre.Map({
-                container: this.mapElem.nativeElement,
-                style: 'https://demotiles.maplibre.org/style.json',
-                center: { lat: 46.0756, lng: 18.2210 },
-                zoom: 5
-            });
+        // Load the small base map.
+        this.map = new Maplibre.Map({
+            container: this.mapElem().nativeElement,
+            style: 'https://demotiles.maplibre.org/style.json',
+            center: { lat: 46.0756, lng: 18.2210 },
+            zoom: 5
+        });
 
-            this.map.on('load', function(this: MaplibreMapComponent) {
-                this.map!.setSprite('https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite');
-            }.bind(this));
+        this.map.on('load', function (this: MaplibreMapComponent) {
+            this.map!.setSprite('https://demotiles.maplibre.org/styles/osm-bright-gl-style/sprite');
+        }.bind(this));
 
-            if (this.example) {
-                this.playExample(this.example);
-            }
+        const example = this.example();
+        if (example) {
+            this.playExample(example);
+        }
 
-            if (this.exposePlay) {
-                (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
-                (document as unknown as Record<string, unknown>)['playLoaded'] = true;
-                document.dispatchEvent(new Event('playLoaded'));
-            }
+        if (this.exposePlay()) {
+            (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
+            (document as unknown as Record<string, unknown>)['playLoaded'] = true;
+            document.dispatchEvent(new Event('playLoaded'));
         }
     }
 

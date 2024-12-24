@@ -1,28 +1,28 @@
 <div class="max-w-8xl m-auto pt-6 md:px-6">
     <div class="w-full pb-12">
-        @switch(type) {
-        @case(StoryType.INSIGHT) {
+        @switch(type()) {
+        @case(StoryType().INSIGHT) {
         <h1 class="text-3xl">Insights</h1>
         <p class="text-lg">These stories are inspired by various, more fascinating
             aspects of my everyday work, aiming at granting you some insight into my general mindset through anecdotes.
             In these stories, I try to keep unique cases at a minimum and focus on patterns you will most likely meet at
             some point in some form. Based on real events.</p>
         }
-        @case(StoryType.CASESTUDY) {
+        @case(StoryType().CASESTUDY) {
         <h1 class="text-3xl">Case studies</h1>
         <p class="text-lg">These stories encompass single events (e.g. a project or
             just part of it) holding significant lessons shaping my professional experience, attitude, or view. I try to
             phrase these stories to remain engaging while their main focus is to preserve and convey these lessons for
             you to take as well. Based on real events.</p>
         }
-        @case(StoryType.UNKNOWN) {
+        @case(StoryType().UNKNOWN) {
         <h1 class="text-3xl">Y̵̢̹̓͝ö̴̬́̿ǘ̴̡ ̸̧̙̈́j̸̹̱̚u̸͎̤͝͠s̵͈͛t̵͐̈́͜
             ̵͖͂͗b̷̬̅̈r̷͖̀o̷̼̽͑k̶̠̀e̷͍͌̿ ̶͕̬͆̽t̸̻̮̕h̴̦͛ĕ̸̲ ̶̺̅s̶̺̏y̷̲͛s̸̖̿̇ṯ̶̃͛e̶̱̓m̸̡͋̒</h1>
         }
         }
     </div>
     <div #storyGrid class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12 pb-12">
-        @for(story of stories; track story.slug) {
+        @for(story of stories(); track story.slug) {
         <div class="card h-96">
             <div class="w-full h-full relative" faceUp>
                 <div class="absolute w-full h-full top-0 left-0 bg-cover blur-xs"
@@ -33,7 +33,7 @@
             </div>
             <div class="w-full h-full flex flex-col items-center justify-center text-lg bg-secondary" faceDown>
                 <p class="text-center">{{story.description}}</p>
-                <a class="btn mt-6" [href]="baseUrl + '/' + story.slug">Read more</a>
+                <a class="btn mt-6" [href]="baseUrl() + '/' + story.slug">Read more</a>
             </div>
 
         </div>

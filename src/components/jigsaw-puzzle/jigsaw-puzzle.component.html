@@ -1,18 +1,18 @@
-<svg #svg class="w-full h-full" [attr.viewBox]="'0 0 ' + width * 1.3 + ' ' + height * 1.3" (mouseup)="onDragEnd()"
+<svg #svg class="w-full h-full" [attr.viewBox]="'0 0 ' + width() * 1.3 + ' ' + height() * 1.3" (mouseup)="onDragEnd()"
     (mouseleave)="onDragEnd()" aria-hidden="true" (touchend)="onDragEnd()" (touchleave)="onDragEnd()"
     (touchcancel)="onDragEnd()" stroke="#000000" stroke-opacity="0.1" focusable="false">
     <defs>
-        <pattern id="bg" patternUnits="userSpaceOnUse" [attr.width]="width" [attr.height]="height">
-            <image [attr.href]="image" [attr.width]="width" [attr.height]="height"></image>
+        <pattern id="bg" patternUnits="userSpaceOnUse" [attr.width]="width()" [attr.height]="height()">
+            <image [attr.href]="image()" [attr.width]="width()" [attr.height]="height()"></image>
         </pattern>
-        @for(piece of puzzlePieces; track piece) {
+        @for(piece of puzzlePieces(); track piece) {
         <pattern [id]="'bg-' + piece.row + '-' + piece.column" href="#bg"
-            [attr.patternTransform]="'translate(' + piece.column * puzzleWidth * -1 + ' ' + piece.row * puzzleHeight * -1 + ')'">
+            [attr.patternTransform]="'translate(' + piece.column * puzzleWidth() * -1 + ' ' + piece.row * puzzleHeight() * -1 + ')'">
         </pattern>
         }
 
     </defs>
-    @for(piece of puzzlePieces; track piece) {
+    @for(piece of puzzlePieces(); track piece) {
     <path transform-origin="center center" [ngClass]="{'cursor-move z-10': !piece.locked}"
         (mousedown)="onDragStart($event)" (touchstart)="onDragStart($event)" (mousemove)="onDragMove($event)"
         (touchmove)="onDragMove($event)" [attr.fill]="'url(#bg-' + piece.row + '-' + piece.column + ')'"></path>

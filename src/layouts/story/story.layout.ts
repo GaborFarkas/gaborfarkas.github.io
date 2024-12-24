@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { StoryModel, StoryType } from '@/models/story.model';
 import { PageUrlMapping } from '@/models/page-url-mapping.model';
@@ -20,43 +20,43 @@ export class StoryLayout {
     /**
      * Story types exposed to the template.
      */
-    protected StoryType = StoryType;
+    protected readonly StoryType = signal(StoryType);
 
     /**
      * Type of the displayed story.
      */
-    protected type: StoryType = StoryType.UNKNOWN;
+    protected type = signal(StoryType.UNKNOWN);
 
     /**
      * The displayed story's descriptor.
      */
-    protected story: StoryModel;
+    protected story: WritableSignal<StoryModel>;
 
     /**
      * The base URL fragment for the category page.
      */
-    protected baseUrl = '';
+    protected baseUrl = signal('');
 
     /**
      * The category label used in the beadcrumbs.
      */
-    protected categoryLabel = '';
+    protected categoryLabel = signal('');
 
     constructor(private router: Router,
         private storyService: StoryService
     ) {
         // Default story to notfound to avoid edge-case exceptions.
-        this.story = storyService.notFound();
+        this.story = signal(storyService.notFound());
 
         // Process the path. It should be host/category/slug, but start from the end just in case.
         const paths = this.router.url.split('/');
-        this.baseUrl = paths[paths.length - 2];
+        this.baseUrl.set(paths[paths.length - 2]);
         const slug = paths[paths.length - 1];
 
-        if (this.baseUrl === PageUrlMapping.INSIGHTS) {
+        if (this.baseUrl() === PageUrlMapping.INSIGHTS) {
             // No need to await, we can call this from the ctor.
             this.fetchStoryAsync(StoryType.INSIGHT, slug);
-            this.categoryLabel = 'Insights';
+            this.categoryLabel.set('Insights');
         }
     }
 
@@ -69,9 +69,9 @@ export class StoryLayout {
         const story = await this.storyService.getStoryAsync(slug);
 
         if (story) {
-            this.story = story;
+            this.story.set(story);
             // Only set the type if there is a story, so we can handle 404 pages as UNKNOWN.
-            this.type = type;
+            this.type.set(type);
         }
     }
 }

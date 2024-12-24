@@ -4,7 +4,7 @@ import { NoPhoneComponent } from "@/components/no-phone/no-phone.component";
 import { PageUrlMapping } from "@/models/page-url-mapping.model";
 import { WebMappingLibrary } from "@/models/web-mapping/web-mapping-library";
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { VERSION as OpenLayersVersion } from "ol";
@@ -12,7 +12,6 @@ import { version as LeafletVersion } from "leaflet";
 import { getVersion as getMaplibreVersion } from "maplibre-gl";
 import { VERSION as CesiumVersion } from "@/utils/cesium";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { faFloppyDisk, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FileService } from "@/services/file.service";
 import { FeatureSupportItem } from "@/models/web-mapping/feature-support-item.model";
@@ -46,42 +45,42 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * Play icon for the template.
      */
-    protected faPlay: IconDefinition = faPlay;
+    protected readonly faPlay = signal(faPlay);
 
     /**
      * Save icon for the template.
      */
-    protected faFloppyDisk: IconDefinition = faFloppyDisk;
+    protected readonly faFloppyDisk = signal(faFloppyDisk);
 
     /**
      * Delete icon for the template.
      */
-    protected faTrash: IconDefinition = faTrash;
+    protected readonly faTrash = signal(faTrash);
 
     /**
      * Web mapping libraries enum for the template.
      */
-    protected WebMappingLibrary = WebMappingLibrary;
+    protected readonly WebMappingLibrary = signal(WebMappingLibrary);
 
     /**
      * Types for the open code option dropdown generator ng-template.
      */
-    protected openCodeTemplateTypes!: { items: (SourceCodeGroup & SourceCodeItem)[] };
+    protected readonly openCodeTemplateTypes!: { items: (SourceCodeGroup & SourceCodeItem)[] };
 
     /**
      * The URL of the iframe-d web map.
      */
-    protected webMapUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`${PageUrlMapping.MAP}?lib=openlayers`);
+    protected webMapUrl = signal(this.sanitizer.bypassSecurityTrustResourceUrl(`${PageUrlMapping.MAP}?lib=openlayers`));
 
     /**
      * Web mapping library versions to display in the library dropdown.
      */
-    protected libraryVersions: Record<WebMappingLibrary, string> = {
+    protected readonly libraryVersions = signal({
         [WebMappingLibrary.OPENLAYERS]: OpenLayersVersion,
         [WebMappingLibrary.LEAFLET]: LeafletVersion,
         [WebMappingLibrary.MAPLIBRE]: getMaplibreVersion(),
         [WebMappingLibrary.CESIUM]: CesiumVersion
-    };
+    });
 
     /**
      * The chosen library (backing field).
@@ -99,7 +98,7 @@ export class SandboxPage implements OnInit, OnDestroy {
     protected set library(value: WebMappingLibrary) {
         if (value !== this.library_) {
             this.library_ = value;
-            this.webMapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`${PageUrlMapping.MAP}?lib=${encodeURIComponent(this.library_).toLowerCase()}`);
+            this.webMapUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(`${PageUrlMapping.MAP}?lib=${encodeURIComponent(this.library_).toLowerCase()}`));
             this.loadTypeDefinitionsAsync();
             this.loadSnippets();
         }
@@ -108,12 +107,12 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * Extra types for the chosen web mapping library.
      */
-    protected extraTypes?: string;
+    protected extraTypes = signal<string | undefined>(undefined);
 
     /**
      * The current content of the code editor.
      */
-    protected currentCode = '';
+    protected currentCode = signal('');
 
     /**
      * Registration key of the automatic code save interval.
@@ -123,12 +122,12 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * The web map iframe
      */
-    @ViewChild('webMap') private webMap!: ElementRef<HTMLIFrameElement>;
+    private webMap = viewChild.required<ElementRef<HTMLIFrameElement>>('webMap');
 
     /**
      * The modal dialog of this page.
      */
-    @ViewChild(ModalComponent) private dialog!: ModalComponent;
+    private dialog = viewChild.required(ModalComponent);
 
     /**
      * Returns the namespace of the currently selected library for user script wrapping.
@@ -161,12 +160,12 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * The available codes for the currently loaded web mapping libraries including examples and locally saved codes.
      */
-    protected availableCodes: Record<WebMappingLibrary, GroupedSourceCodeModel | undefined> = {
+    protected availableCodes = signal<Record<WebMappingLibrary, GroupedSourceCodeModel | undefined>>({
         [WebMappingLibrary.LEAFLET]: undefined,
         [WebMappingLibrary.OPENLAYERS]: undefined,
         [WebMappingLibrary.MAPLIBRE]: undefined,
         [WebMappingLibrary.CESIUM]: undefined
-    };
+    });
 
     /**
      * The currently active snippet (backing field).
@@ -216,21 +215,21 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * The currently active snippet can be deleted.
      */
-    protected get canDelete(): boolean {
+    protected canDelete(): boolean {
         return this.activeSnippet?.type === SourceCodeType.LOCAL;
     }
 
     /**
      * The name of the newly saved snippet.
      */
-    protected saveSnippetName = '';
+    protected saveSnippetName = signal('');
 
     async ngOnInit(): Promise<void> {
         this.loadTypeDefinitionsAsync();
 
         this.saveIntervalKey = window.setInterval(function (this: SandboxPage) {
             if (this.activeSnippet?.type === SourceCodeType.LOCAL) {
-                this.persistencyService.storeWithPrefix(this.libraryName, this.activeSnippet.key, this.currentCode);
+                this.persistencyService.storeWithPrefix(this.libraryName, this.activeSnippet.key, this.currentCode());
             }
         }.bind(this), 5000);
 
@@ -249,17 +248,17 @@ export class SandboxPage implements OnInit, OnDestroy {
      */
     protected runCode() {
         const injector = function (this: SandboxPage) {
-            this.webMap.nativeElement.removeEventListener('load', injector);
-            const iframeDoc = this.webMap.nativeElement.contentWindow!.document;
+            this.webMap().nativeElement.removeEventListener('load', injector);
+            const iframeDoc = this.webMap().nativeElement.contentWindow!.document;
             const scriptElem = iframeDoc.createElement('script');
             scriptElem.type = 'text/javascript';
             //TODO: Think of something more maintainable than this debug hell of a wrapper line!
-            scriptElem.textContent = `const playExampleFn = () => {\n\tdocument.play(async function(${this.libraryNamespace}, map) {\n${this.currentCode}\n});\n}\n if (document.playLoaded) { playExampleFn(); } else { document.addEventListener('playLoaded', playExampleFn); }`;
+            scriptElem.textContent = `const playExampleFn = () => {\n\tdocument.play(async function(${this.libraryNamespace}, map) {\n${this.currentCode()}\n});\n}\n if (document.playLoaded) { playExampleFn(); } else { document.addEventListener('playLoaded', playExampleFn); }`;
             iframeDoc.head.appendChild(scriptElem);
         }.bind(this);
-        this.webMap.nativeElement.addEventListener('load', injector);
+        this.webMap().nativeElement.addEventListener('load', injector);
         // eslint-disable-next-line no-self-assign
-        this.webMap.nativeElement.src = this.webMap.nativeElement.src;
+        this.webMap().nativeElement.src = this.webMap().nativeElement.src;
     }
 
     /**
@@ -311,7 +310,7 @@ export class SandboxPage implements OnInit, OnDestroy {
         }
 
         // Get the function's body only.
-        this.currentCode = sourceArr.slice(startLine + 1, endLine).map(line => line.slice(4)).join('\n');
+        this.currentCode.set(sourceArr.slice(startLine + 1, endLine).map(line => line.slice(4)).join('\n'));
     }
 
     /**
@@ -324,15 +323,15 @@ export class SandboxPage implements OnInit, OnDestroy {
             throw new Error('Could not find snippet in storage.');
         }
 
-        this.currentCode = sourceCode;
+        this.currentCode.set(sourceCode);
     }
 
     /**
      * Loads the type definitions for the currently selected library.
      */
     private async loadTypeDefinitionsAsync() {
-        this.extraTypes = await this.fileService.getTextDocumentAsync(
-            `/assets/web-mapping/types/${this.libraryName}.d.ts`);
+        this.extraTypes.set(await this.fileService.getTextDocumentAsync(
+            `/assets/web-mapping/types/${this.libraryName}.d.ts`));
     }
 
     /**
@@ -340,7 +339,7 @@ export class SandboxPage implements OnInit, OnDestroy {
      * @param forceRebuild Forcefully rebuild the tree to synchronize with changes.
      */
     private loadSnippets(forceRebuild = false) {
-        if (forceRebuild || !this.availableCodes[this.library]) {
+        if (forceRebuild || !this.availableCodes()[this.library]) {
             const model: GroupedSourceCodeModel = {
                 children: []
             };
@@ -415,7 +414,7 @@ export class SandboxPage implements OnInit, OnDestroy {
             }
 
 
-            this.availableCodes[this.library] = model;
+            this.availableCodes()[this.library] = model;
         }
     }
 
@@ -423,8 +422,8 @@ export class SandboxPage implements OnInit, OnDestroy {
      * Opens the save dialog in a modal window.
      */
     protected openSaveDialog() {
-        this.saveSnippetName = '';
-        this.dialog.open();
+        this.saveSnippetName.set('');
+        this.dialog().open();
     }
 
     /**
@@ -435,22 +434,22 @@ export class SandboxPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.persistencyService.storeWithPrefix(this.libraryName, this.saveSnippetName, this.currentCode);
+        this.persistencyService.storeWithPrefix(this.libraryName, this.saveSnippetName(), this.currentCode());
         this.loadSnippets(true);
 
-        this.notificationService.showSuccess(`Successfully saved current code as ${this.saveSnippetName}`, 2000);
+        this.notificationService.showSuccess(`Successfully saved current code as ${this.saveSnippetName()}`, 2000);
 
         // Find snippet and make it active
-        const localSnippet = (this.availableCodes[this.library]?.children.find(
+        const localSnippet = (this.availableCodes()[this.library]?.children.find(
             child => child.name === 'Saved snippets') as SourceCodeGroup)?.children.find(child =>
-                child.name === this.saveSnippetName) as SourceCodeItem | undefined;
+                child.name === this.saveSnippetName()) as SourceCodeItem | undefined;
         if (localSnippet) {
             this.activeSnippet = localSnippet;
         } else {
             this.notificationService.showError('Could not load newly saved snippet. Please refresh the window.', 5000);
         }
 
-        this.dialog.close();
+        this.dialog().close();
         return;
     }
 
@@ -458,8 +457,8 @@ export class SandboxPage implements OnInit, OnDestroy {
      * Cancels the current saving process and closes the save modal window.
      */
     protected cancelSave() {
-        this.saveSnippetName = '';
-        this.dialog.close();
+        this.saveSnippetName.set('');
+        this.dialog().close();
     }
 
     /**

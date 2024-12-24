@@ -1,24 +1,24 @@
-<div class="decoration left hidden md:block md:w-1/6 relative" [style]="{'top': decorationRows * 0.9 / 2 + 'rem'}">
+<div class="decoration left hidden md:block md:w-1/6 relative" [style]="{'top': decorationRows() * 0.9 / 2 + 'rem'}">
     <ng-container *ngTemplateOutlet="decorationItems; context: {side: 'left'}"></ng-container>
 </div>
 <div #content class="w-full md:w-4/6 h-fit" (resize)="onResize()">
     <ng-content></ng-content>
 </div>
-<div class="decoration right hidden md:block md:w-1/6 relative" [style]="{'top': decorationRows * 0.9 / 2 + 'rem'}">
+<div class="decoration right hidden md:block md:w-1/6 relative" [style]="{'top': decorationRows() * 0.9 / 2 + 'rem'}">
     <ng-container *ngTemplateOutlet="decorationItems; context: {side: 'right'}"></ng-container>
 </div>
 
 <ng-template #decorationItems let-side="side">
-    @for(_ of decorationRows | range; track $index; let rowIdx = $index) {
+    @for(_ of decorationRows() | range; track $index; let rowIdx = $index) {
     <div class="relative flex" [style]="{'--index': rowIdx}">
-        <ng-container *ngFor="let _ of decorationColumns | range; index as elemIdx">
-            <p *ngIf="elemIdx === decorationColumns - 1 && (side === 'left' ? leftColRefs : rightColRefs)[rowIdx]; else hexagon"
-                class="reference w-fit h-fit" [url]="(side === 'left' ? leftColRefs : rightColRefs)[rowIdx].url"
-                [flyoutText]="(side === 'left' ? leftColRefs : rightColRefs)[rowIdx].text"
-                [flyoutOrientation]="side === 'left' ? Orientation.RIGHT : Orientation.LEFT"
+        <ng-container *ngFor="let _ of decorationColumns() | range; index as elemIdx">
+            <p *ngIf="elemIdx === decorationColumns() - 1 && (side === 'left' ? leftColRefs() : rightColRefs())[rowIdx]; else hexagon"
+                class="reference w-fit h-fit" [url]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].url"
+                [flyoutText]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].text"
+                [flyoutOrientation]="side === 'left' ? Orientation().RIGHT : Orientation().LEFT"
                 [flyoutFlip]="side === 'right'">
-                <fa-icon *ngIf="(side === 'left' ? leftColRefs : rightColRefs)[rowIdx].icon" size="xl"
-                    class="text-primary" [icon]="(side === 'left' ? leftColRefs : rightColRefs)[rowIdx].icon!"
+                <fa-icon *ngIf="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].icon" size="xl"
+                    class="text-primary" [icon]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].icon!"
                     referenceIcon></fa-icon>
             </p>
         </ng-container>

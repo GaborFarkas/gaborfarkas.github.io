@@ -1,6 +1,6 @@
 import { TokensProviderCache } from "@/monaco-vscode-textmate";
 import { MonacoLoaderService } from "@/services/monaco-loader.service";
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, viewChild } from "@angular/core";
 import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";
 
 declare const monaco: typeof monacoType;
@@ -45,6 +45,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
      * The code editor's current value (backing field).
      */
     private value_ = '';
+
     /**
      * The code editor's current value.
      */
@@ -54,9 +55,14 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
             this.editor?.setValue(this.value_);
         }
     }
+
+    /**
+     * The code editor's current value.
+     */
     public get value(): string {
         return this.value_;
     }
+
     /**
      * Fires when the code editor current value has been changed.
      */
@@ -85,7 +91,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
     /**
      * The editor container's DOM reference.
      */
-    @ViewChild('editorContainer') private editorContainer!: ElementRef<HTMLDivElement>;
+    private editorContainer = viewChild.required<ElementRef<HTMLDivElement>>('editorContainer');
 
     constructor(private loaderService: MonacoLoaderService) { }
 
@@ -109,7 +115,7 @@ export class CodeEditorComponent implements AfterViewInit, OnDestroy {
 
 
                 // Instantiate editor
-                this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
+                this.editor = monaco.editor.create(this.editorContainer().nativeElement, {
                     language: 'javascript',
                     theme: 'light-modern',
                     automaticLayout: true,

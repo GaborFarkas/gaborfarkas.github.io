@@ -4,9 +4,9 @@
             company. You have the fundamental building blocks in place. You have working management, a network of
             possible partners, and sources for funding. What next?</p>
         <div class="jigsaw-container relative flex justify-center items-center">
-            <img class="h-96" src="/assets/longterm-puzzle-bg.svg" [ngClass]="{'invisible': !puzzleComplete}" alt="Puzzle completed">
+            <img class="h-96" src="/assets/longterm-puzzle-bg.svg" [ngClass]="{'invisible': !puzzleComplete()}" alt="Puzzle completed">
             <div class="absolute h-full w-full top-0 left-0 flex justify-center items-center"
-                [ngClass]="{'opacity-0': puzzleComplete}">
+                [ngClass]="{'opacity-0': puzzleComplete()}">
                 <div class="jigsaw h-full" image="/assets/longterm-puzzle-active.svg" [columns]="4" [rows]="3"
                     [fixedPieces]="[4, 8, 9]" (completed)="completePuzzle()"></div>
             </div>
@@ -24,7 +24,7 @@
     <section>
         <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-12">How it works?</h1>
         <div class="timeline mb-12">
-            <div class="timeline-item w-full lg:w-1/2" [icon]="faLightbulb" itemTitle="Getting up to speed">
+            <div class="timeline-item w-full lg:w-1/2" [icon]="faLightbulb()" itemTitle="Getting up to speed">
                 <p prompt>We have some initial meetings, where you introduce me to your goals, current plans, your
                     overall
                     situation.</p>
@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-            <div class="timeline-item w-full lg:w-1/2" [icon]="faFileLines" itemTitle="Planning the system">
+            <div class="timeline-item w-full lg:w-1/2" [icon]="faFileLines()" itemTitle="Planning the system">
                 <p prompt>We make every major decision on the stack, and I create all the initial system overview plans.
                 </p>
                 <div text>
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <div class="timeline-item w-full lg:w-1/2" [icon]="faCode" itemTitle="Backbone development">
+            <div class="timeline-item w-full lg:w-1/2" [icon]="faCode()" itemTitle="Backbone development">
                 <p prompt>I develop the system-critical custom components.</p>
                 <div text>
                     <p class="pb-4">Reinventing the wheel is bad for business. During the planning phase, we specify
@@ -87,7 +87,7 @@
                 </div>
             </div>
 
-            <div class="timeline-item w-full lg:w-1/2" [icon]="faSitemap" itemTitle="Setting up the infrastructure">
+            <div class="timeline-item w-full lg:w-1/2" [icon]="faSitemap()" itemTitle="Setting up the infrastructure">
                 <p prompt>We set up every cloud service needed to run the system and support future development.</p>
                 <div text>
                     <p class="pb-4">Stable and scalable production systems are not the privilege of large multinational
@@ -109,7 +109,7 @@
                 </div>
             </div>
 
-            <div class="timeline-item w-full lg:w-1/2" [icon]="faMagnifyingGlassChart" itemTitle="Spinoff">
+            <div class="timeline-item w-full lg:w-1/2" [icon]="faMagnifyingGlassChart()" itemTitle="Spinoff">
                 <p prompt>I closely monitor your progress but give you gradually more space to make technical decisions
                     without my advice.</p>
                 <div text>
@@ -137,7 +137,7 @@
     <section>
         <h1 class="px-6 md:px-0 lg:text-3xl lg:pb-6">Accountability</h1>
         <div class="w-full bg-primary-accent rounded-lg flex justify-center mb-4">
-            <fa-icon class="text-primary py-4" [icon]="faHandshake" size="2xl"></fa-icon>
+            <fa-icon class="text-primary py-4" [icon]="faHandshake()" size="2xl"></fa-icon>
         </div>
         <p class="md:text-lg pb-6 px-6 md:px-0">It is not only normal but logical to have some questions about the legal
             and
@@ -149,7 +149,7 @@
             start with small-scale projects or counsels to confirm if we can work together for years.</p>
 
         <div class="w-full bg-primary-accent rounded-lg flex justify-center mb-4">
-            <fa-icon class="text-primary py-4" [icon]="faFileContract" size="2xl"></fa-icon>
+            <fa-icon class="text-primary py-4" [icon]="faFileContract()" size="2xl"></fa-icon>
         </div>
         <p class="md:text-lg pb-6 px-6 md:px-0">Before getting into the planning phase, we sign the necessary contracts.
             As
@@ -159,7 +159,7 @@
             phrase certificates of completion or other documentation you or your company needs.</p>
 
         <div class="w-full bg-primary-accent rounded-lg flex justify-center mb-4">
-            <fa-icon class="text-primary py-4" [icon]="faMoneyBillWave" size="2xl"></fa-icon>
+            <fa-icon class="text-primary py-4" [icon]="faMoneyBillWave()" size="2xl"></fa-icon>
         </div>
         <p class="md:text-lg pb-12 px-6 md:px-0">My long-term partners get my best rates. However, they are hourly. In
             long-term partnerships, I invoice monthly according to the hours dedicated to you in the previous month. You

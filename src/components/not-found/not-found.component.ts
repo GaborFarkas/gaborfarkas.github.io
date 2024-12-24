@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { randomizer } from '@/utils/array';
 import { AttributedPicture } from '@/models/attributed-picture.model';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,7 @@ export class NotFoundComponent {
     /**
      * The description text.
      */
-    @Input() text = '';
+    public text = input('');
 
     /**
      * Possible notfound images to choose one from randomly.
@@ -36,10 +36,8 @@ export class NotFoundComponent {
     /**
      * The notfound image.
      */
-    protected image: AttributedPicture;
-
-    constructor() {
+    protected image = computed(() => {
         const random = randomizer(this.images);
-        this.image = random.next().value!;
-    }
+        return random.next().value!;
+    });
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
 import { OpenLayers } from '@/utils/openlayers';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
@@ -19,45 +19,44 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
     /**
      * The HTML element for the map canvas.
      */
-    @ViewChild('map') private mapElem?: ElementRef<HTMLDivElement>;
+    private mapElem = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     /**
      * The OpenLayers map object.
      */
     private map?: OpenLayers.Map;
 
-    @Input() public example?: string;
+    public example = input<string>();
 
-    @Input() public exposePlay = false;
+    public exposePlay = input(false);
 
     /**
      * Loads the base map with a simple style and positions it to Pécs.
      */
     ngAfterViewInit(): void {
-        if (this.mapElem?.nativeElement) {
-            // Load the small base map.
-            this.map = new OpenLayers.Map({
-                target: this.mapElem.nativeElement,
-                view: new OpenLayers.View({
-                    center: OpenLayers.proj.fromLonLat([18.2210, 46.0756]),
-                    zoom: 5
-                }),
-                layers: [
-                    new OpenLayers.layer.Tile({
-                        source: new OpenLayers.source.OSM()
-                    })
-                ]
-            });
+        // Load the small base map.
+        this.map = new OpenLayers.Map({
+            target: this.mapElem().nativeElement,
+            view: new OpenLayers.View({
+                center: OpenLayers.proj.fromLonLat([18.2210, 46.0756]),
+                zoom: 5
+            }),
+            layers: [
+                new OpenLayers.layer.Tile({
+                    source: new OpenLayers.source.OSM()
+                })
+            ]
+        });
 
-            if (this.example) {
-                this.playExample(this.example);
-            }
+        const example = this.example();
+        if (example) {
+            this.playExample(example);
+        }
 
-            if (this.exposePlay) {
-                (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
-                (document as unknown as Record<string, unknown>)['playLoaded'] = true;
-                document.dispatchEvent(new Event('playLoaded'));
-            }
+        if (this.exposePlay()) {
+            (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
+            (document as unknown as Record<string, unknown>)['playLoaded'] = true;
+            document.dispatchEvent(new Event('playLoaded'));
         }
     }
 

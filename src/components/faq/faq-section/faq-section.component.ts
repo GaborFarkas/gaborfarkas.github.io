@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FaqSectionModel } from '@/models/faq.model';
 import { CommonModule } from '@angular/common';
 
@@ -15,17 +15,17 @@ export class FaqSectionComponent {
     /**
      * The question prefix of the current FAQ group.
      */
-    @Input() groupPrefix = '';
+    public groupPrefix = input('');
 
     /**
      * The descriptor of the current FAQ section.
      */
-    @Input() sectionModel!: FaqSectionModel;
+    public sectionModel = input<FaqSectionModel>();
 
     /**
      * Fired when the FAQ section is toggled with the current instance.
      */
-    @Output() toggled = new EventEmitter<FaqSectionComponent>();
+    public toggled = output<FaqSectionComponent>();
 
     /**
      * Gets or sets if the FAQ section is expanded. Backing field.

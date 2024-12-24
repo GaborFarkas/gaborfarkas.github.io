@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { NavDropdownItem } from '@/models/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
 
@@ -12,32 +12,25 @@ import { CommonModule } from '@angular/common';
     templateUrl: './nav-dropdown.component.html',
     styleUrl: './nav-dropdown.component.css'
 })
-export class NavDropdownComponent implements AfterViewInit {
+export class NavDropdownComponent {
     /**
      * Label of the dropdown menu.
      */
-    @Input() label: string | undefined = undefined;
+    public label = input();
 
     /**
      * Dropdown content.
      */
-    @Input() items: NavDropdownItem[] = [];
-
-    /**
-     * The accessibility target element of the dropdown menu for keyboard users.
-     */
-    @ViewChild('ariaTarget') private ariaTarget?: ElementRef<HTMLDivElement>;
+    public items = input<NavDropdownItem[]>([]);
 
     /**
      * Gets or sets if the dropdown menu is expanded. Large screens only.
      */
-    protected expanded = false;
+    protected expanded = signal(false);
 
-    public ngAfterViewInit() {
-        this.ariaTarget?.nativeElement.addEventListener('keypress', function (this: NavDropdownComponent, evt: KeyboardEvent) {
-            if (evt.key === ' ') {
-                this.expanded = !this.expanded;
-            }
-        }.bind(this));
+    protected onKeyPress(evt: KeyboardEvent) {
+        if (evt.key === ' ' || evt.key === 'Enter') {
+            this.expanded.update(value => !value);
+        }
     }
 }

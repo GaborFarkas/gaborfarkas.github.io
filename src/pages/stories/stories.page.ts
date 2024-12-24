@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { StoryModel, StoryType } from '@/models/story.model';
 import { PageUrlMapping } from '@/models/page-url-mapping.model';
@@ -20,39 +20,39 @@ export class StoriesPage implements OnInit, OnDestroy {
     /**
      * Story types exposed to the template.
      */
-    protected StoryType = StoryType;
+    protected readonly StoryType = signal(StoryType);
 
     /**
      * Type of the listed stories.
      */
-    protected type: StoryType = StoryType.UNKNOWN;
+    protected type = signal(StoryType.UNKNOWN);
 
     /**
      * Returns the base URL for the current story category.
      */
-    protected get baseUrl(): string {
-        switch (this.type) {
+    protected baseUrl = computed(() => {
+        switch (this.type()) {
             case StoryType.INSIGHT:
                 return PageUrlMapping.INSIGHTS;
             default:
                 return PageUrlMapping.HOME;
         }
-    }
+    });
 
     /**
      * Gets or sets the listed stories.
      */
-    protected stories: StoryModel[] = [];
+    protected stories = signal<StoryModel[]>([]);
 
     /**
      * Gets the element reference of the grid container.
      */
-    @ViewChild('storyGrid') private storyGridElem?: ElementRef<HTMLDivElement>;
+    private storyGridElem = viewChild.required<ElementRef<HTMLDivElement>>('storyGrid');
 
     /**
      * The current page displayed. New pages are loaded when the user reaches the bottom.
      */
-    private page = 0;
+    private page = signal(0);
 
     /**
      * A lock to avoid requesting new pages when there are no more.
@@ -65,11 +65,11 @@ export class StoriesPage implements OnInit, OnDestroy {
 
     async ngOnInit() {
         if (this.router.url.endsWith(PageUrlMapping.INSIGHTS)) {
-            this.type = StoryType.INSIGHT;
+            this.type.set(StoryType.INSIGHT);
             await this.getNextPageAsync();
         }
 
-        if (this.type === StoryType.UNKNOWN) {
+        if (this.type() === StoryType.UNKNOWN) {
             // Can only reach this line on dev error. Should throw an error instead?
             this.router.navigate([PageUrlMapping.HOME]);
         }
@@ -85,15 +85,15 @@ export class StoriesPage implements OnInit, OnDestroy {
      * Fetches the next page of stories from the story service.
      */
     private async getNextPageAsync() {
-        const newStories = await this.storyService.listStoriesAsync(this.type, {
+        const newStories = await this.storyService.listStoriesAsync(this.type(), {
             orderBy: 'created',
             ascending: false,
-            skip: this.page * 10,
+            skip: this.page() * 10,
             take: 10
         });
-        this.stories = this.page === 0 ? newStories : this.stories.concat(newStories);
+        this.stories.set(this.page() === 0 ? newStories : this.stories().concat(newStories));
 
-        this.page++;
+        this.page.update(value => value++);
         if (newStories.length < 10) {
             this.noMorePages = true;
         }
@@ -104,8 +104,8 @@ export class StoriesPage implements OnInit, OnDestroy {
      * Pre-binding is required for cleaning up when the component is destroyed.
      */
     private onScroll = function (this: StoriesPage) {
-        if (!this.noMorePages && this.storyGridElem?.nativeElement &&
-            window.scrollY > this.storyGridElem.nativeElement.offsetTop + this.storyGridElem.nativeElement.clientHeight - window.innerHeight
+        if (!this.noMorePages &&
+            window.scrollY > this.storyGridElem().nativeElement.offsetTop + this.storyGridElem().nativeElement.clientHeight - window.innerHeight
         ) {
             this.getNextPageAsync();
         }

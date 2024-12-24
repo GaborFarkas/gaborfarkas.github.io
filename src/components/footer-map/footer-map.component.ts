@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, viewChild } from '@angular/core';
 import { AttributionControl, FullscreenControl, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
 import { environment } from '@/environments/environment';
 import BuildingControl from '@/utils/maplibregl/BuildingControl';
@@ -16,7 +16,7 @@ export class FooterMapComponent implements AfterViewInit {
     /**
      * The HTML element for the map canvas.
      */
-    @ViewChild('map') private mapElem?: ElementRef<HTMLDivElement>;
+    private mapElem = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     /**
      * Gets or sets if extra features are already loaded into the map.
@@ -42,56 +42,54 @@ export class FooterMapComponent implements AfterViewInit {
      * Loads the base map with a simple artistic style and positions it to Pécs.
      */
     ngAfterViewInit(): void {
-        if (this.mapElem?.nativeElement) {
-            // Load the small base map with the Stamen Watercolor layer.
-            this.map = new MaplibreMap({
-                container: this.mapElem.nativeElement,
-                style: 'https://tiles.stadiamaps.com/styles/stamen_watercolor.json',
-                center: { lat: 46.0756, lng: 18.2210 },
-                zoom: 12,
-                attributionControl: false
-            });
+        // Load the small base map with the Stamen Watercolor layer.
+        this.map = new MaplibreMap({
+            container: this.mapElem().nativeElement,
+            style: 'https://tiles.stadiamaps.com/styles/stamen_watercolor.json',
+            center: { lat: 46.0756, lng: 18.2210 },
+            zoom: 12,
+            attributionControl: false
+        });
 
-            const attribCtrl = new AttributionControl({
-                customAttribution: 'Expand the map to see some magic!',
-                compact: true
-            });
-            this.map.addControl(attribCtrl);
+        const attribCtrl = new AttributionControl({
+            customAttribution: 'Expand the map to see some magic!',
+            compact: true
+        });
+        this.map.addControl(attribCtrl);
 
-            // Add full screen control.
-            const fsControl = new FullscreenControl({ container: this.mapElem.nativeElement });
-            fsControl.on('fullscreenstart', function (this: FooterMapComponent) {
-                // Add some extra features when full screen is first toggled.
-                if (!this.extrasLoaded && !this.extrasLoading) {
-                    this.extrasLoading = true;
+        // Add full screen control.
+        const fsControl = new FullscreenControl({ container: this.mapElem().nativeElement });
+        fsControl.on('fullscreenstart', function (this: FooterMapComponent) {
+            // Add some extra features when full screen is first toggled.
+            if (!this.extrasLoaded && !this.extrasLoading) {
+                this.extrasLoading = true;
 
-                    this.map?.removeControl(attribCtrl);
-                    this.loadExtras();
+                this.map?.removeControl(attribCtrl);
+                this.loadExtras();
 
-                    this.extrasLoaded = true;
-                    this.extrasLoading = false;
+                this.extrasLoaded = true;
+                this.extrasLoading = false;
+            }
+        }.bind(this));
+
+        this.map.addControl(fsControl);
+
+        // Load the building texture on-demand as preloading makes it inaccessible.
+        //TODO: investigate, maybe a MapLibre bug, maybe I'm stupid.
+        let imgLoading = false;
+        this.map.on('styleimagemissing', async function (evt) {
+            if (evt.id === 'building-blueprint' && !imgLoading) {
+                // Use a simple bool lock to avoid requesting the same image multiple times.
+                imgLoading = true;
+                const response = await evt.target.loadImage('assets/building-texture-blueprint.png');
+                if (!evt.target.hasImage('building-blueprint')) {
+                    evt.target.addImage('building-blueprint', response.data, {
+                        pixelRatio: 2
+                    });
                 }
-            }.bind(this));
-
-            this.map.addControl(fsControl);
-
-            // Load the building texture on-demand as preloading makes it inaccessible.
-            //TODO: investigate, maybe a MapLibre bug, maybe I'm stupid.
-            let imgLoading = false;
-            this.map.on('styleimagemissing', async function (evt) {
-                if (evt.id === 'building-blueprint' && !imgLoading) {
-                    // Use a simple bool lock to avoid requesting the same image multiple times.
-                    imgLoading = true;
-                    const response = await evt.target.loadImage('assets/building-texture-blueprint.png');
-                    if (!evt.target.hasImage('building-blueprint')) {
-                        evt.target.addImage('building-blueprint', response.data, {
-                            pixelRatio: 2
-                        });
-                    }
-                    imgLoading = false;
-                }
-            });
-        }
+                imgLoading = false;
+            }
+        });
     }
 
     /**

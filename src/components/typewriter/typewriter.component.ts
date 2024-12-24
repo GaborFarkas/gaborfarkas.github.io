@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit, SimpleChanges, OnChanges, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -13,27 +13,27 @@ export class TypewriterComponent implements OnInit, OnDestroy, OnChanges {
     /**
      * The text to write. If changed, the animation starts again.
      */
-    @Input() textContent = '';
+    public textContent = input('');
 
     /**
      * The total animation duration in ms.
      */
-    @Input() duration = 0;
+    public duration = input(0);
 
     /**
      * The delay the animation should start after in ms.
      */
-    @Input() delay = 0;
+    public delay = input(0);
 
     /**
      * Sets custom class names to the dynamic text element.
      */
-    @Input() textClass = '';
+    public textClass = input('');
 
     /**
      * The current state of the output text.
      */
-    protected currentText = '';
+    protected currentText = signal('');
 
     /**
      * The array of characters to output.
@@ -83,21 +83,21 @@ export class TypewriterComponent implements OnInit, OnDestroy, OnChanges {
             this.delayKey = undefined;
         }
         this.charArr = [];
-        this.currentText = '';
+        this.currentText.set('');
 
-        if (this.textContent) {
+        if (this.textContent()) {
             this.delayKey = setTimeout(function (this: TypewriterComponent) {
                 this.delayKey = undefined;
 
-                if (this.duration > 0) {
+                if (this.duration() > 0) {
                     // Calculate frequency.
-                    const msPerChar = Math.floor(this.duration / this.textContent.length);
+                    const msPerChar = Math.floor(this.duration() / this.textContent().length);
                     // Create an array with characters to add to the current state.
-                    this.charArr = this.textContent.split('').reverse();
+                    this.charArr = this.textContent().split('').reverse();
                     this.intervalKey = setInterval(function (this: TypewriterComponent) {
                         if (this.charArr.length) {
                             // Add a new character.
-                            this.currentText += this.charArr.pop();
+                            this.currentText.update(value => value + this.charArr.pop());
                         } else {
                             // Clean up interval, we don't need it anymore.
                             clearInterval(this.intervalKey);
@@ -105,9 +105,9 @@ export class TypewriterComponent implements OnInit, OnDestroy, OnChanges {
                         }
                     }.bind(this), msPerChar) as unknown as number;
                 } else {
-                    this.currentText = this.textContent;
+                    this.currentText.set(this.textContent());
                 }
-            }.bind(this), this.delay) as unknown as number;
+            }.bind(this), this.delay()) as unknown as number;
         }
     }
 }

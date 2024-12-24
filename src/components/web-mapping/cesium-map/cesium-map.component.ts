@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
 import * as Cesium from 'cesium';
 import { WebMap } from '@/models/web-mapping/web-map.model';
 import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
@@ -19,16 +19,16 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
     /**
      * The HTML element for the map canvas.
      */
-    @ViewChild('map') private mapElem?: ElementRef<HTMLDivElement>;
+    private mapElem = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     /**
      * The Cesium map object.
      */
     private map?: Cesium.Viewer;
 
-    @Input() public example?: string;
+    public example = input<string>();
 
-    @Input() public exposePlay = false;
+    public exposePlay = input(false);
 
     constructor() {
         (window as unknown as Record<string, unknown>)['CESIUM_BASE_URL'] = '/assets/cesium/';
@@ -38,22 +38,21 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
      * Loads the base map with a simple style and positions it to Pécs.
      */
     ngAfterViewInit(): void {
-        if (this.mapElem?.nativeElement) {
-            // Load the small base map.
-            this.map = new Cesium.Viewer(this.mapElem.nativeElement);
-            this.map.camera.setView({
-                destination: Cesium.Cartesian3.fromDegrees(18.2210, 46.0756, 4000000)
-            });
+        // Load the small base map.
+        this.map = new Cesium.Viewer(this.mapElem().nativeElement);
+        this.map.camera.setView({
+            destination: Cesium.Cartesian3.fromDegrees(18.2210, 46.0756, 4000000)
+        });
 
-            if (this.example) {
-                this.playExample(this.example);
-            }
+        const example = this.example();
+        if (example) {
+            this.playExample(example);
+        }
 
-            if (this.exposePlay) {
-                (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
-                (document as unknown as Record<string, unknown>)['playLoaded'] = true;
-                document.dispatchEvent(new Event('playLoaded'));
-            }
+        if (this.exposePlay()) {
+            (document as unknown as Record<string, unknown>)['play'] = this.play.bind(this);
+            (document as unknown as Record<string, unknown>)['playLoaded'] = true;
+            document.dispatchEvent(new Event('playLoaded'));
         }
     }
 

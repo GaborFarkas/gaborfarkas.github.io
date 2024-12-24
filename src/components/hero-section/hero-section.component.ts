@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Orientation, ReferenceComponent } from '@/components/reference/reference.component';
 import { ReferenceDescriptor } from '@/models/reference.model';
@@ -17,20 +17,20 @@ export class HeroSectionComponent {
     /**
      * Flyout orientation for references.
      */
-    protected Orientation = Orientation;
+    protected readonly Orientation = signal(Orientation);
 
     /**
      * Background image URL.
      */
-    @Input() background?: string = undefined;
+    public background = input<string>();
 
     /**
      * Flip the background with the text.
      */
-    @Input() flip = false;
+    public flip = input(false);
 
     /**
      * The references of this hero section.
      */
-    @Input() references: [ReferenceDescriptor|null, ReferenceDescriptor|null, ReferenceDescriptor|null] = [null, null, null];
+    public references = input<[ReferenceDescriptor|null, ReferenceDescriptor|null, ReferenceDescriptor|null]>([null, null, null]);
 }

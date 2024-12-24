@@ -7,13 +7,13 @@
     </a>
     <span class="max-lg:hidden">Farkas Gábor e.v.</span>
 
-    <fa-icon [icon]="togglerIcon" size="xl" class="absolute right-3 vertical-center md:hidden"
+    <fa-icon [icon]="togglerIcon()" size="xl" class="absolute right-3 vertical-center md:hidden"
         (click)="toggle()"></fa-icon>
 </div>
 
 <div class="nav-container max-md:overflow-hidden md:flex md:h-full md:px-20 md:z-10"
-    [ngClass]="{ 'max-md:h-0': !expanded }">
-    @for(item of navItems; track item) {
+    [ngClass]="{ 'max-md:h-0': !expanded() }">
+    @for(item of navItems(); track item) {
     <nav-dropdown class="md:h-full md:flex items-center" [label]="item.label" [items]="item.items"></nav-dropdown>
     }
 </div>

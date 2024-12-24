@@ -5,7 +5,7 @@ import { OpenLayersMapComponent } from "@/components/web-mapping/openlayers-map/
 import { MapPageQueryParams } from "@/models/page-url-mapping.model";
 import { WebMappingLibrary } from "@/models/web-mapping/web-mapping-library";
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 
 /**
@@ -20,12 +20,12 @@ export class MapPage implements OnInit {
     /**
      * Web mapping library enum exported for the template.
      */
-    protected WebMappingLibrary = WebMappingLibrary;
+    protected readonly WebMappingLibrary = signal(WebMappingLibrary);
 
     /**
      * The library to use in the map page.
      */
-    protected library: WebMappingLibrary = WebMappingLibrary.OPENLAYERS;
+    protected library = signal(WebMappingLibrary.OPENLAYERS);
 
     constructor(private route: ActivatedRoute) { }
 
@@ -33,8 +33,8 @@ export class MapPage implements OnInit {
         this.route.queryParams.subscribe(params => {
             const lib: string | undefined = params[MapPageQueryParams.LIB];
             if (lib) {
-                this.library = Object.values(WebMappingLibrary).find(wmLib =>
-                    wmLib.toString().toLowerCase() === lib) ?? WebMappingLibrary.OPENLAYERS;
+                this.library.set(Object.values(WebMappingLibrary).find(wmLib =>
+                    wmLib.toString().toLowerCase() === lib) ?? WebMappingLibrary.OPENLAYERS);
             }
         });
     }

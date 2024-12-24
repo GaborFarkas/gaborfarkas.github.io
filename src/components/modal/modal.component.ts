@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewContainerRef } from '@angular/core';
+import { Component, input, output, signal, ViewContainerRef } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
@@ -20,12 +19,12 @@ export class ModalComponent {
     /**
      * Close icon
      */
-    protected faXmark: IconDefinition = faXmark;
+    protected readonly faXmark = signal(faXmark);
 
     /**
      * GitHub icon
      */
-    protected faGithub: IconDefinition = faGithub;
+    protected readonly faGithub = signal(faGithub);
 
     /**
      * The dialog element (host container) of the modal window.
@@ -35,17 +34,17 @@ export class ModalComponent {
     /**
      * Gets or sets the title of the modal window.
      */
-    @Input({ required: true }) public windowTitle!: string;
+    public windowTitle = input.required<string>();
 
     /**
      * Gets or sets the GitHub URL for the modal window's content, if any.
      */
-    @Input() public gitHubUrl?: string;
+    public gitHubUrl = input<string>();
 
     /**
      * Fired after closing the dialog.
      */
-    @Output() closed = new EventEmitter();
+    public closed = output();
 
     constructor(private readonly viewRef: ViewContainerRef) {
         this.dialogElem = this.viewRef.element.nativeElement;

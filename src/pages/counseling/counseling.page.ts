@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CardComponent } from '@/components/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCartShopping, faCompassDrafting, faDisplay, faFileContract, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoneyBill1Wave, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
@@ -16,28 +16,28 @@ import { faAngular, faLinux } from '@fortawesome/free-brands-svg-icons';
     templateUrl: './counseling.page.html'
 })
 export class CounselingPage implements OnInit {
-    protected faCompassDrafting = faCompassDrafting;
+    protected readonly faCompassDrafting = signal(faCompassDrafting);
 
-    protected faGlobe = faGlobe;
+    protected readonly faGlobe = signal(faGlobe);
 
-    protected faDisplay = faDisplay;
+    protected readonly faDisplay = signal(faDisplay);
 
-    protected faSitemap = faSitemap;
+    protected readonly faSitemap = signal(faSitemap);
 
-    protected faListCheck = faListCheck;
+    protected readonly faListCheck = signal(faListCheck);
 
-    protected faFileContract = faFileContract;
+    protected readonly faFileContract = signal(faFileContract);
 
-    protected faMoneyBillWave = faMoneyBill1Wave;
+    protected readonly faMoneyBillWave = signal(faMoneyBill1Wave);
 
-    protected Section = Section;
+    protected readonly Section = signal(Section);
 
     /**
      * Color codes for the 5 card items.
      */
-    protected cardColors: string[] = [];
+    protected cardColors = signal<string[]>([]);
 
-    protected references: Record<string, ReferenceDescriptor[]> = {
+    protected readonly references = signal<Record<string, ReferenceDescriptor[]>>({
         [Section.WEB]: [
             {
                 url: 'https://github.com/openlayers/openlayers/commits?author=GaborFarkas',
@@ -81,14 +81,16 @@ export class CounselingPage implements OnInit {
                 text: 'I teach this kind of Agile, not Scrum'
             }
         ]
-    }
+    });
 
     ngOnInit() {
         // Generate random card colors from a set.
         const random = randomizer(['rgb(101 163 13)', 'rgb(79 70 229)', 'rgb(8 145 178)', 'rgb(13 148 136)', 'rgb(202 138 4)']);
+        const cardColors = [];
         for (let i = 0; i < 5; ++i) {
-            this.cardColors.push(random.next().value!);
+            cardColors.push(random.next().value!);
         }
+        this.cardColors.set(cardColors);
     }
 }
 

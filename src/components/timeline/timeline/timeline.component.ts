@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ContentChildren, HostBinding, Input, QueryList } from '@angular/core';
+import { AfterContentInit, Component, contentChildren, input, signal } from '@angular/core';
 import { TimelineItemComponent } from '@/components/timeline/timeline-item/timeline-item.component';
 import { randomizer } from '@/utils/array';
 
@@ -9,34 +9,32 @@ import { randomizer } from '@/utils/array';
     selector: 'div.timeline',
     standalone: true,
     templateUrl: './timeline.component.html',
-    styleUrl: './timeline.component.css'
+    styleUrl: './timeline.component.css',
+    host: {
+        'class': 'relative'
+    }
 })
 export class TimelineComponent implements AfterContentInit {
     /**
      * Start the timeline with a right-directed element.
      */
-    @Input() startRight = false;
+    public startRight = input(false);
 
     /**
      * The colors (CSS format: hex, rgb, or rgba) used by the timeline items.
      * Every timeline item gets a random color from this list without repeating on successive items.
      */
-    @Input() colors: string[] = ['rgb(101 163 13)', 'rgb(79 70 229)', 'rgb(8 145 178)', 'rgb(13 148 136)', 'rgb(202 138 4)'];
+    public colors = input(['rgb(101 163 13)', 'rgb(79 70 229)', 'rgb(8 145 178)', 'rgb(13 148 136)', 'rgb(202 138 4)']);
 
     /**
      * The timeline items associated with this timeline component.
      */
-    @ContentChildren(TimelineItemComponent) protected items?: QueryList<TimelineItemComponent>;
-
-    /**
-     * The host element's class attribute.
-     */
-    @HostBinding('class') protected class = 'relative';
+    protected items = contentChildren(TimelineItemComponent);
 
     /**
      * The currently selected (extended) timeline item.
      */
-    protected selItem?: TimelineItemComponent;
+    protected selItem = signal<TimelineItemComponent|undefined>(undefined);
 
     /**
      * Extend an item in the timeline.
@@ -44,23 +42,24 @@ export class TimelineComponent implements AfterContentInit {
      */
     private extendItem(item: TimelineItemComponent) {
         // As extending an item breaks the design of successors, close the previously extended one.
-        if (this.selItem && this.selItem !== item) {
-            this.selItem.close();
+        const selItemComponent = this.selItem();
+        if (selItemComponent && selItemComponent !== item) {
+            selItemComponent.close();
         }
 
-        this.selItem = item;
+        this.selItem.set(item);
     }
 
     ngAfterContentInit(): void {
-        if (this.items) {
-            const colorRandomizer = randomizer(this.colors);
+        if (this.items().length) {
+            const colorRandomizer = randomizer(this.colors());
 
-            for (let i = 0; i < this.items.length; ++i) {
-                const item = this.items.get(i)!;
+            for (let i = 0; i < this.items().length; ++i) {
+                const item = this.items()[i];
 
                 // Bind timeline items to this timeline component manually.
-                item.reverse = this.startRight ? i % 2 === 0 : i % 2 !== 0;
-                item.color = colorRandomizer.next().value!;
+                item.reverse.set(this.startRight() ? i % 2 === 0 : i % 2 !== 0);
+                item.color.set(colorRandomizer.next().value!);
                 item.extend.subscribe(itemComponent => {
                     this.extendItem(itemComponent);
                 });

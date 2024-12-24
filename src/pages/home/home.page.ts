@@ -1,4 +1,4 @@
-import { Component, QueryList, ViewChildren } from '@angular/core';
+import { Component, signal, viewChildren, WritableSignal } from '@angular/core';
 import { CarouselComponent } from '@/components/carousel/carousel.component';
 import { HeroSceneComponent } from '@/components/hero-scene/hero-scene.component';
 import { Hero, HeroScene } from '@/models/hero.model';
@@ -24,27 +24,27 @@ export class HomePage {
     /**
      * Available hero scenes.
      */
-    protected HeroScene = HeroScene;
+    protected readonly HeroScene = signal(HeroScene);
 
     /**
      * The file name of the hero's image.
      */
-    protected heroImg: string;
+    protected heroImg: WritableSignal<string>;
 
     /**
      * Available hero sections.
      */
-    protected HeroSection = HeroSection;
+    protected readonly HeroSection = signal(HeroSection);
 
     /**
      * Page URLs.
      */
-    protected PageUrlMapping = PageUrlMapping;
+    protected readonly PageUrlMapping = signal(PageUrlMapping);
 
     /**
      * References for the hero sections.
      */
-    protected references: Record<string, [ReferenceDescriptor|null, ReferenceDescriptor|null, ReferenceDescriptor|null]> = {
+    protected readonly references = signal<Record<string, [ReferenceDescriptor | null, ReferenceDescriptor | null, ReferenceDescriptor | null]>>({
         [HeroSection.PLANNING]: [
             {
                 url: 'https://c4model.com/',
@@ -97,23 +97,23 @@ export class HomePage {
                 icon: faGitAlt
             }
         ]
-    }
+    });
 
     /**
      * The hero scenes inside the home page.
      */
-    @ViewChildren(HeroSceneComponent) private heroScenes?: QueryList<HeroSceneComponent>;
+    private heroScenes = viewChildren(HeroSceneComponent);
 
     constructor() {
-        this.heroImg = localStorage.getItem('hero') || Hero.MALE;
+        this.heroImg = signal(localStorage.getItem('hero') || Hero.MALE);
     }
 
     /**
      * Toggles the hero image used in the hero animations.
      */
     protected toggleHero() {
-        this.heroImg = this.heroImg === Hero.MALE ? Hero.FEMALE : Hero.MALE;
-        localStorage.setItem('hero', this.heroImg);
+        this.heroImg.update(value => value === Hero.MALE ? Hero.FEMALE : Hero.MALE);
+        localStorage.setItem('hero', this.heroImg());
     }
 
     /**
@@ -121,9 +121,9 @@ export class HomePage {
      * @param evt The carousel event object.
      */
     protected resetSlideAnimations(evt: CarouselChangeEvent) {
-        if (this.heroScenes) {
-            for (const heroScene of this.heroScenes) {
-                if (heroScene.sceneContainer && evt.slide?.contains(heroScene.sceneContainer.nativeElement)) {
+        if (this.heroScenes().length) {
+            for (const heroScene of this.heroScenes()) {
+                if (heroScene.sceneContainer() && evt.slide?.contains(heroScene.sceneContainer().nativeElement)) {
                     heroScene.restart();
                 }
             }

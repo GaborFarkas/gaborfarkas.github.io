@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, computed, input, model, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
@@ -11,68 +11,64 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
     selector: 'div.timeline-item',
     imports: [CommonModule, FontAwesomeModule],
     templateUrl: './timeline-item.component.html',
-    styleUrl: './timeline-item.component.css'
+    styleUrl: './timeline-item.component.css',
+    host: {
+        '[class]': 'class()',
+        '[style.--item-color]': 'color()'
+    }
 })
 export class TimelineItemComponent {
     /**
      * The title of this item.
      */
-    @Input({ required: true }) itemTitle!: string;
+    public itemTitle = input.required<string>();
 
     /**
      * The icon of this item.
      */
-    @Input({ required: true }) icon!: IconDefinition;
+    public icon = input.required<IconDefinition>();
 
     /**
      * Invert the direction of this timeline item (right to left).
      */
-    @Input() reverse = false;
+    public reverse = model(false);
 
     /**
      * The color class of this item.
      */
-    @Input() color = '#ffffff';
+    public color = model('#ffffff');
 
     /**
      * Fired when the current item is extended.
      */
-    @Output() extend = new EventEmitter<TimelineItemComponent>();
+    public extend = output<TimelineItemComponent>();
 
     /**
      * The host element's class attribute.
      */
-    @HostBinding('class') protected get class(): string {
-        return this.reverse ? 'justify-self-end lg:mr-24' : 'justify-self-start lg:ml-24';
-    }
-
-    /**
-     * The host element's item color CSS variable.
-     */
-    @HostBinding('style.--item-color') protected get itemColor(): string {
-        return this.color;
-    }
+    protected class = computed(() => this.reverse() ?
+        'justify-self-end lg:mr-24' : 'justify-self-start lg:ml-24');
 
     /**
      * The current item is extended.
      */
-    protected extended = false;
+    protected extended = signal(false);
 
     /**
      * Presumably unique ID used by ARIA attributes.
      */
-    protected id: string = Math.random().toString(36).replace('0.', '');
+    protected readonly id = signal(Math.random().toString(36).replace('0.', ''));
 
     protected toggle(): void {
-        if (this.extended) {
+        if (this.extended()) {
             this.close();
         } else {
-            this.extended = true;
+            this.extended.set(true);
             this.extend.emit(this);
         }
     }
 
     close(): void {
-        this.extended = false;
+        this.extended.set(false);
     }
 }

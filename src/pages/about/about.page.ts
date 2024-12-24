@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FaqBlockComponent } from '@/components/faq/faq-block/faq-block.component';
 import { FaqGroupModel } from '@/models/faq.model';
 
@@ -11,7 +11,7 @@ import { FaqGroupModel } from '@/models/faq.model';
     imports: [FaqBlockComponent]
 })
 export class AboutPage {
-    protected sectionGroups: FaqGroupModel[] = [
+    protected readonly sectionGroups = signal<FaqGroupModel[]>([
         {
             prefix: 'Why',
             sections: [
@@ -68,5 +68,5 @@ export class AboutPage {
                 }
             ]
         }
-    ];
+    ]);
 }

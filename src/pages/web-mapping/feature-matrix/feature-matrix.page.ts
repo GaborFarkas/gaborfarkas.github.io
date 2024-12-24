@@ -10,9 +10,8 @@ import { FeatureSupportScore } from '@/models/web-mapping/feature-support-score.
 import { WebMappingLibrary } from '@/models/web-mapping/web-mapping-library';
 import { FileService } from '@/services/file.service';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, OnInit, signal, viewChild, ViewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 /**
@@ -29,51 +28,51 @@ export class FeatureMatrixPage implements OnInit {
     /**
      * Question mark icon.
      */
-    protected faQuestionCircle: IconDefinition = faQuestionCircle;
+    protected readonly faQuestionCircle = signal(faQuestionCircle);
 
     /**
      * Web mapping libraries enum for the template.
      */
-    protected WebMappingLibrary = WebMappingLibrary;
+    protected readonly WebMappingLibrary = signal(WebMappingLibrary);
 
     /**
      * Feature support score enum for the template.
      */
-    protected FeatureSupportScore = FeatureSupportScore;
+    protected readonly FeatureSupportScore = signal(FeatureSupportScore);
 
     /**
      * Rows displayed in the feature support matrix.
      */
-    protected featureSupportItems: FeatureSupportItem[] = [];
+    protected featureSupportItems = signal<FeatureSupportItem[]>([]);
 
     /**
      * The modal dialog of this page.
      */
-    @ViewChild(ModalComponent) dialog!: ModalComponent;
+    private dialog = viewChild.required(ModalComponent);
 
     /**
      * The feature support item currently playing as an example.
      */
-    protected playingItem?: FeatureSupportItem;
+    protected playingItem = signal<FeatureSupportItem | undefined>(undefined);
 
     /**
      * The currently playing feature support item's library.
      */
-    protected playingLibrary?: WebMappingLibrary;
+    protected playingLibrary = signal<WebMappingLibrary | undefined>(undefined);
 
     /**
      * The GitHub URL of the currently playing example.
      */
-    protected get playingExampleUrl(): string | undefined {
-        const sourceFileName = this.playingLibrary?.replace(/ /g, '').toLowerCase();
-        if (!sourceFileName || !this.playingItem?.support?.[this.playingLibrary!].line) return undefined;
-        return `https://github.com/GaborFarkas/gaborfarkas.github.io/blob/${environment.gitRev}/src/examples/${sourceFileName}.ts#L${this.playingItem!.support![this.playingLibrary!].line}`;
-    }
+    protected playingExampleUrl = computed(() => {
+        const sourceFileName = this.playingLibrary()?.replace(/ /g, '').toLowerCase();
+        if (!sourceFileName || !this.playingItem()?.support?.[this.playingLibrary()!].line) return undefined;
+        return `https://github.com/GaborFarkas/gaborfarkas.github.io/blob/${environment.gitRev}/src/examples/${sourceFileName}.ts#L${this.playingItem()!.support![this.playingLibrary()!].line}`;
+    });
 
     constructor(private fileService: FileService) { }
 
     async ngOnInit() {
-        this.featureSupportItems = await this.fileService.getConfigAsync('feature-support.json');
+        this.featureSupportItems.set(await this.fileService.getConfigAsync('feature-support.json'));
     }
 
     /**
@@ -83,9 +82,9 @@ export class FeatureMatrixPage implements OnInit {
      */
     playExample(feature: FeatureSupportItem, library: WebMappingLibrary) {
         if (feature.support?.[library].line !== undefined) {
-            this.playingItem = feature;
-            this.playingLibrary = library;
-            this.dialog.open();
+            this.playingItem.set(feature);
+            this.playingLibrary.set(library);
+            this.dialog().open();
         }
     }
 
@@ -93,7 +92,7 @@ export class FeatureMatrixPage implements OnInit {
      * Clears the last played example.
      */
     clearExample() {
-        this.playingItem = undefined;
-        this.playingLibrary = undefined;
+        this.playingItem.set(undefined);
+        this.playingLibrary.set(undefined);
     }
 }

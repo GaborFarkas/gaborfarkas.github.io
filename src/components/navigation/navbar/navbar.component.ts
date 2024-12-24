@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { NavDropdownComponent } from '../nav-dropdown/nav-dropdown.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { IconDefinition, faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { NavDropdownGroup } from '../../../models/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
 import { PageUrlMapping } from '../../../models/page-url-mapping.model';
@@ -19,19 +19,17 @@ export class NavbarComponent {
     /**
      * Gets or sets if the navigation bar is expanded. Small screens only.
      */
-    protected expanded = false;
+    protected expanded = signal(false);
 
     /**
      * Gets the FA icon for the toggler button.
      */
-    protected get togglerIcon(): IconDefinition {
-        return this.expanded ? faXmark : faBars;
-    }
+    protected togglerIcon = computed(() => this.expanded() ? faXmark : faBars);
 
     /**
      * Gets or sets the navigation links for the website.
      */
-    protected navItems: NavDropdownGroup[] = [
+    protected readonly navItems = signal<NavDropdownGroup[]>([
         {
             label: 'Counseling',
             items: [
@@ -53,12 +51,12 @@ export class NavbarComponent {
                 { label: 'Publications', url: `/${PageUrlMapping.PUBLICATIONS}` }
             ]
         }
-    ]
+    ]);
 
     /**
      * Toggles the navigation bar. Small screens only.
      */
     protected toggle() {
-        this.expanded = !this.expanded;
+        this.expanded.update(value => !value);
     }
 }

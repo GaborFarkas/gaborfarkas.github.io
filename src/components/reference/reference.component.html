@@ -1,10 +1,10 @@
-<ng-container *ngTemplateOutlet="url ? anchor : hexagon; context: {customClass: 'anchor'}"></ng-container>
-<div *ngIf="flyoutText"
-    [class]="'pointer-events-none flyout-container absolute h-full top-0 left-0 invisible ' + flyoutOrientation"
-    [ngClass]="{'flip': flyoutFlip}">
+<ng-container *ngTemplateOutlet="url() ? anchor : hexagon; context: {customClass: 'anchor'}"></ng-container>
+<div *ngIf="flyoutText()"
+    [class]="'pointer-events-none flyout-container absolute h-full top-0 left-0 invisible ' + flyoutOrientation()"
+    [ngClass]="{'flip': flyoutFlip()}">
     <ng-container *ngTemplateOutlet="hexagon"></ng-container>
     <span
-        class="pointer-events-auto relative flex items-center flyout-text bg-primary-accent text-xs xl:text-sm overflow-hidden text-primary">{{flyoutText}}</span>
+        class="pointer-events-auto relative flex items-center flyout-text bg-primary-accent text-xs xl:text-sm overflow-hidden text-primary">{{flyoutText()}}</span>
     <ng-container *ngTemplateOutlet="hexagon; context: {customClass: 'flyout-right'}"></ng-container>
 </div>
 <div class="pointer-events-none absolute w-full h-full top-0 left-0 flex justify-center items-center">
@@ -16,7 +16,7 @@
 </ng-template>
 
 <ng-template #anchor>
-    <a [href]="url" class="anchor" [ariaLabel]="flyoutText">
+    <a [href]="url()" class="anchor" [ariaLabel]="flyoutText()">
         <ng-container *ngTemplateOutlet="hexagon"></ng-container>
     </a>
 </ng-template>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { JigsawPuzzleComponent } from '@/components/jigsaw-puzzle/jigsaw-puzzle.component';
 import { CommonModule } from '@angular/common';
 import { TimelineComponent } from '@/components/timeline/timeline/timeline.component';
@@ -18,32 +18,32 @@ import { faHandshake } from '@fortawesome/free-regular-svg-icons';
 })
 export class PartnershipPage {
     //#region Font awesome icons
-    protected faLightbulb = faLightbulb;
+    protected readonly faLightbulb = signal(faLightbulb);
 
-    protected faFileLines = faFileLines;
+    protected readonly faFileLines = signal(faFileLines);
 
-    protected faCode = faCode;
+    protected readonly faCode = signal(faCode);
 
-    protected faSitemap = faSitemap;
+    protected readonly faSitemap = signal(faSitemap);
 
-    protected faMagnifyingGlassChart = faMagnifyingGlassChart;
+    protected readonly faMagnifyingGlassChart = signal(faMagnifyingGlassChart);
 
-    protected faHandshake = faHandshake;
+    protected readonly faHandshake = signal(faHandshake);
 
-    protected faFileContract = faFileContract;
+    protected readonly faFileContract = signal(faFileContract);
 
-    protected faMoneyBillWave = faMoneyBillWaveAlt;
+    protected readonly faMoneyBillWave = signal(faMoneyBillWaveAlt);
     //#endregion
 
     /**
      * The page puzzle has been completed.
      */
-    protected puzzleComplete = false;
+    protected puzzleComplete = signal(false);
 
     /**
      * Marks the puzzle as completed.
      */
     protected completePuzzle(): void {
-        this.puzzleComplete = true;
+        this.puzzleComplete.set(true);
     }
 }

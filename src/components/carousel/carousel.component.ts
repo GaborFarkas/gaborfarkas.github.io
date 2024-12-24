@@ -1,7 +1,6 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, Input, OnDestroy, output, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { CarouselChangeEvent } from '@/models/carousel-change-event.model';
 
@@ -18,49 +17,22 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Left nav button icon.
      */
-    protected angleLeft: IconDefinition = faAngleLeft;
+    protected readonly angleLeft = signal(faAngleLeft);
 
     /**
      * Right nav button icon.
      */
-    protected angleRight: IconDefinition = faAngleRight;
+    protected readonly angleRight = signal(faAngleRight);
 
     /**
      * Gets or sets the number of slides in this carousel.
      */
-    protected numSlides = 0;
+    protected numSlides = signal(0);
 
     /**
      * Gets or sets the current slide of this carousel. Backing field.
      */
-    private _currSlide = 0;
-
-    /**
-     * Gets or sets the current slide of this carousel.
-     */
-    protected get currSlide(): number {
-        return this._currSlide;
-    }
-
-    /**
-     * Gets or sets the current slide of this carousel.
-     */
-    protected set currSlide(index: number) {
-        if (index !== this._currSlide) {
-            // Make the navigated slide appear visually before scrolling to it.
-            const slideElem = this.carouselElem?.nativeElement.children[index];
-            if (slideElem?.firstChild instanceof HTMLElement) {
-                slideElem.firstChild.style.display = '';
-            }
-
-            this.slideChange.emit({
-                index: index,
-                slide: slideElem
-            });
-
-            this._currSlide = index;
-        }
-    }
+    protected currSlide = signal(0);
 
     /**
      * The key for the automatic slide switch interval.
@@ -70,12 +42,7 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Show page switcher buttons on the left and right sides of the carousel.
      */
-    @Input() pageSwitcher = true;
-
-    /**
-     * Automatically start the carousel
-     */
-    @Input() autoStart = true;
+    public pageSwitcher = input(true);
 
     /**
      * The time between switching slides in milliseconds. Backing field.
@@ -101,7 +68,7 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
 
             if (val > 0) {
                 this.autoSlideIntervalKey = setInterval(function (this: CarouselComponent) {
-                    if (this.currSlide < this.numSlides - 1) {
+                    if (this.currSlide() < this.numSlides() - 1) {
                         this.nextSlide();
                     } else {
                         this.navigateSlide(0);
@@ -116,7 +83,7 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Gets the element reference of the carousel's container div.
      */
-    @ViewChild('carousel') private carouselElem?: ElementRef<HTMLDivElement>;
+    private carouselElem = viewChild.required<ElementRef<HTMLDivElement>>('carousel');
 
     /**
      * Timeout index for hiding invisible slides after a transition so animations can reset.
@@ -126,7 +93,7 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Triggered before a slide change occurs. Passes the slide's index and DOM element.
      */
-    @Output() slideChange = new EventEmitter<CarouselChangeEvent>();
+    public slideChange = output<CarouselChangeEvent>();
 
     ngOnDestroy(): void {
         if (this.autoSlideIntervalKey) {
@@ -135,10 +102,10 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        const carouselDomElem = this.carouselElem?.nativeElement;
+        const carouselDomElem = this.carouselElem().nativeElement;
         if (carouselDomElem) {
             setTimeout(function (this: CarouselComponent) {
-                this.numSlides = carouselDomElem.children.length;
+                this.numSlides.set(carouselDomElem.children.length);
             }.bind(this), 0);
 
             const slides: Element[] = [...carouselDomElem.children];
@@ -156,9 +123,8 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
      * Goes to the next slide.
      */
     nextSlide() {
-        if (this.currSlide < this.numSlides - 1) {
-            this.currSlide++;
-            this.hideSlides(this.currSlide);
+        if (this.currSlide() < this.numSlides() - 1) {
+            this.navigateSlide(this.currSlide() + 1);
         }
     }
 
@@ -166,9 +132,8 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
      * Goes to the previous slide.
      */
     previousSlide() {
-        if (this.currSlide > 0) {
-            this.currSlide--;
-            this.hideSlides(this.currSlide);
+        if (this.currSlide() > 0) {
+            this.navigateSlide(this.currSlide() - 1);
         }
     }
 
@@ -177,8 +142,21 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
      * @param index The slide's index.
      */
     navigateSlide(index: number) {
-        if (index >= 0 && index < this.numSlides - 1) {
-            this.currSlide = index;
+        if (index >= 0 && index < this.numSlides()) {
+            if (index !== this.currSlide()) {
+                // Make the navigated slide appear visually before scrolling to it.
+                const slideElem = this.carouselElem().nativeElement.children[index];
+                if (slideElem?.firstChild instanceof HTMLElement) {
+                    slideElem.firstChild.style.display = '';
+                }
+
+                this.slideChange.emit({
+                    index: index,
+                    slide: slideElem
+                });
+
+                this.currSlide.set(index);
+            }
             this.hideSlides(index);
         }
     }
@@ -195,12 +173,10 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
 
         // Hide every other slide to reset their animations when they appear next time.
         this.hideSlideTimeout = setTimeout(function (this: CarouselComponent) {
-            if (this.carouselElem?.nativeElement) {
-                for (let i = 0; i < this.carouselElem.nativeElement.children.length; ++i) {
-                    const slideElem = this.carouselElem.nativeElement.children[i];
-                    if (i !== index && slideElem.firstChild && slideElem.firstChild instanceof HTMLElement) {
-                        slideElem.firstChild.style.display = 'none';
-                    }
+            for (let i = 0; i < this.carouselElem().nativeElement.children.length; ++i) {
+                const slideElem = this.carouselElem().nativeElement.children[i];
+                if (i !== index && slideElem.firstChild && slideElem.firstChild instanceof HTMLElement) {
+                    slideElem.firstChild.style.display = 'none';
                 }
             }
             this.hideSlideTimeout = undefined;

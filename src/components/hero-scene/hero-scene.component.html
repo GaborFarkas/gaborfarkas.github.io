@@ -1,5 +1,5 @@
 <div #sceneContainer class="relative w-full h-full overflow-hidden">
-    <div *ngIf="heroScene === HeroScene.LONGTERM" class="w-full h-full scene-long">
+    <div *ngIf="heroScene() === HeroScene.LONGTERM" class="w-full h-full scene-long">
         <div class="flex flex-col w-full h-full">
             <div class="wall w-full"></div>
             <div class="skirt w-full"></div>
@@ -19,7 +19,7 @@
         </div>
 
         <div class="h-3/5 w-2/4 absolute hero-background flex items-center justify-center">
-            <img class="hero max-h-3/5 cursor-pointer" [ngClass]="{'animate-shrink': animating}" [src]="'assets/' + heroImg + '.png'"
+            <img class="hero max-h-3/5 cursor-pointer" [ngClass]="{'animate-shrink': animating()}" [src]="'assets/' + heroImg() + '.png'"
                 (click)="toggleHero()" (keypress)="toggleHero()" tabindex="0" alt="Hero flying">
             <div class="hero-text absolute" #heroText>
                 @defer (on viewport(heroText)) {
@@ -31,7 +31,7 @@
         <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0 pointer-events-none"></div>
     </div>
 
-    <div *ngIf="heroScene === HeroScene.COUNSEL" class="w-full h-full relative scene-counsel">
+    <div *ngIf="heroScene() === HeroScene.COUNSEL" class="w-full h-full relative scene-counsel">
         <div class="counsel-bg w-full h-full">
             <div class="attribution opaque-bg absolute right-0 bottom-0">
                 <a href="http://www.freepik.com">Adapted from designs by upklyak / brgfx / Freepik</a>
@@ -41,14 +41,14 @@
         <img class="absolute bug" src="assets/bug.png" alt="Bug">
         <img class="absolute bug bug-eye" src="assets/bug-eye.png" alt="Bug's eye">
 
-        <img class="hero absolute h-4/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating}" [src]="'assets/' + heroImg + '-stand.png'"
+        <img class="hero absolute h-4/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating()}" [src]="'assets/' + heroImg() + '-stand.png'"
             (click)="toggleHero()" (keypress)="toggleHero()" alt="Standing hero" tabindex="0">
-        <img class="hero hero-punch absolute h-5/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating}" [src]="'assets/' + heroImg + '-punch.png'"
+        <img class="hero hero-punch absolute h-5/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating()}" [src]="'assets/' + heroImg() + '-punch.png'"
             (click)="toggleHero()" (keypress)="toggleHero()" alt="Punching hero" tabindex="0">
     </div>
 
-    <div *ngIf="heroScene === HeroScene.RESEARCH" class="w-full h-full relative" #researchScene>
-        <canvas #wallOfFame class="absolute top-0 h-full frame-wall" [style]="{'width': wallOfFameWidth + 'rem', 'right': 'calc(-' + wallOfFameWidth + 'rem + 100%)'}"></canvas>
+    <div *ngIf="heroScene() === HeroScene.RESEARCH" class="w-full h-full relative" #researchScene>
+        <canvas #wallOfFame class="absolute top-0 h-full frame-wall" [style]="{'width': wallOfFameWidth() + 'rem', 'right': 'calc(-' + wallOfFameWidth() + 'rem + 100%)'}"></canvas>
         <div class="research-text absolute w-1/2">
             @defer (on viewport(researchScene)) {
                 <img class="w-4 absolute bottom-4 sm:bottom-0 left-4 sm:left-0" src="assets/pointing-arrow.png" alt="Arrow pointing to text">

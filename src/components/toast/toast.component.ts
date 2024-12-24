@@ -1,7 +1,7 @@
 import { NotificationLevel, NotificationModel } from "@/models/notification.model";
 import { NotificationService } from "@/services/notification.service";
-import { Component, Input } from "@angular/core";
-import { FontAwesomeModule, IconDefinition } from "@fortawesome/angular-fontawesome";
+import { Component, computed, input, signal } from "@angular/core";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 /**
@@ -19,13 +19,13 @@ export class ToastComponent {
     /**
      * Close icon
      */
-    protected faXmark: IconDefinition = faXmark;
+    protected readonly faXmark = signal(faXmark);
 
     /**
      * The background class name of the toast according to severity level.
      */
-    protected get backgroundClass() {
-        switch (this.notification.level) {
+    protected backgroundClass = computed(() => {
+        switch (this.notification().level) {
             case NotificationLevel.ERROR:
                 return 'bg-red-400';
             case NotificationLevel.SUCCESS:
@@ -33,17 +33,17 @@ export class ToastComponent {
             case NotificationLevel.WARNING:
                 return 'bg-yellow-500';
         }
-    };
+    });
 
     /**
      * The notification to display.
      */
-    @Input({ required: true }) notification!: NotificationModel;
+    public notification = input.required<NotificationModel>();
 
     /**
      * Closes the notification.
      */
     protected close() {
-        this.notificationService.closeNotification(this.notification);
+        this.notificationService.closeNotification(this.notification());
     }
 }

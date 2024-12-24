@@ -1,11 +1,11 @@
-<div class="menu-target h-full xl:text-lg" (mouseover)="expanded = true" (focus)="expanded = true"
-    (mouseout)="expanded = false" (blur)="expanded = false" role="menu">
-    <div #ariaTarget class="menu-container h-full relative" tabindex="0" role="menuitem"
-        [attr.aria-haspopup]="items.length > 0" [ariaExpanded]="expanded" [ariaLabel]="label">
-        <span class="max-md:hidden h-full flex items-center md:px-10"><span>{{label}}</span></span>
+<div class="menu-target h-full xl:text-lg" (mouseover)="expanded.set(true)" (focus)="expanded.set(true)"
+    (mouseout)="expanded.set(false)" (blur)="expanded.set(false)" role="menu">
+    <div class="menu-container h-full relative" tabindex="0" role="menuitem" (keypress)="onKeyPress($event)"
+        [attr.aria-haspopup]="items.length > 0" [ariaExpanded]="expanded()" [ariaLabel]="label()">
+        <span class="max-md:hidden h-full flex items-center md:px-10"><span>{{label()}}</span></span>
         <ul class="overflow-hidden md:absolute md:z-10"
-            [ngClass]="{ 'md:max-h-0': !expanded, 'md:max-h-40': expanded }">
-            @for(navItem of items; track navItem) {
+            [ngClass]="{ 'md:max-h-0': !expanded(), 'md:max-h-40': expanded() }">
+            @for(navItem of items(); track navItem) {
             <li class="pb-5"><a class="px-5 md:whitespace-nowrap" [href]="navItem.url">{{navItem.label}}</a></li>
             }
         </ul>

@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 
 /**
  * A component for pages unavailable on small devices (e.g. phones).
@@ -12,5 +12,5 @@ export class NoPhoneComponent {
     /**
      * Minimum device width for the functionality to work.
      */
-    @Input({required: true}) public minWidth = 0;
+    public minWidth = input.required<number>();
 }

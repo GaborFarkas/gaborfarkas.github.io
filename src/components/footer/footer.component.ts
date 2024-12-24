@@ -1,6 +1,6 @@
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, HostBinding, input, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faLocationDot, faEnvelope, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
 import { FooterMapComponent } from '@/components/footer-map/footer-map.component';
 
@@ -17,27 +17,27 @@ export class FooterComponent {
     /**
      * FA location marker icon.
      */
-    protected marker: IconDefinition = faLocationDot;
+    protected readonly marker = signal(faLocationDot);
 
     /**
      * FA email icon.
      */
-    protected email: IconDefinition = faEnvelope;
+    protected readonly email = signal(faEnvelope);
 
     /**
      * Use a smaller, compact footer.
      */
-    @Input() public compact = false;
+    public compact = input(false);
 
     /**
      * The local part of the email address.
      */
-    @HostBinding('style.--local') protected emailLocal = '"contact"';
+    @HostBinding('style.--local') protected readonly emailLocal = '"contact"';
 
     /**
      * The domain of the email address.
      */
-    @HostBinding('style.--domain') protected emailDomain = '"farkasgaborev.eu"';
+    @HostBinding('style.--domain') protected readonly emailDomain = '"farkasgaborev.eu"';
 
     /**
      * Returns the raw email address.

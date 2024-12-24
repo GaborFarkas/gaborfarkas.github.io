@@ -2,9 +2,9 @@
     [ngClass]="{'expanded': expanded}" (click)="toggleSection()" (keypress)="toggleSection()" tabindex="0">
     <h1 class="p-0">
         <span class="prefix-container">
-            <span class="prefix inline-block" [ngClass]="{'expanded': expanded}">{{groupPrefix}}</span>
+            <span class="prefix inline-block" [ngClass]="{'expanded': expanded}">{{groupPrefix()}}</span>
         </span>
-        <span>{{sectionModel.question}}</span>
+        <span>{{sectionModel()?.question}}</span>
     </h1>
 </div>
-<p class="px-5 text-xl" [ngClass]="{'expanded py-6': expanded}">{{sectionModel.answer}}</p>
+<p class="px-5 text-xl" [ngClass]="{'expanded py-6': expanded}">{{sectionModel()?.answer}}</p>

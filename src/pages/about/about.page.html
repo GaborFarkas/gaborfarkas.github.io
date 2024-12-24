@@ -4,7 +4,7 @@
         deemed important or interesting are answered below. If you would like to ask anything else, contact me via the
         email address at the bottom of the page. Happy browsing!</p>
     <section class="pb-6 lg:pb-12">
-        @for(group of sectionGroups; track group) {
+        @for(group of sectionGroups(); track group) {
         <div class="faq w-full p-5 lg:px-10" [prefix]="group.prefix" [sections]="group.sections"></div>
         }
     </section>

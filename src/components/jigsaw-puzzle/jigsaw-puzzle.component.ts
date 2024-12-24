@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, ElementRef, input, OnInit, output, signal, viewChild } from '@angular/core';
 import { PuzzlePiece, generatePuzzle } from '@/models/puzzle.model';
 import { CommonModule } from '@angular/common';
 
@@ -14,31 +14,27 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
     /**
      * The puzzle pieces.
      */
-    protected puzzlePieces: PuzzlePiece[] = [];
+    protected puzzlePieces = signal<PuzzlePiece[]>([]);
 
     /**
      * Total width of the puzzle.
      */
-    protected width = 0;
+    protected width = signal(0);
 
     /**
      * Total height of the puzzle.
      */
-    protected height = 0;
+    protected height = signal(0);
 
     /**
      * Gets the width of a single puzzle piece.
      */
-    protected get puzzleWidth(): number {
-        return this.width / this.columns;
-    }
+    protected puzzleWidth = computed(() => this.width() / this.columns());
 
     /**
      * Gets the height of a single puzzle piece.
      */
-    protected get puzzleHeight(): number {
-        return this.height / this.rows;
-    }
+    protected puzzleHeight = computed(() => this.height() / this.rows());
 
     /**
      * Gets or sets if the board has been initialized.
@@ -59,48 +55,48 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
     /**
      * The URL of the puzzle's picture.
      */
-    @Input({ required: true }) image!: string;
+    public image = input.required<string>();
 
     /**
      * Number of columns in the puzzle.
      */
-    @Input() columns = 0;
+    public columns = input(0);
 
     /**
      * Number of rows in the puzzle
      */
-    @Input() rows = 0;
+    public rows = input(0);
 
     /**
      * Indices of the fixed puzzle pieces (glued to their correct position).
      */
-    @Input() fixedPieces: number[] = [];
+    public fixedPieces = input<number[]>([]);
 
     /**
      * Gets the element reference of the puzzle board SVG.
      */
-    @ViewChild('svg') svg?: ElementRef<SVGSVGElement>;
+    private svg = viewChild.required<ElementRef<SVGSVGElement>>('svg');
 
     /**
      * Fired when the puzzle is solved.
      */
-    @Output() completed = new EventEmitter();
+    public completed = output();
 
     ngOnInit(): void {
         // Generate puzzle pieces and fix down the necessary ones.
-        this.puzzlePieces = [...generatePuzzle(this.columns, this.rows, 3)];
-        this.puzzlePieces.forEach((value, index) => {
-            if (this.fixedPieces.includes(index)) {
+        this.puzzlePieces.set([...generatePuzzle(this.columns(), this.rows(), 3)]);
+        this.puzzlePieces().forEach((value, index) => {
+            if (this.fixedPieces().includes(index)) {
                 value.locked = true;
             }
         });
 
         // Preload the background image to get its dimensions for the SVG CRS.
         const image = new Image();
-        image.src = this.image;
+        image.src = this.image();
         image.onload = function (this: JigsawPuzzleComponent) {
-            this.width = image.width;
-            this.height = image.height;
+            this.width.set(image.width);
+            this.height.set(image.height);
 
             if (!this.initialized) {
                 this.initializePuzzle();
@@ -119,9 +115,9 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
      * @param evt The pointer event.
      */
     protected onDragStart(evt: MouseEvent | TouchEvent) {
-        if (this.svg?.nativeElement && !this.draggedItem && evt.target instanceof SVGPathElement) {
+        if (!this.draggedItem && evt.target instanceof SVGPathElement) {
             // Get the corresponding puzzle piece to check if it's already locked.
-            if (!this.puzzlePieces.find(piece => piece.dom === evt.target)?.locked) {
+            if (!this.puzzlePieces().find(piece => piece.dom === evt.target)?.locked) {
                 // Store the puzzle element and the offset.
                 this.draggedItem = evt.target;
                 // Move the piece to top of the DOM.
@@ -147,8 +143,8 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
             evt.preventDefault();
             const svgCoords = this.getSvgPointerCoordinates(evt);
             // Constrain the coordinates to the board area.
-            svgCoords[0] = Math.max(Math.min(svgCoords[0] - this.dragOffset[0], this.width), 0);
-            svgCoords[1] = Math.max(Math.min(svgCoords[1] - this.dragOffset[1], this.height), 0);
+            svgCoords[0] = Math.max(Math.min(svgCoords[0] - this.dragOffset[0], this.width()), 0);
+            svgCoords[1] = Math.max(Math.min(svgCoords[1] - this.dragOffset[1], this.height()), 0);
             // Set the elem's origin by offsetting with the calculated offset.
             this.draggedItem.setAttributeNS(null, 'transform', `translate(${svgCoords[0]} ${svgCoords[1]})`);
         }
@@ -158,27 +154,27 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
      * Event listener for releasing a puzzle piece.
      */
     protected onDragEnd() {
-        if (this.svg && this.draggedItem) {
+        if (this.draggedItem) {
             // Calculate the correct position of the dragged piece on the board.
-            const piece = this.puzzlePieces.find(piece => piece.dom === this.draggedItem);
+            const piece = this.puzzlePieces().find(piece => piece.dom === this.draggedItem);
             if (piece) {
-                const centerPos = [piece.column * this.puzzleWidth + this.puzzleWidth / 2, piece.row * this.puzzleHeight + this.puzzleHeight / 2];
+                const centerPos = [piece.column * this.puzzleWidth() + this.puzzleWidth() / 2, piece.row * this.puzzleHeight() + this.puzzleHeight() / 2];
 
                 // Get its current position.
                 const translate = this.draggedItem.transform.baseVal.getItem(0);
                 const currPos = [translate.matrix.e, translate.matrix.f];
 
                 // If the item is approximately in the right position, fix it down.
-                if ((this.width - Math.abs(centerPos[0] - currPos[0])) / this.width > 0.95 && (this.height - Math.abs(centerPos[1] - currPos[1])) / this.height > 0.95) {
+                if ((this.width() - Math.abs(centerPos[0] - currPos[0])) / this.width() > 0.95 && (this.height() - Math.abs(centerPos[1] - currPos[1])) / this.height() > 0.95) {
                     this.draggedItem.setAttributeNS(null, 'transform', `translate(${centerPos[0]} ${centerPos[1]})`);
                     piece.locked = true;
 
-                    const firstPuzzleSvg = this.svg.nativeElement.querySelector('path');
+                    const firstPuzzleSvg = this.svg().nativeElement.querySelector('path');
                     if (firstPuzzleSvg) {
-                        this.svg.nativeElement.insertBefore(this.draggedItem, firstPuzzleSvg);
+                        this.svg().nativeElement.insertBefore(this.draggedItem, firstPuzzleSvg);
                     }
 
-                    if (this.puzzlePieces.every(piece => piece.locked)) {
+                    if (this.puzzlePieces().every(piece => piece.locked)) {
                         this.completed.emit();
                     }
                 }
@@ -193,33 +189,33 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
      * Sets an initial transform value for every puzzle piece on the board.
      */
     private initializePuzzle(): void {
-        if (this.width && this.height && this.svg?.nativeElement) {
+        if (this.width() && this.height()) {
             this.initialized = true;
             // Get all path elements
-            const pieceSvgs = this.svg.nativeElement.querySelectorAll('path');
+            const pieceSvgs = this.svg().nativeElement.querySelectorAll('path');
             for (let i = 0; i < pieceSvgs.length; ++i) {
                 // Find the associated puzzle piece (currently they are in the same order).
-                const piece = this.puzzlePieces[i];
+                const piece = this.puzzlePieces()[i];
 
                 // Generate shape
                 pieceSvgs[i].setAttributeNS(null, 'd', this.generatePath(piece));
 
                 // Set initial position.
                 pieceSvgs[i].setAttributeNS(null, 'transform', `translate(${piece.locked ?
-                    piece.column * this.puzzleWidth + this.puzzleWidth / 2 :
-                    this.getRandomCoordinates(this.width, 0.3)} ${piece.locked ?
-                        piece.row * this.puzzleHeight + this.puzzleHeight / 2 :
-                        this.getRandomCoordinates(this.height, 0.3)})`);
+                    piece.column * this.puzzleWidth() + this.puzzleWidth() / 2 :
+                    this.getRandomCoordinates(this.width(), 0.3)} ${piece.locked ?
+                        piece.row * this.puzzleHeight() + this.puzzleHeight() / 2 :
+                        this.getRandomCoordinates(this.height(), 0.3)})`);
                 // Store association for later.
                 piece.dom = pieceSvgs[i];
             }
 
             // Move every fixed element to the bottom of the DOM.
-            for (const piece of this.puzzlePieces) {
+            for (const piece of this.puzzlePieces()) {
                 if (piece.locked && piece.dom) {
-                    const firstPuzzleSvg = this.svg.nativeElement.querySelector('path');
+                    const firstPuzzleSvg = this.svg().nativeElement.querySelector('path');
                     if (firstPuzzleSvg) {
-                        this.svg.nativeElement.insertBefore(piece.dom, firstPuzzleSvg);
+                        this.svg().nativeElement.insertBefore(piece.dom, firstPuzzleSvg);
                     }
                 }
             }
@@ -244,11 +240,9 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
     private getSvgPointerCoordinates(event: MouseEvent | TouchEvent): [number, number] {
         const x = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
         const y = event instanceof MouseEvent ? event.clientY : event.touches[0].clientY;
-        if (this.svg?.nativeElement) {
-            const ctm = this.svg.nativeElement.getScreenCTM();
-            if (ctm) {
-                return [(x - ctm.e) / ctm.a, (y - ctm.f) / ctm.d];
-            }
+        const ctm = this.svg().nativeElement.getScreenCTM();
+        if (ctm) {
+            return [(x - ctm.e) / ctm.a, (y - ctm.f) / ctm.d];
         }
 
         return [x, y];
@@ -260,7 +254,7 @@ export class JigsawPuzzleComponent implements OnInit, AfterViewInit {
      * @returns The d attribute.
      */
     private generatePath(puzzle: PuzzlePiece): string {
-        return `M0 0 ${this.generateEdge(puzzle.topEdge, this.puzzleWidth, Direction.RIGHT)} ${this.generateEdge(puzzle.rightEdge, this.puzzleHeight, Direction.DOWN)} ${this.generateEdge(puzzle.bottomEdge, this.puzzleWidth, Direction.LEFT)} ${this.generateEdge(puzzle.leftEdge, this.puzzleHeight, Direction.UP)}`;
+        return `M0 0 ${this.generateEdge(puzzle.topEdge, this.puzzleWidth(), Direction.RIGHT)} ${this.generateEdge(puzzle.rightEdge, this.puzzleHeight(), Direction.DOWN)} ${this.generateEdge(puzzle.bottomEdge, this.puzzleWidth(), Direction.LEFT)} ${this.generateEdge(puzzle.leftEdge, this.puzzleHeight(), Direction.UP)}`;
     }
 
     /**
