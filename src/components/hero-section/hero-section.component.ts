@@ -17,7 +17,7 @@ export class HeroSectionComponent {
     /**
      * Flyout orientation for references.
      */
-    protected readonly Orientation = signal(Orientation);
+    protected readonly Orientation = signal(Orientation).asReadonly();
 
     /**
      * Background image URL.

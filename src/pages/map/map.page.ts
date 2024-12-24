@@ -20,7 +20,7 @@ export class MapPage implements OnInit {
     /**
      * Web mapping library enum exported for the template.
      */
-    protected readonly WebMappingLibrary = signal(WebMappingLibrary);
+    protected readonly WebMappingLibrary = signal(WebMappingLibrary).asReadonly();
 
     /**
      * The library to use in the map page.

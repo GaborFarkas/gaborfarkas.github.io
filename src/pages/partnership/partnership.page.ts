@@ -18,21 +18,21 @@ import { faHandshake } from '@fortawesome/free-regular-svg-icons';
 })
 export class PartnershipPage {
     //#region Font awesome icons
-    protected readonly faLightbulb = signal(faLightbulb);
+    protected readonly faLightbulb = signal(faLightbulb).asReadonly();
 
-    protected readonly faFileLines = signal(faFileLines);
+    protected readonly faFileLines = signal(faFileLines).asReadonly();
 
-    protected readonly faCode = signal(faCode);
+    protected readonly faCode = signal(faCode).asReadonly();
 
-    protected readonly faSitemap = signal(faSitemap);
+    protected readonly faSitemap = signal(faSitemap).asReadonly();
 
-    protected readonly faMagnifyingGlassChart = signal(faMagnifyingGlassChart);
+    protected readonly faMagnifyingGlassChart = signal(faMagnifyingGlassChart).asReadonly();
 
-    protected readonly faHandshake = signal(faHandshake);
+    protected readonly faHandshake = signal(faHandshake).asReadonly();
 
-    protected readonly faFileContract = signal(faFileContract);
+    protected readonly faFileContract = signal(faFileContract).asReadonly();
 
-    protected readonly faMoneyBillWave = signal(faMoneyBillWaveAlt);
+    protected readonly faMoneyBillWave = signal(faMoneyBillWaveAlt).asReadonly();
     //#endregion
 
     /**

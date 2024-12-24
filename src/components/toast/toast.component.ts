@@ -19,7 +19,7 @@ export class ToastComponent {
     /**
      * Close icon
      */
-    protected readonly faXmark = signal(faXmark);
+    protected readonly faXmark = signal(faXmark).asReadonly();
 
     /**
      * The background class name of the toast according to severity level.

@@ -1,5 +1,5 @@
 <div #sceneContainer class="relative w-full h-full overflow-hidden">
-    <div *ngIf="heroScene() === HeroScene.LONGTERM" class="w-full h-full scene-long">
+    <div *ngIf="heroScene() === HeroScene().LONGTERM" class="w-full h-full scene-long">
         <div class="flex flex-col w-full h-full">
             <div class="wall w-full"></div>
             <div class="skirt w-full"></div>
@@ -31,7 +31,7 @@
         <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0 pointer-events-none"></div>
     </div>
 
-    <div *ngIf="heroScene() === HeroScene.COUNSEL" class="w-full h-full relative scene-counsel">
+    <div *ngIf="heroScene() === HeroScene().COUNSEL" class="w-full h-full relative scene-counsel">
         <div class="counsel-bg w-full h-full">
             <div class="attribution opaque-bg absolute right-0 bottom-0">
                 <a href="http://www.freepik.com">Adapted from designs by upklyak / brgfx / Freepik</a>
@@ -47,7 +47,7 @@
             (click)="toggleHero()" (keypress)="toggleHero()" alt="Punching hero" tabindex="0">
     </div>
 
-    <div *ngIf="heroScene() === HeroScene.RESEARCH" class="w-full h-full relative" #researchScene>
+    <div *ngIf="heroScene() === HeroScene().RESEARCH" class="w-full h-full relative" #researchScene>
         <canvas #wallOfFame class="absolute top-0 h-full frame-wall" [style]="{'width': wallOfFameWidth() + 'rem', 'right': 'calc(-' + wallOfFameWidth() + 'rem + 100%)'}"></canvas>
         <div class="research-text absolute w-1/2">
             @defer (on viewport(researchScene)) {

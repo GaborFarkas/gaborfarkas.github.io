@@ -16,21 +16,21 @@ import { faAngular, faLinux } from '@fortawesome/free-brands-svg-icons';
     templateUrl: './counseling.page.html'
 })
 export class CounselingPage implements OnInit {
-    protected readonly faCompassDrafting = signal(faCompassDrafting);
+    protected readonly faCompassDrafting = signal(faCompassDrafting).asReadonly();
 
-    protected readonly faGlobe = signal(faGlobe);
+    protected readonly faGlobe = signal(faGlobe).asReadonly();
 
-    protected readonly faDisplay = signal(faDisplay);
+    protected readonly faDisplay = signal(faDisplay).asReadonly();
 
-    protected readonly faSitemap = signal(faSitemap);
+    protected readonly faSitemap = signal(faSitemap).asReadonly();
 
-    protected readonly faListCheck = signal(faListCheck);
+    protected readonly faListCheck = signal(faListCheck).asReadonly();
 
-    protected readonly faFileContract = signal(faFileContract);
+    protected readonly faFileContract = signal(faFileContract).asReadonly();
 
-    protected readonly faMoneyBillWave = signal(faMoneyBill1Wave);
+    protected readonly faMoneyBillWave = signal(faMoneyBill1Wave).asReadonly();
 
-    protected readonly Section = signal(Section);
+    protected readonly Section = signal(Section).asReadonly();
 
     /**
      * Color codes for the 5 card items.
@@ -81,7 +81,7 @@ export class CounselingPage implements OnInit {
                 text: 'I teach this kind of Agile, not Scrum'
             }
         ]
-    });
+    }).asReadonly();
 
     ngOnInit() {
         // Generate random card colors from a set.

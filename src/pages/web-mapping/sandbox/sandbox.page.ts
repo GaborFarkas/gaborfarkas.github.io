@@ -4,7 +4,7 @@ import { NoPhoneComponent } from "@/components/no-phone/no-phone.component";
 import { PageUrlMapping } from "@/models/page-url-mapping.model";
 import { WebMappingLibrary } from "@/models/web-mapping/web-mapping-library";
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild, ViewChild } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit, Signal, signal, viewChild, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { VERSION as OpenLayersVersion } from "ol";
@@ -45,22 +45,22 @@ export class SandboxPage implements OnInit, OnDestroy {
     /**
      * Play icon for the template.
      */
-    protected readonly faPlay = signal(faPlay);
+    protected readonly faPlay = signal(faPlay).asReadonly();
 
     /**
      * Save icon for the template.
      */
-    protected readonly faFloppyDisk = signal(faFloppyDisk);
+    protected readonly faFloppyDisk = signal(faFloppyDisk).asReadonly();
 
     /**
      * Delete icon for the template.
      */
-    protected readonly faTrash = signal(faTrash);
+    protected readonly faTrash = signal(faTrash).asReadonly();
 
     /**
      * Web mapping libraries enum for the template.
      */
-    protected readonly WebMappingLibrary = signal(WebMappingLibrary);
+    protected readonly WebMappingLibrary = signal(WebMappingLibrary).asReadonly();
 
     /**
      * Types for the open code option dropdown generator ng-template.
@@ -80,7 +80,7 @@ export class SandboxPage implements OnInit, OnDestroy {
         [WebMappingLibrary.LEAFLET]: LeafletVersion,
         [WebMappingLibrary.MAPLIBRE]: getMaplibreVersion(),
         [WebMappingLibrary.CESIUM]: CesiumVersion
-    });
+    }).asReadonly();
 
     /**
      * The chosen library (backing field).

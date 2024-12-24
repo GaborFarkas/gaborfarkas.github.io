@@ -16,7 +16,7 @@ export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
     /**
      * Available hero scenes.
      */
-    protected HeroScene = HeroScene;
+    protected readonly HeroScene = signal(HeroScene).asReadonly();
 
     /**
      * The hero image used in the animation.

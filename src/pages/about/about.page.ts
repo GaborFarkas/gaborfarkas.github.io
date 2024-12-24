@@ -68,5 +68,5 @@ export class AboutPage {
                 }
             ]
         }
-    ]);
+    ]).asReadonly();
 }

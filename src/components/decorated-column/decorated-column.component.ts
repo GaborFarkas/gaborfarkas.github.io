@@ -46,7 +46,7 @@ export class DecoratedColumnComponent implements AfterViewInit, OnDestroy {
     /**
      * Possible orientations for the references' flyout text.
      */
-    protected readonly Orientation = signal(Orientation);
+    protected readonly Orientation = signal(Orientation).asReadonly();
 
     /**
      * References to hide in the decoration.

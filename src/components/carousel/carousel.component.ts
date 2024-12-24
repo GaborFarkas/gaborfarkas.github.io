@@ -17,12 +17,12 @@ export class CarouselComponent implements OnDestroy, AfterViewInit {
     /**
      * Left nav button icon.
      */
-    protected readonly angleLeft = signal(faAngleLeft);
+    protected readonly angleLeft = signal(faAngleLeft).asReadonly();
 
     /**
      * Right nav button icon.
      */
-    protected readonly angleRight = signal(faAngleRight);
+    protected readonly angleRight = signal(faAngleRight).asReadonly();
 
     /**
      * Gets or sets the number of slides in this carousel.

@@ -10,7 +10,7 @@ import { FeatureSupportScore } from '@/models/web-mapping/feature-support-score.
 import { WebMappingLibrary } from '@/models/web-mapping/web-mapping-library';
 import { FileService } from '@/services/file.service';
 import { CommonModule } from '@angular/common';
-import { Component, computed, OnInit, signal, viewChild, ViewChild } from '@angular/core';
+import { Component, computed, OnInit, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -28,17 +28,17 @@ export class FeatureMatrixPage implements OnInit {
     /**
      * Question mark icon.
      */
-    protected readonly faQuestionCircle = signal(faQuestionCircle);
+    protected readonly faQuestionCircle = signal(faQuestionCircle).asReadonly();
 
     /**
      * Web mapping libraries enum for the template.
      */
-    protected readonly WebMappingLibrary = signal(WebMappingLibrary);
+    protected readonly WebMappingLibrary = signal(WebMappingLibrary).asReadonly();
 
     /**
      * Feature support score enum for the template.
      */
-    protected readonly FeatureSupportScore = signal(FeatureSupportScore);
+    protected readonly FeatureSupportScore = signal(FeatureSupportScore).asReadonly();
 
     /**
      * Rows displayed in the feature support matrix.

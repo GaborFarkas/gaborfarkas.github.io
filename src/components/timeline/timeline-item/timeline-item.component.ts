@@ -57,7 +57,7 @@ export class TimelineItemComponent {
     /**
      * Presumably unique ID used by ARIA attributes.
      */
-    protected readonly id = signal(Math.random().toString(36).replace('0.', ''));
+    protected readonly id = signal(Math.random().toString(36).replace('0.', '')).asReadonly();
 
     protected toggle(): void {
         if (this.extended()) {

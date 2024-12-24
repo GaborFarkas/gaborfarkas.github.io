@@ -51,7 +51,7 @@ export class NavbarComponent {
                 { label: 'Publications', url: `/${PageUrlMapping.PUBLICATIONS}` }
             ]
         }
-    ]);
+    ]).asReadonly();
 
     /**
      * Toggles the navigation bar. Small screens only.

@@ -20,7 +20,7 @@ export class StoriesPage implements OnInit, OnDestroy {
     /**
      * Story types exposed to the template.
      */
-    protected readonly StoryType = signal(StoryType);
+    protected readonly StoryType = signal(StoryType).asReadonly();
 
     /**
      * Type of the listed stories.

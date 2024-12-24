@@ -24,7 +24,7 @@ export class HomePage {
     /**
      * Available hero scenes.
      */
-    protected readonly HeroScene = signal(HeroScene);
+    protected readonly HeroScene = signal(HeroScene).asReadonly();
 
     /**
      * The file name of the hero's image.
@@ -34,12 +34,12 @@ export class HomePage {
     /**
      * Available hero sections.
      */
-    protected readonly HeroSection = signal(HeroSection);
+    protected readonly HeroSection = signal(HeroSection).asReadonly();
 
     /**
      * Page URLs.
      */
-    protected readonly PageUrlMapping = signal(PageUrlMapping);
+    protected readonly PageUrlMapping = signal(PageUrlMapping).asReadonly();
 
     /**
      * References for the hero sections.
@@ -97,7 +97,7 @@ export class HomePage {
                 icon: faGitAlt
             }
         ]
-    });
+    }).asReadonly();
 
     /**
      * The hero scenes inside the home page.

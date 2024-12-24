@@ -17,12 +17,12 @@ export class FooterComponent {
     /**
      * FA location marker icon.
      */
-    protected readonly marker = signal(faLocationDot);
+    protected readonly marker = signal(faLocationDot).asReadonly();
 
     /**
      * FA email icon.
      */
-    protected readonly email = signal(faEnvelope);
+    protected readonly email = signal(faEnvelope).asReadonly();
 
     /**
      * Use a smaller, compact footer.

@@ -19,12 +19,12 @@ export class ModalComponent {
     /**
      * Close icon
      */
-    protected readonly faXmark = signal(faXmark);
+    protected readonly faXmark = signal(faXmark).asReadonly();
 
     /**
      * GitHub icon
      */
-    protected readonly faGithub = signal(faGithub);
+    protected readonly faGithub = signal(faGithub).asReadonly();
 
     /**
      * The dialog element (host container) of the modal window.
