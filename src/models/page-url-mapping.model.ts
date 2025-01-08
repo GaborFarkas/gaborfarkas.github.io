@@ -8,6 +8,7 @@ export enum PageUrlMapping {
     PARTNERSHIP = 'partnership',
     COUNSELING = 'counseling',
     INSIGHTS = 'insights',
+    CASESTUDIES = 'case-studies',
     FEATUREMATRIX = 'web-mapping/feature-matrix',
     MAP = 'web-mapping/map',
     SANDBOX = 'web-mapping/sandbox'
@@ -18,7 +19,8 @@ export enum PageUrlMapping {
  */
 export enum StoryUrlMapping {
     WEBPROG2 = 'web-programming-2',
-    SWDEVTECH = 'software-development-technologies'
+    SWDEVTECH = 'software-development-technologies',
+    LINUXPROG = 'linux-as-programming-language'
 }
 
 /**

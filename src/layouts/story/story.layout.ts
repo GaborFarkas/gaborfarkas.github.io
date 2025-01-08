@@ -57,6 +57,9 @@ export class StoryLayout {
             // No need to await, we can call this from the ctor.
             this.fetchStoryAsync(StoryType.INSIGHT, slug);
             this.categoryLabel.set('Insights');
+        } else if (this.baseUrl() === PageUrlMapping.CASESTUDIES) {
+            this.fetchStoryAsync(StoryType.CASESTUDY, slug);
+            this.categoryLabel.set('Case Studies');
         }
     }
 

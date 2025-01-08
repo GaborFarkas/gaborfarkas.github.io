@@ -6,6 +6,7 @@ import { randomizer } from '@/utils/array';
 import { DecoratedColumnComponent } from '@/components/decorated-column/decorated-column.component';
 import { ReferenceDescriptor } from '@/models/reference.model';
 import { faAngular, faLinux } from '@fortawesome/free-brands-svg-icons';
+import { PageUrlMapping, StoryUrlMapping } from '@/models/page-url-mapping.model';
 
 /**
  * Main content of the counseling page.
@@ -69,9 +70,9 @@ export class CounselingPage implements OnInit {
         ],
         [Section.INFRASTRUCTURE]: [
             {
-                url: '',
+                url: `/${PageUrlMapping.CASESTUDIES}/${StoryUrlMapping.LINUXPROG}`,
                 icon: faLinux,
-                text: 'Linux as a programming language: a case study (coming soon)'
+                text: 'Linux as a programming language: a case study'
             }
         ],
         [Section.PM]: [

@@ -34,6 +34,8 @@ export class StoriesPage implements OnInit, OnDestroy {
         switch (this.type()) {
             case StoryType.INSIGHT:
                 return PageUrlMapping.INSIGHTS;
+            case StoryType.CASESTUDY:
+                return PageUrlMapping.CASESTUDIES;
             default:
                 return PageUrlMapping.HOME;
         }
@@ -66,6 +68,9 @@ export class StoriesPage implements OnInit, OnDestroy {
     async ngOnInit() {
         if (this.router.url.endsWith(PageUrlMapping.INSIGHTS)) {
             this.type.set(StoryType.INSIGHT);
+            await this.getNextPageAsync();
+        } else if (this.router.url.endsWith(PageUrlMapping.CASESTUDIES)) {
+            this.type.set(StoryType.CASESTUDY);
             await this.getNextPageAsync();
         }
 
