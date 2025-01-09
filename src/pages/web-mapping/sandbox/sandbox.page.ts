@@ -4,9 +4,9 @@ import { NoPhoneComponent } from "@/components/no-phone/no-phone.component";
 import { PageUrlMapping } from "@/models/page-url-mapping.model";
 import { WebMappingLibrary } from "@/models/web-mapping/web-mapping-library";
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, OnDestroy, OnInit, Signal, signal, viewChild, ViewChild } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { DomSanitizer } from "@angular/platform-browser";
 import { VERSION as OpenLayersVersion } from "ol";
 import { version as LeafletVersion } from "leaflet";
 import { getVersion as getMaplibreVersion } from "maplibre-gl";
@@ -257,7 +257,6 @@ export class SandboxPage implements OnInit, OnDestroy {
             iframeDoc.head.appendChild(scriptElem);
         }.bind(this);
         this.webMap().nativeElement.addEventListener('load', injector);
-        // eslint-disable-next-line no-self-assign
         this.webMap().nativeElement.src = this.webMap().nativeElement.src;
     }
 
