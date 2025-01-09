@@ -2,3 +2,47 @@ code[class*="language-"],
 pre[class*="language-"] {
   @apply text-sm;
 }
+
+:not(pre) > code[class*=language-], pre[class*=language-] {
+    background: #ffffff;
+}
+
+.token.comment {
+    color: #008000;
+}
+
+.language-bash .token.class-name, .token.function {
+    color: #795E26;
+}
+
+.language-bash .token.atrule, .language-bash .token.attr-value, .token.keyword {
+    color: #AF00DB;
+}
+
+.token.punctuation {
+    color: #0000FF;
+}
+
+.language-bash .token.important, .language-bash .token.regex, .language-bash .token.variable {
+    color: #001080;
+}
+
+.language-bash .token.operator {
+    color: #000000;
+}
+
+.token.string {
+    color: #A31515;
+}
+
+.token.number {
+    color: #098658;
+}
+
+.language-makefile .token.operator {
+    color: #A31515;
+}
+
+.language-makefile .token.builtin, .language-makefile .token.target, .language-makefile .token.variable {
+    color: #795E26;
+}
