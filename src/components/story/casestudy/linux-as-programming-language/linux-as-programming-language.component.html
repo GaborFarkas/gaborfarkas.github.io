@@ -1,0 +1,130 @@
+<h1>A solar forecasting system</h1>
+
+<p class="pb-4">I got one of my first serious projects in 2018. It was a joint effort between the University where I
+    work and a local solar power plant developer company. The goal was to create a system that could forecast the power
+    generation of small plants (less than 500 MW) for the next day according to law and regulations. These forecasts
+    were called schedules. They were simple XML files containing predicted power generation with an hourly resolution.
+    The system was required to calculate said schedules, generate the XML files, and upload them. Easy, right?
+</p>
+
+<p class="pb-4">The development was in the University's hands, our team was a handful of my colleagues and me. We
+    planned the whole thing thoroughly, did all the calculations, validated the results, and gathered all the source
+    data we could work with. We did science first, as usual. Back in those days, that was our strength, not software
+    development. It turned out we could make pretty decent predictions. That was important, as regulations had a bonus
+    and a penalty system. If you worked with large error margins, the government bought power from you below market
+    prices. Suppose your margins were good, then above. The funny thing is, we only needed to work accurately on sunny
+    days, which is easy to do. Clouds are the problematic factors, but on cloudy days solar plants generate next to
+    nothing compared to sunny days. Consequently, we needed to get all the bonuses on high-yield sunny days, and we did
+    not have to worry about penalties on cloudy days.
+</p>
+
+<p class="pb-4">Five scientists sitting at a table with all the calculations done, no software, and little experience in
+    software development. Almost like a joke. We had to discuss technology. What should be the programming
+    language? The operating system? We decided on Bash on Debian as the right tool to create a proof of concept. If
+    everything works, we can port the code to a more sophisticated and performant environment. Until then, Bash was the
+    language everybody understood in the team. In retrospect, this decision was ridiculous in many ways. These kinds of
+    projects usually do Bash get rewritten, refactored, or ported in any way. They outlive their use in their initial
+    form. Not to mention Bash's shortcomings or that I wrote ~90% of the code. It was quite a fun struggle, though.
+</p>
+
+<h1>Core components</h1>
+
+<p class="pb-4">I decided to choose a modular architecture for this software, inspired by GRASS GIS. In this design,
+    every component is an independently executable module working with inputs, outputs, and environmental variables.
+    This is a great way to keep complexity down even with imperative languages. The concept was to write our core
+    components as separate Bash scripts and add some glue between them.</p>
+
+<p class="pb-4">The system was required to calculate schedules, generate XML files, and upload them, remember? For those
+    tasks, we only needed a few modules: an analysis module, an I/O module, and a kernel module calling and scheduling
+    the other ones. Well, the real complexity came with the details. The most important functionality of the system was
+    scheduling and orchestrating different tasks. Timing was essential. Accurate weather forecasts came in at 8 AM,
+    schedules could only be uploaded between 9 AM and 10 AM (if I remember correctly), so we needed to calculate in
+    between. It turned out quickly that we also needed to monitor the inverters of our partners' solar parks, archive
+    data, log everything, and manage credentials for uploading schedules. The system ended up with 5 modules, a bunch of
+    shared functions sourced from 4 library files, and 13 I/O submodules for downloading, uploading, monitoring, and
+    archiving data.</p>
+
+<p class="pb-4">To have a better feel about those modules, the logger looked like this:</p>
+
+<div class="code-viewer h-96 overflow-y-auto mb-4" language="bash" [value]="loggerFile"></div>
+
+<h1>Bash: painful pleasures for the adventurous developer</h1>
+
+<p class="pb-4">The application at this point begged for something more than simple glue. It was complicated enough to
+    need some management tools and to use its own memory state for scheduling instead of crontab. Especially, as
+    different I/O operations started to depend on each other. The solution was to create a daemon process starting
+    automatically with the operating system and running indefinitely, independent from any user session. Who knew Bash
+    is completely capable of implementing a daemon? Not me. It was an exciting and pleasant surprise. With this step,
+    the system grew with a daemon process, a CLI tool interfacing with the running daemon, and an init.d (sysv) script.
+    As you can see from the comments in the following excerpt, it was quite stressful to maintain and modify the daemon
+    module.</p>
+
+<div class="code-viewer h-96 overflow-y-auto mb-4" language="bash" [value]="daemonFile"></div>
+
+<p class="pb-4">The largest issue came from the workflows for a single solar park (power plant). I/O operations were
+    interdependent, the analysis had to be executed when all the input data were available, and the schedules needed to
+    be uploaded in a narrow time window. We had to think about graphs, translate them into trees and queues, and time
+    everything perfectly. It is an easy task for a reasonable programming language. Well in Bash, I had to use cut
+    awfully lot despite relying on its array support as well. Both solutions were bad. String lists were hard to debug,
+    while array operations were messy to read and modify. Just take a look at an example function from the scheduler
+    library:</p>
+
+<div class="code-viewer h-96 overflow-y-auto mb-4" language="bash" [value]="schedulerLibFile"></div>
+
+<p class="pb-4">Stability was crucial while manual testing was far too expensive. If the system would have had an error
+    crashing down the whole daemon, we would have been out of business. The solution? Unit tests, of course. It was the
+    only way to reliably test every modification to the different data structures used by the system... in Bash. Would
+    you ever guess that Bash has a perfectly usable unit testing framework called Bats? I only had to define some helper
+    functions for array assertions and a thorough set of test cases could automatically find all major bugs and
+    regressions, just like in any quality software.</p>
+
+<div class="code-viewer h-96 overflow-y-auto mb-4" language="bash" [value]="loggerBatsFile"></div>
+
+<p class="pb-4">Of course, there were tasks unfeasible to solve in Bash. Reading from NetCDF files, encrypting and
+    hashing with blowfish, and web scraping. We used Python scripts when Bash could not be used. Why did we have to use
+    web scraping? When we started, we could only upload schedules manually, and manual administrative labor was too
+    expensive for this project. We had to automatize everything. To overcome this obstacle, I wrote a simple script
+    using Selenium to upload the XML files after logging in with every park. I only had to add some additional random
+    jitters and pauses between key presses, clicks, and interactions, and we passed all of their checks with flying
+    colors. Funny detail, they released an API later on. However, it was so overcomplicated and hard to implement that
+    we rather stuck with our scraper.</p>
+
+<h1>Failsafes everywhere</h1>
+
+<p class="pb-4">I always liked specifications and standards. They contain unambiguous facts about how something should
+    work if phrased correctly. They don't leave much space for accidents. The regulation for uploading schedules
+    contained something more serious than its bonus and penalty system. If you fail to upload a schedule for the next
+    day, you pay. A lot. I don't remember the exact amount, but I remember that we had to make absolutely sure that we
+    uploaded every schedule. For that, a significant part of the code got filled with failsafe mechanisms, increasing
+    complexity excessively.</p>
+
+<p class="pb-4">What should happen if there are no valid inputs for our predictions? We created averages for every day
+    and area from historical data for that. What should happen if we fail to log in? We sent emails at that moment to
+    everybody involved. Nothing should fail gracefully, every error must land in our inbox or invoke a failsafe
+    mechanism. That was also applied to the system as a whole. We ran it on two servers hosted by independent companies
+    at different locations. The only issue was that only one of them was allowed to upload. To solve this, I
+    daisy-chained the servers and made every operation notify the next one. You can imagine it as a circular linked list
+    of servers using SSH to send receipts of successful or failed operations. If the previous server failed to upload,
+    the next one had to try it. At this point, the 2-hour time window for uploading schedules was not so gracious
+    anymore.
+</p>
+
+<p class="pb-4">With this final addendum, the software became problematic to deploy, set up, and update. Since the
+    infrastructure was in our hands and we used Debian everywhere, I decided to package every new version into deb
+    packages and deploy them via SSH. Voilá, it became a full-fledged software with every component in place written
+    almost entirely in Bash. I even created a Makefile for recipes for testing, packaging, deployment, and some other
+    things. The best thing about the system, it worked flawlessly.</p>
+
+<div class="code-viewer h-96 overflow-y-auto mb-4" language="makefile" [value]="makeFile"></div>
+
+<h1>The fate of the project</h1>
+
+<p class="pb-4">When the system started to prove itself in action, there was some scientific interest in a ported
+    version. Boosted on this, I ported some of its functionalities to Rust as OpenPAF. You can see it on the
+    following link: <a href="https://github.com/ptettkffi/OpenPAF"
+        target="_blank">https://github.com/ptettkffi/OpenPAF</a>. Sadly, that interest never turned into funding, and
+    with that, I also stopped working on it when my next large project came. Not much later, the government made further
+    restrictions on scheduling solar parks, retiring our system along with most of our smaller competitors. Nowadays
+    this field has very limited business opportunities, and therefore, I see little chance of another contract for a
+    similar software. In case that happens, this is one of the few problems I would try to solve with infrastructure
+    (Docker, Airflow, Python scripts) before deciding to finish OpenPAF.</p>

@@ -5,8 +5,7 @@ import { Component } from '@angular/core';
  */
 @Component({
     selector: 'software-development-technologies',
-    templateUrl: './software-development-technologies.component.html',
-    standalone: true
+    templateUrl: './software-development-technologies.component.html'
 })
 export class SoftwareDevelopmentTechnologiesComponent {
 }

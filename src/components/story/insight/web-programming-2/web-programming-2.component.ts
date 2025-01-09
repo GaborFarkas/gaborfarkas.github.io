@@ -5,8 +5,7 @@ import { Component } from '@angular/core';
  */
 @Component({
     selector: 'web-programming-2',
-    templateUrl: './web-programming-2.component.html',
-    standalone: true
+    templateUrl: './web-programming-2.component.html'
 })
 export class WebProgramming2Component {
 }

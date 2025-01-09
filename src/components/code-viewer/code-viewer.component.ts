@@ -55,6 +55,9 @@ export class CodeViewerComponent implements OnInit {
             case 'bash':
                 import('prismjs/components/prism-bash').then(() => this.ready.set(true));
                 break;
+            case 'makefile':
+                import('prismjs/components/prism-makefile').then(() => this.ready.set(true));
+                break;
             default:
                 throw new Error(`Unsupported language ${this.language()}`);
         }
