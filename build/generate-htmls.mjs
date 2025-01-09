@@ -53,8 +53,12 @@ function generateHtmlFile(config) {
             outputPath = path.join(buildDir, 'insights', config.slug);
             type = 'article';
             break;
+        case 'casestudy':
+            outputPath = path.join(buildDir, 'case-studies', config.slug);
+            type = 'article';
+            break;
         default:
-            throw new Error(`Unknown story type ${config.type}.`);
+            throw new Error(`Unknown story type ${config.category}.`);
     }
     outputPath += '.html';
 
