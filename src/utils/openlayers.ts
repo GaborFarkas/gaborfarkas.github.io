@@ -24,8 +24,10 @@ export namespace OpenLayers {
     export import Feature = ol_base.Feature
     export import Geolocation = ol_base.Geolocation
     export import Graticule = ol_base.Graticule
+    export import Image = ol_base.Image
     export import ImageCanvas = ol_base.ImageCanvas
     export import ImageTile = ol_base.ImageTile
+    export import ImageWrapper = ol_base.ImageWrapper
     export import Kinetic = ol_base.Kinetic
     export import Map = ol_base.Map
     export import MapBrowserEvent = ol_base.MapBrowserEvent
@@ -35,14 +37,11 @@ export namespace OpenLayers {
     export import Observable = ol_base.Observable
     export import Overlay = ol_base.Overlay
     export import Tile = ol_base.Tile
-    export import TileCache = ol_base.TileCache
     export import TileQueue = ol_base.TileQueue
     export import TileRange = ol_base.TileRange
     export import VectorRenderTile = ol_base.VectorRenderTile
     export import VectorTile = ol_base.VectorTile
     export import View = ol_base.View
-    export import Image = ol_base.Image
-    export import ImageWrapper = ol_base.ImageWrapper
     export import getUid = ol_base.getUid
     export import VERSION = ol_base.VERSION
 
