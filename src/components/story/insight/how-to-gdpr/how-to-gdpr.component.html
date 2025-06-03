@@ -1,0 +1,228 @@
+<h1>Regulations in the EU</h1>
+
+<p class="pb-4">Working in the European Union as a software developer has its perks since you can reach a huge and
+    profitable market. However, the EU also has the strictest regulations on digital products and services. We have GDPR
+    for general privacy and security, the Omnibus directive for e-commerce applications, NIS2 for cybersecurity in vital
+    sectors, and the AI directive for using AI ethically, to mention a few.</p>
+
+<p class="pb-4">While our regulations are tough, they serve a good purpose. Some aim to aid individuals against
+    companies. Others aid vital systems against potential attackers so our power grid cannot be shut down as easily as
+    in Die Hard. They are always trying to protect a vulnerable group against potential exploiters. The issue? They are
+    doing this at the expense of the IT sector, as they are mandating extra effort put into every part of IT systems.
+</p>
+
+<p class="pb-4">To tell why that extra expense is causing friction, we have to concentrate on a single question: who is
+    responsible? If you ask a lawmaker, it's the companies. They hold total responsibility for their products and
+    services. However, this responsibility is often delegated to IT professionals creating and maintaining the system.
+    For smaller companies, it is far too idealistic to contract people or consulting firms just to comply with
+    regulations, putting additional pressure on software developers and architects. They are often expected to design
+    and build systems fully compliant with all EU regulations.</p>
+
+<p class="pb-4">According to my experience, the attitude of software developers towards regulations in 2025 is not very
+    positive. Those people already wear many hats, have a variety of responsibilities, and are reluctant to take a new
+    one. As a software developer, I also tend to shake off tasks tangential to my work (if possible) to avoid
+    fragmentation. However, I believe that the expectation against software developers and architects to have a firm
+    understanding of EU software regulations is legitimate.</p>
+
+<p class="pb-4">Look at it from a different perspective. It's not about compliance and potential penalties. It's about
+    protection. Protecting users, content creators, vulnerable groups like the elderly and children, or vital
+    infrastructure. To do that correctly, to help without exploitation, every link in the development chain must be
+    aware of possible threats and mitigation patterns. Regulations are frameworks synthesizing those patterns into a
+    coherent system. The best part is, it's not that hard to navigate them in practice.</p>
+
+<h1>GDPR: the first steps</h1>
+
+<p class="pb-4">The first regulation that comes into mind as a software developer in the EU is GDPR. It is a safety and
+    privacy regulation affecting every software with a user base in the EU. GDPR aims to protect the privacy of users by
+    regulating personal data stored by software. A really convenient side of GDPR is that the severity of consequences
+    for noncompliance is gradual. Enforcement is relatively forgiving at a smaller scale. GDPR on an SME scale focuses
+    mostly on what, as in what kind of personal data you are collecting from your users?</p>
+
+<p class="pb-4">When it comes to legal definitions in digital law, I usually prefer to consider the intention over the
+    actual text. Digital legislation is still in its infancy. Definitions change with precedents, and advancements in IT
+    are still so fast, that it is hard to keep up with regulations. With that said, I consider every bit of user data
+    personal which can be used to identify an individual, like user names, email addresses, telephone numbers, and even
+    IP addresses.</p>
+
+<h2>No data collected</h2>
+
+<p class="pb-4">Let's start with a narrow category of applications out of the scope of GDPR. Applications not collecting
+    user data do not have to do anything GDPR-specific. You can still collect anonymous data, like statistics or
+    unauthenticated inputs, just nothing user-specific. Not even logged IP addresses. Typical applications in this
+    category are without a back-end, such as this website.</p>
+
+<h2>Some data collected</h2>
+
+<p class="pb-4">If you decide to include a user management service in your application or start to collect any
+    user-specific data, you are subjected to GDPR. This category is about small applications collecting only essential
+    data. You can consider any data essential which are required for the application to work as intended. We are not
+    talking about the minimum data required to run the application without crashing. If your system has a name display
+    in its navigation bar, then the user's name is essential for the intended operation of the software. Collecting
+    essential data is considered a legitimate interest by GDPR.</p>
+
+<p class="pb-4">Applications with only a legitimate interest in user data need to supply the bare minimum: information.
+    The software must inform the user that it's collecting data and specify what kinds of data it's collecting. In a web
+    application, the usual format is a short "cookie consent" and a detailed privacy document on a dedicated page. It
+    doesn't matter if the application uses actual cookies or header tokens. If it collects personal data, it must
+    inform its users.</p>
+
+<p class="pb-4">The privacy document must contain all personal data collected from your users along with the reasons for
+    collecting them. It doesn't need to be a detailed list, but it must be clear to the users what data is collected
+    about them. While a privacy document is lengthy and formal, there are several free templates and generators to use.
+    You can start with a generator, make adjustments with an LLM, like ChatGPT, and add the final touches manually for
+    an optimal workflow.</p>
+
+<p class="pb-4">The cookie consent is a banner or a modal window asking for consent to store information on users'
+    devices. According to EU's <a target="_blank" class="underline"
+        href="https://europa.eu/youreurope/business/dealing-with-customers/data-protection/online-privacy/index_en.htm">cookie
+        guidelines</a>, asking for consent is not mandatory for applications collecting data for legitimate interest. It
+    can still be useful for displaying a link to the privacy document if it cannot be displayed anywhere else.</p>
+
+<h2>Third-party data collection</h2>
+
+<p class="pb-4">Cookie regulations were created to let users opt out of non-essential data collections related to
+    marketing, analytics, and social media. Applications allowing third parties to collect personal data are in this
+    category and must ask for user consent. Additionally, the consent form must be created in a way that users can
+    easily withdraw their consent anytime.</p>
+
+<p class="pb-4">It is important to mention the fine line between third-parties collecting personal data and
+    third-parties providing essential services. Latter services do not need additional consent, but they must be
+    detailed in the privacy document. For example, captcha services use cookies, but they do not collect personal data.
+</p>
+
+<p class="pb-4">The rule of thumb is that if you want to integrate any analytics, social media, advertising, or other
+    marketing services, you need a cookie consent, and it needs to be granular. You must make users able to opt out of
+    any or all those non-essential data collections. There are many libraries and services out there offering granular
+    cookie consent forms and you can always implement your version.</p>
+
+<h1>Planning with GDPR</h1>
+
+<p class="pb-2">Former requirements can be added on the go, at any stage of the development. However, there are two
+    more:</p>
+<ul class="list-disc pl-10 pb-4">
+    <li>Users must be able to get their personal data stored by the application completely deleted.</li>
+    <li>Users must be able to get an export of their personal data stored by the application.</li>
+</ul>
+
+<p class="pb-4">Those criteria are a bit more problematic from an architectural standpoint. Complete deletion must be
+    planned on the database level. If we are dealing with a new application, the easiest approach is to separate tables
+    with personal data and forget soft deletion for them. When soft deletion is a must, or we are dealing with an
+    existing non-compliant application, we usually cannot avoid adding a GDPR service to the system.</p>
+
+<p class="pb-4">Automatically exporting personal data on a user request is usually too much hassle on the SME scale.
+    Exports can be done manually from the database, and as export requests are rare, it is economically more feasible to
+    do so. Since export and deletion requests do not need to be automatized (it's enough to specify an email address in
+    the privacy documentation for such requests), a request pipeline is not required.</p>
+
+<p class="pb-4">Putting together all the main requirements for an online application (inform, privacy document, cookie
+    consent, deletion, export), we can see that total compliance is not hard, but it can be problematic in some cases.
+    Especially with applications designed to scale, since deletion can become a conflict of interest. To take the middle
+    road, I typically plan GDPR compliance at the start of projects with my clients. Let them choose the degree of
+    compliance they are comfortable with. Stricter rules can be added later (with more effort of course), and chances
+    are, a small application with a handful of users will never get into the crosshairs of authorities. If it does,
+    especially the first time, the worst that can happen from the application's fault is a warning.</p>
+
+<h1>DPIA: when things are getting serious</h1>
+
+<p class="pb-4">While regulations are forgiving for small applications, strictness and enforcement increase
+    significantly as the application scales. It is more about the size of the user base than the application's
+    complexity. There are signs that regulations scale up with size, and one of them is the newfound need for a Data
+    Protection Impact Assessment (DPIA).</p>
+
+<p class="pb-4">DPIA is not only a GDPR requirement, but also a great method to ensure a large application is complying
+    completely and correctly. Large applications are built differently, often using microservice architecture, databases
+    residing in multiple geographic locations, and CDNs for streamlining file storage. On that scale, GDPR is much
+    harder to comply with; therefore, it focuses on questions like where and how, as in where the application stores
+    personal data and how it uses collected personal data. To make compliance manageable, companies execute DPIAs
+    periodically.</p>
+
+<p class="pb-4">When a DPIA is needed, good chance you are working with a large enterprise maintaining a large system
+    with a large user base. In that case, you just have to follow the company's internal policies. They already figured
+    out their bottlenecks, like conflicts of interest, and the best ways to handle them. You need to read the internal
+    compliance policy and follow protocol. If you have questions or concerns, ask the Chief Data Officer (CDO).</p>
+
+<p class="pb-4">In other cases, DPIA typically comes up when a company inherits the need for it from a large partner. In
+    that case, congratulations, you are about to go big! The responsibility to conduct the DPIA is shared between the
+    technical lead and the lead developer or architect if they are different people. Most likely, given that you are
+    reading this article for advice, you are one of them.</p>
+
+<p class="pb-4">Good practice in maintaining compliance with a scaling application is to conduct the first DPIA
+    thoroughly without using any other templates than the <a class="underline"
+        href="https://gdpr.eu/data-protection-impact-assessment-template/" target="_blank">official one</a>. Make a list
+    of all the personal data collected by the application, their possible storage locations (focusing on third-party
+    services with servers outside of the EU), and legitimate reasons for withholding some of the collected data, where
+    necessary. For example, if you are operating a service invoicing based on users of your partners (like GitHub), you
+    cannot remove or modify invoices when a user gets deleted. That is a conflict of interest, a legitimate reason to
+    keep part of the collected personal data for an extended period. If you clearly outline every case like that in the
+    first DPIA, it will be easier to maintain compliance with time.</p>
+
+<p class="pb-4">A better practice is planning the application in a DPIA-friendly way from the start if it will need to
+    be scaled. It's more about documentation than architecture. When you need to conduct the first DPIA, having proper
+    documentation will make all the difference. There are three types of documentation I found extremely helpful:</p>
+<ul class="list-disc pl-10 pb-4">
+    <li>An overview system diagram holding all the internal and external services and their relationships. The <a
+            class="underline" href="https://c4model.com/" target="_blank">C4 model</a> is a great tool for this.</li>
+    <li>A data flow diagram emphasizing personal data in data pipelines.</li>
+    <li>Sections in the developer's manual (or code documentation) explaining parts of the code that will most likely
+        form exceptions from GDPR compliance.</li>
+</ul>
+
+<p class="pb-4">The only anti-pattern I strongly recommend avoiding is taking GDPR compliance too lightly for an
+    application designed to scale, especially when it starts to grow. Violations are taken more seriously with a large
+    user base and repercussions are severe. To have an idea about fines in different countries at different scales, you
+    can browse any of the <a href="https://www.enforcementtracker.com/" target="_blank">GDPR enforcement tracker</a>
+    websites.</p>
+
+<h1>Summary</h1>
+
+<p class="pb-4">If you are looking for the oversimplified short version of my recommended GDPR workflow, take a look at
+    the table below.</p>
+
+<table class="w-full">
+    <thead class="bg-primary">
+        <tr>
+            <th>Compliance level</th>
+            <th>Condition</th>
+            <th>Recommended steps</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="border-t border-slate-600">
+            <td>No compliance</td>
+            <td>No personal data collection.</td>
+            <td>Nothing to do.</td>
+        </tr>
+        <tr class="border-t border-slate-600">
+            <td>Basic</td>
+            <td>Personal data is collected.</td>
+            <td>
+                <ul>
+                    <li>Add a privacy document and a noticeable link to it. Either use the footer or a cookie consent
+                        banner.</li>
+                    <li>Design the database in a way that personal data can be easily deleted without remaining
+                        splinters.</li>
+                </ul>
+            </td>
+        </tr>
+        <tr class="border-t border-slate-600">
+            <td>Cookie</td>
+            <td>Personal data is shared with third-party services.</td>
+            <td>Add a granular cookie consent window where users can select services they would like to share their
+                personal data with. Do not use services rejected by the user.</td>
+        </tr>
+        <tr class="border-y border-slate-600">
+            <td>Advanced</td>
+            <td>Application is designed to scale up to a large user base.</td>
+            <td>
+                <ul>
+                    <li>Create and maintain a system overview diagram with major components and their relationships.
+                    </li>
+                    <li>Create and maintain a data flow diagram emphasizing personal data in the system.</li>
+                    <li>Highlight and explain components and pipelines in a possible conflict of interest with GDPR.
+                    </li>
+                    <li>Discuss if an automatic personal data export tool is needed.</li>
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>

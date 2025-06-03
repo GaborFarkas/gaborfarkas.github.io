@@ -20,7 +20,8 @@ export enum PageUrlMapping {
 export enum StoryUrlMapping {
     WEBPROG2 = 'web-programming-2',
     SWDEVTECH = 'software-development-technologies',
-    LINUXPROG = 'linux-as-programming-language'
+    LINUXPROG = 'linux-as-programming-language',
+    GDPR = 'how-to-gdpr'
 }
 
 /**
