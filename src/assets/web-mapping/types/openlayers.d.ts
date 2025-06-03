@@ -1150,7 +1150,7 @@ declare function toLonLat(coordinate: Coordinate, projection?: ProjectionLike): 
  * @return {boolean} Equivalent.
  * @api
  */
-declare function equivalent(projection1: Projection, projection2: Projection): boolean;
+declare function equivalent$1(projection1: Projection, projection2: Projection): boolean;
 /**
  * Searches in the list of transform functions for the function for converting
  * coordinates from the source projection to the destination projection.
@@ -2312,12 +2312,19 @@ declare function makeInverse(target: Transform, source: Transform): Transform;
  */
 declare function determinant(mat: Transform): number;
 /**
- * A rounded string version of the transform.  This can be used
+ * A matrix string version of the transform.  This can be used
  * for CSS transforms.
  * @param {!Transform} mat Matrix.
  * @return {string} The transform as a string.
  */
 declare function toString$1(mat: Transform): string;
+/**
+ * Compare two matrices for equality.
+ * @param {!string} cssTransform1 A CSS transform matrix string.
+ * @param {!string} cssTransform2 A CSS transform matrix string.
+ * @return {boolean} The two matrices are equal.
+ */
+declare function equivalent(cssTransform1: string, cssTransform2: string): boolean;
 /**
  * An array representing an affine 2d transformation for use with
  * {@link module :ol/transform} functions. The array has 6 elements.
@@ -3518,12 +3525,6 @@ declare function fromString(s: string): Color;
  * @api
  */
 declare function asArray(color: Color | string): Color;
-/**
- * Exported for the tests.
- * @param {Color} color Color.
- * @return {Color} Clamped color.
- */
-declare function normalize(color: Color): Color;
 /**
  * @param {Color} color Color.
  * @return {string} String.
@@ -4908,9 +4909,9 @@ declare class LayerRenderer<LayerType extends Layer> extends Observable {
      * @abstract
      * @param {import("../Map.js").FrameState} frameState Frame state.
      * @param {HTMLElement|null} target Target that may be used to render content to.
-     * @return {HTMLElement|null} The rendered element.
+     * @return {HTMLElement} The rendered element.
      */
-    renderFrame(frameState: FrameState, target: HTMLElement | null): HTMLElement | null;
+    renderFrame(frameState: FrameState, target: HTMLElement | null): HTMLElement;
     /**
      * @abstract
      * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
@@ -7234,6 +7235,11 @@ declare class ZIndexContext {
      */
     private context_;
     /**
+     * @param {...*} args Arguments to push to the instructions array.
+     * @private
+     */
+    private push_;
+    /**
      * @private
      * @param {...*} args Args.
      * @return {ZIndexContext} This.
@@ -8566,6 +8572,12 @@ declare class MultiLineString$1 extends SimpleGeometry {
      */
     getLineStrings(): Array<LineString$1>;
     /**
+     * Return the sum of all line string lengths
+     * @return {number} Length (on projected plane).
+     * @api
+     */
+    getLength(): number;
+    /**
      * @return {Array<number>} Flat midpoints.
      */
     getFlatMidpoints(): Array<number>;
@@ -8993,6 +9005,71 @@ declare class MapEvent extends BaseEvent {
 type Types$1 = "postrender" | "movestart" | "moveend" | "loadstart" | "loadend";
 
 /**
+ * @classdesc
+ * Events emitted as map browser events are instances of this type.
+ * See {@link module:ol/Map~Map} for which events trigger a map browser event.
+ * @template {PointerEvent|KeyboardEvent|WheelEvent} [EVENT=PointerEvent|KeyboardEvent|WheelEvent]
+ */
+declare class MapBrowserEvent<EVENT extends PointerEvent | KeyboardEvent | WheelEvent = KeyboardEvent | WheelEvent | PointerEvent> extends MapEvent {
+    /**
+     * @param {string} type Event type.
+     * @param {import("./Map.js").default} map Map.
+     * @param {EVENT} originalEvent Original event.
+     * @param {boolean} [dragging] Is the map currently being dragged?
+     * @param {import("./Map.js").FrameState} [frameState] Frame state.
+     * @param {Array<PointerEvent>} [activePointers] Active pointers.
+     */
+    constructor(type: string, map: Map, originalEvent: EVENT, dragging?: boolean, frameState?: FrameState, activePointers?: Array<PointerEvent>);
+    /**
+     * The original browser event.
+     * @const
+     * @type {EVENT}
+     * @api
+     */
+    originalEvent: EVENT;
+    /**
+     * The map pixel relative to the viewport corresponding to the original browser event.
+     * @type {?import("./pixel.js").Pixel}
+     * @private
+     */
+    private pixel_;
+    /**
+     * The coordinate in the user projection corresponding to the original browser event.
+     * @type {?import("./coordinate.js").Coordinate}
+     * @private
+     */
+    private coordinate_;
+    /**
+     * Indicates if the map is currently being dragged. Only set for
+     * `POINTERDRAG` and `POINTERMOVE` events. Default is `false`.
+     *
+     * @type {boolean}
+     * @api
+     */
+    dragging: boolean;
+    /**
+     * @type {Array<PointerEvent>|undefined}
+     */
+    activePointers: Array<PointerEvent> | undefined;
+    set pixel(pixel: Pixel);
+    /**
+     * The map pixel relative to the viewport corresponding to the original event.
+     * @type {import("./pixel.js").Pixel}
+     * @api
+     */
+    get pixel(): Pixel;
+    set coordinate(coordinate: Coordinate);
+    /**
+     * The coordinate corresponding to the original browser event.  This will be in the user
+     * projection if one is set.  Otherwise it will be in the view projection.
+     * @type {import("./coordinate.js").Coordinate}
+     * @api
+     */
+    get coordinate(): Coordinate;
+}
+//# sourceMappingURL=MapBrowserEvent.d.ts.map
+
+/**
  * *
  */
 type Types = "singleclick" | "click" | "dblclick" | "pointerdrag" | "pointermove";
@@ -9335,71 +9412,6 @@ declare class Overlay extends BaseObject {
 }
 
 /**
- * @classdesc
- * Events emitted as map browser events are instances of this type.
- * See {@link module:ol/Map~Map} for which events trigger a map browser event.
- * @template {UIEvent} EVENT
- */
-declare class MapBrowserEvent<EVENT extends UIEvent> extends MapEvent {
-    /**
-     * @param {string} type Event type.
-     * @param {import("./Map.js").default} map Map.
-     * @param {EVENT} originalEvent Original event.
-     * @param {boolean} [dragging] Is the map currently being dragged?
-     * @param {import("./Map.js").FrameState} [frameState] Frame state.
-     * @param {Array<PointerEvent>} [activePointers] Active pointers.
-     */
-    constructor(type: string, map: Map, originalEvent: EVENT, dragging?: boolean, frameState?: FrameState, activePointers?: Array<PointerEvent>);
-    /**
-     * The original browser event.
-     * @const
-     * @type {EVENT}
-     * @api
-     */
-    originalEvent: EVENT;
-    /**
-     * The map pixel relative to the viewport corresponding to the original browser event.
-     * @type {?import("./pixel.js").Pixel}
-     * @private
-     */
-    private pixel_;
-    /**
-     * The coordinate in the user projection corresponding to the original browser event.
-     * @type {?import("./coordinate.js").Coordinate}
-     * @private
-     */
-    private coordinate_;
-    /**
-     * Indicates if the map is currently being dragged. Only set for
-     * `POINTERDRAG` and `POINTERMOVE` events. Default is `false`.
-     *
-     * @type {boolean}
-     * @api
-     */
-    dragging: boolean;
-    /**
-     * @type {Array<PointerEvent>|undefined}
-     */
-    activePointers: Array<PointerEvent> | undefined;
-    set pixel(pixel: Pixel);
-    /**
-     * The map pixel relative to the viewport corresponding to the original event.
-     * @type {import("./pixel.js").Pixel}
-     * @api
-     */
-    get pixel(): Pixel;
-    set coordinate(coordinate: Coordinate);
-    /**
-     * The coordinate corresponding to the original browser event.  This will be in the user
-     * projection if one is set.  Otherwise it will be in the view projection.
-     * @type {import("./coordinate.js").Coordinate}
-     * @api
-     */
-    get coordinate(): Coordinate;
-}
-//# sourceMappingURL=MapBrowserEvent.d.ts.map
-
-/**
  * *
  */
 type InteractionOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2 | "change:active", ObjectEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | "change:active", Return>;
@@ -9414,7 +9426,7 @@ type InteractionOptions = {
      * prevented (this includes functions with no explicit return). The interactions
      * are traversed in reverse order of the interactions collection of the map.
      */
-    handleEvent?: ((arg0: MapBrowserEvent<any>) => boolean) | undefined;
+    handleEvent?: ((arg0: MapBrowserEvent) => boolean) | undefined;
 };
 /***
  * @template Return
@@ -9470,7 +9482,7 @@ declare class Interaction extends BaseObject {
      * @return {boolean} `false` to stop event propagation.
      * @api
      */
-    handleEvent(mapBrowserEvent: MapBrowserEvent<any>): boolean;
+    handleEvent(mapBrowserEvent: MapBrowserEvent): boolean;
     /**
      * @private
      * @type {import("../Map.js").default|null}
@@ -10076,7 +10088,7 @@ type MapObjectEventTypes = Types$2 | "change:layergroup" | "change:size" | "chan
 /**
  * *
  */
-type MapEventHandler<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<MapObjectEventTypes, ObjectEvent, Return> & OnSignature<Types, MapBrowserEvent<any>, Return> & OnSignature<Types$1, MapEvent, Return> & OnSignature<MapRenderEventTypes, RenderEvent, Return> & CombinedOnSignature<EventTypes | MapObjectEventTypes | Types | Types$1 | MapRenderEventTypes, Return>;
+type MapEventHandler<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<MapObjectEventTypes, ObjectEvent, Return> & OnSignature<Types, MapBrowserEvent, Return> & OnSignature<Types$1, MapEvent, Return> & OnSignature<MapRenderEventTypes, RenderEvent, Return> & CombinedOnSignature<EventTypes | MapObjectEventTypes | Types | Types$1 | MapRenderEventTypes, Return>;
 /**
  * Object literal with config options for the map.
  */
@@ -10419,6 +10431,9 @@ declare class Map extends BaseObject {
      * Detect features that intersect a pixel on the viewport, and execute a
      * callback with each intersecting feature. Layers included in the detection can
      * be configured through the `layerFilter` option in `options`.
+     * For polygons without a fill, only the stroke will be used for hit detection.
+     * Polygons must have a fill style applied to ensure that pixels inside a polygon are detected.
+     * The fill can be transparent.
      * @param {import("./pixel.js").Pixel} pixel Pixel.
      * @param {function(import("./Feature.js").FeatureLike, import("./layer/Layer.js").default<import("./source/Source").default>, import("./geom/SimpleGeometry.js").default): T} callback Feature callback. The callback will be
      *     called with two arguments. The first argument is one
@@ -10436,6 +10451,9 @@ declare class Map extends BaseObject {
     forEachFeatureAtPixel<T>(pixel: Pixel, callback: (arg0: FeatureLike, arg1: Layer<Source>, arg2: SimpleGeometry) => T, options?: AtPixelOptions): T | undefined;
     /**
      * Get all features that intersect a pixel on the viewport.
+     * For polygons without a fill, only the stroke will be used for hit detection.
+     * Polygons must have a fill style applied to ensure that pixels inside a polygon are detected.
+     * The fill can be transparent.
      * @param {import("./pixel.js").Pixel} pixel Pixel.
      * @param {AtPixelOptions} [options] Optional options.
      * @return {Array<import("./Feature.js").FeatureLike>} The detected features or
@@ -10452,6 +10470,9 @@ declare class Map extends BaseObject {
     /**
      * Detect if features intersect a pixel on the viewport. Layers included in the
      * detection can be configured through the `layerFilter` option.
+     * For polygons without a fill, only the stroke will be used for hit detection.
+     * Polygons must have a fill style applied to ensure that pixels inside a polygon are detected.
+     * The fill can be transparent.
      * @param {import("./pixel.js").Pixel} pixel Pixel.
      * @param {AtPixelOptions} [options] Optional options.
      * @return {boolean} Is there a feature at the given pixel?
@@ -10639,14 +10660,14 @@ declare class Map extends BaseObject {
      */
     getTilePriority(tile: Tile$1, tileSourceKey: string, tileCenter: Coordinate, tileResolution: number): number;
     /**
-     * @param {UIEvent} browserEvent Browser event.
+     * @param {PointerEvent|KeyboardEvent|WheelEvent} browserEvent Browser event.
      * @param {string} [type] Type.
      */
-    handleBrowserEvent(browserEvent: UIEvent, type?: string): void;
+    handleBrowserEvent(browserEvent: PointerEvent | KeyboardEvent | WheelEvent, type?: string): void;
     /**
      * @param {MapBrowserEvent} mapBrowserEvent The event to handle.
      */
-    handleMapBrowserEvent(mapBrowserEvent: MapBrowserEvent<any>): void;
+    handleMapBrowserEvent(mapBrowserEvent: MapBrowserEvent): void;
     /**
      * @protected
      */
@@ -10762,14 +10783,14 @@ declare class Map extends BaseObject {
     setTarget(target?: HTMLElement | string): void;
     /**
      * Set the view for this map.
-     * @param {View|Promise<import("./View.js").ViewOptions>} view The view that controls this map.
+     * @param {View|Promise<import("./View.js").ViewOptions>|null} view The view that controls this map.
      * It is also possible to pass a promise that resolves to options for constructing a view.  This
      * alternative allows view properties to be resolved by sources or other components that load
      * view-related metadata.
      * @observable
      * @api
      */
-    setView(view: View | Promise<ViewOptions>): void;
+    setView(view: View | Promise<ViewOptions> | null): void;
     /**
      * Force a recalculation of the map viewport size.  This should be called when
      * third-party code changes the size of the map viewport.
@@ -11659,12 +11680,12 @@ declare class Style$2 {
     /**
      * Set a geometry that is rendered instead of the feature's geometry.
      *
-     * @param {string|import("../geom/Geometry.js").default|GeometryFunction} geometry
+     * @param {string|import("../geom/Geometry.js").default|GeometryFunction|null} geometry
      *     Feature property or geometry or function returning a geometry to render
      *     for this style.
      * @api
      */
-    setGeometry(geometry: string | Geometry$1 | GeometryFunction$2): void;
+    setGeometry(geometry: string | Geometry$1 | GeometryFunction$2 | null): void;
     /**
      * Set the z-index.
      *
@@ -15148,6 +15169,7 @@ declare function upAndDown(t: number): number;
 type SnapEventType = string;
 declare namespace SnapEventType {
     let SNAP: string;
+    let UNSNAP: string;
 }
 /**
  * @classdesc
@@ -15239,10 +15261,10 @@ declare function toPromise<T>(getter: () => (T | Promise<T>)): Promise<T>;
  * @return {Condition} Condition function.
  */
 declare function all$1(...args: Condition[]): Condition;
-declare function altKeyOnly(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function altShiftKeysOnly(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function focus(event: MapBrowserEvent<any>): boolean;
-declare function focusWithTabindex(event: MapBrowserEvent<any>): boolean;
+declare function altKeyOnly(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function altShiftKeysOnly(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function focus(event: MapBrowserEvent): boolean;
+declare function focusWithTabindex(event: MapBrowserEvent): boolean;
 /**
  * Return always true.
  *
@@ -15251,8 +15273,8 @@ declare function focusWithTabindex(event: MapBrowserEvent<any>): boolean;
  * @api
  */
 declare const always: typeof TRUE;
-declare function click(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function mouseActionButton(mapBrowserEvent: MapBrowserEvent<any>): boolean;
+declare function click(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function mouseActionButton(mapBrowserEvent: MapBrowserEvent): boolean;
 /**
  * Return always false.
  *
@@ -15261,23 +15283,23 @@ declare function mouseActionButton(mapBrowserEvent: MapBrowserEvent<any>): boole
  * @api
  */
 declare const never: typeof FALSE;
-declare function pointerMove(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function singleClick(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function doubleClick(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function noModifierKeys(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function platformModifierKeyOnly(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function platformModifierKey(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function shiftKeyOnly(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function targetNotEditable(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function mouseOnly(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function touchOnly(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function penOnly(mapBrowserEvent: MapBrowserEvent<any>): boolean;
-declare function primaryAction(mapBrowserEvent: MapBrowserEvent<any>): boolean;
+declare function pointerMove(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function singleClick(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function doubleClick(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function noModifierKeys(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function platformModifierKeyOnly(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function platformModifierKey(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function shiftKeyOnly(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function targetNotEditable(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function mouseOnly(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function touchOnly(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function penOnly(mapBrowserEvent: MapBrowserEvent): boolean;
+declare function primaryAction(mapBrowserEvent: MapBrowserEvent): boolean;
 /**
  * A function that takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
  * `{boolean}`. If the condition is met, true should be returned.
  */
-type Condition = (this: unknown, arg1: MapBrowserEvent<any>) => boolean;
+type Condition = (this: unknown, arg1: MapBrowserEvent) => boolean;
 
 /**
  * Get a string representation for a type.
@@ -15479,6 +15501,7 @@ type EncodedExpression = LiteralValue | any[];
  *   * `['any', value1, value2, ...]` returns `true` if any of the inputs are `true`, `false` otherwise.
  *   * `['has', attributeName, keyOrArrayIndex, ...]` returns `true` if feature properties include the (nested) key `attributeName`,
  *     `false` otherwise.
+ *     Note that for WebGL layers, the hardcoded value `-9999999` is used to distinguish when a property is not defined.
  *   * `['between', value1, value2, value3]` returns `true` if `value1` is contained between `value2` and `value3`
  *     (inclusively), or `false` otherwise.
  *   * `['in', needle, haystack]` returns `true` if `needle` is found in `haystack`, and
@@ -15689,7 +15712,6 @@ declare function uniformNameForVariable(variableName: string): string;
  */
 /**
  * @typedef {Object} CompilationContext
- * @property {boolean} [inFragmentShader] If false, means the expression output should be made for a vertex shader
  * @property {Object<string, CompilationContextProperty>} properties The values for properties used in 'get' expressions.
  * @property {Object<string, CompilationContextVariable>} variables The values for variables used in 'var' expressions.
  * @property {Object<string, string>} functions Lookup of functions used by the style.
@@ -15720,6 +15742,10 @@ declare function buildExpression(encoded: EncodedExpression, type: number, parsi
 declare const PALETTE_TEXTURE_ARRAY: "u_paletteTextures";
 declare const FEATURE_ID_PROPERTY_NAME: "featureId";
 declare const GEOMETRY_TYPE_PROPERTY_NAME: "geometryType";
+/**
+ * The value `-9999999` will be used to indicate that a property on a feature is not defined, similar to a "no data" value.
+ */
+declare const UNDEFINED_PROP_VALUE: -9999999;
 type CompilationContextProperty = {
     /**
      * Name
@@ -15741,10 +15767,6 @@ type CompilationContextVariable = {
     type: number;
 };
 type CompilationContext = {
-    /**
-     * If false, means the expression output should be made for a vertex shader
-     */
-    inFragmentShader?: boolean | undefined;
     /**
      * The values for properties used in 'get' expressions.
      */
@@ -21890,6 +21912,14 @@ declare function coordinates(flatCoordinates: Array<number>, offset: number, end
  * @template T
  */
 declare function forEach<T>(flatCoordinates: Array<number>, offset: number, end: number, stride: number, callback: (arg0: Coordinate, arg1: Coordinate) => T): T | boolean;
+/**
+ * Calculate the intersection point of two line segments.
+ * Reference: https://stackoverflow.com/a/72474223/2389327
+ * @param {Array<import("../../coordinate.js").Coordinate>} segment1 The first line segment as an array of two points.
+ * @param {Array<import("../../coordinate.js").Coordinate>} segment2 The second line segment as an array of two points.
+ * @return {import("../../coordinate.js").Coordinate|undefined} The intersection point or `undefined` if no intersection.
+ */
+declare function getIntersectionPoint(segment1: Array<Coordinate>, segment2: Array<Coordinate>): Coordinate | undefined;
 
 /**
  * @param {Array<number>} flatCoordinates Flat coordinates.
@@ -22104,11 +22134,6 @@ declare function scale$1(flatCoordinates: Array<number>, offset: number, end: nu
 declare function translate$1(flatCoordinates: Array<number>, offset: number, end: number, stride: number, deltaX: number, deltaY: number, dest?: Array<number>): Array<number>;
 
 /**
- * User agent string says we are dealing with Firefox as browser.
- * @type {boolean}
- */
-declare const FIREFOX: boolean;
-/**
  * User agent string says we are dealing with Safari as browser.
  * @type {boolean}
  */
@@ -22229,33 +22254,47 @@ declare class DblClickDragZoom extends Interaction {
      */
     private trackedPointers_;
     /**
+     * @type {PointerEvent|null}
+     * @private
+     */
+    private down_;
+    /**
      * @type {Array<PointerEvent>}
      * @protected
      */
     protected targetPointers: Array<PointerEvent>;
     /**
-     * Handle pointer drag events.
-     * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
+     * Handles the {@link module:ol/MapBrowserEvent~MapBrowserEvent  map browser event} and may call into
+     * other functions, if event sequences like e.g. 'drag' or 'down-up' etc. are
+     * detected.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} mapBrowserEvent Map browser event.
+     * @return {boolean} `false` to stop event propagation.
+     * @api
+     * @override
      */
-    handleDragEvent(mapBrowserEvent: MapBrowserEvent<any>): void;
+    override handleEvent(mapBrowserEvent: MapBrowserEvent<PointerEvent>): boolean;
+    /**
+     * Handle pointer drag events.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} mapBrowserEvent Event.
+     */
+    handleDragEvent(mapBrowserEvent: MapBrowserEvent<PointerEvent>): void;
     lastDistance_: number | undefined;
     lastScaleDelta_: number | undefined;
     /**
      * Handle pointer down events.
-     * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} mapBrowserEvent Event.
      * @return {boolean} If the event was consumed.
      */
-    handleDownEvent(mapBrowserEvent: MapBrowserEvent<any>): boolean;
+    handleDownEvent(mapBrowserEvent: MapBrowserEvent<PointerEvent>): boolean;
     anchor_: any;
-    down_: MapBrowserEvent<any> | undefined;
     /**
      * Handle pointer up events zooming out.
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
      * @return {boolean} If the event was consumed.
      */
-    handleUpEvent(mapBrowserEvent: MapBrowserEvent<any>): boolean;
+    handleUpEvent(mapBrowserEvent: MapBrowserEvent): boolean;
     /**
-     * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} mapBrowserEvent Event.
      * @private
      */
     private updateTrackedPointers_;
@@ -23142,19 +23181,19 @@ type Options$17 = {
      * Function handling "down" events. If the function returns `true` then a drag
      * sequence is started.
      */
-    handleDownEvent?: ((arg0: MapBrowserEvent<any>) => boolean) | undefined;
+    handleDownEvent?: ((arg0: MapBrowserEvent) => boolean) | undefined;
     /**
      * Function handling "drag" events. This function is called on "move" events
      * during a drag sequence.
      */
-    handleDragEvent?: ((arg0: MapBrowserEvent<any>) => void) | undefined;
+    handleDragEvent?: ((arg0: MapBrowserEvent) => void) | undefined;
     /**
      * Method called by the map to notify the interaction that a browser event was
      * dispatched to the map. The function may return `false` to prevent the
      * propagation of the event to other interactions in the map's interactions
      * chain.
      */
-    handleEvent?: ((arg0: MapBrowserEvent<any>) => boolean) | undefined;
+    handleEvent?: ((arg0: MapBrowserEvent) => boolean) | undefined;
     /**
      * Function handling "move" events. This function is called on "move" events.
      * This functions is also called during a drag sequence, so during a drag
@@ -23162,12 +23201,12 @@ type Options$17 = {
      * If `handleDownEvent` is defined and it returns true this function will not
      * be called during a drag sequence.
      */
-    handleMoveEvent?: ((arg0: MapBrowserEvent<any>) => void) | undefined;
+    handleMoveEvent?: ((arg0: MapBrowserEvent) => void) | undefined;
     /**
      * Function handling "up" events. If the function returns `false` then the
      * current drag sequence is stopped.
      */
-    handleUpEvent?: ((arg0: MapBrowserEvent<any>) => boolean) | undefined;
+    handleUpEvent?: ((arg0: MapBrowserEvent) => boolean) | undefined;
     /**
      * Should the down event be propagated to other interactions, or should be
      * stopped?
@@ -23222,26 +23261,26 @@ declare class PointerInteraction extends Interaction {
      * @return {boolean} If the event was consumed.
      * @protected
      */
-    protected handleDownEvent(mapBrowserEvent: MapBrowserEvent<any>): boolean;
+    protected handleDownEvent(mapBrowserEvent: MapBrowserEvent): boolean;
     /**
      * Handle pointer drag events.
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
      * @protected
      */
-    protected handleDragEvent(mapBrowserEvent: MapBrowserEvent<any>): void;
+    protected handleDragEvent(mapBrowserEvent: MapBrowserEvent): void;
     /**
      * Handle pointer move events.
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
      * @protected
      */
-    protected handleMoveEvent(mapBrowserEvent: MapBrowserEvent<any>): void;
+    protected handleMoveEvent(mapBrowserEvent: MapBrowserEvent): void;
     /**
      * Handle pointer up events.
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Event.
      * @return {boolean} If the event was consumed.
      * @protected
      */
-    protected handleUpEvent(mapBrowserEvent: MapBrowserEvent<any>): boolean;
+    protected handleUpEvent(mapBrowserEvent: MapBrowserEvent): boolean;
     /**
      * This function is used to determine if "down" events should be propagated
      * to other interactions or should be stopped.
@@ -23284,7 +23323,7 @@ declare class DragBoxEvent extends BaseEvent {
      * @param {import("../coordinate.js").Coordinate} coordinate The event coordinate.
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Originating event.
      */
-    constructor(type: string, coordinate: Coordinate, mapBrowserEvent: MapBrowserEvent<any>);
+    constructor(type: string, coordinate: Coordinate, mapBrowserEvent: MapBrowserEvent);
     /**
      * The coordinate of the drag event.
      * @const
@@ -23297,7 +23336,7 @@ declare class DragBoxEvent extends BaseEvent {
      * @type {import("../MapBrowserEvent.js").default}
      * @api
      */
-    mapBrowserEvent: MapBrowserEvent<any>;
+    mapBrowserEvent: MapBrowserEvent;
 }
 
 /**
@@ -23305,7 +23344,7 @@ declare class DragBoxEvent extends BaseEvent {
  * {@link module :ol/pixel~Pixel}s and returns a `{boolean}`. If the condition is met,
  * true should be returned.
  */
-type EndCondition = (this: unknown, arg1: MapBrowserEvent<any>, arg2: Pixel, arg3: Pixel) => boolean;
+type EndCondition = (this: unknown, arg1: MapBrowserEvent, arg2: Pixel, arg3: Pixel) => boolean;
 type Options$16 = {
     /**
      * CSS class name for styling the box.
@@ -23332,7 +23371,7 @@ type Options$16 = {
      * Code to execute just
      * before `boxend` is fired.
      */
-    onBoxEnd?: ((this: DragBox, arg1: MapBrowserEvent<any>) => void) | undefined;
+    onBoxEnd?: ((this: DragBox, arg1: MapBrowserEvent) => void) | undefined;
 };
 /**
  * *
@@ -23391,7 +23430,7 @@ declare class DragBox extends PointerInteraction {
      * Function to execute just before `onboxend` is fired
      * @param {import("../MapBrowserEvent.js").default} event Event.
      */
-    onBoxEnd(event: MapBrowserEvent<any>): void;
+    onBoxEnd(event: MapBrowserEvent): void;
     /**
      * @type {import("../pixel.js").Pixel}
      * @private
@@ -23416,7 +23455,7 @@ declare class DragBox extends PointerInteraction {
      * @param {import("../pixel.js").Pixel} endPixel The end pixel of the box.
      * @return {boolean} Whether or not the boxend condition should be fired.
      */
-    defaultBoxEndCondition(mapBrowserEvent: MapBrowserEvent<any>, startPixel: Pixel, endPixel: Pixel): boolean;
+    defaultBoxEndCondition(mapBrowserEvent: MapBrowserEvent, startPixel: Pixel, endPixel: Pixel): boolean;
     /**
      * Returns geometry of last drawn box.
      * @return {import("../geom/Polygon.js").default} Geometry.
@@ -25750,7 +25789,1078 @@ declare class WebGLPointsLayerRenderer extends WebGLLayerRenderer<any> {
     renderDeclutter(): void;
 }
 
-type Options$_<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType$2<VectorSourceType>> = {
+declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_screenToWorldMatrix;\nuniform vec2 u_viewportSizePx;\nuniform float u_pixelRatio;\nuniform float u_globalAlpha;\nuniform float u_time;\nuniform float u_zoom;\nuniform float u_resolution;\nuniform float u_rotation;\nuniform vec4 u_renderExtent;\nuniform vec2 u_patternOrigin;\nuniform float u_depth;\nuniform mediump int u_hitDetection;\n\nconst float PI = 3.141592653589793238;\nconst float TWO_PI = 2.0 * PI;\nfloat currentLineMetric = 0.; // an actual value will be used in the stroke shaders\n";
+/**
+ * @typedef {Object} AttributeDescription
+ * @property {string} name Attribute name, as will be declared in the headers (including a_)
+ * @property {string} type Attribute type, either `float`, `vec2`, `vec4`...
+ * @property {string} varyingName Varying name, as will be declared in the fragment shader (including v_)
+ * @property {string} varyingType Varying type, either `float`, `vec2`, `vec4`...
+ * @property {string} varyingExpression GLSL expression to assign to the varying in the vertex shader
+ */
+/**
+ * @classdesc
+ * This class implements a classic builder pattern for generating many different types of shaders.
+ * Methods can be chained, e. g.:
+ *
+ * ```js
+ * const shader = new ShaderBuilder()
+ *   .addVarying('v_width', 'float', 'a_width')
+ *   .addUniform('u_time')
+ *   .setColorExpression('...')
+ *   .setSymbolSizeExpression('...')
+ *   .getSymbolFragmentShader();
+ * ```
+ *
+ * A note on [alpha premultiplication](https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied):
+ * The ShaderBuilder class expects all colors to **not having been alpha-premultiplied!** This is because alpha
+ * premultiplication is done at the end of each fragment shader.
+ */
+declare class ShaderBuilder {
+    /**
+     * Uniforms; these will be declared in the header (should include the type).
+     * @type {Array<string>}
+     * @private
+     */
+    private uniforms_;
+    /**
+     * Attributes; these will be declared in the header (should include the type).
+     * @type {Array<AttributeDescription>}
+     * @private
+     */
+    private attributes_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasSymbol_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private symbolSizeExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private symbolRotationExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private symbolOffsetExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private symbolColorExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private texCoordExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private discardExpression_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private symbolRotateWithView_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasStroke_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private strokeWidthExpression_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private strokeColorExpression_;
+    /**
+     * @private
+     */
+    private strokeOffsetExpression_;
+    /**
+     * @private
+     */
+    private strokeCapExpression_;
+    /**
+     * @private
+     */
+    private strokeJoinExpression_;
+    /**
+     * @private
+     */
+    private strokeMiterLimitExpression_;
+    /**
+     * @private
+     */
+    private strokeDistanceFieldExpression_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasFill_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private fillColorExpression_;
+    /**
+     * @type {Array<string>}
+     * @private
+     */
+    private vertexShaderFunctions_;
+    /**
+     * @type {Array<string>}
+     * @private
+     */
+    private fragmentShaderFunctions_;
+    /**
+     * Adds a uniform accessible in both fragment and vertex shaders.
+     * The given name should include a type, such as `sampler2D u_texture`.
+     * @param {string} name Uniform name
+     * @return {ShaderBuilder} the builder object
+     */
+    addUniform(name: string): ShaderBuilder;
+    /**
+     * Adds an attribute accessible in the vertex shader, read from the geometry buffer.
+     * The given name should include a type, such as `vec2 a_position`.
+     * Attributes will also be made available under the same name in fragment shaders.
+     * @param {string} name Attribute name
+     * @param {'float'|'vec2'|'vec3'|'vec4'} type Type
+     * @param {string} [transform] Expression which will be assigned to the varying in the vertex shader, and
+     * passed on to the fragment shader.
+     * @param {'float'|'vec2'|'vec3'|'vec4'} [transformedType] Type of the attribute after transformation;
+     * e.g. `vec4` after unpacking color components
+     * @return {ShaderBuilder} the builder object
+     */
+    addAttribute(name: string, type: "float" | "vec2" | "vec3" | "vec4", transform?: string, transformedType?: "float" | "vec2" | "vec3" | "vec4"): ShaderBuilder;
+    /**
+     * Sets an expression to compute the size of the shape.
+     * This expression can use all the uniforms and attributes available
+     * in the vertex shader, and should evaluate to a `vec2` value.
+     * @param {string} expression Size expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolSizeExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current symbol size expression
+     */
+    getSymbolSizeExpression(): string;
+    /**
+     * Sets an expression to compute the rotation of the shape.
+     * This expression can use all the uniforms and attributes available
+     * in the vertex shader, and should evaluate to a `float` value in radians.
+     * @param {string} expression Size expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolRotationExpression(expression: string): ShaderBuilder;
+    /**
+     * Sets an expression to compute the offset of the symbol from the point center.
+     * This expression can use all the uniforms and attributes available
+     * in the vertex shader, and should evaluate to a `vec2` value.
+     * @param {string} expression Offset expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolOffsetExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current symbol offset expression
+     */
+    getSymbolOffsetExpression(): string;
+    /**
+     * Sets an expression to compute the color of the shape.
+     * This expression can use all the uniforms, varyings and attributes available
+     * in the fragment shader, and should evaluate to a `vec4` value.
+     * @param {string} expression Color expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolColorExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current symbol color expression
+     */
+    getSymbolColorExpression(): string;
+    /**
+     * Sets an expression to compute the texture coordinates of the vertices.
+     * This expression can use all the uniforms and attributes available
+     * in the vertex shader, and should evaluate to a `vec4` value.
+     * @param {string} expression Texture coordinate expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setTextureCoordinateExpression(expression: string): ShaderBuilder;
+    /**
+     * Sets an expression to determine whether a fragment (pixel) should be discarded,
+     * i.e. not drawn at all.
+     * This expression can use all the uniforms, varyings and attributes available
+     * in the fragment shader, and should evaluate to a `bool` value (it will be
+     * used in an `if` statement)
+     * @param {string} expression Fragment discard expression
+     * @return {ShaderBuilder} the builder object
+     */
+    setFragmentDiscardExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current fragment discard expression
+     */
+    getFragmentDiscardExpression(): string;
+    /**
+     * Sets whether the symbols should rotate with the view or stay aligned with the map.
+     * Note: will only be used for point geometry shaders.
+     * @param {boolean} rotateWithView Rotate with view
+     * @return {ShaderBuilder} the builder object
+     */
+    setSymbolRotateWithView(rotateWithView: boolean): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke width expression, returning value in pixels
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeWidthExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke color expression, evaluate to `vec4`: can rely on currentLengthPx and currentRadiusPx
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeColorExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current stroke color expression
+     */
+    getStrokeColorExpression(): string;
+    /**
+     * @param {string} expression Stroke color expression, evaluate to `float`
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeOffsetExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke line cap expression, evaluate to `float`
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeCapExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke line join expression, evaluate to `float`
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeJoinExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke miter limit expression, evaluate to `float`
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeMiterLimitExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Stroke distance field expression, evaluate to `float`
+     * This can override the default distance field; can rely on currentLengthPx and currentRadiusPx
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokeDistanceFieldExpression(expression: string): ShaderBuilder;
+    /**
+     * @param {string} expression Fill color expression, evaluate to `vec4`
+     * @return {ShaderBuilder} the builder object
+     */
+    setFillColorExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current fill color expression
+     */
+    getFillColorExpression(): string;
+    addVertexShaderFunction(code: any): this;
+    addFragmentShaderFunction(code: any): this;
+    /**
+     * Generates a symbol vertex shader from the builder parameters
+     * @return {string|null} The full shader as a string; null if no size or color specified
+     */
+    getSymbolVertexShader(): string | null;
+    /**
+     * Generates a symbol fragment shader from the builder parameters
+     * @return {string|null} The full shader as a string; null if no size or color specified
+     */
+    getSymbolFragmentShader(): string | null;
+    /**
+     * Generates a stroke vertex shader from the builder parameters
+     * @return {string|null} The full shader as a string; null if no size or color specified
+     */
+    getStrokeVertexShader(): string | null;
+    /**
+     * Generates a stroke fragment shader from the builder parameters
+     *
+     * @return {string|null} The full shader as a string; null if no size or color specified
+     */
+    getStrokeFragmentShader(): string | null;
+    /**
+     * Generates a fill vertex shader from the builder parameters
+     *
+     * @return {string|null} The full shader as a string; null if no color specified
+     */
+    getFillVertexShader(): string | null;
+    /**
+     * Generates a fill fragment shader from the builder parameters
+     * @return {string|null} The full shader as a string; null if no color specified
+     */
+    getFillFragmentShader(): string | null;
+}
+
+type Feature = Feature$2;
+/**
+ * Object that holds a reference to a feature as well as the raw coordinates of its various geometries
+ */
+type GeometryBatchItem = {
+    /**
+     * Feature
+     */
+    feature: Feature | RenderFeature;
+    /**
+     * Array of flat coordinates arrays, one for each geometry related to the feature
+     */
+    flatCoordss: Array<Array<number>>;
+    /**
+     * Only defined for linestring and polygon batches
+     */
+    verticesCount?: number | undefined;
+    /**
+     * Only defined for polygon batches
+     */
+    ringsCount?: number | undefined;
+    /**
+     * Array of vertices counts in each ring for each geometry; only defined for polygons batches
+     */
+    ringsVerticesCounts?: number[][] | undefined;
+    /**
+     * The reference in the global batch (used for hit detection)
+     */
+    ref?: number | undefined;
+};
+/**
+ * A geometry batch specific to polygons
+ */
+type PolygonGeometryBatch = {
+    /**
+     * Dictionary of all entries in the batch with associated computed values.
+     * One entry corresponds to one feature. Key is feature uid.
+     */
+    entries: {
+        [x: string]: GeometryBatchItem;
+    };
+    /**
+     * Amount of geometries in the batch.
+     */
+    geometriesCount: number;
+    /**
+     * Amount of vertices from geometries in the batch.
+     */
+    verticesCount: number;
+    /**
+     * How many outer and inner rings in this batch.
+     */
+    ringsCount: number;
+};
+/**
+ * A geometry batch specific to lines
+ */
+type LineStringGeometryBatch = {
+    /**
+     * Dictionary of all entries in the batch with associated computed values.
+     * One entry corresponds to one feature. Key is feature uid.
+     */
+    entries: {
+        [x: string]: GeometryBatchItem;
+    };
+    /**
+     * Amount of geometries in the batch.
+     */
+    geometriesCount: number;
+    /**
+     * Amount of vertices from geometries in the batch.
+     */
+    verticesCount: number;
+};
+/**
+ * A geometry batch specific to points
+ */
+type PointGeometryBatch = {
+    /**
+     * Dictionary of all entries in the batch with associated computed values.
+     * One entry corresponds to one feature. Key is feature uid.
+     */
+    entries: {
+        [x: string]: GeometryBatchItem;
+    };
+    /**
+     * Amount of geometries in the batch.
+     */
+    geometriesCount: number;
+};
+/**
+ * @typedef {import("../../Feature.js").default} Feature
+ */
+/**
+ * @typedef {import("../../geom/Geometry.js").Type} GeometryType
+ */
+/**
+ * @typedef {Object} GeometryBatchItem Object that holds a reference to a feature as well as the raw coordinates of its various geometries
+ * @property {Feature|RenderFeature} feature Feature
+ * @property {Array<Array<number>>} flatCoordss Array of flat coordinates arrays, one for each geometry related to the feature
+ * @property {number} [verticesCount] Only defined for linestring and polygon batches
+ * @property {number} [ringsCount] Only defined for polygon batches
+ * @property {Array<Array<number>>} [ringsVerticesCounts] Array of vertices counts in each ring for each geometry; only defined for polygons batches
+ * @property {number} [ref] The reference in the global batch (used for hit detection)
+ */
+/**
+ * @typedef {PointGeometryBatch|LineStringGeometryBatch|PolygonGeometryBatch} GeometryBatch
+ */
+/**
+ * @typedef {Object} PolygonGeometryBatch A geometry batch specific to polygons
+ * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
+ * One entry corresponds to one feature. Key is feature uid.
+ * @property {number} geometriesCount Amount of geometries in the batch.
+ * @property {number} verticesCount Amount of vertices from geometries in the batch.
+ * @property {number} ringsCount How many outer and inner rings in this batch.
+ */
+/**
+ * @typedef {Object} LineStringGeometryBatch A geometry batch specific to lines
+ * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
+ * One entry corresponds to one feature. Key is feature uid.
+ * @property {number} geometriesCount Amount of geometries in the batch.
+ * @property {number} verticesCount Amount of vertices from geometries in the batch.
+ */
+/**
+ * @typedef {Object} PointGeometryBatch A geometry batch specific to points
+ * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
+ * One entry corresponds to one feature. Key is feature uid.
+ * @property {number} geometriesCount Amount of geometries in the batch.
+ */
+/**
+ * @classdesc This class is used to group several geometries of various types together for faster rendering.
+ * Three inner batches are maintained for polygons, lines and points. Each time a feature is added, changed or removed
+ * from the batch, these inner batches are modified accordingly in order to keep them up-to-date.
+ *
+ * A feature can be present in several inner batches, for example a polygon geometry will be present in the polygon batch
+ * and its linear rings will be present in the line batch. Multi geometries are also broken down into individual geometries
+ * and added to the corresponding batches in a recursive manner.
+ *
+ * Corresponding {@link module:ol/render/webgl/BatchRenderer} instances are then used to generate the render instructions
+ * and WebGL buffers (vertices and indices) for each inner batches; render instructions are stored on the inner batches,
+ * alongside the transform used to convert world coords to screen coords at the time these instructions were generated.
+ * The resulting WebGL buffers are stored on the batches as well.
+ *
+ * An important aspect of geometry batches is that there is no guarantee that render instructions and WebGL buffers
+ * are synchronized, i.e. render instructions can describe a new state while WebGL buffers might not have been written yet.
+ * This is why two world-to-screen transforms are stored on each batch: one for the render instructions and one for
+ * the WebGL buffers.
+ */
+declare class MixedGeometryBatch {
+    /**
+     * @private
+     */
+    private globalCounter_;
+    /**
+     * Refs are used as keys for hit detection.
+     * @type {Map<number, Feature|RenderFeature>}
+     * @private
+     */
+    private refToFeature_;
+    /**
+     * Features are split in "entries", which are individual geometries. We use the following map to share a single ref for all those entries.
+     * @type {Map<string, number>}
+     * @private
+     */
+    private uidToRef_;
+    /**
+     * The precision in WebGL shaders is limited.
+     * To keep the refs as small as possible we maintain an array of freed up references.
+     * @type {Array<number>}
+     * @private
+     */
+    private freeGlobalRef_;
+    /**
+     * @type {PolygonGeometryBatch}
+     */
+    polygonBatch: PolygonGeometryBatch;
+    /**
+     * @type {PointGeometryBatch}
+     */
+    pointBatch: PointGeometryBatch;
+    /**
+     * @type {LineStringGeometryBatch}
+     */
+    lineStringBatch: LineStringGeometryBatch;
+    /**
+     * @param {Array<Feature|RenderFeature>} features Array of features to add to the batch
+     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
+     */
+    addFeatures(features: Array<Feature | RenderFeature>, projectionTransform?: TransformFunction): void;
+    /**
+     * @param {Feature|RenderFeature} feature Feature to add to the batch
+     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
+     */
+    addFeature(feature: Feature | RenderFeature, projectionTransform?: TransformFunction): void;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
+     * @private
+     */
+    private clearFeatureEntryInPointBatch_;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
+     * @private
+     */
+    private clearFeatureEntryInLineStringBatch_;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     * @return {GeometryBatchItem|void} the cleared entry
+     * @private
+     */
+    private clearFeatureEntryInPolygonBatch_;
+    /**
+     * @param {import("../../geom.js").Geometry|RenderFeature} geometry Geometry
+     * @param {Feature|RenderFeature} feature Feature
+     * @private
+     */
+    private addGeometry_;
+    /**
+     * @param {GeometryType} type Geometry type
+     * @param {Array<number>} flatCoords Flat coordinates
+     * @param {Array<number> | Array<Array<number>> | null} ends Coordinate ends
+     * @param {Feature|RenderFeature} feature Feature
+     * @param {string} featureUid Feature uid
+     * @param {number} stride Stride
+     * @param {import('../../geom/Geometry.js').GeometryLayout} [layout] Layout
+     * @private
+     */
+    private addCoordinates_;
+    /**
+     * @param {string} featureUid Feature uid
+     * @param {GeometryBatchItem} entry The entry to add
+     * @return {GeometryBatchItem} the added entry
+     * @private
+     */
+    private addRefToEntry_;
+    /**
+     * Return a ref to the pool of available refs.
+     * @param {number} ref the ref to return
+     * @param {string} featureUid the feature uid
+     * @private
+     */
+    private removeRef_;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     */
+    changeFeature(feature: Feature | RenderFeature): void;
+    /**
+     * @param {Feature|RenderFeature} feature Feature
+     */
+    removeFeature(feature: Feature | RenderFeature): void;
+    clear(): void;
+    /**
+     * Resolve the feature associated to a ref.
+     * @param {number} ref Hit detected ref
+     * @return {Feature|RenderFeature} feature
+     */
+    getFeatureFromRef(ref: number): Feature | RenderFeature;
+    isEmpty(): boolean;
+    /**
+     * Will return a new instance of this class that only contains the features
+     * for which the provided callback returned true
+     * @param {function((Feature|RenderFeature)): boolean} featureFilter Feature filter callback
+     * @return {MixedGeometryBatch} Filtered geometry batch
+     */
+    filter(featureFilter: (arg0: (Feature | RenderFeature)) => boolean): MixedGeometryBatch;
+}
+
+/**
+ * A description of a custom attribute to be passed on to the GPU, with a value different
+ * for each feature.
+ */
+type AttributeDefinition = {
+    /**
+     * Amount of numerical values composing the attribute, either 1, 2, 3 or 4; in case size is > 1, the return value
+     * of the callback should be an array; if unspecified, assumed to be a single float value
+     */
+    size?: number | undefined;
+    /**
+     * This callback computes the numerical value of the
+     * attribute for a given feature.
+     */
+    callback: (this: GeometryBatchItem, arg1: FeatureLike) => number | Array<number>;
+};
+type AttributeDefinitions = {
+    [x: string]: AttributeDefinition;
+};
+type UniformDefinitions = {
+    [x: string]: UniformValue;
+};
+type WebGLBuffers = {
+    /**
+     * Array containing indices and vertices buffers for polygons
+     */
+    polygonBuffers: Array<WebGLArrayBuffer>;
+    /**
+     * Array containing indices and vertices buffers for line strings
+     */
+    lineStringBuffers: Array<WebGLArrayBuffer>;
+    /**
+     * Array containing indices and vertices buffers for points
+     */
+    pointBuffers: Array<WebGLArrayBuffer>;
+    /**
+     * Inverse of the transform applied when generating buffers
+     */
+    invertVerticesTransform: Transform;
+};
+type AsShaders = {
+    /**
+     * Shader builder with the appropriate presets.
+     */
+    builder: ShaderBuilder;
+    /**
+     * Custom attributes made available in the vertex shaders.
+     * Default shaders rely on the attributes in {@link Attributes}.
+     */
+    attributes?: {
+        [x: string]: AttributeDefinition;
+    } | undefined;
+    /**
+     * Additional uniforms usable in shaders.
+     */
+    uniforms?: {
+        [x: string]: UniformValue;
+    } | undefined;
+};
+type AsRule = {
+    /**
+     * Style
+     */
+    style: FlatStyle$1;
+    /**
+     * Filter
+     */
+    filter?: EncodedExpression | undefined;
+};
+type VectorStyle = AsRule | AsShaders;
+/**
+ * @typedef {Object} AttributeDefinition A description of a custom attribute to be passed on to the GPU, with a value different
+ * for each feature.
+ * @property {number} [size] Amount of numerical values composing the attribute, either 1, 2, 3 or 4; in case size is > 1, the return value
+ * of the callback should be an array; if unspecified, assumed to be a single float value
+ * @property {function(this:import("./MixedGeometryBatch.js").GeometryBatchItem, import("../../Feature").FeatureLike):number|Array<number>} callback This callback computes the numerical value of the
+ * attribute for a given feature.
+ */
+/**
+ * @typedef {Object<string, AttributeDefinition>} AttributeDefinitions
+ * @typedef {Object<string, import("../../webgl/Helper").UniformValue>} UniformDefinitions
+ */
+/**
+ * @typedef {Object} WebGLBuffers
+ * @property {Array<WebGLArrayBuffer>} polygonBuffers Array containing indices and vertices buffers for polygons
+ * @property {Array<WebGLArrayBuffer>} lineStringBuffers Array containing indices and vertices buffers for line strings
+ * @property {Array<WebGLArrayBuffer>} pointBuffers Array containing indices and vertices buffers for points
+ * @property {import("../../transform.js").Transform} invertVerticesTransform Inverse of the transform applied when generating buffers
+ */
+/**
+ * @typedef {Object} RenderInstructions
+ * @property {Float32Array|null} polygonInstructions Polygon instructions; null if nothing to render
+ * @property {Float32Array|null} lineStringInstructions LineString instructions; null if nothing to render
+ * @property {Float32Array|null} pointInstructions Point instructions; null if nothing to render
+ */
+/**
+ * @typedef {Object} ShaderProgram An object containing both shaders (vertex and fragment)
+ * @property {string} vertex Vertex shader source
+ * @property {string} fragment Fragment shader source
+ */
+/**
+ * @typedef {Object} AsShaders
+ * @property {import("./ShaderBuilder.js").ShaderBuilder} builder Shader builder with the appropriate presets.
+ * @property {AttributeDefinitions} [attributes] Custom attributes made available in the vertex shaders.
+ * Default shaders rely on the attributes in {@link Attributes}.
+ * @property {UniformDefinitions} [uniforms] Additional uniforms usable in shaders.
+ */
+/**
+ * @typedef {Object} AsRule
+ * @property {import('../../style/flat.js').FlatStyle} style Style
+ * @property {import("../../expr/expression.js").EncodedExpression} [filter] Filter
+ */
+/**
+ * @typedef {AsRule|AsShaders} VectorStyle
+ */
+/**
+ * @classdesc This class is responsible for:
+ * 1. generate WebGL buffers according to a provided style, using a MixedGeometryBatch as input
+ * 2. rendering geometries contained in said buffers
+ *
+ * A layer renderer will typically maintain several of these in order to have several styles rendered separately.
+ *
+ * A VectorStyleRenderer instance can be created either from a literal style or from shaders using either
+ * `VectorStyleRenderer.fromStyle` or `VectorStyleRenderer.fromShaders`. The shaders should not be provided explicitly
+ * but instead as a preconfigured ShaderBuilder instance.
+ *
+ * The `generateBuffers` method returns a promise resolving to WebGL buffers that are intended to be rendered by the
+ * same renderer.
+ */
+declare class VectorStyleRenderer {
+    /**
+     * @param {VectorStyle} styleOrShaders Literal style or custom shaders
+     * @param {import('../../style/flat.js').StyleVariables} variables Style variables
+     * @param {import('../../webgl/Helper.js').default} helper Helper
+     * @param {boolean} [enableHitDetection] Whether to enable the hit detection (needs compatible shader)
+     * @param {import("../../expr/expression.js").ExpressionValue} [filter] Optional filter expression
+     */
+    constructor(styleOrShaders: VectorStyle, variables: StyleVariables, helper: WebGLHelper, enableHitDetection?: boolean, filter?: ExpressionValue);
+    /**
+     * @private
+     * @type {import('../../webgl/Helper.js').default}
+     */
+    private helper_;
+    /**
+     * @private
+     */
+    private hitDetectionEnabled_;
+    /**
+     * @private
+     * @type {WebGLProgram}
+     */
+    private fillProgram_;
+    /**
+     * @private
+     * @type {WebGLProgram}
+     */
+    private strokeProgram_;
+    /**
+     * @private
+     * @type {WebGLProgram}
+     */
+    private symbolProgram_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasFill_;
+    /**
+     * @private
+     */
+    private fillVertexShader_;
+    /**
+     * @private
+     */
+    private fillFragmentShader_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasStroke_;
+    /**
+     * @private
+     */
+    private strokeVertexShader_;
+    /**
+     * @private
+     */
+    private strokeFragmentShader_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hasSymbol_;
+    /**
+     * @private
+     */
+    private symbolVertexShader_;
+    /**
+     * @private
+     */
+    private symbolFragmentShader_;
+    /**
+     * @type {function(import('../../Feature.js').FeatureLike): boolean}
+     * @private
+     */
+    private featureFilter_;
+    /**
+     * @private
+     */
+    private customAttributes_;
+    /**
+     * @private
+     */
+    private uniforms_;
+    /**
+     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     * @private
+     */
+    private polygonAttributesDesc_;
+    /**
+     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     * @private
+     */
+    private lineStringAttributesDesc_;
+    /**
+     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     * @private
+     */
+    private pointAttributesDesc_;
+    /**
+     * Will apply the style filter when generating geometry batches (if it can be evaluated outside a map context)
+     * @param {import("../../expr/expression.js").ExpressionValue} filter Style filter
+     * @return {function(import('../../Feature.js').FeatureLike): boolean} Feature filter
+     * @private
+     */
+    private computeFeatureFilter;
+    /**
+     * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
+     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+     * @return {Promise<WebGLBuffers|null>} A promise resolving to WebGL buffers; returns null if buffers are empty
+     */
+    generateBuffers(geometryBatch: MixedGeometryBatch, transform: Transform): Promise<WebGLBuffers | null>;
+    /**
+     * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
+     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+     * @return {RenderInstructions} Render instructions
+     * @private
+     */
+    private generateRenderInstructions_;
+    /**
+     * @param {Float32Array|null} renderInstructions Render instructions
+     * @param {import("../../geom/Geometry.js").Type} geometryType Geometry type
+     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+     * @return {Promise<Array<WebGLArrayBuffer>>|null} Indices buffer and vertices buffer; null if nothing to render
+     * @private
+     */
+    private generateBuffersForType_;
+    /**
+     * Render the geometries in the given buffers.
+     * @param {WebGLBuffers} buffers WebGL Buffers to draw
+     * @param {import("../../Map.js").FrameState} frameState Frame state
+     * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
+     */
+    render(buffers: WebGLBuffers, frameState: FrameState, preRenderCallback: () => void): void;
+    /**
+     * @param {WebGLArrayBuffer} indicesBuffer Indices buffer
+     * @param {WebGLArrayBuffer} verticesBuffer Vertices buffer
+     * @param {WebGLProgram} program Program
+     * @param {Array<import('../../webgl/Helper.js').AttributeDescription>} attributes Attribute descriptions
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
+     * @private
+     */
+    private renderInternal_;
+    /**
+     * @param {import('../../webgl/Helper.js').default} helper Helper
+     * @param {WebGLBuffers} buffers WebGL Buffers to reload if any
+     */
+    setHelper(helper: WebGLHelper, buffers?: WebGLBuffers): void;
+}
+
+type StyleAsShaders$2 = AsShaders;
+type Options$_ = {
+    /**
+     * A CSS class name to set to the canvas element.
+     */
+    className?: string | undefined;
+    /**
+     * Flat vector style; also accepts shaders
+     */
+    style: FlatStyleLike | Array<StyleAsShaders$2> | StyleAsShaders$2;
+    /**
+     * Style variables
+     */
+    variables: {
+        [x: string]: string | number | boolean | number[];
+    };
+    /**
+     * Setting this to true will provide a slight performance boost, but will
+     * prevent all hit detection on the layer.
+     */
+    disableHitDetection?: boolean | undefined;
+    /**
+     * Post-processes definitions
+     */
+    postProcesses?: PostProcessesOptions[] | undefined;
+};
+/**
+ * @typedef {import('../../render/webgl/VectorStyleRenderer.js').AsShaders} StyleAsShaders
+ */
+/**
+ * @typedef {import('../../render/webgl/VectorStyleRenderer.js').AsRule} StyleAsRule
+ */
+/**
+ * @typedef {Object} Options
+ * @property {string} [className='ol-layer'] A CSS class name to set to the canvas element.
+ * @property {import('../../style/flat.js').FlatStyleLike | Array<StyleAsShaders> | StyleAsShaders} style Flat vector style; also accepts shaders
+ * @property {Object<string, number|Array<number>|string|boolean>} variables Style variables
+ * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
+ * prevent all hit detection on the layer.
+ * @property {Array<import("./Layer").PostProcessesOptions>} [postProcesses] Post-processes definitions
+ */
+/**
+ * @classdesc
+ * Experimental WebGL vector renderer. Supports polygons, lines and points:
+ *  Polygons are broken down into triangles
+ *  Lines are rendered as strips of quads
+ *  Points are rendered as quads
+ *
+ * You need to provide vertex and fragment shaders as well as custom attributes for each type of geometry. All shaders
+ * can access the uniforms in the {@link module:ol/webgl/Helper~DefaultUniform} enum.
+ * The vertex shaders can access the following attributes depending on the geometry type:
+ *  For polygons: {@link module:ol/render/webgl/PolygonBatchRenderer~Attributes}
+ *  For line strings: {@link module:ol/render/webgl/LineStringBatchRenderer~Attributes}
+ *  For points: {@link module:ol/render/webgl/PointBatchRenderer~Attributes}
+ *
+ * Please note that the fragment shaders output should have premultiplied alpha, otherwise visual anomalies may occur.
+ *
+ * Note: this uses {@link module:ol/webgl/Helper~WebGLHelper} internally.
+ */
+declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
+    /**
+     * @param {import("../../layer/Layer.js").default} layer Layer.
+     * @param {Options} options Options.
+     */
+    constructor(layer: Layer, options: Options$_);
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private hitDetectionEnabled_;
+    /**
+     * @type {WebGLRenderTarget}
+     * @private
+     */
+    private hitRenderTarget_;
+    /**
+     * @private
+     */
+    private sourceRevision_;
+    /**
+     * @private
+     */
+    private previousExtent_;
+    /**
+     * This transform is updated on every frame and is the composition of:
+     * - invert of the world->screen transform that was used when rebuilding buffers (see `this.renderTransform_`)
+     * - current world->screen transform
+     * @type {import("../../transform.js").Transform}
+     * @private
+     */
+    private currentTransform_;
+    /**
+     * @private
+     */
+    private tmpCoords_;
+    /**
+     * @private
+     */
+    private tmpTransform_;
+    /**
+     * @private
+     */
+    private tmpMat4_;
+    /**
+     * @type {import("../../transform.js").Transform}
+     * @private
+     */
+    private currentFrameStateTransform_;
+    /**
+     * @type {import('../../style/flat.js').StyleVariables}
+     * @private
+     */
+    private styleVariables_;
+    /**
+     * @type {Array<StyleAsRule | StyleAsShaders>}
+     * @private
+     */
+    private styles_;
+    /**
+     * @type {Array<VectorStyleRenderer>}
+     * @private
+     */
+    private styleRenderers_;
+    /**
+     * @type {Array<import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers>}
+     * @private
+     */
+    private buffers_;
+    /**
+     * @private
+     */
+    private batch_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private initialFeaturesAdded_;
+    /**
+     * @private
+     * @type {Array<import("../../events.js").EventsKey|null>}
+     */
+    private sourceListenKeys_;
+    /**
+     * @private
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     */
+    private addInitialFeatures_;
+    /**
+     * @param {Options} options Options.
+     * @private
+     */
+    private applyOptions_;
+    /**
+     * @private
+     */
+    private createRenderers_;
+    /**
+     * @override
+     */
+    override reset(options: any): void;
+    /**
+     * @param {import("../../proj.js").TransformFunction} projectionTransform Transform function.
+     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
+     * @private
+     */
+    private handleSourceFeatureAdded_;
+    /**
+     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
+     * @private
+     */
+    private handleSourceFeatureChanged_;
+    /**
+     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
+     * @private
+     */
+    private handleSourceFeatureDelete_;
+    /**
+     * @private
+     */
+    private handleSourceFeatureClear_;
+    /**
+     * @param {import("../../transform.js").Transform} batchInvertTransform Inverse of the transformation in which geometries are expressed
+     * @private
+     */
+    private applyUniforms_;
+    /**
+     * Render the layer.
+     * @param {import("../../Map.js").FrameState} frameState Frame state.
+     * @return {HTMLElement} The rendered element.
+     * @override
+     */
+    override renderFrame(frameState: FrameState): HTMLElement;
+    /**
+     * Render the world, either to the main framebuffer or to the hit framebuffer
+     * @param {import("../../Map.js").FrameState} frameState current frame state
+     * @param {boolean} forHitDetection whether the rendering is for hit detection
+     * @param {number} startWorld the world to render in the first iteration
+     * @param {number} endWorld the last world to render
+     * @param {number} worldWidth the width of the worlds being rendered
+     */
+    renderWorlds(frameState: FrameState, forHitDetection: boolean, startWorld: number, endWorld: number, worldWidth: number): void;
+    /**
+     * Will release a set of Webgl buffers
+     * @param {import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers} buffers Buffers
+     */
+    disposeBuffers(buffers: WebGLBuffers): void;
+    renderDeclutter(): void;
+}
+
+type Options$Z<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType$2<VectorSourceType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -25915,7 +27025,7 @@ declare class VectorImageLayer<VectorSourceType extends VectorSource<FeatureType
     /**
      * @param {Options<VectorSourceType, FeatureType>} [options] Options.
      */
-    constructor(options?: Options$_<VectorSourceType, FeatureType>);
+    constructor(options?: Options$Z<VectorSourceType, FeatureType>);
     /**
      * @type {number}
      * @private
@@ -25954,7 +27064,7 @@ type ImageSourceEventTypes = "imageloadend" | "imageloaderror" | "imageloadstart
  * *
  */
 type ImageSourceOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2, ObjectEvent, Return> & OnSignature<ImageSourceEventTypes, ImageSourceEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | ImageSourceEventTypes, Return>;
-type Options$Z = {
+type Options$Y = {
     /**
      * Attributions.
      */
@@ -26016,7 +27126,7 @@ declare class ImageSource extends Source {
     /**
      * @param {Options} options Single image source options.
      */
-    constructor(options: Options$Z);
+    constructor(options: Options$Y);
     /***
      * @type {ImageSourceOnSignature<import("../events").EventsKey>}
      */
@@ -26115,7 +27225,7 @@ declare class ImageSource extends Source {
     protected handleImageChange(event: BaseEvent): void;
 }
 
-type Options$Y<ImageSourceType extends ImageSource> = {
+type Options$X<ImageSourceType extends ImageSource> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -26222,7 +27332,7 @@ declare class BaseImageLayer<ImageSourceType extends ImageSource, RendererType e
     /**
      * @param {Options<ImageSourceType>} [options] Layer options.
      */
-    constructor(options?: Options$Y<ImageSourceType>);
+    constructor(options?: Options$X<ImageSourceType>);
 }
 
 /**
@@ -26241,7 +27351,7 @@ declare class ImageLayer<ImageSourceType extends ImageSource> extends BaseImageL
     /**
      * @param {import("./BaseImage.js").Options<ImageSourceType>} [options] Layer options.
      */
-    constructor(options?: Options$Y<ImageSourceType>);
+    constructor(options?: Options$X<ImageSourceType>);
 }
 //# sourceMappingURL=Image.d.ts.map
 
@@ -26315,7 +27425,7 @@ declare class CanvasLayerRenderer<LayerType extends Layer> extends LayerRenderer
     /**
      * Get a rendering container from an existing target, if compatible.
      * @param {HTMLElement} target Potential render target.
-     * @param {string} transform CSS Transform.
+     * @param {string} transform CSS transform matrix.
      * @param {string} [backgroundColor] Background color.
      */
     useContainer(target: HTMLElement, transform: string, backgroundColor?: string): void;
@@ -26462,7 +27572,7 @@ declare class CanvasVectorImageLayerRenderer extends CanvasImageLayerRenderer {
 }
 //# sourceMappingURL=VectorImageLayer.d.ts.map
 
-type Options$X = {
+type Options$W = {
     /**
      * Deprecated.  Use the cacheSize option on the layer instead.
      */
@@ -26674,7 +27784,7 @@ declare class BingMaps extends TileImage {
     /**
      * @param {Options} options Bing Maps options.
      */
-    constructor(options: Options$X);
+    constructor(options: Options$W);
     /**
      * @private
      * @type {boolean}
@@ -26725,7 +27835,7 @@ declare class BingMaps extends TileImage {
     handleImageryMetadataResponse(response: BingMapsImageryMetadataResponse): void;
 }
 
-type Options$W = {
+type Options$V = {
     /**
      * Attributions.
      */
@@ -26901,7 +28011,7 @@ declare class XYZ extends TileImage {
     /**
      * @param {Options} [options] XYZ options.
      */
-    constructor(options?: Options$W);
+    constructor(options?: Options$V);
     /**
      * @private
      * @type {number}
@@ -26909,7 +28019,7 @@ declare class XYZ extends TileImage {
     private gutter_;
 }
 
-type Options$V = {
+type Options$U = {
     /**
      * Attributions.
      */
@@ -27011,7 +28121,7 @@ declare class CartoDB extends XYZ {
     /**
      * @param {Options} options CartoDB options.
      */
-    constructor(options: Options$V);
+    constructor(options: Options$U);
     /**
      * @type {string}
      * @private
@@ -27080,7 +28190,7 @@ declare class CartoDB extends XYZ {
 }
 
 type GeometryFunction$1<FeatureType extends FeatureLike = FeatureLike> = (feature: FeatureType) => (Point$2 | null);
-type Options$U<FeatureType extends FeatureLike = Feature$2<Geometry$1>> = {
+type Options$T<FeatureType extends FeatureLike = Feature$2<Geometry$1>> = {
     /**
      * Attributions.
      */
@@ -27196,7 +28306,7 @@ declare class Cluster<FeatureType extends FeatureLike = Feature$2<Geometry$1>> e
     /**
      * @param {Options<FeatureType>} [options] Cluster options.
      */
-    constructor(options?: Options$U<FeatureType>);
+    constructor(options?: Options$T<FeatureType>);
     /**
      * @type {number|undefined}
      * @protected
@@ -27318,7 +28428,7 @@ type LoaderOptions$5 = {
  * returns {@link import ("../DataTile.js").Data data} for a tile or a promise for the same.
  */
 type Loader$1 = (arg0: number, arg1: number, arg2: number, arg3: LoaderOptions$5) => (Data | Promise<Data>);
-type Options$T = {
+type Options$S = {
     /**
      * Data loader.  Called with z, x, and y tile coordinates.
      * Returns {@link import ("../DataTile.js").Data data} for a tile or a promise for the same.
@@ -27456,7 +28566,7 @@ declare class DataTileSource<TileType extends Tile$1 = DataTile> extends TileSou
     /**
      * @param {Options} options DataTile source options.
      */
-    constructor(options: Options$T);
+    constructor(options: Options$S);
     /**
      * @private
      * @type {number}
@@ -27987,7 +29097,7 @@ type GeoTIFFSourceOptions = {
      */
     cacheSize?: number | undefined;
 };
-type Options$S = {
+type Options$R = {
     /**
      * List of information about GeoTIFF sources.
      * Multiple sources can be combined when their resolution sets are equal after applying a scale.
@@ -28089,7 +29199,7 @@ declare class GeoTIFFSource extends DataTileSource<DataTile> {
     /**
      * @param {Options} options Data tile options.
      */
-    constructor(options: Options$S);
+    constructor(options: Options$R);
     /**
      * @type {Array<SourceInfo>}
      * @private
@@ -28206,7 +29316,7 @@ declare class GeoTIFFSource extends DataTileSource<DataTile> {
     private composeTile_;
 }
 
-type Options$R = {
+type Options$Q = {
     /**
      * Google Map Tiles API key. Get yours at https://developers.google.com/maps/documentation/tile/get-api-key.
      */
@@ -28358,7 +29468,7 @@ declare class Google extends TileImage {
     /**
      * @param {Options} options Google Maps options.
      */
-    constructor(options: Options$R);
+    constructor(options: Options$Q);
     /**
      * @type {string}
      * @private
@@ -28427,7 +29537,7 @@ declare class Google extends TileImage {
     private fetchAttributions_;
 }
 
-type Options$Q = {
+type Options$P = {
     /**
      * Attributions.
      */
@@ -28530,7 +29640,7 @@ declare class ImageArcGISRest extends ImageSource {
     /**
      * @param {Options} [options] Image ArcGIS Rest Options.
      */
-    constructor(options?: Options$Q);
+    constructor(options?: Options$P);
     /**
      * @private
      * @type {?string}
@@ -28608,6 +29718,12 @@ declare class ImageArcGISRest extends ImageSource {
      */
     setUrl(url: string | undefined): void;
     /**
+     * Set the user-provided params.
+     * @param {Object} params Params.
+     * @api
+     */
+    setParams(params: any): void;
+    /**
      * Update the user-provided params.
      * @param {Object} params Params.
      * @api
@@ -28625,7 +29741,7 @@ declare class ImageArcGISRest extends ImageSource {
  * references the {@link module :ol/source/ImageCanvas~ImageCanvasSource}.
  */
 type FunctionType$1 = (this: ImageCanvas, arg1: Extent$1, arg2: number, arg3: number, arg4: Size, arg5: Projection) => HTMLCanvasElement;
-type Options$P = {
+type Options$O = {
     /**
      * Attributions.
      */
@@ -28708,7 +29824,7 @@ declare class ImageCanvasSource extends ImageSource {
     /**
      * @param {Options} [options] ImageCanvas options.
      */
-    constructor(options?: Options$P);
+    constructor(options?: Options$O);
     /**
      * @private
      * @type {FunctionType}
@@ -28740,7 +29856,7 @@ declare class ImageCanvasSource extends ImageSource {
     override getImageInternal(extent: Extent$1, resolution: number, pixelRatio: number, projection: Projection): ImageCanvas;
 }
 
-type Options$O = {
+type Options$N = {
     /**
      * The mapagent url.
      */
@@ -28828,7 +29944,7 @@ declare class ImageMapGuide extends ImageSource {
     /**
      * @param {Options} options ImageMapGuide options.
      */
-    constructor(options: Options$O);
+    constructor(options: Options$N);
     /**
      * @private
      * @type {?string}
@@ -28898,6 +30014,12 @@ declare class ImageMapGuide extends ImageSource {
      */
     getImageLoadFunction(): LoadFunction;
     /**
+     * Set the user-provided params.
+     * @param {Object} params Params.
+     * @api
+     */
+    setParams(params: any): void;
+    /**
      * Update the user-provided params.
      * @param {Object} params Params.
      * @api
@@ -28911,7 +30033,7 @@ declare class ImageMapGuide extends ImageSource {
     setImageLoadFunction(imageLoadFunction: LoadFunction): void;
 }
 
-type Options$N = {
+type Options$M = {
     /**
      * Attributions.
      */
@@ -28968,7 +30090,7 @@ declare class Static extends ImageSource {
     /**
      * @param {Options} options ImageStatic options.
      */
-    constructor(options: Options$N);
+    constructor(options: Options$M);
     /**
      * @private
      * @type {string}
@@ -29000,7 +30122,7 @@ declare class Static extends ImageSource {
 type Loader = (arg0: number, arg1: number, arg2: number, arg3: LoaderOptions$5) => (ImageLike | Promise<ImageLike>);
 type UrlGetter = (arg0: number, arg1: number, arg2: number, arg3: LoaderOptions$5) => string;
 type UrlLike = string | Array<string> | UrlGetter;
-type Options$M = {
+type Options$L = {
     /**
      * The image URL template.  In addition to a single URL template, an array of URL templates or a function
      * can be provided.  If a function is provided, it will be called with z, x, y tile coordinates and loader options and should
@@ -29090,7 +30212,7 @@ declare class ImageTileSource extends DataTileSource<ImageTile> {
     /**
      * @param {Options} [options] DataTile source options.
      */
-    constructor(options?: Options$M);
+    constructor(options?: Options$L);
     /**
      * @param {UrlLike} url The new URL.
      * @api
@@ -29248,7 +30370,7 @@ type LoaderOptions$4 = {
     load?: ((arg0: HTMLImageElement, arg1: string) => Promise<ImageLike>) | undefined;
 };
 
-type Options$L = {
+type Options$K = {
     /**
      * Attributions.
      */
@@ -29343,7 +30465,7 @@ declare class ImageWMS extends ImageSource {
     /**
      * @param {Options} [options] ImageWMS options.
      */
-    constructor(options?: Options$L);
+    constructor(options?: Options$K);
     /**
      * @private
      * @type {?string}
@@ -29451,6 +30573,12 @@ declare class ImageWMS extends ImageSource {
      */
     setUrl(url: string | undefined): void;
     /**
+     * Set the user-provided params.
+     * @param {Object} params Params.
+     * @api
+     */
+    setParams(params: any): void;
+    /**
      * Update the user-provided params.
      * @param {Object} params Params.
      * @api
@@ -29458,7 +30586,7 @@ declare class ImageWMS extends ImageSource {
     updateParams(params: any): void;
 }
 
-type Options$K = {
+type Options$J = {
     /**
      * URL to the OGC Map Tileset endpoint.
      */
@@ -29571,7 +30699,7 @@ declare class OGCMapTile extends TileImage {
     /**
      * @param {Options} options OGC map tile options.
      */
-    constructor(options: Options$K);
+    constructor(options: Options$J);
     /**
      * @param {import("./ogcTileUtil.js").TileSetInfo} tileSetInfo Tile set info.
      * @private
@@ -29584,7 +30712,7 @@ declare class OGCMapTile extends TileImage {
     private handleError_;
 }
 
-type Options$J<FeatureType extends FeatureLike = RenderFeature> = {
+type Options$I<FeatureType extends FeatureLike = RenderFeature> = {
     /**
      * Attributions.
      */
@@ -29791,7 +30919,7 @@ declare class VectorTile<FeatureType extends FeatureLike = RenderFeature> extend
     /**
      * @param {!Options<FeatureType>} options Vector tile options.
      */
-    constructor(options: Options$J<FeatureType>);
+    constructor(options: Options$I<FeatureType>);
     /**
      * @private
      * @type {import("../format/Feature.js").default<FeatureType>|null}
@@ -29854,7 +30982,7 @@ declare class VectorTile<FeatureType extends FeatureLike = RenderFeature> extend
     setOverlaps(overlaps: boolean): void;
 }
 
-type Options$I<FeatureType extends FeatureLike = RenderFeature> = {
+type Options$H<FeatureType extends FeatureLike = RenderFeature> = {
     /**
      * URL to the OGC Vector Tileset endpoint.
      */
@@ -29974,7 +31102,7 @@ declare class OGCVectorTile<FeatureType extends FeatureLike = RenderFeature> ext
     /**
      * @param {Options<FeatureType>} options OGC vector tile options.
      */
-    constructor(options: Options$I<FeatureType>);
+    constructor(options: Options$H<FeatureType>);
     /**
      * @param {import("./ogcTileUtil.js").TileSetInfo} tileSetInfo Tile set info.
      * @private
@@ -29987,7 +31115,7 @@ declare class OGCVectorTile<FeatureType extends FeatureLike = RenderFeature> ext
     private handleError_;
 }
 
-type Options$H = {
+type Options$G = {
     /**
      * Attributions.
      */
@@ -30081,7 +31209,7 @@ declare class OSM extends XYZ {
     /**
      * @param {Options} [options] Open Street Map options.
      */
-    constructor(options?: Options$H);
+    constructor(options?: Options$G);
 }
 
 /**
@@ -30146,7 +31274,7 @@ type Operation = (arg0: (Array<Array<number>> | Array<ImageData>), arg1: any) =>
  */
 type RasterOperationType = "pixel" | "image";
 type RasterSourceEventTypes = ImageSourceEventTypes | "beforeoperations" | "afteroperations";
-type Options$G = {
+type Options$F = {
     /**
      * Input
      * sources or layers.  For vector data, use an VectorImage layer.
@@ -30234,7 +31362,7 @@ declare class RasterSource extends ImageSource {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$G);
+    constructor(options: Options$F);
     /***
      * @type {RasterSourceOnSignature<import("../events").EventsKey>}
      */
@@ -30354,7 +31482,7 @@ declare class RasterSource extends ImageSource {
     override getResolutions(projection?: Projection): Array<number> | null;
 }
 
-type Options$F = {
+type Options$E = {
     /**
      * Deprecated.  Use the cacheSize option on the layer instead.
      */
@@ -30453,10 +31581,10 @@ declare class StadiaMaps extends XYZ {
     /**
      * @param {Options} options StadiaMaps options.
      */
-    constructor(options: Options$F);
+    constructor(options: Options$E);
 }
 
-type Options$E = {
+type Options$D = {
     /**
      * Attributions.
      */
@@ -30606,7 +31734,7 @@ declare class TileArcGISRest extends TileImage {
     /**
      * @param {Options} [options] Tile ArcGIS Rest options.
      */
-    constructor(options?: Options$E);
+    constructor(options?: Options$D);
     /**
      * @private
      * @type {!Object}
@@ -30646,6 +31774,12 @@ declare class TileArcGISRest extends TileImage {
      */
     private getRequestUrl_;
     /**
+     * Set the user-provided params.
+     * @param {Object} params Params.
+     * @api
+     */
+    setParams(params: any): void;
+    /**
      * Update the user-provided params.
      * @param {Object} params Params.
      * @api
@@ -30653,7 +31787,7 @@ declare class TileArcGISRest extends TileImage {
     updateParams(params: any): void;
 }
 
-type Options$D = {
+type Options$C = {
     /**
      * Optional projection.
      */
@@ -30710,7 +31844,7 @@ declare class TileDebug extends ImageTileSource {
     /**
      * @param {Options} [options] Debug tile options.
      */
-    constructor(options?: Options$D);
+    constructor(options?: Options$C);
 }
 
 type Config = {
@@ -30767,7 +31901,7 @@ type Config = {
      */
     center?: number[] | undefined;
 };
-type Options$C = {
+type Options$B = {
     /**
      * Attributions.
      */
@@ -30891,7 +32025,7 @@ declare class TileJSON extends TileImage {
     /**
      * @param {Options} options TileJSON options.
      */
-    constructor(options: Options$C);
+    constructor(options: Options$B);
     /**
      * @type {Config}
      * @private
@@ -30928,7 +32062,7 @@ declare class TileJSON extends TileImage {
     protected handleTileJSONError(): void;
 }
 
-type Options$B = {
+type Options$A = {
     /**
      * Attributions.
      */
@@ -31107,7 +32241,7 @@ declare class TileWMS extends TileImage {
     /**
      * @param {Options} [options] Tile WMS options.
      */
-    constructor(options?: Options$B);
+    constructor(options?: Options$A);
     /**
      * @private
      * @type {number}
@@ -31191,8 +32325,20 @@ declare class TileWMS extends TileImage {
      */
     private getKeyForParams_;
     /**
-     * Update the user-provided params.
-     * @param {Object} params Params.
+     * @param {Object} params New URL paremeters.
+     * @private
+     */
+    private setParams_;
+    /**
+     * Set the URL parameters passed to the WMS source.
+     * @param {Object} params New URL paremeters.
+     * @api
+     */
+    setParams(params: any): void;
+    /**
+     * Update the URL parameters. This method can be used to update a subset of the WMS
+     * parameters. Call `setParams` to set all of the parameters.
+     * @param {Object} params Updated URL parameters.
      * @api
      */
     updateParams(params: any): void;
@@ -31298,7 +32444,7 @@ declare class CustomTile extends Tile$1 {
     private onXHRError_;
 }
 
-type Options$A = {
+type Options$z = {
     /**
      * If `true` the UTFGrid source loads the tiles based on their "visibility".
      * This improves the speed of response, but increases traffic.
@@ -31361,7 +32507,7 @@ declare class UTFGrid extends TileSource<Tile$1> {
     /**
      * @param {Options} options Source options.
      */
-    constructor(options: Options$A);
+    constructor(options: Options$z);
     /**
      * @private
      * @type {boolean}
@@ -31382,6 +32528,11 @@ declare class UTFGrid extends TileSource<Tile$1> {
      * @type {boolean}
      */
     private jsonp_;
+    /**
+     * @private
+     * @type {LRUCache}
+     */
+    private tileCache_;
     /**
      * @private
      * @param {Event} event The load event.
@@ -31436,7 +32587,7 @@ declare class UTFGrid extends TileSource<Tile$1> {
  * Request encoding. One of 'KVP', 'REST'.
  */
 type RequestEncoding = "KVP" | "REST";
-type Options$z = {
+type Options$y = {
     /**
      * Attributions.
      */
@@ -31610,7 +32761,7 @@ declare class WMTS extends TileImage {
     /**
      * @param {Options} options WMTS options.
      */
-    constructor(options: Options$z);
+    constructor(options: Options$y);
     /**
      * @private
      * @type {string}
@@ -31709,7 +32860,7 @@ declare class WMTS extends TileImage {
 }
 
 type TierSizeCalculation = "default" | "truncated";
-type Options$y = {
+type Options$x = {
     /**
      * Attributions.
      */
@@ -31836,7 +32987,7 @@ declare class Zoomify extends TileImage {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$y);
+    constructor(options: Options$x);
 }
 
 /**
@@ -32047,7 +33198,7 @@ type VectorTileRenderType = "hybrid" | "vector";
  * *
  */
 type ExtractedFeatureType$3<T> = T extends VectorTile<infer U extends FeatureLike> ? U : never;
-type Options$x<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile<any>, FeatureType extends FeatureLike = ExtractedFeatureType$3<VectorTileSourceType>> = {
+type Options$w<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile<any>, FeatureType extends FeatureLike = ExtractedFeatureType$3<VectorTileSourceType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -32137,11 +33288,12 @@ type Options$x<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile
      */
     declutter?: string | number | boolean | undefined;
     /**
-     * Layer style. When set to `null`, only
+     * Layer
+     * style. When set to `null`, only
      * features that have their own style will be rendered. See {@link module :ol/style/Style~Style} for the default style
      * which will be used if this is not set.
      */
-    style?: StyleLike | null | undefined;
+    style?: StyleLike | FlatStyleLike | null | undefined;
     /**
      * Background color for the layer. If not specified, no
      * background will be rendered.
@@ -32243,7 +33395,8 @@ type Options$x<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile
  * same `declutter` value will be decluttered together. The priority is determined by the drawing order of the
  * layers with the same `declutter` value. Higher in the layer stack means higher priority. To declutter distinct
  * layers or groups of layers separately, use different truthy values for `declutter`.
- * @property {import("../style/Style.js").StyleLike|null} [style] Layer style. When set to `null`, only
+ * @property {import("../style/Style.js").StyleLike|import("../style/flat.js").FlatStyleLike|null} [style] Layer
+ * style. When set to `null`, only
  * features that have their own style will be rendered. See {@link module:ol/style/Style~Style} for the default style
  * which will be used if this is not set.
  * @property {import("./Base.js").BackgroundColor} [background] Background color for the layer. If not specified, no
@@ -32277,7 +33430,7 @@ declare class VectorTileLayer<VectorTileSourceType extends VectorTile<FeatureTyp
     /**
      * @param {Options<VectorTileSourceType, FeatureType>} [options] Options.
      */
-    constructor(options?: Options$x<VectorTileSourceType, FeatureType>);
+    constructor(options?: Options$w<VectorTileSourceType, FeatureType>);
     /***
      * @type {VectorTileLayerOnSignature<import("../events").EventsKey>}
      */
@@ -32351,7 +33504,7 @@ declare class VectorTileLayer<VectorTileSourceType extends VectorTile<FeatureTyp
  * *
  */
 type BaseTileLayerOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes | LayerEventType | "change:preload" | "change:useInterimTilesOnError", ObjectEvent, Return> & OnSignature<LayerRenderEventTypes, RenderEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes | LayerEventType | "change:preload" | "change:useInterimTilesOnError" | LayerRenderEventTypes, Return>;
-type Options$w<TileSourceType extends TileSource> = {
+type Options$v<TileSourceType extends TileSource> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -32493,7 +33646,7 @@ declare class BaseTileLayer<TileSourceType extends TileSource, RendererType exte
     /**
      * @param {Options<TileSourceType>} [options] Tile layer options.
      */
-    constructor(options?: Options$w<TileSourceType>);
+    constructor(options?: Options$v<TileSourceType>);
     /***
      * @type {BaseTileLayerOnSignature<import("../events").EventsKey>}
      */
@@ -32562,7 +33715,7 @@ declare class TileLayer<TileSourceType extends TileSource = TileSource<Tile$1>> 
     /**
      * @param {import("./BaseTile.js").Options<TileSourceType>} [options] Tile layer options.
      */
-    constructor(options?: Options$w<TileSourceType>);
+    constructor(options?: Options$v<TileSourceType>);
     /**
      * @override
      */
@@ -32714,7 +33867,7 @@ declare class LRUCache<T> {
 type TileLookup = {
     [x: number]: Set<Tile$1>;
 };
-type Options$v = {
+type Options$u = {
     /**
      * The cache size.
      */
@@ -32736,7 +33889,7 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} [options] Options.
      */
-    constructor(tileLayer: LayerType, options?: Options$v);
+    constructor(tileLayer: LayerType, options?: Options$u);
     /**
      * Rendered extent has changed since the previous `renderFrame()` call
      * @type {boolean}
@@ -32927,7 +34080,7 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
      * @param {import("../../layer/VectorTile.js").default} layer VectorTile layer.
      * @param {import("./TileLayer.js").Options} options Options.
      */
-    constructor(layer: VectorTileLayer, options: Options$v);
+    constructor(layer: VectorTileLayer, options: Options$u);
     /** @private */
     private boundHandleStyleImageChange_;
     /**
@@ -33186,7 +34339,7 @@ declare class CanvasVectorLayerRenderer extends CanvasLayerRenderer<any> {
  * *
  */
 type ExtractedFeatureType$2<T> = T extends VectorSource<infer U extends FeatureLike> ? U : never;
-type Options$u<FeatureType extends FeatureLike, VectorSourceType extends VectorSource<FeatureType> | VectorTile<FeatureType>> = {
+type Options$t<FeatureType extends FeatureLike, VectorSourceType extends VectorSource<FeatureType> | VectorTile<FeatureType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -33302,14 +34455,14 @@ type Options$u<FeatureType extends FeatureLike, VectorSourceType extends VectorS
  * @template {import('../Feature').FeatureLike} FeatureType
  * @template {import("../source/Vector.js").default<FeatureType>|import("../source/VectorTile.js").default<FeatureType>} VectorSourceType<FeatureType>
  * @extends {Layer<VectorSourceType, RendererType>}
- * @template {import("../renderer/canvas/VectorLayer.js").default|import("../renderer/canvas/VectorTileLayer.js").default|import("../renderer/canvas/VectorImageLayer.js").default|import("../renderer/webgl/PointsLayer.js").default} RendererType
+ * @template {import("../renderer/canvas/VectorLayer.js").default|import("../renderer/canvas/VectorTileLayer.js").default|import("../renderer/canvas/VectorImageLayer.js").default|import("../renderer/webgl/VectorLayer.js").default|import("../renderer/webgl/PointsLayer.js").default} RendererType
  * @api
  */
-declare class BaseVectorLayer<FeatureType extends FeatureLike, VectorSourceType extends VectorSource<FeatureType> | VectorTile<FeatureType>, RendererType extends CanvasVectorLayerRenderer | CanvasVectorTileLayerRenderer | CanvasVectorImageLayerRenderer | WebGLPointsLayerRenderer> extends Layer<VectorSourceType, RendererType> {
+declare class BaseVectorLayer<FeatureType extends FeatureLike, VectorSourceType extends VectorSource<FeatureType> | VectorTile<FeatureType>, RendererType extends CanvasVectorLayerRenderer | CanvasVectorTileLayerRenderer | CanvasVectorImageLayerRenderer | WebGLVectorLayerRenderer | WebGLPointsLayerRenderer> extends Layer<VectorSourceType, RendererType> {
     /**
      * @param {Options<FeatureType, VectorSourceType>} [options] Options.
      */
-    constructor(options?: Options$u<FeatureType, VectorSourceType>);
+    constructor(options?: Options$t<FeatureType, VectorSourceType>);
     /**
      * @private
      * @type {string}
@@ -33407,7 +34560,7 @@ declare class BaseVectorLayer<FeatureType extends FeatureLike, VectorSourceType 
     setDeclutter(declutter: boolean | string | number): void;
 }
 
-type Options$t<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType$2<VectorSourceType>> = {
+type Options$s<VectorSourceType extends VectorSource<FeatureType> = VectorSource<any>, FeatureType extends FeatureLike = ExtractedFeatureType$2<VectorSourceType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -33583,7 +34736,7 @@ declare class VectorLayer<VectorSourceType extends VectorSource<FeatureType> = V
     /**
      * @param {Options<VectorSourceType, FeatureType>} [options] Options.
      */
-    constructor(options?: Options$t<VectorSourceType, FeatureType>);
+    constructor(options?: Options$s<VectorSourceType, FeatureType>);
 }
 
 /**
@@ -33605,7 +34758,7 @@ declare class DrawEvent extends BaseEvent {
     feature: Feature$2;
 }
 
-type Options$s = {
+type Options$r = {
     /**
      * Geometry type of
      * the geometries being drawn with this instance.
@@ -33781,7 +34934,7 @@ declare class Draw extends PointerInteraction {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$s);
+    constructor(options: Options$r);
     /***
      * @type {DrawOnSignature<import("../events").EventsKey>}
      */
@@ -34002,6 +35155,21 @@ declare class Draw extends PointerInteraction {
      */
     getOverlay(): VectorLayer;
     /**
+     * Handles the {@link module:ol/MapBrowserEvent~MapBrowserEvent map browser event} and may actually draw or finish the drawing.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Map browser event.
+     * @return {boolean} `false` to stop event propagation.
+     * @api
+     * @override
+     */
+    override handleEvent(event: MapBrowserEvent<PointerEvent>): boolean;
+    /**
+     * Handle pointer down events.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Event.
+     * @return {boolean} If the event was consumed.
+     * @override
+     */
+    override handleDownEvent(event: MapBrowserEvent<PointerEvent>): boolean;
+    /**
      * @private
      */
     private deactivateTrace_;
@@ -34037,8 +35205,15 @@ declare class Draw extends PointerInteraction {
      */
     private updateTrace_;
     /**
+     * Handle pointer up events.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Event.
+     * @return {boolean} If the event was consumed.
+     * @override
+     */
+    override handleUpEvent(event: MapBrowserEvent<PointerEvent>): boolean;
+    /**
      * Handle move events.
-     * @param {import("../MapBrowserEvent.js").default} event A move event.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event A move event.
      * @private
      */
     private handlePointerMove_;
@@ -34160,7 +35335,7 @@ declare class ExtentEvent extends BaseEvent {
     extent: Extent$1;
 }
 
-type Options$r = {
+type Options$q = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -34224,7 +35399,7 @@ declare class Extent extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$r);
+    constructor(options?: Options$q);
     /***
      * @type {ExtentOnSignature<import("../events").EventsKey>}
      */
@@ -34346,7 +35521,7 @@ declare class Extent extends PointerInteraction {
     setExtent(extent: Extent$1): void;
 }
 
-type Options$q = {
+type Options$p = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -34393,7 +35568,7 @@ declare class KeyboardPan extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$q);
+    constructor(options?: Options$p);
     /**
      * @private
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Browser event.
@@ -34417,7 +35592,7 @@ declare class KeyboardPan extends Interaction {
     private pixelDelta_;
 }
 
-type Options$p = {
+type Options$o = {
     /**
      * Animation duration in milliseconds.
      */
@@ -34464,7 +35639,7 @@ declare class KeyboardZoom extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$p);
+    constructor(options?: Options$o);
     /**
      * @private
      * @type {import("../events/condition.js").Condition}
@@ -34484,7 +35659,7 @@ declare class KeyboardZoom extends Interaction {
 
 type Params = "x" | "y" | "z" | "r" | "l";
 type Callback = (arg0: string) => void;
-type Options$o = {
+type Options$n = {
     /**
      * Animate view transitions.
      */
@@ -34531,7 +35706,7 @@ declare class Link$1 extends Interaction {
     /**
      * @param {Options} [options] Link options.
      */
-    constructor(options?: Options$o);
+    constructor(options?: Options$n);
     /**
      * @type {import('../View.js').AnimationOptions|null}
      * @private
@@ -34716,7 +35891,7 @@ declare class ModifyEvent extends BaseEvent {
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent
      * Associated {@link module:ol/MapBrowserEvent~MapBrowserEvent}.
      */
-    constructor(type: ModifyEventType, features: Collection<Feature$2>, mapBrowserEvent: MapBrowserEvent<any>);
+    constructor(type: ModifyEventType, features: Collection<Feature$2>, mapBrowserEvent: MapBrowserEvent);
     /**
      * The features being modified.
      * @type {Collection<Feature>}
@@ -34728,7 +35903,7 @@ declare class ModifyEvent extends BaseEvent {
      * @type {import("../MapBrowserEvent.js").default}
      * @api
      */
-    mapBrowserEvent: MapBrowserEvent<any>;
+    mapBrowserEvent: MapBrowserEvent;
 }
 
 type SegmentData = {
@@ -34757,7 +35932,7 @@ type SegmentData = {
      */
     featureSegments?: SegmentData[] | undefined;
 };
-type Options$n = {
+type Options$m = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -34871,7 +36046,7 @@ declare class Modify extends PointerInteraction {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$n);
+    constructor(options: Options$m);
     /***
      * @type {ModifyOnSignature<import("../events").EventsKey>}
      */
@@ -35205,7 +36380,7 @@ declare class Modify extends PointerInteraction {
     private updateSegmentIndices_;
 }
 
-type Options$m = {
+type Options$l = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -35273,7 +36448,7 @@ declare class MouseWheelZoom extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$m);
+    constructor(options?: Options$l);
     /**
      * @private
      * @type {number}
@@ -35370,7 +36545,7 @@ declare class MouseWheelZoom extends Interaction {
     setMouseAnchor(useAnchor: boolean): void;
 }
 
-type Options$l = {
+type Options$k = {
     /**
      * The duration of the animation in
      * milliseconds.
@@ -35397,7 +36572,7 @@ declare class PinchRotate extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$l);
+    constructor(options?: Options$k);
     /**
      * @private
      * @type {import("../coordinate.js").Coordinate}
@@ -35430,7 +36605,7 @@ declare class PinchRotate extends PointerInteraction {
     private duration_;
 }
 
-type Options$k = {
+type Options$j = {
     /**
      * Animation duration in milliseconds.
      */
@@ -35450,7 +36625,7 @@ declare class PinchZoom extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$k);
+    constructor(options?: Options$j);
     /**
      * @private
      * @type {import("../coordinate.js").Coordinate}
@@ -35546,7 +36721,7 @@ declare class SelectEvent extends BaseEvent {
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Associated
      *     {@link module:ol/MapBrowserEvent~MapBrowserEvent}.
      */
-    constructor(type: SelectEventType, selected: Array<Feature$2>, deselected: Array<Feature$2>, mapBrowserEvent: MapBrowserEvent<any>);
+    constructor(type: SelectEventType, selected: Array<Feature$2>, deselected: Array<Feature$2>, mapBrowserEvent: MapBrowserEvent);
     /**
      * Selected features array.
      * @type {Array<import("../Feature.js").default>}
@@ -35564,7 +36739,7 @@ declare class SelectEvent extends BaseEvent {
      * @type {import("../MapBrowserEvent.js").default}
      * @api
      */
-    mapBrowserEvent: MapBrowserEvent<any>;
+    mapBrowserEvent: MapBrowserEvent;
 }
 
 /**
@@ -35572,7 +36747,7 @@ declare class SelectEvent extends BaseEvent {
  * selected or `false` otherwise.
  */
 type FilterFunction$1 = (arg0: Feature$2, arg1: Layer<Source>) => boolean;
-type Options$j = {
+type Options$i = {
     /**
      * A function
      * that takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -35688,7 +36863,7 @@ declare class Select extends Interaction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$j);
+    constructor(options?: Options$i);
     /***
      * @type {SelectOnSignature<import("../events").EventsKey>}
      */
@@ -35830,29 +37005,63 @@ declare class Select extends Interaction {
     private removeFeatureLayerAssociation_;
 }
 
-type Result = {
+/**
+ * An array of two coordinates representing a line segment, or an array of one
+ * coordinate representing a point.
+ */
+type Segment = Array<Coordinate>;
+/**
+ * A function taking a {@link module :ol/geom/Geometry~Geometry} as argument and returning an array of {@link Segment}s.
+ */
+type Segmenter<GeometryType extends Geometry$1 = Geometry$1> = (geometry: GeometryType, projection?: Projection) => Array<Segment>;
+/**
+ * Each segmenter specified here will override the default segmenter for the
+ * corresponding geometry type. To exclude all geometries of a specific geometry type from being snapped to,
+ * set the segmenter to `null`.
+ */
+type Segmenters = {
     /**
-     * Vertex.
+     * Point segmenter.
      */
-    vertex: Coordinate | null;
+    Point?: Segmenter<Point$2> | null | undefined;
     /**
-     * VertexPixel.
+     * LineString segmenter.
      */
-    vertexPixel: Pixel | null;
+    LineString?: Segmenter<LineString$1> | null | undefined;
     /**
-     * Feature.
+     * Polygon segmenter.
      */
-    feature: Feature$2 | null;
+    Polygon?: Segmenter<Polygon$1> | null | undefined;
     /**
-     * Segment, or `null` if snapped to a vertex.
+     * Circle segmenter.
      */
-    segment: Array<Coordinate> | null;
+    Circle?: Segmenter<Circle> | null | undefined;
+    /**
+     * GeometryCollection segmenter.
+     */
+    GeometryCollection?: Segmenter<GeometryCollection$1> | null | undefined;
+    /**
+     * MultiPoint segmenter.
+     */
+    MultiPoint?: Segmenter<MultiPoint$1> | null | undefined;
+    /**
+     * MultiLineString segmenter.
+     */
+    MultiLineString?: Segmenter<MultiLineString$1> | null | undefined;
+    /**
+     * MultiPolygon segmenter.
+     */
+    MultiPolygon?: Segmenter<MultiPolygon$1> | null | undefined;
 };
-type Options$i = {
+type Options$h = {
     /**
      * Snap to these features. Either this option or source should be provided.
      */
     features?: Collection<Feature$2<Geometry$1>> | undefined;
+    /**
+     * Snap to features from this source. Either this option or features should be provided
+     */
+    source?: VectorSource<Feature$2<Geometry$1>> | undefined;
     /**
      * Snap to edges.
      */
@@ -35862,27 +37071,61 @@ type Options$i = {
      */
     vertex?: boolean | undefined;
     /**
+     * Snap to intersections between segments.
+     */
+    intersection?: boolean | undefined;
+    /**
      * Pixel tolerance for considering the pointer close enough to a segment or
      * vertex for snapping.
      */
     pixelTolerance?: number | undefined;
     /**
-     * Snap to features from this source. Either this option or features should be provided
+     * Custom segmenters by {@link module :ol/geom/Geometry~Type}. By default, the
+     * following segmenters are used:
+     * - `Point`: A one-dimensional segment (e.g. `[[10, 20]]`) representing the point.
+     * - `LineString`: One two-dimensional segment (e.g. `[[10, 20], [30, 40]]`) for each segment of the linestring.
+     * - `Polygon`: One two-dimensional segment for each segment of the exterior ring and the interior rings.
+     * - `Circle`: One two-dimensional segment for each segment of a regular polygon with 32 points representing the circle circumference.
+     * - `GeometryCollection`: All segments of the contained geometries.
+     * - `MultiPoint`: One one-dimensional segment for each point.
+     * - `MultiLineString`: One two-dimensional segment for each segment of the linestrings.
+     * - `MultiPolygon`: One two-dimensional segment for each segment of the polygons.
      */
-    source?: VectorSource<Feature$2<Geometry$1>> | undefined;
+    segmenters?: Segmenters | undefined;
+};
+/**
+ * Information about the last snapped state.
+ */
+type SnappedInfo = {
+    /**
+     * - The snapped vertex.
+     */
+    vertex: Coordinate | null;
+    /**
+     * - The pixel of the snapped vertex.
+     */
+    vertexPixel: Pixel | null;
+    /**
+     * - The feature being snapped.
+     */
+    feature: Feature$2 | null;
+    /**
+     * - Segment, or `null` if snapped to a vertex.
+     */
+    segment: Segment | null;
 };
 /**
  * *
  */
-type SnapOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2 | "change:active", ObjectEvent, Return> & OnSignature<"snap", SnapEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | "change:active" | "snap", Return>;
+type SnapOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2 | "change:active", ObjectEvent, Return> & OnSignature<"snap" | "unsnap", SnapEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | "change:active" | "snap" | "unsnap", Return>;
 /***
  * @template Return
  * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
  *   import("../Observable").OnSignature<import("../ObjectEventType").Types|
  *     'change:active', import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<'snap', SnapEvent, Return> &
+ *   import("../Observable").OnSignature<'snap'|'unsnap', SnapEvent, Return> &
  *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
- *     'change:active'|'snap', Return>} SnapOnSignature
+ *     'change:active'|'snap'|'unsnap', Return>} SnapOnSignature
  */
 /**
  * @classdesc
@@ -35912,7 +37155,7 @@ declare class Snap extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$i);
+    constructor(options?: Options$h);
     /***
      * @type {SnapOnSignature<import("../events").EventsKey>}
      */
@@ -35940,6 +37183,11 @@ declare class Snap extends PointerInteraction {
      * @type {boolean}
      */
     private edge_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private intersection_;
     /**
      * @type {import("../Collection.js").default<import("../Feature.js").default>|null}
      * @private
@@ -35982,11 +37230,16 @@ declare class Snap extends PointerInteraction {
      */
     private rBush_;
     /**
-     * @const
+     * Holds information about the last snapped state.
+     * @type {SnappedInfo|null}
      * @private
-     * @type {Object<string, function(Array<Array<import('../coordinate.js').Coordinate>>, import("../geom/Geometry.js").default): void>}
      */
-    private GEOMETRY_SEGMENTERS_;
+    private snapped_;
+    /**
+     * @type {Object<string, Segmenter>}
+     * @private
+     */
+    private segmenters_;
     /**
      * Add a feature to the collection of features that we may snap to.
      * @param {import("../Feature.js").default} feature Feature.
@@ -36000,6 +37253,16 @@ declare class Snap extends PointerInteraction {
      * @private
      */
     private getFeatures_;
+    /**
+     * Checks if two snap data sets are equal.
+     * Compares the segment and the feature.
+     *
+     * @param {SnappedInfo} data1 The first snap data set.
+     * @param {SnappedInfo} data2 The second snap data set.
+     * @return {boolean} `true` if the data sets are equal, otherwise `false`.
+     * @private
+     */
+    private areSnapDataEqual_;
     /**
      * @param {import("../source/Vector.js").VectorSourceEvent|import("../Collection.js").CollectionEvent<import("../Feature.js").default>} evt Event.
      * @private
@@ -36035,62 +37298,14 @@ declare class Snap extends PointerInteraction {
      * @param {import("../pixel.js").Pixel} pixel Pixel
      * @param {import("../coordinate.js").Coordinate} pixelCoordinate Coordinate
      * @param {import("../Map.js").default} map Map.
-     * @return {Result|null} Snap result
+     * @return {SnappedInfo|null} Snap result
      */
-    snapTo(pixel: Pixel, pixelCoordinate: Coordinate, map: Map): Result | null;
+    snapTo(pixel: Pixel, pixelCoordinate: Coordinate, map: Map): SnappedInfo | null;
     /**
      * @param {import("../Feature.js").default} feature Feature
      * @private
      */
     private updateFeature_;
-    /**
-     * @param {Array<Array<import('../coordinate.js').Coordinate>>} segments Segments
-     * @param {import("../geom/Circle.js").default} geometry Geometry.
-     * @private
-     */
-    private segmentCircleGeometry_;
-    /**
-     * @param {Array<Array<import('../coordinate.js').Coordinate>>} segments Segments
-     * @param {import("../geom/GeometryCollection.js").default} geometry Geometry.
-     * @private
-     */
-    private segmentGeometryCollectionGeometry_;
-    /**
-     * @param {Array<Array<import('../coordinate.js').Coordinate>>} segments Segments
-     * @param {import("../geom/LineString.js").default} geometry Geometry.
-     * @private
-     */
-    private segmentLineStringGeometry_;
-    /**
-     * @param {Array<Array<import('../coordinate.js').Coordinate>>} segments Segments
-     * @param {import("../geom/MultiLineString.js").default} geometry Geometry.
-     * @private
-     */
-    private segmentMultiLineStringGeometry_;
-    /**
-     * @param {Array<Array<import('../coordinate.js').Coordinate>>} segments Segments
-     * @param {import("../geom/MultiPoint.js").default} geometry Geometry.
-     * @private
-     */
-    private segmentMultiPointGeometry_;
-    /**
-     * @param {Array<Array<import('../coordinate.js').Coordinate>>} segments Segments
-     * @param {import("../geom/MultiPolygon.js").default} geometry Geometry.
-     * @private
-     */
-    private segmentMultiPolygonGeometry_;
-    /**
-     * @param {Array<Array<import('../coordinate.js').Coordinate>>} segments Segments
-     * @param {import("../geom/Point.js").default} geometry Geometry.
-     * @private
-     */
-    private segmentPointGeometry_;
-    /**
-     * @param {Array<Array<import('../coordinate.js').Coordinate>>} segments Segments
-     * @param {import("../geom/Polygon.js").default} geometry Geometry.
-     * @private
-     */
-    private segmentPolygonGeometry_;
 }
 
 /**
@@ -36133,7 +37348,7 @@ declare class TranslateEvent extends BaseEvent {
      * @param {import("../coordinate.js").Coordinate} startCoordinate The original coordinates before.translation started
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent Map browser event.
      */
-    constructor(type: TranslateEventType, features: Collection<Feature$2>, coordinate: Coordinate, startCoordinate: Coordinate, mapBrowserEvent: MapBrowserEvent<any>);
+    constructor(type: TranslateEventType, features: Collection<Feature$2>, coordinate: Coordinate, startCoordinate: Coordinate, mapBrowserEvent: MapBrowserEvent);
     /**
      * The features being translated.
      * @type {Collection<Feature>}
@@ -36159,7 +37374,7 @@ declare class TranslateEvent extends BaseEvent {
      * @type {import("../MapBrowserEvent.js").default}
      * @api
      */
-    mapBrowserEvent: MapBrowserEvent<any>;
+    mapBrowserEvent: MapBrowserEvent;
 }
 
 /**
@@ -36169,7 +37384,7 @@ declare class TranslateEvent extends BaseEvent {
  * translated or `false` otherwise.
  */
 type FilterFunction = (arg0: Feature$2, arg1: Layer<Source>) => boolean;
-type Options$h = {
+type Options$g = {
     /**
      * A function that
      * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
@@ -36237,7 +37452,7 @@ declare class Translate extends PointerInteraction {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$h);
+    constructor(options?: Options$g);
     /***
      * @type {TranslateOnSignature<import("../events").EventsKey>}
      */
@@ -36478,7 +37693,7 @@ type Style$1 = {
      */
     gamma?: ExpressionValue | undefined;
 };
-type Options$g = {
+type Options$f = {
     /**
      * Style to apply to the layer.
      */
@@ -36582,9 +37797,9 @@ type Options$g = {
  */
 declare class WebGLTileLayer extends BaseTileLayer<DataTileSource<DataTile | ImageTile>, WebGLTileLayerRenderer<any>> {
     /**
-     * @param {Options} options Tile layer options.
+     * @param {Options} [options] Tile layer options.
      */
-    constructor(options: Options$g);
+    constructor(options?: Options$f);
     /**
      * @type {Array<SourceType>|function(import("../extent.js").Extent, number):Array<SourceType>}
      * @private
@@ -36809,7 +38024,7 @@ type TileRepresentationLookup = {
         [x: number]: Set<BaseTileRepresentation<Tile$1>>;
     };
 };
-type Options$f = {
+type Options$e = {
     /**
      * Additional uniforms
      * made available to shaders.
@@ -36850,7 +38065,7 @@ declare class WebGLBaseTileLayerRenderer<LayerType extends BaseLayerType, TileTy
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} options Options.
      */
-    constructor(tileLayer: LayerType, options: Options$f);
+    constructor(tileLayer: LayerType, options: Options$e);
     /**
      * The last call to `renderFrame` was completed with all tiles loaded
      * @type {boolean}
@@ -36901,7 +38116,7 @@ declare class WebGLBaseTileLayerRenderer<LayerType extends BaseLayerType, TileTy
      * @param {Options} options Options.
      * @override
      */
-    override reset(options: Options$f): void;
+    override reset(options: Options$e): void;
     /**
      * @abstract
      * @param {import("../../webgl/BaseTileRepresentation.js").TileRepresentationOptions<TileType>} options tile representation options
@@ -36979,7 +38194,7 @@ declare class WebGLBaseTileLayerRenderer<LayerType extends BaseLayerType, TileTy
     private findAltTiles_;
 }
 
-type Options$e = {
+type Options$d = {
     /**
      * Vertex shader source.
      */
@@ -37036,7 +38251,7 @@ declare class WebGLTileLayerRenderer<LayerType extends WebGLTileLayer | FlowLaye
      * @param {LayerType} tileLayer Tile layer.
      * @param {Options} options Options.
      */
-    constructor(tileLayer: LayerType, options: Options$e);
+    constructor(tileLayer: LayerType, options: Options$d);
     /**
      * @type {WebGLProgram}
      * @private
@@ -37077,7 +38292,7 @@ declare class WebGLTileLayerRenderer<LayerType extends WebGLTileLayer | FlowLaye
      * @param {Options} options Options.
      * @override
      */
-    override reset(options: Options$e): void;
+    override reset(options: Options$d): void;
     /**
      * @override
      */
@@ -37099,7 +38314,7 @@ declare class WebGLTileLayerRenderer<LayerType extends WebGLTileLayer | FlowLaye
 }
 
 type LayerType$1 = FlowLayer;
-type Options$d = {
+type Options$c = {
     /**
      * The maximum particle speed in the input data.
      */
@@ -37159,7 +38374,7 @@ declare class FlowLayerRenderer extends WebGLTileLayerRenderer<FlowLayer> {
      * @param {LayerType} layer The tiled field layer.
      * @param {Options} options The renderer options.
      */
-    constructor(layer: LayerType$1, options: Options$d);
+    constructor(layer: LayerType$1, options: Options$c);
     /**
      * @type {string}
      * @private
@@ -37324,7 +38539,7 @@ type Style = {
      */
     color?: ExpressionValue | undefined;
 };
-type Options$c = {
+type Options$b = {
     /**
      * The maximum particle speed.
      */
@@ -37423,7 +38638,7 @@ declare class FlowLayer extends BaseTileLayer<DataTileSource<DataTile>, FlowLaye
     /**
      * @param {Options} options Flow layer options.
      */
-    constructor(options: Options$c);
+    constructor(options: Options$b);
     /**
      * @type {Style}
      * @private
@@ -37469,7 +38684,7 @@ declare class FlowLayer extends BaseTileLayer<DataTileSource<DataTile>, FlowLaye
     getSources(extent: Extent$1, resolution: number): Array<SourceType>;
 }
 
-type Options$b = {
+type Options$a = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -37742,7 +38957,7 @@ declare class Graticule extends VectorLayer<VectorSource<Feature$2<Geometry$1>>,
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$b);
+    constructor(options?: Options$a);
     /**
      * @type {import("../proj/Projection.js").default}
      * @private
@@ -38046,7 +39261,8 @@ declare class Graticule extends VectorLayer<VectorSource<Feature$2<Geometry$1>>,
     private updateProjectionInfo_;
 }
 
-type Options$a<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSourceType extends VectorSource<FeatureType> = VectorSource<FeatureType>> = {
+type WeightExpression = NumberExpression | string | ((arg0: Feature$2) => number);
+type Options$9<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSourceType extends VectorSource<FeatureType> = VectorSource<FeatureType>> = {
     /**
      * A CSS class name to set to the layer element.
      */
@@ -38097,19 +39313,31 @@ type Options$a<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSo
      */
     gradient?: string[] | undefined;
     /**
-     * Radius size in pixels.
+     * Radius size in pixels. Note that for LineStrings,
+     * the width of the line will be double the radius.
      */
-    radius?: number | undefined;
+    radius?: NumberExpression | undefined;
     /**
-     * Blur size in pixels.
+     * Blur size in pixels. This is added to the `radius`
+     * parameter above to create the final size of the blur effect.
      */
-    blur?: number | undefined;
+    blur?: NumberExpression | undefined;
     /**
      * The feature
-     * attribute to use for the weight or a function that returns a weight from a feature. Weight values
+     * attribute to use for the weight. This also supports expressions returning a number or a function that returns a weight from a feature. Weight values
      * should range from 0 to 1 (and values outside will be clamped to that range).
      */
-    weight?: string | ((arg0: Feature$2) => number) | undefined;
+    weight?: WeightExpression | undefined;
+    /**
+     * Optional filter expression.
+     */
+    filter?: BooleanExpression | undefined;
+    /**
+     * Variables used in expressions (optional)
+     */
+    variables?: {
+        [x: string]: string | number | boolean | number[];
+    } | undefined;
     /**
      * Point source.
      */
@@ -38132,14 +39360,20 @@ type Options$a<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSo
  * @fires import("../render/Event.js").RenderEvent#postrender
  * @template {import("../Feature.js").FeatureLike} [FeatureType=import("../Feature.js").default]
  * @template {import("../source/Vector.js").default<FeatureType>} [VectorSourceType=import("../source/Vector.js").default<FeatureType>]
- * @extends {BaseVector<FeatureType, VectorSourceType, WebGLPointsLayerRenderer>}
+ * @extends {BaseVector<FeatureType, VectorSourceType, WebGLVectorLayerRenderer>}
  * @api
  */
-declare class Heatmap<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSourceType extends VectorSource<FeatureType> = VectorSource<FeatureType>> extends BaseVectorLayer<FeatureType, VectorSourceType, WebGLPointsLayerRenderer> {
+declare class Heatmap<FeatureType extends FeatureLike = Feature$2<Geometry$1>, VectorSourceType extends VectorSource<FeatureType> = VectorSource<FeatureType>> extends BaseVectorLayer<FeatureType, VectorSourceType, WebGLVectorLayerRenderer> {
     /**
      * @param {Options<FeatureType, VectorSourceType>} [options] Options.
      */
-    constructor(options?: Options$a<FeatureType, VectorSourceType>);
+    constructor(options?: Options$9<FeatureType, VectorSourceType>);
+    filter_: BooleanExpression;
+    /**
+     * @type {import('../style/flat.js').StyleVariables}
+     * @private
+     */
+    private styleVariables_;
     /**
      * @private
      * @type {HTMLCanvasElement}
@@ -38148,14 +39382,14 @@ declare class Heatmap<FeatureType extends FeatureLike = Feature$2<Geometry$1>, V
     /**
      * @private
      */
-    private weightFunction_;
+    private weight_;
     /**
      * Return the blur size in pixels.
-     * @return {number} Blur size in pixels.
+     * @return {import("../style/flat.js").NumberExpression} Blur size in pixels.
      * @api
      * @observable
      */
-    getBlur(): number;
+    getBlur(): NumberExpression;
     /**
      * Return the gradient colors as array of strings.
      * @return {Array<string>} Colors.
@@ -38165,22 +39399,22 @@ declare class Heatmap<FeatureType extends FeatureLike = Feature$2<Geometry$1>, V
     getGradient(): Array<string>;
     /**
      * Return the size of the radius in pixels.
-     * @return {number} Radius size in pixel.
+     * @return {import("../style/flat.js").NumberExpression} Radius size in pixel.
      * @api
      * @observable
      */
-    getRadius(): number;
+    getRadius(): NumberExpression;
     /**
      * @private
      */
     private handleGradientChanged_;
     /**
      * Set the blur size in pixels.
-     * @param {number} blur Blur size in pixels.
+     * @param {import("../style/flat.js").NumberExpression} blur Blur size in pixels (supports expressions).
      * @api
      * @observable
      */
-    setBlur(blur: number): void;
+    setBlur(blur: NumberExpression): void;
     /**
      * Set the gradient colors as array of strings.
      * @param {Array<string>} colors Gradient.
@@ -38190,18 +39424,35 @@ declare class Heatmap<FeatureType extends FeatureLike = Feature$2<Geometry$1>, V
     setGradient(colors: Array<string>): void;
     /**
      * Set the size of the radius in pixels.
-     * @param {number} radius Radius size in pixel.
+     * @param {import("../style/flat.js").NumberExpression} radius Radius size in pixel (supports expressions).
      * @api
      * @observable
      */
-    setRadius(radius: number): void;
+    setRadius(radius: NumberExpression): void;
+    /**
+     * Set the filter expression
+     * @param {import("../style/flat.js").BooleanExpression} filter Filter expression
+     * @api
+     */
+    setFilter(filter: BooleanExpression): void;
+    /**
+     * Set the weight expression
+     * @param {WeightExpression} weight Weight expression
+     * @api
+     */
+    setWeight(weight: WeightExpression): void;
+    /**
+     * Update any variables used by the layer style and trigger a re-render.
+     * @param {import('../style/flat.js').StyleVariables} variables Variables to update.
+     */
+    updateStyleVariables(variables: StyleVariables): void;
     /**
      * @override
      */
     override renderDeclutter(): void;
 }
 
-type Options$9<VectorSourceType extends VectorSource<FeatureLike>> = {
+type Options$8<VectorSourceType extends VectorSource<FeatureLike>> = {
     /**
      * Literal style to apply to the layer features.
      */
@@ -38352,7 +39603,7 @@ declare class WebGLPointsLayer<VectorSourceType extends VectorSource<FeatureLike
     /**
      * @param {Options<VectorSourceType>} options Options.
      */
-    constructor(options: Options$9<VectorSourceType>);
+    constructor(options: Options$8<VectorSourceType>);
     /**
      * @type {import('../style/flat.js').StyleVariables}
      * @private
@@ -38360,7 +39611,7 @@ declare class WebGLPointsLayer<VectorSourceType extends VectorSource<FeatureLike
     private styleVariables_;
     /**
      * @private
-     * @type {import('../webgl/styleparser.js').StyleParseResult}
+     * @type {import('../render/webgl/style.js').StyleParseResult}
      */
     private parseResult_;
     /**
@@ -38375,1084 +39626,6 @@ declare class WebGLPointsLayer<VectorSourceType extends VectorSource<FeatureLike
     updateStyleVariables(variables: {
         [x: string]: number;
     }): void;
-}
-
-declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_screenToWorldMatrix;\nuniform vec2 u_viewportSizePx;\nuniform float u_pixelRatio;\nuniform float u_globalAlpha;\nuniform float u_time;\nuniform float u_zoom;\nuniform float u_resolution;\nuniform float u_rotation;\nuniform vec4 u_renderExtent;\nuniform vec2 u_patternOrigin;\nuniform float u_depth;\nuniform mediump int u_hitDetection;\n\nconst float PI = 3.141592653589793238;\nconst float TWO_PI = 2.0 * PI;\nfloat currentLineMetric = 0.; // an actual value will be used in the stroke shaders\n";
-/**
- * @typedef {Object} VaryingDescription
- * @property {string} name Varying name, as will be declared in the header.
- * @property {string} type Varying type, either `float`, `vec2`, `vec4`...
- * @property {string} expression Expression which will be assigned to the varying in the vertex shader, and
- * passed on to the fragment shader.
- */
-/**
- * @classdesc
- * This class implements a classic builder pattern for generating many different types of shaders.
- * Methods can be chained, e. g.:
- *
- * ```js
- * const shader = new ShaderBuilder()
- *   .addVarying('v_width', 'float', 'a_width')
- *   .addUniform('u_time')
- *   .setColorExpression('...')
- *   .setSymbolSizeExpression('...')
- *   .getSymbolFragmentShader();
- * ```
- *
- * A note on [alpha premultiplication](https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied):
- * The ShaderBuilder class expects all colors to **not having been alpha-premultiplied!** This is because alpha
- * premultiplication is done at the end of each fragment shader.
- */
-declare class ShaderBuilder {
-    /**
-     * Uniforms; these will be declared in the header (should include the type).
-     * @type {Array<string>}
-     * @private
-     */
-    private uniforms_;
-    /**
-     * Attributes; these will be declared in the header (should include the type).
-     * @type {Array<string>}
-     * @private
-     */
-    private attributes_;
-    /**
-     * Varyings with a name, a type and an expression.
-     * @type {Array<VaryingDescription>}
-     * @private
-     */
-    private varyings_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasSymbol_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private symbolSizeExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private symbolRotationExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private symbolOffsetExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private symbolColorExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private texCoordExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private discardExpression_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private symbolRotateWithView_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasStroke_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private strokeWidthExpression_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private strokeColorExpression_;
-    /**
-     * @private
-     */
-    private strokeOffsetExpression_;
-    /**
-     * @private
-     */
-    private strokeCapExpression_;
-    /**
-     * @private
-     */
-    private strokeJoinExpression_;
-    /**
-     * @private
-     */
-    private strokeMiterLimitExpression_;
-    /**
-     * @private
-     */
-    private strokeDistanceFieldExpression_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasFill_;
-    /**
-     * @type {string}
-     * @private
-     */
-    private fillColorExpression_;
-    /**
-     * @type {Array<string>}
-     * @private
-     */
-    private vertexShaderFunctions_;
-    /**
-     * @type {Array<string>}
-     * @private
-     */
-    private fragmentShaderFunctions_;
-    /**
-     * Adds a uniform accessible in both fragment and vertex shaders.
-     * The given name should include a type, such as `sampler2D u_texture`.
-     * @param {string} name Uniform name
-     * @return {ShaderBuilder} the builder object
-     */
-    addUniform(name: string): ShaderBuilder;
-    /**
-     * Adds an attribute accessible in the vertex shader, read from the geometry buffer.
-     * The given name should include a type, such as `vec2 a_position`.
-     * @param {string} name Attribute name
-     * @return {ShaderBuilder} the builder object
-     */
-    addAttribute(name: string): ShaderBuilder;
-    /**
-     * Adds a varying defined in the vertex shader and accessible from the fragment shader.
-     * The type and expression of the varying have to be specified separately.
-     * @param {string} name Varying name
-     * @param {'float'|'vec2'|'vec3'|'vec4'} type Type
-     * @param {string} expression Expression used to assign a value to the varying.
-     * @return {ShaderBuilder} the builder object
-     */
-    addVarying(name: string, type: "float" | "vec2" | "vec3" | "vec4", expression: string): ShaderBuilder;
-    /**
-     * Sets an expression to compute the size of the shape.
-     * This expression can use all the uniforms and attributes available
-     * in the vertex shader, and should evaluate to a `vec2` value.
-     * @param {string} expression Size expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolSizeExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current symbol size expression
-     */
-    getSymbolSizeExpression(): string;
-    /**
-     * Sets an expression to compute the rotation of the shape.
-     * This expression can use all the uniforms and attributes available
-     * in the vertex shader, and should evaluate to a `float` value in radians.
-     * @param {string} expression Size expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolRotationExpression(expression: string): ShaderBuilder;
-    /**
-     * Sets an expression to compute the offset of the symbol from the point center.
-     * This expression can use all the uniforms and attributes available
-     * in the vertex shader, and should evaluate to a `vec2` value.
-     * @param {string} expression Offset expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolOffsetExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current symbol offset expression
-     */
-    getSymbolOffsetExpression(): string;
-    /**
-     * Sets an expression to compute the color of the shape.
-     * This expression can use all the uniforms, varyings and attributes available
-     * in the fragment shader, and should evaluate to a `vec4` value.
-     * @param {string} expression Color expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolColorExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current symbol color expression
-     */
-    getSymbolColorExpression(): string;
-    /**
-     * Sets an expression to compute the texture coordinates of the vertices.
-     * This expression can use all the uniforms and attributes available
-     * in the vertex shader, and should evaluate to a `vec4` value.
-     * @param {string} expression Texture coordinate expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setTextureCoordinateExpression(expression: string): ShaderBuilder;
-    /**
-     * Sets an expression to determine whether a fragment (pixel) should be discarded,
-     * i.e. not drawn at all.
-     * This expression can use all the uniforms, varyings and attributes available
-     * in the fragment shader, and should evaluate to a `bool` value (it will be
-     * used in an `if` statement)
-     * @param {string} expression Fragment discard expression
-     * @return {ShaderBuilder} the builder object
-     */
-    setFragmentDiscardExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current fragment discard expression
-     */
-    getFragmentDiscardExpression(): string;
-    /**
-     * Sets whether the symbols should rotate with the view or stay aligned with the map.
-     * Note: will only be used for point geometry shaders.
-     * @param {boolean} rotateWithView Rotate with view
-     * @return {ShaderBuilder} the builder object
-     */
-    setSymbolRotateWithView(rotateWithView: boolean): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke width expression, returning value in pixels
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeWidthExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke color expression, evaluate to `vec4`: can rely on currentLengthPx and currentRadiusPx
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeColorExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current stroke color expression
-     */
-    getStrokeColorExpression(): string;
-    /**
-     * @param {string} expression Stroke color expression, evaluate to `float`
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeOffsetExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke line cap expression, evaluate to `float`
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeCapExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke line join expression, evaluate to `float`
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeJoinExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke miter limit expression, evaluate to `float`
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeMiterLimitExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Stroke distance field expression, evaluate to `float`
-     * This can override the default distance field; can rely on currentLengthPx and currentRadiusPx
-     * @return {ShaderBuilder} the builder object
-     */
-    setStrokeDistanceFieldExpression(expression: string): ShaderBuilder;
-    /**
-     * @param {string} expression Fill color expression, evaluate to `vec4`
-     * @return {ShaderBuilder} the builder object
-     */
-    setFillColorExpression(expression: string): ShaderBuilder;
-    /**
-     * @return {string} The current fill color expression
-     */
-    getFillColorExpression(): string;
-    addVertexShaderFunction(code: any): void;
-    addFragmentShaderFunction(code: any): void;
-    /**
-     * Generates a symbol vertex shader from the builder parameters
-     * @return {string|null} The full shader as a string; null if no size or color specified
-     */
-    getSymbolVertexShader(): string | null;
-    /**
-     * Generates a symbol fragment shader from the builder parameters
-     * @return {string|null} The full shader as a string; null if no size or color specified
-     */
-    getSymbolFragmentShader(): string | null;
-    /**
-     * Generates a stroke vertex shader from the builder parameters
-     * @return {string|null} The full shader as a string; null if no size or color specified
-     */
-    getStrokeVertexShader(): string | null;
-    /**
-     * Generates a stroke fragment shader from the builder parameters
-     *
-     * @return {string|null} The full shader as a string; null if no size or color specified
-     */
-    getStrokeFragmentShader(): string | null;
-    /**
-     * Generates a fill vertex shader from the builder parameters
-     *
-     * @return {string|null} The full shader as a string; null if no color specified
-     */
-    getFillVertexShader(): string | null;
-    /**
-     * Generates a fill fragment shader from the builder parameters
-     * @return {string|null} The full shader as a string; null if no color specified
-     */
-    getFillFragmentShader(): string | null;
-}
-
-type Feature = Feature$2;
-/**
- * Object that holds a reference to a feature as well as the raw coordinates of its various geometries
- */
-type GeometryBatchItem = {
-    /**
-     * Feature
-     */
-    feature: Feature | RenderFeature;
-    /**
-     * Array of flat coordinates arrays, one for each geometry related to the feature
-     */
-    flatCoordss: Array<Array<number>>;
-    /**
-     * Only defined for linestring and polygon batches
-     */
-    verticesCount?: number | undefined;
-    /**
-     * Only defined for polygon batches
-     */
-    ringsCount?: number | undefined;
-    /**
-     * Array of vertices counts in each ring for each geometry; only defined for polygons batches
-     */
-    ringsVerticesCounts?: number[][] | undefined;
-    /**
-     * The reference in the global batch (used for hit detection)
-     */
-    ref?: number | undefined;
-};
-/**
- * A geometry batch specific to polygons
- */
-type PolygonGeometryBatch = {
-    /**
-     * Dictionary of all entries in the batch with associated computed values.
-     * One entry corresponds to one feature. Key is feature uid.
-     */
-    entries: {
-        [x: string]: GeometryBatchItem;
-    };
-    /**
-     * Amount of geometries in the batch.
-     */
-    geometriesCount: number;
-    /**
-     * Amount of vertices from geometries in the batch.
-     */
-    verticesCount: number;
-    /**
-     * How many outer and inner rings in this batch.
-     */
-    ringsCount: number;
-};
-/**
- * A geometry batch specific to lines
- */
-type LineStringGeometryBatch = {
-    /**
-     * Dictionary of all entries in the batch with associated computed values.
-     * One entry corresponds to one feature. Key is feature uid.
-     */
-    entries: {
-        [x: string]: GeometryBatchItem;
-    };
-    /**
-     * Amount of geometries in the batch.
-     */
-    geometriesCount: number;
-    /**
-     * Amount of vertices from geometries in the batch.
-     */
-    verticesCount: number;
-};
-/**
- * A geometry batch specific to points
- */
-type PointGeometryBatch = {
-    /**
-     * Dictionary of all entries in the batch with associated computed values.
-     * One entry corresponds to one feature. Key is feature uid.
-     */
-    entries: {
-        [x: string]: GeometryBatchItem;
-    };
-    /**
-     * Amount of geometries in the batch.
-     */
-    geometriesCount: number;
-};
-/**
- * @typedef {import("../../Feature.js").default} Feature
- */
-/**
- * @typedef {import("../../geom/Geometry.js").Type} GeometryType
- */
-/**
- * @typedef {Object} GeometryBatchItem Object that holds a reference to a feature as well as the raw coordinates of its various geometries
- * @property {Feature|RenderFeature} feature Feature
- * @property {Array<Array<number>>} flatCoordss Array of flat coordinates arrays, one for each geometry related to the feature
- * @property {number} [verticesCount] Only defined for linestring and polygon batches
- * @property {number} [ringsCount] Only defined for polygon batches
- * @property {Array<Array<number>>} [ringsVerticesCounts] Array of vertices counts in each ring for each geometry; only defined for polygons batches
- * @property {number} [ref] The reference in the global batch (used for hit detection)
- */
-/**
- * @typedef {PointGeometryBatch|LineStringGeometryBatch|PolygonGeometryBatch} GeometryBatch
- */
-/**
- * @typedef {Object} PolygonGeometryBatch A geometry batch specific to polygons
- * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
- * One entry corresponds to one feature. Key is feature uid.
- * @property {number} geometriesCount Amount of geometries in the batch.
- * @property {number} verticesCount Amount of vertices from geometries in the batch.
- * @property {number} ringsCount How many outer and inner rings in this batch.
- */
-/**
- * @typedef {Object} LineStringGeometryBatch A geometry batch specific to lines
- * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
- * One entry corresponds to one feature. Key is feature uid.
- * @property {number} geometriesCount Amount of geometries in the batch.
- * @property {number} verticesCount Amount of vertices from geometries in the batch.
- */
-/**
- * @typedef {Object} PointGeometryBatch A geometry batch specific to points
- * @property {Object<string, GeometryBatchItem>} entries Dictionary of all entries in the batch with associated computed values.
- * One entry corresponds to one feature. Key is feature uid.
- * @property {number} geometriesCount Amount of geometries in the batch.
- */
-/**
- * @classdesc This class is used to group several geometries of various types together for faster rendering.
- * Three inner batches are maintained for polygons, lines and points. Each time a feature is added, changed or removed
- * from the batch, these inner batches are modified accordingly in order to keep them up-to-date.
- *
- * A feature can be present in several inner batches, for example a polygon geometry will be present in the polygon batch
- * and its linear rings will be present in the line batch. Multi geometries are also broken down into individual geometries
- * and added to the corresponding batches in a recursive manner.
- *
- * Corresponding {@link module:ol/render/webgl/BatchRenderer} instances are then used to generate the render instructions
- * and WebGL buffers (vertices and indices) for each inner batches; render instructions are stored on the inner batches,
- * alongside the transform used to convert world coords to screen coords at the time these instructions were generated.
- * The resulting WebGL buffers are stored on the batches as well.
- *
- * An important aspect of geometry batches is that there is no guarantee that render instructions and WebGL buffers
- * are synchronized, i.e. render instructions can describe a new state while WebGL buffers might not have been written yet.
- * This is why two world-to-screen transforms are stored on each batch: one for the render instructions and one for
- * the WebGL buffers.
- */
-declare class MixedGeometryBatch {
-    /**
-     * @private
-     */
-    private globalCounter_;
-    /**
-     * Refs are used as keys for hit detection.
-     * @type {Map<number, Feature|RenderFeature>}
-     * @private
-     */
-    private refToFeature_;
-    /**
-     * Features are split in "entries", which are individual geometries. We use the following map to share a single ref for all those entries.
-     * @type {Map<string, number>}
-     * @private
-     */
-    private uidToRef_;
-    /**
-     * The precision in WebGL shaders is limited.
-     * To keep the refs as small as possible we maintain an array of freed up references.
-     * @type {Array<number>}
-     * @private
-     */
-    private freeGlobalRef_;
-    /**
-     * @type {PolygonGeometryBatch}
-     */
-    polygonBatch: PolygonGeometryBatch;
-    /**
-     * @type {PointGeometryBatch}
-     */
-    pointBatch: PointGeometryBatch;
-    /**
-     * @type {LineStringGeometryBatch}
-     */
-    lineStringBatch: LineStringGeometryBatch;
-    /**
-     * @param {Array<Feature|RenderFeature>} features Array of features to add to the batch
-     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
-     */
-    addFeatures(features: Array<Feature | RenderFeature>, projectionTransform?: TransformFunction): void;
-    /**
-     * @param {Feature|RenderFeature} feature Feature to add to the batch
-     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
-     */
-    addFeature(feature: Feature | RenderFeature, projectionTransform?: TransformFunction): void;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     * @return {GeometryBatchItem|void} the cleared entry
-     * @private
-     */
-    private clearFeatureEntryInPointBatch_;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     * @return {GeometryBatchItem|void} the cleared entry
-     * @private
-     */
-    private clearFeatureEntryInLineStringBatch_;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     * @return {GeometryBatchItem|void} the cleared entry
-     * @private
-     */
-    private clearFeatureEntryInPolygonBatch_;
-    /**
-     * @param {import("../../geom.js").Geometry|RenderFeature} geometry Geometry
-     * @param {Feature|RenderFeature} feature Feature
-     * @private
-     */
-    private addGeometry_;
-    /**
-     * @param {GeometryType} type Geometry type
-     * @param {Array<number>} flatCoords Flat coordinates
-     * @param {Array<number> | Array<Array<number>> | null} ends Coordinate ends
-     * @param {Feature|RenderFeature} feature Feature
-     * @param {string} featureUid Feature uid
-     * @param {number} stride Stride
-     * @param {import('../../geom/Geometry.js').GeometryLayout} [layout] Layout
-     * @private
-     */
-    private addCoordinates_;
-    /**
-     * @param {string} featureUid Feature uid
-     * @param {GeometryBatchItem} entry The entry to add
-     * @return {GeometryBatchItem} the added entry
-     * @private
-     */
-    private addRefToEntry_;
-    /**
-     * Return a ref to the pool of available refs.
-     * @param {number} ref the ref to return
-     * @param {string} featureUid the feature uid
-     * @private
-     */
-    private returnRef_;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     */
-    changeFeature(feature: Feature | RenderFeature): void;
-    /**
-     * @param {Feature|RenderFeature} feature Feature
-     */
-    removeFeature(feature: Feature | RenderFeature): void;
-    clear(): void;
-    /**
-     * Resolve the feature associated to a ref.
-     * @param {number} ref Hit detected ref
-     * @return {Feature|RenderFeature} feature
-     */
-    getFeatureFromRef(ref: number): Feature | RenderFeature;
-    isEmpty(): boolean;
-    /**
-     * Will return a new instance of this class that only contains the features
-     * for which the provided callback returned true
-     * @param {function((Feature|RenderFeature)): boolean} featureFilter Feature filter callback
-     * @return {MixedGeometryBatch} Filtered geometry batch
-     */
-    filter(featureFilter: (arg0: (Feature | RenderFeature)) => boolean): MixedGeometryBatch;
-}
-
-/**
- * A description of a custom attribute to be passed on to the GPU, with a value different
- * for each feature.
- */
-type AttributeDefinition = {
-    /**
-     * Amount of numerical values composing the attribute, either 1, 2, 3 or 4; in case size is > 1, the return value
-     * of the callback should be an array; if unspecified, assumed to be a single float value
-     */
-    size?: number | undefined;
-    /**
-     * This callback computes the numerical value of the
-     * attribute for a given feature.
-     */
-    callback: (this: GeometryBatchItem, arg1: FeatureLike) => number | Array<number>;
-};
-type AttributeDefinitions = {
-    [x: string]: AttributeDefinition;
-};
-type UniformDefinitions = {
-    [x: string]: UniformValue;
-};
-type WebGLBuffers = {
-    /**
-     * Array containing indices and vertices buffers for polygons
-     */
-    polygonBuffers: Array<WebGLArrayBuffer>;
-    /**
-     * Array containing indices and vertices buffers for line strings
-     */
-    lineStringBuffers: Array<WebGLArrayBuffer>;
-    /**
-     * Array containing indices and vertices buffers for points
-     */
-    pointBuffers: Array<WebGLArrayBuffer>;
-    /**
-     * Inverse of the transform applied when generating buffers
-     */
-    invertVerticesTransform: Transform;
-};
-type AsShaders = {
-    /**
-     * Shader builder with the appropriate presets.
-     */
-    builder: ShaderBuilder;
-    /**
-     * Custom attributes made available in the vertex shaders.
-     * Default shaders rely on the attributes in {@link Attributes}.
-     */
-    attributes?: {
-        [x: string]: AttributeDefinition;
-    } | undefined;
-    /**
-     * Additional uniforms usable in shaders.
-     */
-    uniforms?: {
-        [x: string]: UniformValue;
-    } | undefined;
-};
-type AsRule = {
-    /**
-     * Style
-     */
-    style: FlatStyle$1;
-    /**
-     * Filter
-     */
-    filter?: EncodedExpression | undefined;
-};
-type VectorStyle = AsRule | AsShaders;
-/**
- * @typedef {Object} AttributeDefinition A description of a custom attribute to be passed on to the GPU, with a value different
- * for each feature.
- * @property {number} [size] Amount of numerical values composing the attribute, either 1, 2, 3 or 4; in case size is > 1, the return value
- * of the callback should be an array; if unspecified, assumed to be a single float value
- * @property {function(this:import("./MixedGeometryBatch.js").GeometryBatchItem, import("../../Feature").FeatureLike):number|Array<number>} callback This callback computes the numerical value of the
- * attribute for a given feature.
- */
-/**
- * @typedef {Object<string, AttributeDefinition>} AttributeDefinitions
- * @typedef {Object<string, import("../../webgl/Helper").UniformValue>} UniformDefinitions
- */
-/**
- * @typedef {Object} WebGLBuffers
- * @property {Array<WebGLArrayBuffer>} polygonBuffers Array containing indices and vertices buffers for polygons
- * @property {Array<WebGLArrayBuffer>} lineStringBuffers Array containing indices and vertices buffers for line strings
- * @property {Array<WebGLArrayBuffer>} pointBuffers Array containing indices and vertices buffers for points
- * @property {import("../../transform.js").Transform} invertVerticesTransform Inverse of the transform applied when generating buffers
- */
-/**
- * @typedef {Object} RenderInstructions
- * @property {Float32Array|null} polygonInstructions Polygon instructions; null if nothing to render
- * @property {Float32Array|null} lineStringInstructions LineString instructions; null if nothing to render
- * @property {Float32Array|null} pointInstructions Point instructions; null if nothing to render
- */
-/**
- * @typedef {Object} ShaderProgram An object containing both shaders (vertex and fragment)
- * @property {string} vertex Vertex shader source
- * @property {string} fragment Fragment shader source
- */
-/**
- * @typedef {Object} AsShaders
- * @property {import("../../webgl/ShaderBuilder.js").ShaderBuilder} builder Shader builder with the appropriate presets.
- * @property {AttributeDefinitions} [attributes] Custom attributes made available in the vertex shaders.
- * Default shaders rely on the attributes in {@link Attributes}.
- * @property {UniformDefinitions} [uniforms] Additional uniforms usable in shaders.
- */
-/**
- * @typedef {Object} AsRule
- * @property {import('../../style/flat.js').FlatStyle} style Style
- * @property {import("../../expr/expression.js").EncodedExpression} [filter] Filter
- */
-/**
- * @typedef {AsRule|AsShaders} VectorStyle
- */
-/**
- * @classdesc This class is responsible for:
- * 1. generate WebGL buffers according to a provided style, using a MixedGeometryBatch as input
- * 2. rendering geometries contained in said buffers
- *
- * A layer renderer will typically maintain several of these in order to have several styles rendered separately.
- *
- * A VectorStyleRenderer instance can be created either from a literal style or from shaders using either
- * `VectorStyleRenderer.fromStyle` or `VectorStyleRenderer.fromShaders`. The shaders should not be provided explicitly
- * but instead as a preconfigured ShaderBuilder instance.
- *
- * The `generateBuffers` method returns a promise resolving to WebGL buffers that are intended to be rendered by the
- * same renderer.
- */
-declare class VectorStyleRenderer {
-    /**
-     * @param {VectorStyle} styleOrShaders Literal style or custom shaders
-     * @param {import('../../style/flat.js').StyleVariables} variables Style variables
-     * @param {import('../../webgl/Helper.js').default} helper Helper
-     * @param {boolean} [enableHitDetection] Whether to enable the hit detection (needs compatible shader)
-     * @param {import("../../expr/expression.js").ExpressionValue} [filter] Optional filter expression
-     */
-    constructor(styleOrShaders: VectorStyle, variables: StyleVariables, helper: WebGLHelper, enableHitDetection?: boolean, filter?: ExpressionValue);
-    /**
-     * @private
-     * @type {import('../../webgl/Helper.js').default}
-     */
-    private helper_;
-    /**
-     * @private
-     */
-    private hitDetectionEnabled_;
-    /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private fillProgram_;
-    /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private strokeProgram_;
-    /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private symbolProgram_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasFill_;
-    /**
-     * @private
-     */
-    private fillVertexShader_;
-    /**
-     * @private
-     */
-    private fillFragmentShader_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasStroke_;
-    /**
-     * @private
-     */
-    private strokeVertexShader_;
-    /**
-     * @private
-     */
-    private strokeFragmentShader_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasSymbol_;
-    /**
-     * @private
-     */
-    private symbolVertexShader_;
-    /**
-     * @private
-     */
-    private symbolFragmentShader_;
-    /**
-     * @type {function(import('../../Feature.js').FeatureLike): boolean}
-     * @private
-     */
-    private featureFilter_;
-    /**
-     * @private
-     */
-    private customAttributes_;
-    /**
-     * @private
-     */
-    private uniforms_;
-    /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
-     * @private
-     */
-    private polygonAttributesDesc_;
-    /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
-     * @private
-     */
-    private lineStringAttributesDesc_;
-    /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
-     * @private
-     */
-    private pointAttributesDesc_;
-    /**
-     * Will apply the style filter when generating geometry batches (if it can be evaluated outside a map context)
-     * @param {import("../../expr/expression.js").ExpressionValue} filter Style filter
-     * @return {function(import('../../Feature.js').FeatureLike): boolean} Feature filter
-     * @private
-     */
-    private computeFeatureFilter;
-    /**
-     * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
-     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
-     * @return {Promise<WebGLBuffers|null>} A promise resolving to WebGL buffers; returns null if buffers are empty
-     */
-    generateBuffers(geometryBatch: MixedGeometryBatch, transform: Transform): Promise<WebGLBuffers | null>;
-    /**
-     * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
-     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
-     * @return {RenderInstructions} Render instructions
-     * @private
-     */
-    private generateRenderInstructions_;
-    /**
-     * @param {Float32Array|null} renderInstructions Render instructions
-     * @param {import("../../geom/Geometry.js").Type} geometryType Geometry type
-     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
-     * @return {Promise<Array<WebGLArrayBuffer>>|null} Indices buffer and vertices buffer; null if nothing to render
-     * @private
-     */
-    private generateBuffersForType_;
-    /**
-     * Render the geometries in the given buffers.
-     * @param {WebGLBuffers} buffers WebGL Buffers to draw
-     * @param {import("../../Map.js").FrameState} frameState Frame state
-     * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
-     */
-    render(buffers: WebGLBuffers, frameState: FrameState, preRenderCallback: () => void): void;
-    /**
-     * @param {WebGLArrayBuffer} indicesBuffer Indices buffer
-     * @param {WebGLArrayBuffer} verticesBuffer Vertices buffer
-     * @param {WebGLProgram} program Program
-     * @param {Array<import('../../webgl/Helper.js').AttributeDescription>} attributes Attribute descriptions
-     * @param {import("../../Map.js").FrameState} frameState Frame state.
-     * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
-     * @private
-     */
-    private renderInternal_;
-    /**
-     * @param {import('../../webgl/Helper.js').default} helper Helper
-     * @param {WebGLBuffers} buffers WebGL Buffers to reload if any
-     */
-    setHelper(helper: WebGLHelper, buffers?: WebGLBuffers): void;
-}
-
-type StyleAsShaders$2 = AsShaders;
-type Options$8 = {
-    /**
-     * A CSS class name to set to the canvas element.
-     */
-    className?: string | undefined;
-    /**
-     * Flat vector style; also accepts shaders
-     */
-    style: FlatStyleLike | Array<StyleAsShaders$2> | StyleAsShaders$2;
-    /**
-     * Style variables
-     */
-    variables: {
-        [x: string]: string | number | boolean | number[];
-    };
-    /**
-     * Setting this to true will provide a slight performance boost, but will
-     * prevent all hit detection on the layer.
-     */
-    disableHitDetection?: boolean | undefined;
-    /**
-     * Post-processes definitions
-     */
-    postProcesses?: PostProcessesOptions[] | undefined;
-};
-/**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').AsShaders} StyleAsShaders
- */
-/**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').AsRule} StyleAsRule
- */
-/**
- * @typedef {Object} Options
- * @property {string} [className='ol-layer'] A CSS class name to set to the canvas element.
- * @property {import('../../style/flat.js').FlatStyleLike | Array<StyleAsShaders> | StyleAsShaders} style Flat vector style; also accepts shaders
- * @property {Object<string, number|Array<number>|string|boolean>} variables Style variables
- * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
- * prevent all hit detection on the layer.
- * @property {Array<import("./Layer").PostProcessesOptions>} [postProcesses] Post-processes definitions
- */
-/**
- * @classdesc
- * Experimental WebGL vector renderer. Supports polygons, lines and points:
- *  Polygons are broken down into triangles
- *  Lines are rendered as strips of quads
- *  Points are rendered as quads
- *
- * You need to provide vertex and fragment shaders as well as custom attributes for each type of geometry. All shaders
- * can access the uniforms in the {@link module:ol/webgl/Helper~DefaultUniform} enum.
- * The vertex shaders can access the following attributes depending on the geometry type:
- *  For polygons: {@link module:ol/render/webgl/PolygonBatchRenderer~Attributes}
- *  For line strings: {@link module:ol/render/webgl/LineStringBatchRenderer~Attributes}
- *  For points: {@link module:ol/render/webgl/PointBatchRenderer~Attributes}
- *
- * Please note that the fragment shaders output should have premultiplied alpha, otherwise visual anomalies may occur.
- *
- * Note: this uses {@link module:ol/webgl/Helper~WebGLHelper} internally.
- */
-declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
-    /**
-     * @param {import("../../layer/Layer.js").default} layer Layer.
-     * @param {Options} options Options.
-     */
-    constructor(layer: Layer, options: Options$8);
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hitDetectionEnabled_;
-    /**
-     * @type {WebGLRenderTarget}
-     * @private
-     */
-    private hitRenderTarget_;
-    /**
-     * @private
-     */
-    private sourceRevision_;
-    /**
-     * @private
-     */
-    private previousExtent_;
-    /**
-     * This transform is updated on every frame and is the composition of:
-     * - invert of the world->screen transform that was used when rebuilding buffers (see `this.renderTransform_`)
-     * - current world->screen transform
-     * @type {import("../../transform.js").Transform}
-     * @private
-     */
-    private currentTransform_;
-    /**
-     * @private
-     */
-    private tmpCoords_;
-    /**
-     * @private
-     */
-    private tmpTransform_;
-    /**
-     * @private
-     */
-    private tmpMat4_;
-    /**
-     * @type {import("../../transform.js").Transform}
-     * @private
-     */
-    private currentFrameStateTransform_;
-    /**
-     * @type {import('../../style/flat.js').StyleVariables}
-     * @private
-     */
-    private styleVariables_;
-    /**
-     * @type {Array<StyleAsRule | StyleAsShaders>}
-     * @private
-     */
-    private styles_;
-    /**
-     * @type {Array<VectorStyleRenderer>}
-     * @private
-     */
-    private styleRenderers_;
-    /**
-     * @type {Array<import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers>}
-     * @private
-     */
-    private buffers_;
-    /**
-     * @private
-     */
-    private batch_;
-    /**
-     * @private
-     * @type {boolean}
-     */
-    private initialFeaturesAdded_;
-    /**
-     * @private
-     * @type {Array<import("../../events.js").EventsKey|null>}
-     */
-    private sourceListenKeys_;
-    /**
-     * @private
-     * @param {import("../../Map.js").FrameState} frameState Frame state.
-     */
-    private addInitialFeatures_;
-    /**
-     * @param {Options} options Options.
-     * @private
-     */
-    private applyOptions_;
-    /**
-     * @private
-     */
-    private createRenderers_;
-    /**
-     * @override
-     */
-    override reset(options: any): void;
-    /**
-     * @param {import("../../proj.js").TransformFunction} projectionTransform Transform function.
-     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
-     * @private
-     */
-    private handleSourceFeatureAdded_;
-    /**
-     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
-     * @private
-     */
-    private handleSourceFeatureChanged_;
-    /**
-     * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
-     * @private
-     */
-    private handleSourceFeatureDelete_;
-    /**
-     * @private
-     */
-    private handleSourceFeatureClear_;
-    /**
-     * @param {import("../../transform.js").Transform} batchInvertTransform Inverse of the transformation in which geometries are expressed
-     * @private
-     */
-    private applyUniforms_;
-    /**
-     * Render the layer.
-     * @param {import("../../Map.js").FrameState} frameState Frame state.
-     * @return {HTMLElement} The rendered element.
-     * @override
-     */
-    override renderFrame(frameState: FrameState): HTMLElement;
-    /**
-     * Render the world, either to the main framebuffer or to the hit framebuffer
-     * @param {import("../../Map.js").FrameState} frameState current frame state
-     * @param {boolean} forHitDetection whether the rendering is for hit detection
-     * @param {number} startWorld the world to render in the first iteration
-     * @param {number} endWorld the last world to render
-     * @param {number} worldWidth the width of the worlds being rendered
-     */
-    renderWorlds(frameState: FrameState, forHitDetection: boolean, startWorld: number, endWorld: number, worldWidth: number): void;
-    /**
-     * Will release a set of Webgl buffers
-     * @param {import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers} buffers Buffers
-     */
-    disposeBuffers(buffers: WebGLBuffers): void;
 }
 
 /**
@@ -39622,7 +39795,6 @@ declare class WebGLVectorLayer<VectorSourceType extends VectorSource<FeatureType
      * @param {import('../style/flat.js').FlatStyleLike} style Layer style.
      */
     setStyle(style: FlatStyleLike): void;
-    style: FlatStyleLike | undefined;
 }
 
 type TileType = VectorRenderTile;
@@ -39662,9 +39834,9 @@ declare class TileGeometry extends BaseTileRepresentation<VectorRenderTile> {
     private generateMaskBuffer_;
     /**
      * Will release a set of Webgl buffers
-     * @param {import('../render/webgl/VectorStyleRenderer.js').WebGLBuffers} buffers Buffers
+     * @param {import('../render/webgl/VectorStyleRenderer.js').WebGLBuffers|null} buffers Buffers
      */
-    disposeBuffers(buffers: WebGLBuffers): void;
+    disposeBuffers(buffers: WebGLBuffers | null): void;
 }
 
 type StyleAsShaders$1 = AsShaders;
@@ -39998,7 +40170,6 @@ declare class WebGLVectorTileLayer<VectorTileSourceType extends VectorTile<Featu
      * @param {import('../style/flat.js').FlatStyleLike} style Layer style.
      */
     setStyle(style: FlatStyleLike): void;
-    style: FlatStyleLike | undefined;
 }
 
 /**
@@ -40991,42 +41162,6 @@ type RuleSetEvaluator = (arg0: EvaluationContext) => Array<Style$2>;
 type StyleEvaluator = (arg0: EvaluationContext) => Style$2 | null;
 
 /**
- * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
- * @return {number} Cumulated size of all attributes
- */
-declare function getCustomAttributesSize(customAttributes: AttributeDefinitions): number;
-/**
- * Render instructions for lines are structured like so:
- * [ x0, y0, customAttr0, ... , xN, yN, customAttrN ]
- * @param {import("./MixedGeometryBatch.js").PointGeometryBatch} batch Point geometry batch
- * @param {Float32Array} renderInstructions Render instructions
- * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
- * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
- * @return {Float32Array} Generated render instructions
- */
-declare function generatePointRenderInstructions(batch: PointGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
-/**
- * Render instructions for lines are structured like so:
- * [ customAttr0, ... , customAttrN, numberOfVertices0, x0, y0, ... , xN, yN, numberOfVertices1, ... ]
- * @param {import("./MixedGeometryBatch.js").LineStringGeometryBatch} batch Line String geometry batch
- * @param {Float32Array} renderInstructions Render instructions
- * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
- * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
- * @return {Float32Array} Generated render instructions
- */
-declare function generateLineStringRenderInstructions(batch: LineStringGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
-/**
- * Render instructions for polygons are structured like so:
- * [ customAttr0, ..., customAttrN, numberOfRings, numberOfVerticesInRing0, ..., numberOfVerticesInRingN, x0, y0, ..., xN, yN, numberOfRings,... ]
- * @param {import("./MixedGeometryBatch.js").PolygonGeometryBatch} batch Polygon geometry batch
- * @param {Float32Array} renderInstructions Render instructions
- * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
- * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
- * @return {Float32Array} Generated render instructions
- */
-declare function generatePolygonRenderInstructions(batch: PolygonGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
-
-/**
  * Pushes a quad (two triangles) based on a point geometry
  * @param {Float32Array} instructions Array of render instructions for points.
  * @param {number} elementIndex Index from which render instructions will be read.
@@ -41089,12 +41224,76 @@ declare function writeLineSegmentToBuffers(instructions: Float32Array, segmentSt
  * @private
  */
 declare function writePolygonTrianglesToBuffers(instructions: Float32Array, polygonStartIndex: number, vertexArray: Array<number>, indexArray: Array<number>, customAttributesSize: number): number;
+declare const LINESTRING_ANGLE_COSINE_CUTOFF: 0.985;
 /**
- * Returns a texture of 1x1 pixel, white
- * @private
- * @return {ImageData} Image data.
+ * An object holding positions both in an index and a vertex buffer.
  */
-declare function getBlankImageData(): ImageData;
+type BufferPositions = {
+    /**
+     * Position in the vertex buffer
+     */
+    vertexPosition: number;
+    /**
+     * Position in the index buffer
+     */
+    indexPosition: number;
+};
+
+/**
+ * Recursively parses a style expression and outputs a GLSL-compatible string. Takes in a compilation context that
+ * will be read and modified during the parsing operation.
+ * @param {import("../../expr/gpu.js").CompilationContext} compilationContext Compilation context
+ * @param {import("../../expr/expression.js").EncodedExpression} value Value
+ * @param {number} [expectedType] Expected final type (can be several types combined)
+ * @return {string} GLSL-compatible output
+ */
+declare function expressionToGlsl(compilationContext: CompilationContext, value: EncodedExpression, expectedType?: number): string;
+/**
+ * Packs all components of a color into a two-floats array
+ * @param {import("../../color.js").Color|string} color Color as array of numbers or string
+ * @return {Array<number>} Vec2 array containing the color in compressed form
+ */
+declare function packColor(color: Color | string): Array<number>;
+/**
+ * @param {number} type Value type
+ * @return {1|2|3|4} The amount of components for this value
+ */
+declare function getGlslSizeFromType(type: number): 1 | 2 | 3 | 4;
+/**
+ * @param {number} type Value type
+ * @return {'float'|'vec2'|'vec3'|'vec4'} The corresponding GLSL type for this value
+ */
+declare function getGlslTypeFromType(type: number): "float" | "vec2" | "vec3" | "vec4";
+/**
+ * Applies the properties and variables collected in a compilation context to a ShaderBuilder instance:
+ * properties will show up as attributes in shaders, and variables will show up as uniforms.
+ * @param {import("./ShaderBuilder.js").ShaderBuilder} builder Shader builder
+ * @param {import("../../expr/gpu.js").CompilationContext} context Compilation context
+ */
+declare function applyContextToBuilder(builder: ShaderBuilder, context: CompilationContext): void;
+/**
+ * Generates a set of uniforms from variables collected in a compilation context,
+ * to be fed to a WebGLHelper instance
+ * @param {import("../../expr/gpu.js").CompilationContext} context Compilation context
+ * @param {import('../../style/flat.js').StyleVariables} [variables] Style variables.
+ * @return {Object<string,import("../../webgl/Helper").UniformValue>} Uniforms
+ */
+declare function generateUniformsFromContext(context: CompilationContext, variables?: StyleVariables): {
+    [x: string]: UniformValue;
+};
+/**
+ * Generates a set of attributes from properties collected in a compilation context,
+ * to be fed to a WebGLHelper instance
+ * @param {import("../../expr/gpu.js").CompilationContext} context Compilation context
+ * @return {import('./VectorStyleRenderer.js').AttributeDefinitions} Attributes
+ */
+declare function generateAttributesFromContext(context: CompilationContext): AttributeDefinitions;
+declare const UNPACK_COLOR_FN: "vec4 unpackColor(vec2 packedColor) {\n  return vec4(\n    fract(floor(packedColor[0] / 256.0) / 256.0),\n    fract(packedColor[0] / 256.0),\n    fract(floor(packedColor[1] / 256.0) / 256.0),\n    fract(packedColor[1] / 256.0)\n  );\n}";
+
+/**
+ * Utilities for encoding/decoding values to be used in shaders
+ * @module ol/render/webgl/encodeUtil
+ */
 /**
  * Generates a color array based on a numerical id
  * Note: the range for each component is 0 to 1 with 256 steps
@@ -41110,6 +41309,69 @@ declare function colorEncodeId(id: number, array?: Array<number>): Array<number>
  * @return {number} Decoded id
  */
 declare function colorDecodeId(color: Array<number>): number;
+
+/**
+ * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
+ * @return {number} Cumulated size of all attributes
+ */
+declare function getCustomAttributesSize(customAttributes: AttributeDefinitions): number;
+/**
+ * Render instructions for lines are structured like so:
+ * [ x0, y0, customAttr0, ... , xN, yN, customAttrN ]
+ * @param {import("./MixedGeometryBatch.js").PointGeometryBatch} batch Point geometry batch
+ * @param {Float32Array} renderInstructions Render instructions
+ * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
+ * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+ * @return {Float32Array} Generated render instructions
+ */
+declare function generatePointRenderInstructions(batch: PointGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
+/**
+ * Render instructions for lines are structured like so:
+ * [ customAttr0, ... , customAttrN, numberOfVertices0, x0, y0, ... , xN, yN, numberOfVertices1, ... ]
+ * @param {import("./MixedGeometryBatch.js").LineStringGeometryBatch} batch Line String geometry batch
+ * @param {Float32Array} renderInstructions Render instructions
+ * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
+ * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+ * @return {Float32Array} Generated render instructions
+ */
+declare function generateLineStringRenderInstructions(batch: LineStringGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
+/**
+ * Render instructions for polygons are structured like so:
+ * [ customAttr0, ..., customAttrN, numberOfRings, numberOfVerticesInRing0, ..., numberOfVerticesInRingN, x0, y0, ..., xN, yN, numberOfRings,... ]
+ * @param {import("./MixedGeometryBatch.js").PolygonGeometryBatch} batch Polygon geometry batch
+ * @param {Float32Array} renderInstructions Render instructions
+ * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
+ * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+ * @return {Float32Array} Generated render instructions
+ */
+declare function generatePolygonRenderInstructions(batch: PolygonGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
+
+/**
+ * see https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+ * @param {Object|string} input The hash input, either an object or string
+ * @return {string} Hash (if the object cannot be serialized, it is based on `getUid`)
+ */
+declare function computeHash(input: any | string): string;
+/**
+ * @typedef {Object} StyleParseResult
+ * @property {ShaderBuilder} builder Shader builder pre-configured according to a given style
+ * @property {import("./VectorStyleRenderer.js").UniformDefinitions} uniforms Uniform definitions
+ * @property {import("./VectorStyleRenderer.js").AttributeDefinitions} attributes Attribute definitions
+ */
+/**
+ * Parses a {@link import("../../style/flat.js").FlatStyle} object and returns a {@link ShaderBuilder}
+ * object that has been configured according to the given style, as well as `attributes` and `uniforms`
+ * arrays to be fed to the `WebGLPointsRenderer` class.
+ *
+ * Also returns `uniforms` and `attributes` properties as expected by the
+ * {@link module:ol/renderer/webgl/PointsLayer~WebGLPointsLayerRenderer}.
+ *
+ * @param {import("../../style/flat.js").FlatStyle} style Flat style.
+ * @param {import('../../style/flat.js').StyleVariables} [variables] Style variables.
+ * @param {import("../../expr/expression.js").EncodedExpression} [filter] Filter (if any)
+ * @return {StyleParseResult} Result containing shader params, attributes and uniforms.
+ */
+declare function parseLiteralStyle(style: FlatStyle$1, variables?: StyleVariables, filter?: EncodedExpression): StyleParseResult;
 /**
  * @typedef {import('./VectorStyleRenderer.js').AsShaders} StyleAsShaders
  */
@@ -41123,22 +41385,22 @@ declare function colorDecodeId(color: Array<number>): number;
  * @return {Array<StyleAsShaders | StyleAsRule>} Separate styles as shaders or rules with a single flat style and a filter
  */
 declare function breakDownFlatStyle(style: FlatStyleLike | Array<StyleAsShaders> | StyleAsShaders): Array<StyleAsShaders | StyleAsRule>;
-declare const LINESTRING_ANGLE_COSINE_CUTOFF: 0.985;
+type StyleParseResult = {
+    /**
+     * Shader builder pre-configured according to a given style
+     */
+    builder: ShaderBuilder;
+    /**
+     * Uniform definitions
+     */
+    uniforms: UniformDefinitions;
+    /**
+     * Attribute definitions
+     */
+    attributes: AttributeDefinitions;
+};
 type StyleAsShaders = AsShaders;
 type StyleAsRule = AsRule;
-/**
- * An object holding positions both in an index and a vertex buffer.
- */
-type BufferPositions = {
-    /**
-     * Position in the vertex buffer
-     */
-    vertexPosition: number;
-    /**
-     * Position in the index buffer
-     */
-    indexPosition: number;
-};
 
 /**
  * @classdesc
@@ -43318,62 +43580,6 @@ declare class WebGLPostProcessingPass {
     private applyUniforms;
 }
 
-/**
- * Recursively parses a style expression and outputs a GLSL-compatible string. Takes in a compilation context that
- * will be read and modified during the parsing operation.
- * @param {import("../expr/gpu.js").CompilationContext} compilationContext Compilation context
- * @param {import("../expr/expression.js").EncodedExpression} value Value
- * @param {number} [expectedType] Expected final type (can be several types combined)
- * @return {string} GLSL-compatible output
- */
-declare function expressionToGlsl(compilationContext: CompilationContext, value: EncodedExpression, expectedType?: number): string;
-/**
- * Packs all components of a color into a two-floats array
- * @param {import("../color.js").Color|string} color Color as array of numbers or string
- * @return {Array<number>} Vec2 array containing the color in compressed form
- */
-declare function packColor(color: Color | string): Array<number>;
-/**
- * see https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
- * @param {Object|string} input The hash input, either an object or string
- * @return {string} Hash (if the object cannot be serialized, it is based on `getUid`)
- */
-declare function computeHash(input: any | string): string;
-/**
- * @typedef {Object} StyleParseResult
- * @property {ShaderBuilder} builder Shader builder pre-configured according to a given style
- * @property {import("../render/webgl/VectorStyleRenderer.js").UniformDefinitions} uniforms Uniform definitions
- * @property {import("../render/webgl/VectorStyleRenderer.js").AttributeDefinitions} attributes Attribute definitions
- */
-/**
- * Parses a {@link import("../style/flat.js").FlatStyle} object and returns a {@link ShaderBuilder}
- * object that has been configured according to the given style, as well as `attributes` and `uniforms`
- * arrays to be fed to the `WebGLPointsRenderer` class.
- *
- * Also returns `uniforms` and `attributes` properties as expected by the
- * {@link module:ol/renderer/webgl/PointsLayer~WebGLPointsLayerRenderer}.
- *
- * @param {import("../style/flat.js").FlatStyle} style Flat style.
- * @param {import('../style/flat.js').StyleVariables} [variables] Style variables.
- * @param {import("../expr/expression.js").EncodedExpression} [filter] Filter (if any)
- * @return {StyleParseResult} Result containing shader params, attributes and uniforms.
- */
-declare function parseLiteralStyle(style: FlatStyle$1, variables?: StyleVariables, filter?: EncodedExpression): StyleParseResult;
-type StyleParseResult = {
-    /**
-     * Shader builder pre-configured according to a given style
-     */
-    builder: ShaderBuilder;
-    /**
-     * Uniform definitions
-     */
-    uniforms: UniformDefinitions;
-    /**
-     * Attribute definitions
-     */
-    attributes: AttributeDefinitions;
-};
-
 
     export { Collection };
     export { DataTile };
@@ -43398,487 +43604,487 @@ type StyleParseResult = {
     export { VectorTile$1 as VectorTile };
     export { View };
     export namespace array {
-        export { ascending };
-        export { binarySearch };
-        export { descending };
+        export { ascending as ascending };
+        export { binarySearch as binarySearch };
+        export { descending as descending };
         export { equals$2 as equals };
         export { extend$1 as extend };
-        export { isSorted };
-        export { linearFindNearest };
+        export { isSorted as isSorted };
+        export { linearFindNearest as linearFindNearest };
         export { remove$1 as remove };
-        export { reverseSubArray };
-        export { stableSort };
+        export { reverseSubArray as reverseSubArray };
+        export { stableSort as stableSort };
     }
     export namespace asserts {
-        export { assert };
+        export { assert as assert };
     }
     export namespace centerconstraint {
-        export { createExtent };
-        export { none };
+        export { createExtent as createExtent };
+        export { none as none };
     }
     export namespace color {
-        export { NO_COLOR };
-        export { asArray };
-        export { asString };
-        export { fromString };
-        export { isStringColor };
-        export { lchaToRgba };
-        export { normalize };
-        export { rgbaToLcha };
-        export { toString };
-        export { withAlpha };
+        export { NO_COLOR as NO_COLOR };
+        export { asArray as asArray };
+        export { asString as asString };
+        export { fromString as fromString };
+        export { isStringColor as isStringColor };
+        export { lchaToRgba as lchaToRgba };
+        export { rgbaToLcha as rgbaToLcha };
+        export { toString as toString };
+        export { withAlpha as withAlpha };
     }
     export namespace colorlike {
-        export { asColorLike };
+        export { asColorLike as asColorLike };
     }
     export namespace console {
-        export { error };
-        export { log };
-        export { setLevel };
-        export { warn };
+        export { error as error };
+        export { log as log };
+        export { setLevel as setLevel };
+        export { warn as warn };
     }
     export namespace control {
-        export { Attribution };
-        export { Control };
-        export { FullScreen };
-        export { MousePosition };
-        export { OverviewMap };
-        export { Rotate };
-        export { ScaleLine };
-        export { Zoom };
-        export { ZoomSlider };
-        export { ZoomToExtent };
+        export { Attribution as Attribution };
+        export { Control as Control };
+        export { FullScreen as FullScreen };
+        export { MousePosition as MousePosition };
+        export { OverviewMap as OverviewMap };
+        export { Rotate as Rotate };
+        export { ScaleLine as ScaleLine };
+        export { Zoom as Zoom };
+        export { ZoomSlider as ZoomSlider };
+        export { ZoomToExtent as ZoomToExtent };
         export namespace defaults {
             export { defaults$1 as defaults };
         }
     }
     export namespace coordinate {
         export { add$2 as add };
-        export { closestOnCircle };
-        export { closestOnSegment };
-        export { createStringXY };
-        export { degreesToStringHDMS };
-        export { distance };
-        export { equals };
-        export { format };
-        export { getWorldsAway };
+        export { closestOnCircle as closestOnCircle };
+        export { closestOnSegment as closestOnSegment };
+        export { createStringXY as createStringXY };
+        export { degreesToStringHDMS as degreesToStringHDMS };
+        export { distance as distance };
+        export { equals as equals };
+        export { format as format };
+        export { getWorldsAway as getWorldsAway };
         export { rotate$1 as rotate };
         export { scale$2 as scale };
         export { squaredDistance$1 as squaredDistance };
-        export { squaredDistanceToSegment };
-        export { toStringHDMS };
-        export { toStringXY };
+        export { squaredDistanceToSegment as squaredDistanceToSegment };
+        export { toStringHDMS as toStringHDMS };
+        export { toStringXY as toStringXY };
         export { wrapX$1 as wrapX };
     }
     export namespace css {
-        export { CLASS_COLLAPSED };
-        export { CLASS_CONTROL };
-        export { CLASS_HIDDEN };
-        export { CLASS_SELECTABLE };
-        export { CLASS_UNSELECTABLE };
-        export { CLASS_UNSUPPORTED };
-        export { getFontParameters };
+        export { CLASS_COLLAPSED as CLASS_COLLAPSED };
+        export { CLASS_CONTROL as CLASS_CONTROL };
+        export { CLASS_HIDDEN as CLASS_HIDDEN };
+        export { CLASS_SELECTABLE as CLASS_SELECTABLE };
+        export { CLASS_UNSELECTABLE as CLASS_UNSELECTABLE };
+        export { CLASS_UNSUPPORTED as CLASS_UNSUPPORTED };
+        export { getFontParameters as getFontParameters };
     }
     export namespace dom {
-        export { createCanvasContext2D };
-        export { getSharedCanvasContext2D };
-        export { outerHeight };
-        export { outerWidth };
-        export { releaseCanvas };
-        export { removeChildren };
-        export { replaceChildren };
-        export { replaceNode };
+        export { createCanvasContext2D as createCanvasContext2D };
+        export { getSharedCanvasContext2D as getSharedCanvasContext2D };
+        export { outerHeight as outerHeight };
+        export { outerWidth as outerWidth };
+        export { releaseCanvas as releaseCanvas };
+        export { removeChildren as removeChildren };
+        export { replaceChildren as replaceChildren };
+        export { replaceNode as replaceNode };
     }
     export namespace easing {
-        export { easeIn };
-        export { easeOut };
-        export { inAndOut };
-        export { linear };
-        export { upAndDown };
+        export { easeIn as easeIn };
+        export { easeOut as easeOut };
+        export { inAndOut as inAndOut };
+        export { linear as linear };
+        export { upAndDown as upAndDown };
     }
     export namespace events {
         export { BaseEvent as Event };
         export namespace SnapEvent {
-            export { SnapEvent };
+            export { SnapEvent as SnapEvent };
         }
-        export { Target };
+        export { Target as Target };
         export namespace condition {
             export { all$1 as all };
-            export { altKeyOnly };
-            export { altShiftKeysOnly };
-            export { always };
-            export { click };
-            export { doubleClick };
-            export { focus };
-            export { focusWithTabindex };
-            export { mouseActionButton };
-            export { mouseOnly };
-            export { never };
-            export { noModifierKeys };
-            export { penOnly };
-            export { platformModifierKey };
-            export { platformModifierKeyOnly };
-            export { pointerMove };
-            export { primaryAction };
-            export { shiftKeyOnly };
-            export { singleClick };
-            export { targetNotEditable };
-            export { touchOnly };
+            export { altKeyOnly as altKeyOnly };
+            export { altShiftKeysOnly as altShiftKeysOnly };
+            export { always as always };
+            export { click as click };
+            export { doubleClick as doubleClick };
+            export { focus as focus };
+            export { focusWithTabindex as focusWithTabindex };
+            export { mouseActionButton as mouseActionButton };
+            export { mouseOnly as mouseOnly };
+            export { never as never };
+            export { noModifierKeys as noModifierKeys };
+            export { penOnly as penOnly };
+            export { platformModifierKey as platformModifierKey };
+            export { platformModifierKeyOnly as platformModifierKeyOnly };
+            export { pointerMove as pointerMove };
+            export { primaryAction as primaryAction };
+            export { shiftKeyOnly as shiftKeyOnly };
+            export { singleClick as singleClick };
+            export { targetNotEditable as targetNotEditable };
+            export { touchOnly as touchOnly };
         }
-        export { listen };
-        export { listenOnce };
-        export { unlistenByKey };
+        export { listen as listen };
+        export { listenOnce as listenOnce };
+        export { unlistenByKey as unlistenByKey };
     }
     export namespace expr {
         namespace cpu {
             export { buildExpression$1 as buildExpression };
-            export { newEvaluationContext };
+            export { newEvaluationContext as newEvaluationContext };
         }
         namespace expression {
-            export { AnyType };
-            export { BooleanType };
-            export { CallExpression };
-            export { ColorType };
-            export { LiteralExpression };
-            export { NoneType };
-            export { NumberArrayType };
-            export { NumberType };
-            export { Ops };
-            export { SizeType };
-            export { StringType };
-            export { computeGeometryType };
-            export { includesType };
-            export { isType };
-            export { newParsingContext };
-            export { overlapsType };
+            export { AnyType as AnyType };
+            export { BooleanType as BooleanType };
+            export { CallExpression as CallExpression };
+            export { ColorType as ColorType };
+            export { LiteralExpression as LiteralExpression };
+            export { NoneType as NoneType };
+            export { NumberArrayType as NumberArrayType };
+            export { NumberType as NumberType };
+            export { Ops as Ops };
+            export { SizeType as SizeType };
+            export { StringType as StringType };
+            export { computeGeometryType as computeGeometryType };
+            export { includesType as includesType };
+            export { isType as isType };
+            export { newParsingContext as newParsingContext };
+            export { overlapsType as overlapsType };
             export { parse$1 as parse };
-            export { typeName };
+            export { typeName as typeName };
         }
         namespace gpu {
-            export { FEATURE_ID_PROPERTY_NAME };
-            export { GEOMETRY_TYPE_PROPERTY_NAME };
-            export { PALETTE_TEXTURE_ARRAY };
-            export { arrayToGlsl };
-            export { buildExpression };
-            export { colorToGlsl };
-            export { getStringNumberEquivalent };
-            export { newCompilationContext };
-            export { numberToGlsl };
-            export { sizeToGlsl };
-            export { stringToGlsl };
-            export { uniformNameForVariable };
+            export { FEATURE_ID_PROPERTY_NAME as FEATURE_ID_PROPERTY_NAME };
+            export { GEOMETRY_TYPE_PROPERTY_NAME as GEOMETRY_TYPE_PROPERTY_NAME };
+            export { PALETTE_TEXTURE_ARRAY as PALETTE_TEXTURE_ARRAY };
+            export { UNDEFINED_PROP_VALUE as UNDEFINED_PROP_VALUE };
+            export { arrayToGlsl as arrayToGlsl };
+            export { buildExpression as buildExpression };
+            export { colorToGlsl as colorToGlsl };
+            export { getStringNumberEquivalent as getStringNumberEquivalent };
+            export { newCompilationContext as newCompilationContext };
+            export { numberToGlsl as numberToGlsl };
+            export { sizeToGlsl as sizeToGlsl };
+            export { stringToGlsl as stringToGlsl };
+            export { uniformNameForVariable as uniformNameForVariable };
         }
     }
     export namespace extent {
-        export { applyTransform };
-        export { approximatelyEquals };
-        export { boundingExtent };
-        export { buffer };
-        export { clone };
-        export { closestSquaredDistanceXY };
-        export { containsCoordinate };
-        export { containsExtent };
-        export { containsXY };
-        export { coordinateRelationship };
-        export { createEmpty };
+        export { applyTransform as applyTransform };
+        export { approximatelyEquals as approximatelyEquals };
+        export { boundingExtent as boundingExtent };
+        export { buffer as buffer };
+        export { clone as clone };
+        export { closestSquaredDistanceXY as closestSquaredDistanceXY };
+        export { containsCoordinate as containsCoordinate };
+        export { containsExtent as containsExtent };
+        export { containsXY as containsXY };
+        export { coordinateRelationship as coordinateRelationship };
+        export { createEmpty as createEmpty };
         export { createOrUpdate$1 as createOrUpdate };
-        export { createOrUpdateEmpty };
-        export { createOrUpdateFromCoordinate };
-        export { createOrUpdateFromCoordinates };
-        export { createOrUpdateFromFlatCoordinates };
-        export { createOrUpdateFromRings };
+        export { createOrUpdateEmpty as createOrUpdateEmpty };
+        export { createOrUpdateFromCoordinate as createOrUpdateFromCoordinate };
+        export { createOrUpdateFromCoordinates as createOrUpdateFromCoordinates };
+        export { createOrUpdateFromFlatCoordinates as createOrUpdateFromFlatCoordinates };
+        export { createOrUpdateFromRings as createOrUpdateFromRings };
         export { equals$1 as equals };
-        export { extend };
-        export { extendCoordinate };
-        export { extendCoordinates };
-        export { extendFlatCoordinates };
-        export { extendRings };
-        export { extendXY };
-        export { forEachCorner };
+        export { extend as extend };
+        export { extendCoordinate as extendCoordinate };
+        export { extendCoordinates as extendCoordinates };
+        export { extendFlatCoordinates as extendFlatCoordinates };
+        export { extendRings as extendRings };
+        export { extendXY as extendXY };
+        export { forEachCorner as forEachCorner };
         export { getArea$1 as getArea };
-        export { getBottomLeft };
-        export { getBottomRight };
-        export { getCenter };
-        export { getCorner };
-        export { getEnlargedArea };
-        export { getForViewAndSize };
-        export { getHeight };
-        export { getIntersection };
-        export { getIntersectionArea };
-        export { getMargin };
-        export { getRotatedViewport };
-        export { getSize };
-        export { getTopLeft };
-        export { getTopRight };
-        export { getWidth };
+        export { getBottomLeft as getBottomLeft };
+        export { getBottomRight as getBottomRight };
+        export { getCenter as getCenter };
+        export { getCorner as getCorner };
+        export { getEnlargedArea as getEnlargedArea };
+        export { getForViewAndSize as getForViewAndSize };
+        export { getHeight as getHeight };
+        export { getIntersection as getIntersection };
+        export { getIntersectionArea as getIntersectionArea };
+        export { getMargin as getMargin };
+        export { getRotatedViewport as getRotatedViewport };
+        export { getSize as getSize };
+        export { getTopLeft as getTopLeft };
+        export { getTopRight as getTopRight };
+        export { getWidth as getWidth };
         export { intersects$1 as intersects };
-        export { intersectsSegment };
+        export { intersectsSegment as intersectsSegment };
         export { isEmpty$1 as isEmpty };
-        export { returnOrUpdate };
-        export { scaleFromCenter };
-        export { wrapAndSliceX };
+        export { returnOrUpdate as returnOrUpdate };
+        export { scaleFromCenter as scaleFromCenter };
+        export { wrapAndSliceX as wrapAndSliceX };
         export { wrapX$2 as wrapX };
     }
     export namespace featureloader {
-        export { loadFeaturesXhr };
-        export { setWithCredentials };
-        export { xhr };
+        export { loadFeaturesXhr as loadFeaturesXhr };
+        export { setWithCredentials as setWithCredentials };
+        export { xhr as xhr };
     }
     export namespace format {
-        export { EsriJSON };
+        export { EsriJSON as EsriJSON };
         export { FeatureFormat as Feature };
-        export { GML };
-        export { GML2 };
-        export { GML3 };
-        export { GML32 };
-        export { GMLBase };
-        export { GPX };
-        export { GeoJSON };
-        export { IGC };
-        export { IIIFInfo };
-        export { JSONFeature };
-        export { KML };
-        export { MVT };
-        export { OSMXML };
-        export { OWS };
-        export { Polyline };
-        export { TextFeature };
-        export { TopoJSON };
-        export { WFS };
-        export { WKB };
-        export { WKT };
-        export { WMSCapabilities };
-        export { WMSGetFeatureInfo };
-        export { WMTSCapabilities };
-        export { XML };
-        export { XMLFeature };
+        export { GML as GML };
+        export { GML2 as GML2 };
+        export { GML3 as GML3 };
+        export { GML32 as GML32 };
+        export { GMLBase as GMLBase };
+        export { GPX as GPX };
+        export { GeoJSON as GeoJSON };
+        export { IGC as IGC };
+        export { IIIFInfo as IIIFInfo };
+        export { JSONFeature as JSONFeature };
+        export { KML as KML };
+        export { MVT as MVT };
+        export { OSMXML as OSMXML };
+        export { OWS as OWS };
+        export { Polyline as Polyline };
+        export { TextFeature as TextFeature };
+        export { TopoJSON as TopoJSON };
+        export { WFS as WFS };
+        export { WKB as WKB };
+        export { WKT as WKT };
+        export { WMSCapabilities as WMSCapabilities };
+        export { WMSGetFeatureInfo as WMSGetFeatureInfo };
+        export { WMTSCapabilities as WMTSCapabilities };
+        export { XML as XML };
+        export { XMLFeature as XMLFeature };
         export namespace filter {
-            export { And };
-            export { Bbox };
-            export { Comparison };
-            export { ComparisonBinary };
-            export { Contains };
-            export { DWithin };
-            export { Disjoint };
-            export { During };
-            export { EqualTo };
-            export { Filter };
-            export { GreaterThan };
-            export { GreaterThanOrEqualTo };
-            export { Intersects };
-            export { IsBetween };
-            export { IsLike };
-            export { IsNull };
-            export { LessThan };
-            export { LessThanOrEqualTo };
-            export { LogicalNary };
-            export { Not };
-            export { NotEqualTo };
-            export { Or };
-            export { ResourceId };
-            export { Spatial };
-            export { Within };
-            export { and };
+            export { And as And };
+            export { Bbox as Bbox };
+            export { Comparison as Comparison };
+            export { ComparisonBinary as ComparisonBinary };
+            export { Contains as Contains };
+            export { DWithin as DWithin };
+            export { Disjoint as Disjoint };
+            export { During as During };
+            export { EqualTo as EqualTo };
+            export { Filter as Filter };
+            export { GreaterThan as GreaterThan };
+            export { GreaterThanOrEqualTo as GreaterThanOrEqualTo };
+            export { Intersects as Intersects };
+            export { IsBetween as IsBetween };
+            export { IsLike as IsLike };
+            export { IsNull as IsNull };
+            export { LessThan as LessThan };
+            export { LessThanOrEqualTo as LessThanOrEqualTo };
+            export { LogicalNary as LogicalNary };
+            export { Not as Not };
+            export { NotEqualTo as NotEqualTo };
+            export { Or as Or };
+            export { ResourceId as ResourceId };
+            export { Spatial as Spatial };
+            export { Within as Within };
+            export { and as and };
             export { bbox$1 as bbox };
-            export { between };
-            export { contains };
-            export { disjoint };
-            export { during };
-            export { dwithin };
-            export { equalTo };
-            export { greaterThan };
-            export { greaterThanOrEqualTo };
-            export { intersects };
-            export { isNull };
-            export { lessThan };
-            export { lessThanOrEqualTo };
-            export { like };
-            export { not };
-            export { notEqualTo };
-            export { or };
-            export { resourceId };
-            export { within };
+            export { between as between };
+            export { contains as contains };
+            export { disjoint as disjoint };
+            export { during as during };
+            export { dwithin as dwithin };
+            export { equalTo as equalTo };
+            export { greaterThan as greaterThan };
+            export { greaterThanOrEqualTo as greaterThanOrEqualTo };
+            export { intersects as intersects };
+            export { isNull as isNull };
+            export { lessThan as lessThan };
+            export { lessThanOrEqualTo as lessThanOrEqualTo };
+            export { like as like };
+            export { not as not };
+            export { notEqualTo as notEqualTo };
+            export { or as or };
+            export { resourceId as resourceId };
+            export { within as within };
         }
         export namespace xlink {
-            export { readHref };
+            export { readHref as readHref };
         }
         export namespace xsd {
-            export { readBoolean };
-            export { readBooleanString };
-            export { readDateTime };
-            export { readDecimal };
-            export { readDecimalString };
-            export { readNonNegativeIntegerString };
-            export { readPositiveInteger };
-            export { readString };
-            export { writeBooleanTextNode };
-            export { writeCDATASection };
-            export { writeDateTimeTextNode };
-            export { writeDecimalTextNode };
-            export { writeNonNegativeIntegerTextNode };
-            export { writeStringTextNode };
+            export { readBoolean as readBoolean };
+            export { readBooleanString as readBooleanString };
+            export { readDateTime as readDateTime };
+            export { readDecimal as readDecimal };
+            export { readDecimalString as readDecimalString };
+            export { readNonNegativeIntegerString as readNonNegativeIntegerString };
+            export { readPositiveInteger as readPositiveInteger };
+            export { readString as readString };
+            export { writeBooleanTextNode as writeBooleanTextNode };
+            export { writeCDATASection as writeCDATASection };
+            export { writeDateTimeTextNode as writeDateTimeTextNode };
+            export { writeDecimalTextNode as writeDecimalTextNode };
+            export { writeNonNegativeIntegerTextNode as writeNonNegativeIntegerTextNode };
+            export { writeStringTextNode as writeStringTextNode };
         }
     }
     export namespace functions {
-        export { FALSE };
-        export { TRUE };
-        export { VOID };
-        export { memoizeOne };
-        export { toPromise };
+        export { FALSE as FALSE };
+        export { TRUE as TRUE };
+        export { VOID as VOID };
+        export { memoizeOne as memoizeOne };
+        export { toPromise as toPromise };
     }
     export namespace geom {
-        export { Circle };
+        export { Circle as Circle };
         export { Geometry$1 as Geometry };
         export { GeometryCollection$1 as GeometryCollection };
         export { LineString$1 as LineString };
-        export { LinearRing };
+        export { LinearRing as LinearRing };
         export { MultiLineString$1 as MultiLineString };
         export { MultiPoint$1 as MultiPoint };
         export { MultiPolygon$1 as MultiPolygon };
         export { Point$2 as Point };
         export { Polygon$1 as Polygon };
-        export { SimpleGeometry };
+        export { SimpleGeometry as SimpleGeometry };
         export namespace flat {
             namespace area {
-                export { linearRing };
-                export { linearRings };
+                export { linearRing as linearRing };
+                export { linearRings as linearRings };
                 export { linearRingss$1 as linearRingss };
             }
             namespace center {
-                export { linearRingss };
+                export { linearRingss as linearRingss };
             }
             namespace closest {
-                export { arrayMaxSquaredDelta };
-                export { assignClosestArrayPoint };
-                export { assignClosestMultiArrayPoint };
-                export { assignClosestPoint };
-                export { maxSquaredDelta };
-                export { multiArrayMaxSquaredDelta };
+                export { arrayMaxSquaredDelta as arrayMaxSquaredDelta };
+                export { assignClosestArrayPoint as assignClosestArrayPoint };
+                export { assignClosestMultiArrayPoint as assignClosestMultiArrayPoint };
+                export { assignClosestPoint as assignClosestPoint };
+                export { maxSquaredDelta as maxSquaredDelta };
+                export { multiArrayMaxSquaredDelta as multiArrayMaxSquaredDelta };
             }
             namespace contains {
-                export { linearRingContainsExtent };
-                export { linearRingContainsXY };
-                export { linearRingsContainsXY };
-                export { linearRingssContainsXY };
+                export { linearRingContainsExtent as linearRingContainsExtent };
+                export { linearRingContainsXY as linearRingContainsXY };
+                export { linearRingsContainsXY as linearRingsContainsXY };
+                export { linearRingssContainsXY as linearRingssContainsXY };
             }
             namespace deflate {
-                export { deflateCoordinate };
-                export { deflateCoordinates };
-                export { deflateCoordinatesArray };
-                export { deflateMultiCoordinatesArray };
+                export { deflateCoordinate as deflateCoordinate };
+                export { deflateCoordinates as deflateCoordinates };
+                export { deflateCoordinatesArray as deflateCoordinatesArray };
+                export { deflateMultiCoordinatesArray as deflateMultiCoordinatesArray };
             }
             namespace flip {
-                export { flipXY };
+                export { flipXY as flipXY };
             }
             namespace geodesic {
-                export { greatCircleArc };
-                export { meridian };
-                export { parallel };
+                export { greatCircleArc as greatCircleArc };
+                export { meridian as meridian };
+                export { parallel as parallel };
             }
             namespace inflate {
-                export { inflateCoordinates };
-                export { inflateCoordinatesArray };
-                export { inflateMultiCoordinatesArray };
+                export { inflateCoordinates as inflateCoordinates };
+                export { inflateCoordinatesArray as inflateCoordinatesArray };
+                export { inflateMultiCoordinatesArray as inflateMultiCoordinatesArray };
             }
             namespace interiorpoint {
-                export { getInteriorPointOfArray };
-                export { getInteriorPointsOfMultiArray };
+                export { getInteriorPointOfArray as getInteriorPointOfArray };
+                export { getInteriorPointsOfMultiArray as getInteriorPointsOfMultiArray };
             }
             namespace interpolate {
-                export { interpolatePoint };
-                export { lineStringCoordinateAtM };
-                export { lineStringsCoordinateAtM };
+                export { interpolatePoint as interpolatePoint };
+                export { lineStringCoordinateAtM as lineStringCoordinateAtM };
+                export { lineStringsCoordinateAtM as lineStringsCoordinateAtM };
             }
             namespace intersectsextent {
-                export { intersectsLineString };
-                export { intersectsLineStringArray };
-                export { intersectsLinearRing };
-                export { intersectsLinearRingArray };
-                export { intersectsLinearRingMultiArray };
+                export { intersectsLineString as intersectsLineString };
+                export { intersectsLineStringArray as intersectsLineStringArray };
+                export { intersectsLinearRing as intersectsLinearRing };
+                export { intersectsLinearRingArray as intersectsLinearRingArray };
+                export { intersectsLinearRingMultiArray as intersectsLinearRingMultiArray };
             }
             namespace length {
-                export { lineStringLength };
-                export { linearRingLength };
+                export { lineStringLength as lineStringLength };
+                export { linearRingLength as linearRingLength };
             }
             namespace orient {
-                export { inflateEnds };
-                export { linearRingIsClockwise };
-                export { linearRingsAreOriented };
-                export { linearRingssAreOriented };
-                export { orientLinearRings };
-                export { orientLinearRingsArray };
+                export { inflateEnds as inflateEnds };
+                export { linearRingIsClockwise as linearRingIsClockwise };
+                export { linearRingsAreOriented as linearRingsAreOriented };
+                export { linearRingssAreOriented as linearRingssAreOriented };
+                export { orientLinearRings as orientLinearRings };
+                export { orientLinearRingsArray as orientLinearRingsArray };
             }
             namespace reverse {
-                export { coordinates };
+                export { coordinates as coordinates };
             }
             namespace segments {
-                export { forEach };
+                export { forEach as forEach };
+                export { getIntersectionPoint as getIntersectionPoint };
             }
             namespace simplify {
-                export { douglasPeucker };
-                export { douglasPeuckerArray };
-                export { douglasPeuckerMultiArray };
-                export { quantize };
-                export { quantizeArray };
-                export { quantizeMultiArray };
-                export { radialDistance };
-                export { simplifyLineString };
-                export { snap };
+                export { douglasPeucker as douglasPeucker };
+                export { douglasPeuckerArray as douglasPeuckerArray };
+                export { douglasPeuckerMultiArray as douglasPeuckerMultiArray };
+                export { quantize as quantize };
+                export { quantizeArray as quantizeArray };
+                export { quantizeMultiArray as quantizeMultiArray };
+                export { radialDistance as radialDistance };
+                export { simplifyLineString as simplifyLineString };
+                export { snap as snap };
             }
             namespace straightchunk {
-                export { matchingChunk };
+                export { matchingChunk as matchingChunk };
             }
             namespace textpath {
-                export { drawTextOnPath };
+                export { drawTextOnPath as drawTextOnPath };
             }
             namespace topology {
-                export { lineStringIsClosed };
+                export { lineStringIsClosed as lineStringIsClosed };
             }
             namespace transform {
-                export { rotate };
+                export { rotate as rotate };
                 export { scale$1 as scale };
-                export { transform2D };
+                export { transform2D as transform2D };
                 export { translate$1 as translate };
             }
         }
     }
     export namespace has {
-        export { CREATE_IMAGE_BITMAP };
-        export { DEVICE_PIXEL_RATIO };
-        export { FIREFOX };
-        export { IMAGE_DECODE };
-        export { MAC };
-        export { PASSIVE_EVENT_LISTENERS };
-        export { SAFARI };
-        export { SAFARI_BUG_237906 };
-        export { WEBKIT };
-        export { WORKER_OFFSCREEN_CANVAS };
+        export { CREATE_IMAGE_BITMAP as CREATE_IMAGE_BITMAP };
+        export { DEVICE_PIXEL_RATIO as DEVICE_PIXEL_RATIO };
+        export { IMAGE_DECODE as IMAGE_DECODE };
+        export { MAC as MAC };
+        export { PASSIVE_EVENT_LISTENERS as PASSIVE_EVENT_LISTENERS };
+        export { SAFARI as SAFARI };
+        export { SAFARI_BUG_237906 as SAFARI_BUG_237906 };
+        export { WEBKIT as WEBKIT };
+        export { WORKER_OFFSCREEN_CANVAS as WORKER_OFFSCREEN_CANVAS };
     }
     export namespace interaction {
-        export { DblClickDragZoom };
-        export { DoubleClickZoom };
-        export { DragAndDrop };
-        export { DragBox };
-        export { DragPan };
-        export { DragRotate };
-        export { DragRotateAndZoom };
-        export { DragZoom };
-        export { Draw };
-        export { Extent };
-        export { Interaction };
-        export { KeyboardPan };
-        export { KeyboardZoom };
+        export { DblClickDragZoom as DblClickDragZoom };
+        export { DoubleClickZoom as DoubleClickZoom };
+        export { DragAndDrop as DragAndDrop };
+        export { DragBox as DragBox };
+        export { DragPan as DragPan };
+        export { DragRotate as DragRotate };
+        export { DragRotateAndZoom as DragRotateAndZoom };
+        export { DragZoom as DragZoom };
+        export { Draw as Draw };
+        export { Extent as Extent };
+        export { Interaction as Interaction };
+        export { KeyboardPan as KeyboardPan };
+        export { KeyboardZoom as KeyboardZoom };
         export { Link$1 as Link };
-        export { Modify };
-        export { MouseWheelZoom };
-        export { PinchRotate };
-        export { PinchZoom };
+        export { Modify as Modify };
+        export { MouseWheelZoom as MouseWheelZoom };
+        export { PinchRotate as PinchRotate };
+        export { PinchZoom as PinchZoom };
         export { PointerInteraction as Pointer };
-        export { Select };
-        export { Snap };
-        export { Translate };
+        export { Select as Select };
+        export { Snap as Snap };
+        export { Translate as Translate };
         export namespace defaults {
-            export { defaults };
+            export { defaults as defaults };
         }
     }
     export namespace layer {
@@ -43887,11 +44093,11 @@ type StyleParseResult = {
         export { BaseTileLayer as BaseTile };
         export { BaseVectorLayer as BaseVector };
         export { FlowLayer as Flow };
-        export { Graticule };
+        export { Graticule as Graticule };
         export { LayerGroup as Group };
-        export { Heatmap };
+        export { Heatmap as Heatmap };
         export { ImageLayer as Image };
-        export { Layer };
+        export { Layer as Layer };
         export { TileLayer as Tile };
         export { VectorLayer as Vector };
         export { VectorImageLayer as VectorImage };
@@ -43902,195 +44108,214 @@ type StyleParseResult = {
         export { WebGLVectorTileLayer as WebGLVectorTile };
     }
     export namespace loadingstrategy {
-        export { all };
-        export { bbox };
-        export { tile };
+        export { all as all };
+        export { bbox as bbox };
+        export { tile as tile };
     }
     export namespace math {
-        export { ceil };
-        export { clamp };
-        export { floor };
-        export { lerp };
-        export { modulo };
-        export { round };
-        export { solveLinearSystem };
-        export { squaredDistance };
-        export { squaredSegmentDistance };
-        export { toDegrees };
-        export { toFixed };
-        export { toRadians };
-        export { wrap };
+        export { ceil as ceil };
+        export { clamp as clamp };
+        export { floor as floor };
+        export { lerp as lerp };
+        export { modulo as modulo };
+        export { round as round };
+        export { solveLinearSystem as solveLinearSystem };
+        export { squaredDistance as squaredDistance };
+        export { squaredSegmentDistance as squaredSegmentDistance };
+        export { toDegrees as toDegrees };
+        export { toFixed as toFixed };
+        export { toRadians as toRadians };
+        export { wrap as wrap };
     }
     export namespace net {
-        export { ClientError };
-        export { ResponseError };
-        export { getJSON };
-        export { jsonp };
-        export { overrideXHR };
-        export { resolveUrl };
-        export { restoreXHR };
+        export { ClientError as ClientError };
+        export { ResponseError as ResponseError };
+        export { getJSON as getJSON };
+        export { jsonp as jsonp };
+        export { overrideXHR as overrideXHR };
+        export { resolveUrl as resolveUrl };
+        export { restoreXHR as restoreXHR };
     }
     export namespace obj {
         export { clear$2 as clear };
-        export { isEmpty };
+        export { isEmpty as isEmpty };
     }
     export namespace proj {
-        export { Projection };
+        export { Projection as Projection };
         export namespace Units {
             export { METERS_PER_UNIT$1 as METERS_PER_UNIT };
-            export { fromCode };
+            export { fromCode as fromCode };
         }
-        export { addCommon };
-        export { addCoordinateTransforms };
-        export { addEquivalentProjections };
-        export { addEquivalentTransforms };
-        export { addProjection };
-        export { addProjections };
-        export { clearAllProjections };
-        export { clearUserProjection };
-        export { cloneTransform };
-        export { createProjection };
-        export { createSafeCoordinateTransform };
-        export { createTransformFromCoordinateTransform };
-        export { disableCoordinateWarning };
+        export { addCommon as addCommon };
+        export { addCoordinateTransforms as addCoordinateTransforms };
+        export { addEquivalentProjections as addEquivalentProjections };
+        export { addEquivalentTransforms as addEquivalentTransforms };
+        export { addProjection as addProjection };
+        export { addProjections as addProjections };
+        export { clearAllProjections as clearAllProjections };
+        export { clearUserProjection as clearUserProjection };
+        export { cloneTransform as cloneTransform };
+        export { createProjection as createProjection };
+        export { createSafeCoordinateTransform as createSafeCoordinateTransform };
+        export { createTransformFromCoordinateTransform as createTransformFromCoordinateTransform };
+        export { disableCoordinateWarning as disableCoordinateWarning };
         export namespace epsg3857 {
             export { EXTENT$1 as EXTENT };
-            export { HALF_SIZE };
-            export { MAX_SAFE_Y };
+            export { HALF_SIZE as HALF_SIZE };
+            export { MAX_SAFE_Y as MAX_SAFE_Y };
             export { PROJECTIONS$1 as PROJECTIONS };
             export { RADIUS$1 as RADIUS };
-            export { WORLD_EXTENT };
-            export { fromEPSG4326 };
-            export { toEPSG4326 };
+            export { WORLD_EXTENT as WORLD_EXTENT };
+            export { fromEPSG4326 as fromEPSG4326 };
+            export { toEPSG4326 as toEPSG4326 };
         }
         export namespace epsg4326 {
-            export { EXTENT };
-            export { METERS_PER_UNIT };
-            export { PROJECTIONS };
-            export { RADIUS };
+            export { EXTENT as EXTENT };
+            export { METERS_PER_UNIT as METERS_PER_UNIT };
+            export { PROJECTIONS as PROJECTIONS };
+            export { RADIUS as RADIUS };
         }
-        export { equivalent };
-        export { fromLonLat };
-        export { fromUserCoordinate };
-        export { fromUserExtent };
-        export { fromUserResolution };
+        export { equivalent$1 as equivalent };
+        export { fromLonLat as fromLonLat };
+        export { fromUserCoordinate as fromUserCoordinate };
+        export { fromUserExtent as fromUserExtent };
+        export { fromUserResolution as fromUserResolution };
         export { get$2 as get };
-        export { getPointResolution };
-        export { getTransform };
-        export { getTransformFromProjections };
-        export { getUserProjection };
-        export { identityTransform };
+        export { getPointResolution as getPointResolution };
+        export { getTransform as getTransform };
+        export { getTransformFromProjections as getTransformFromProjections };
+        export { getUserProjection as getUserProjection };
+        export { identityTransform as identityTransform };
         export namespace proj4 {
-            export { epsgLookupMapTiler };
-            export { fromEPSGCode };
-            export { getEPSGLookup };
-            export { isRegistered };
-            export { register };
-            export { setEPSGLookup };
-            export { unregister };
+            export { epsgLookupMapTiler as epsgLookupMapTiler };
+            export { fromEPSGCode as fromEPSGCode };
+            export { getEPSGLookup as getEPSGLookup };
+            export { isRegistered as isRegistered };
+            export { register as register };
+            export { setEPSGLookup as setEPSGLookup };
+            export { unregister as unregister };
         }
         export namespace projections {
             export { add$1 as add };
             export { clear$1 as clear };
             export { get$1 as get };
         }
-        export { setUserProjection };
-        export { toLonLat };
-        export { toUserCoordinate };
-        export { toUserExtent };
-        export { toUserResolution };
-        export { transform };
-        export { transformExtent };
-        export { transformWithProjections };
+        export { setUserProjection as setUserProjection };
+        export { toLonLat as toLonLat };
+        export { toUserCoordinate as toUserCoordinate };
+        export { toUserExtent as toUserExtent };
+        export { toUserResolution as toUserResolution };
+        export { transform as transform };
+        export { transformExtent as transformExtent };
+        export { transformWithProjections as transformWithProjections };
         export namespace transforms {
-            export { add };
-            export { clear };
-            export { get };
-            export { remove };
+            export { add as add };
+            export { clear as clear };
+            export { get as get };
+            export { remove as remove };
         }
-        export { useGeographic };
+        export { useGeographic as useGeographic };
         export namespace utm {
-            export { makeProjection };
-            export { makeTransforms };
-            export { zoneFromCode };
+            export { makeProjection as makeProjection };
+            export { makeTransforms as makeTransforms };
+            export { zoneFromCode as zoneFromCode };
         }
     }
     export namespace render {
         export { RenderBox as Box };
         export { RenderEvent as Event };
         export { RenderFeature as Feature };
-        export { VectorContext };
+        export { VectorContext as VectorContext };
         export namespace canvas {
             export { CanvasBuilder as Builder };
-            export { BuilderGroup };
-            export { Executor };
-            export { ExecutorGroup };
+            export { BuilderGroup as BuilderGroup };
+            export { Executor as Executor };
+            export { ExecutorGroup as ExecutorGroup };
             export { CanvasImageBuilder as ImageBuilder };
             export { CanvasImmediateRenderer as Immediate };
             export namespace Instruction {
-                export { beginPathInstruction };
-                export { closePathInstruction };
-                export { fillInstruction };
-                export { strokeInstruction };
+                export { beginPathInstruction as beginPathInstruction };
+                export { closePathInstruction as closePathInstruction };
+                export { fillInstruction as fillInstruction };
+                export { strokeInstruction as strokeInstruction };
             }
             export { CanvasLineStringBuilder as LineStringBuilder };
             export { CanvasPolygonBuilder as PolygonBuilder };
             export { CanvasTextBuilder as TextBuilder };
-            export { ZIndexContext };
-            export { checkedFonts };
-            export { defaultFillStyle };
-            export { defaultFont };
-            export { defaultLineCap };
-            export { defaultLineDash };
-            export { defaultLineDashOffset };
-            export { defaultLineJoin };
-            export { defaultLineWidth };
-            export { defaultMiterLimit };
-            export { defaultPadding };
-            export { defaultStrokeStyle };
-            export { defaultTextAlign };
-            export { defaultTextBaseline };
-            export { drawImageOrLabel };
-            export { getTextDimensions };
+            export { ZIndexContext as ZIndexContext };
+            export { checkedFonts as checkedFonts };
+            export { defaultFillStyle as defaultFillStyle };
+            export { defaultFont as defaultFont };
+            export { defaultLineCap as defaultLineCap };
+            export { defaultLineDash as defaultLineDash };
+            export { defaultLineDashOffset as defaultLineDashOffset };
+            export { defaultLineJoin as defaultLineJoin };
+            export { defaultLineWidth as defaultLineWidth };
+            export { defaultMiterLimit as defaultMiterLimit };
+            export { defaultPadding as defaultPadding };
+            export { defaultStrokeStyle as defaultStrokeStyle };
+            export { defaultTextAlign as defaultTextAlign };
+            export { defaultTextBaseline as defaultTextBaseline };
+            export { drawImageOrLabel as drawImageOrLabel };
+            export { getTextDimensions as getTextDimensions };
             export namespace hitdetect {
-                export { HIT_DETECT_RESOLUTION };
-                export { createHitDetectionImageData };
-                export { hitDetect };
+                export { HIT_DETECT_RESOLUTION as HIT_DETECT_RESOLUTION };
+                export { createHitDetectionImageData as createHitDetectionImageData };
+                export { hitDetect as hitDetect };
             }
-            export { measureAndCacheTextWidth };
-            export { measureTextHeight };
-            export { measureTextWidth };
-            export { registerFont };
-            export { rotateAtOffset };
+            export { measureAndCacheTextWidth as measureAndCacheTextWidth };
+            export { measureTextHeight as measureTextHeight };
+            export { measureTextWidth as measureTextWidth };
+            export { registerFont as registerFont };
+            export { rotateAtOffset as rotateAtOffset };
             export namespace style {
-                export { buildRuleSet };
-                export { buildStyle };
-                export { flatStylesToStyleFunction };
-                export { rulesToStyleFunction };
+                export { buildRuleSet as buildRuleSet };
+                export { buildStyle as buildStyle };
+                export { flatStylesToStyleFunction as flatStylesToStyleFunction };
+                export { rulesToStyleFunction as rulesToStyleFunction };
             }
-            export { textHeights };
+            export { textHeights as textHeights };
         }
-        export { getRenderPixel };
-        export { getVectorContext };
-        export { toContext };
+        export { getRenderPixel as getRenderPixel };
+        export { getVectorContext as getVectorContext };
+        export { toContext as toContext };
         export namespace webgl {
-            export { MixedGeometryBatch };
-            export { VectorStyleRenderer };
-            export namespace renderinstructions {
-                export { generateLineStringRenderInstructions };
-                export { generatePointRenderInstructions };
-                export { generatePolygonRenderInstructions };
-                export { getCustomAttributesSize };
+            export { MixedGeometryBatch as MixedGeometryBatch };
+            export namespace ShaderBuilder {
+                export { COMMON_HEADER as COMMON_HEADER };
+                export { ShaderBuilder as ShaderBuilder };
             }
-            export namespace utils {
-                export { LINESTRING_ANGLE_COSINE_CUTOFF };
-                export { breakDownFlatStyle };
-                export { colorDecodeId };
-                export { colorEncodeId };
-                export { getBlankImageData };
-                export { writeLineSegmentToBuffers };
-                export { writePointFeatureToBuffers };
-                export { writePolygonTrianglesToBuffers };
+            export { VectorStyleRenderer as VectorStyleRenderer };
+            export namespace bufferUtil {
+                export { LINESTRING_ANGLE_COSINE_CUTOFF as LINESTRING_ANGLE_COSINE_CUTOFF };
+                export { writeLineSegmentToBuffers as writeLineSegmentToBuffers };
+                export { writePointFeatureToBuffers as writePointFeatureToBuffers };
+                export { writePolygonTrianglesToBuffers as writePolygonTrianglesToBuffers };
+            }
+            export namespace compileUtil {
+                export { UNPACK_COLOR_FN as UNPACK_COLOR_FN };
+                export { applyContextToBuilder as applyContextToBuilder };
+                export { expressionToGlsl as expressionToGlsl };
+                export { generateAttributesFromContext as generateAttributesFromContext };
+                export { generateUniformsFromContext as generateUniformsFromContext };
+                export { getGlslSizeFromType as getGlslSizeFromType };
+                export { getGlslTypeFromType as getGlslTypeFromType };
+                export { packColor as packColor };
+            }
+            export namespace encodeUtil {
+                export { colorDecodeId as colorDecodeId };
+                export { colorEncodeId as colorEncodeId };
+            }
+            export namespace renderinstructions {
+                export { generateLineStringRenderInstructions as generateLineStringRenderInstructions };
+                export { generatePointRenderInstructions as generatePointRenderInstructions };
+                export { generatePolygonRenderInstructions as generatePolygonRenderInstructions };
+                export { getCustomAttributesSize as getCustomAttributesSize };
+            }
+            export namespace style {
+                export { breakDownFlatStyle as breakDownFlatStyle };
+                export { computeHash as computeHash };
+                export { parseLiteralStyle as parseLiteralStyle };
             }
         }
     }
@@ -44107,10 +44332,10 @@ type StyleParseResult = {
             export { CanvasVectorTileLayerRenderer as VectorTileLayer };
         }
         export namespace vector {
-            export { defaultOrder };
-            export { getSquaredTolerance };
-            export { getTolerance };
-            export { renderFeature };
+            export { defaultOrder as defaultOrder };
+            export { getSquaredTolerance as getSquaredTolerance };
+            export { getTolerance as getTolerance };
+            export { renderFeature as renderFeature };
         }
         export namespace webgl {
             export { FlowLayerRenderer as FlowLayer };
@@ -44126,275 +44351,265 @@ type StyleParseResult = {
         export { ReprojDataTile as DataTile };
         export { ReprojImage as Image };
         export { ReprojTile as Tile };
-        export { Triangulation };
-        export { calculateSourceExtentResolution };
-        export { calculateSourceResolution };
-        export { canvasPool };
+        export { Triangulation as Triangulation };
+        export { calculateSourceExtentResolution as calculateSourceExtentResolution };
+        export { calculateSourceResolution as calculateSourceResolution };
+        export { canvasPool as canvasPool };
         export namespace common {
-            export { ERROR_THRESHOLD };
+            export { ERROR_THRESHOLD as ERROR_THRESHOLD };
         }
         export namespace glreproj {
-            export { canvasGLPool };
-            export { createCanvasContextWebGL };
-            export { releaseGLCanvas };
-            export { render };
+            export { canvasGLPool as canvasGLPool };
+            export { createCanvasContextWebGL as createCanvasContextWebGL };
+            export { releaseGLCanvas as releaseGLCanvas };
+            export { render as render };
         }
         export { render$1 as render };
     }
     export namespace resolution {
-        export { fromResolutionLike };
+        export { fromResolutionLike as fromResolutionLike };
     }
     export namespace resolutionconstraint {
-        export { createMinMaxResolution };
-        export { createSnapToPower };
-        export { createSnapToResolutions };
+        export { createMinMaxResolution as createMinMaxResolution };
+        export { createSnapToPower as createSnapToPower };
+        export { createSnapToResolutions as createSnapToResolutions };
     }
     export namespace rotationconstraint {
-        export { createSnapToN };
-        export { createSnapToZero };
-        export { disable };
+        export { createSnapToN as createSnapToN };
+        export { createSnapToZero as createSnapToZero };
+        export { disable as disable };
         export { none$1 as none };
     }
     export namespace size {
         export { buffer$1 as buffer };
-        export { hasArea };
+        export { hasArea as hasArea };
         export { scale$4 as scale };
-        export { toSize };
+        export { toSize as toSize };
     }
     export namespace source {
-        export { BingMaps };
-        export { CartoDB };
-        export { Cluster };
+        export { BingMaps as BingMaps };
+        export { CartoDB as CartoDB };
+        export { Cluster as Cluster };
         export { DataTileSource as DataTile };
         export { GeoTIFFSource as GeoTIFF };
-        export { Google };
-        export { IIIF };
+        export { Google as Google };
+        export { IIIF as IIIF };
         export { ImageSource as Image };
-        export { ImageArcGISRest };
+        export { ImageArcGISRest as ImageArcGISRest };
         export { ImageCanvasSource as ImageCanvas };
-        export { ImageMapGuide };
+        export { ImageMapGuide as ImageMapGuide };
         export { Static as ImageStatic };
         export { ImageTileSource as ImageTile };
-        export { ImageWMS };
-        export { OGCMapTile };
-        export { OGCVectorTile };
-        export { OSM };
+        export { ImageWMS as ImageWMS };
+        export { OGCMapTile as OGCMapTile };
+        export { OGCVectorTile as OGCVectorTile };
+        export { OSM as OSM };
         export { RasterSource as Raster };
-        export { SentinelHub };
-        export { Source };
-        export { StadiaMaps };
+        export { SentinelHub as SentinelHub };
+        export { Source as Source };
+        export { StadiaMaps as StadiaMaps };
         export { TileSource as Tile };
-        export { TileArcGISRest };
-        export { TileDebug };
-        export { TileImage };
-        export { TileJSON };
-        export { TileWMS };
-        export { UTFGrid };
-        export { UrlTile };
+        export { TileArcGISRest as TileArcGISRest };
+        export { TileDebug as TileDebug };
+        export { TileImage as TileImage };
+        export { TileJSON as TileJSON };
+        export { TileWMS as TileWMS };
+        export { UTFGrid as UTFGrid };
+        export { UrlTile as UrlTile };
         export { VectorSource as Vector };
-        export { VectorTile };
-        export { WMTS };
-        export { XYZ };
-        export { Zoomify };
+        export { VectorTile as VectorTile };
+        export { WMTS as WMTS };
+        export { XYZ as XYZ };
+        export { Zoomify as Zoomify };
         export namespace arcgisRest {
             export { createLoader$3 as createLoader };
-            export { getRequestUrl };
+            export { getRequestUrl as getRequestUrl };
         }
         export namespace common {
-            export { DECIMALS };
-            export { DEFAULT_WMS_VERSION };
+            export { DECIMALS as DECIMALS };
+            export { DEFAULT_WMS_VERSION as DEFAULT_WMS_VERSION };
         }
         export namespace mapguide {
             export { createLoader$1 as createLoader };
         }
         export namespace mapserver {
-            export { createLoader };
+            export { createLoader as createLoader };
         }
         export namespace ogcTileUtil {
-            export { appendCollectionsQueryParam };
-            export { getMapTileUrlTemplate };
-            export { getTileSetInfo };
-            export { getVectorTileUrlTemplate };
+            export { appendCollectionsQueryParam as appendCollectionsQueryParam };
+            export { getMapTileUrlTemplate as getMapTileUrlTemplate };
+            export { getTileSetInfo as getTileSetInfo };
+            export { getVectorTileUrlTemplate as getVectorTileUrlTemplate };
         }
-        export { sourcesFromTileGrid };
+        export { sourcesFromTileGrid as sourcesFromTileGrid };
         namespace _static {
             export { createLoader$2 as createLoader };
         }
         export { _static as static };
         export namespace wms {
-            export { DEFAULT_VERSION };
+            export { DEFAULT_VERSION as DEFAULT_VERSION };
             export { createLoader$4 as createLoader };
-            export { getFeatureInfoUrl };
-            export { getImageSrc };
-            export { getLegendUrl };
-            export { getRequestParams };
+            export { getFeatureInfoUrl as getFeatureInfoUrl };
+            export { getImageSrc as getImageSrc };
+            export { getLegendUrl as getLegendUrl };
+            export { getRequestParams as getRequestParams };
             export { getRequestUrl$1 as getRequestUrl };
         }
     }
     export namespace sphere {
-        export { DEFAULT_RADIUS };
-        export { getArea };
-        export { getDistance };
-        export { getLength };
-        export { offset };
+        export { DEFAULT_RADIUS as DEFAULT_RADIUS };
+        export { getArea as getArea };
+        export { getDistance as getDistance };
+        export { getLength as getLength };
+        export { offset as offset };
     }
     export namespace string {
-        export { compareVersions };
-        export { padNumber };
+        export { compareVersions as compareVersions };
+        export { padNumber as padNumber };
     }
     export namespace structs {
-        export { LRUCache };
-        export { PriorityQueue };
-        export { RBush };
+        export { LRUCache as LRUCache };
+        export { PriorityQueue as PriorityQueue };
+        export { RBush as RBush };
     }
     export namespace style {
         export { CircleStyle as Circle };
-        export { Fill };
-        export { Icon };
-        export { IconImage };
-        export { IconImageCache };
+        export { Fill as Fill };
+        export { Icon as Icon };
+        export { IconImage as IconImage };
+        export { IconImageCache as IconImageCache };
         export { ImageStyle as Image };
-        export { RegularShape };
-        export { Stroke };
+        export { RegularShape as RegularShape };
+        export { Stroke as Stroke };
         export { Style$2 as Style };
         export { Text$1 as Text };
         export namespace flat {
-            export { createDefaultStyle };
+            export { createDefaultStyle as createDefaultStyle };
         }
     }
     export namespace tilecoord {
-        export { createOrUpdate };
-        export { fromKey };
-        export { getCacheKeyForTileKey };
-        export { getKey };
-        export { getKeyZXY };
-        export { hash };
-        export { hashZXY };
-        export { withinExtentAndZ };
+        export { createOrUpdate as createOrUpdate };
+        export { fromKey as fromKey };
+        export { getCacheKeyForTileKey as getCacheKeyForTileKey };
+        export { getKey as getKey };
+        export { getKeyZXY as getKeyZXY };
+        export { hash as hash };
+        export { hashZXY as hashZXY };
+        export { withinExtentAndZ as withinExtentAndZ };
     }
     export namespace tilegrid {
-        export { TileGrid };
+        export { TileGrid as TileGrid };
         export { WMTSTileGrid as WMTS };
         export namespace common {
-            export { DEFAULT_MAX_ZOOM };
-            export { DEFAULT_TILE_SIZE };
+            export { DEFAULT_MAX_ZOOM as DEFAULT_MAX_ZOOM };
+            export { DEFAULT_TILE_SIZE as DEFAULT_TILE_SIZE };
         }
-        export { createForExtent };
-        export { createForProjection };
-        export { createXYZ };
-        export { extentFromProjection };
-        export { getForProjection };
-        export { wrapX };
+        export { createForExtent as createForExtent };
+        export { createForProjection as createForProjection };
+        export { createXYZ as createXYZ };
+        export { extentFromProjection as extentFromProjection };
+        export { getForProjection as getForProjection };
+        export { wrapX as wrapX };
     }
     export namespace tileurlfunction {
-        export { createFromTemplate };
-        export { createFromTemplates };
-        export { createFromTileUrlFunctions };
-        export { nullTileUrlFunction };
+        export { createFromTemplate as createFromTemplate };
+        export { createFromTemplates as createFromTemplates };
+        export { createFromTileUrlFunctions as createFromTileUrlFunctions };
+        export { nullTileUrlFunction as nullTileUrlFunction };
     }
     export namespace transform {
-        export { apply };
-        export { compose };
-        export { composeCssTransform };
+        export { apply as apply };
+        export { compose as compose };
+        export { composeCssTransform as composeCssTransform };
         export { create$1 as create };
-        export { determinant };
-        export { invert };
-        export { makeInverse };
-        export { makeScale };
-        export { multiply };
-        export { reset };
+        export { determinant as determinant };
+        export { equivalent as equivalent };
+        export { invert as invert };
+        export { makeInverse as makeInverse };
+        export { makeScale as makeScale };
+        export { multiply as multiply };
+        export { reset as reset };
         export { rotate$2 as rotate };
         export { scale$3 as scale };
-        export { set };
-        export { setFromArray };
+        export { set as set };
+        export { setFromArray as setFromArray };
         export { toString$1 as toString };
         export { translate$2 as translate };
     }
     export namespace uri {
-        export { appendParams };
-        export { expandUrl };
-        export { pickUrl };
-        export { renderXYZTemplate };
+        export { appendParams as appendParams };
+        export { expandUrl as expandUrl };
+        export { pickUrl as pickUrl };
+        export { renderXYZTemplate as renderXYZTemplate };
     }
     export namespace util {
-        export { VERSION };
-        export { abstract };
-        export { getUid };
+        export { VERSION as VERSION };
+        export { abstract as abstract };
+        export { getUid as getUid };
     }
     export namespace vec {
         namespace mat4 {
-            export { create };
-            export { fromTransform };
-            export { orthographic };
-            export { scale };
-            export { translate };
-            export { translation };
+            export { create as create };
+            export { fromTransform as fromTransform };
+            export { orthographic as orthographic };
+            export { scale as scale };
+            export { translate as translate };
+            export { translation as translation };
         }
     }
     export namespace webgl {
-        export { ARRAY_BUFFER };
-        export { BaseTileRepresentation };
+        export { ARRAY_BUFFER as ARRAY_BUFFER };
+        export { BaseTileRepresentation as BaseTileRepresentation };
         export { WebGLArrayBuffer as Buffer };
         export namespace Canvas {
-            export { Canvas };
-            export { createProgram };
+            export { Canvas as Canvas };
+            export { createProgram as createProgram };
         }
-        export { DYNAMIC_DRAW };
-        export { ELEMENT_ARRAY_BUFFER };
-        export { FLOAT };
+        export { DYNAMIC_DRAW as DYNAMIC_DRAW };
+        export { ELEMENT_ARRAY_BUFFER as ELEMENT_ARRAY_BUFFER };
+        export { FLOAT as FLOAT };
         export { WebGLHelper as Helper };
-        export { PaletteTexture };
+        export { PaletteTexture as PaletteTexture };
         export { WebGLPostProcessingPass as PostProcessingPass };
         export { WebGLRenderTarget as RenderTarget };
-        export { STATIC_DRAW };
-        export { STREAM_DRAW };
-        export namespace ShaderBuilder {
-            export { COMMON_HEADER };
-            export { ShaderBuilder };
-        }
-        export { TileGeometry };
-        export { TileTexture };
-        export { UNSIGNED_BYTE };
-        export { UNSIGNED_INT };
-        export { UNSIGNED_SHORT };
-        export { getContext };
-        export { getSupportedExtensions };
-        export namespace styleparser {
-            export { computeHash };
-            export { expressionToGlsl };
-            export { packColor };
-            export { parseLiteralStyle };
-        }
+        export { STATIC_DRAW as STATIC_DRAW };
+        export { STREAM_DRAW as STREAM_DRAW };
+        export { TileGeometry as TileGeometry };
+        export { TileTexture as TileTexture };
+        export { UNSIGNED_BYTE as UNSIGNED_BYTE };
+        export { UNSIGNED_INT as UNSIGNED_INT };
+        export { UNSIGNED_SHORT as UNSIGNED_SHORT };
+        export { getContext as getContext };
+        export { getSupportedExtensions as getSupportedExtensions };
     }
     export namespace xml {
-        export { OBJECT_PROPERTY_NODE_FACTORY };
-        export { XML_SCHEMA_INSTANCE_URI };
-        export { createElementNS };
-        export { getAllTextContent };
-        export { getAllTextContent_ };
-        export { getAttributeNS };
-        export { getDocument };
-        export { getXMLSerializer };
-        export { isDocument };
-        export { makeArrayExtender };
-        export { makeArrayPusher };
-        export { makeArraySerializer };
-        export { makeChildAppender };
-        export { makeObjectPropertyPusher };
-        export { makeObjectPropertySetter };
-        export { makeReplacer };
-        export { makeSequence };
-        export { makeSimpleNodeFactory };
-        export { makeStructureNS };
-        export { parse };
-        export { parseNode };
-        export { pushParseAndPop };
-        export { pushSerializeAndPop };
-        export { registerDocument };
-        export { registerXMLSerializer };
-        export { serialize };
+        export { OBJECT_PROPERTY_NODE_FACTORY as OBJECT_PROPERTY_NODE_FACTORY };
+        export { XML_SCHEMA_INSTANCE_URI as XML_SCHEMA_INSTANCE_URI };
+        export { createElementNS as createElementNS };
+        export { getAllTextContent as getAllTextContent };
+        export { getAllTextContent_ as getAllTextContent_ };
+        export { getAttributeNS as getAttributeNS };
+        export { getDocument as getDocument };
+        export { getXMLSerializer as getXMLSerializer };
+        export { isDocument as isDocument };
+        export { makeArrayExtender as makeArrayExtender };
+        export { makeArrayPusher as makeArrayPusher };
+        export { makeArraySerializer as makeArraySerializer };
+        export { makeChildAppender as makeChildAppender };
+        export { makeObjectPropertyPusher as makeObjectPropertyPusher };
+        export { makeObjectPropertySetter as makeObjectPropertySetter };
+        export { makeReplacer as makeReplacer };
+        export { makeSequence as makeSequence };
+        export { makeSimpleNodeFactory as makeSimpleNodeFactory };
+        export { makeStructureNS as makeStructureNS };
+        export { parse as parse };
+        export { parseNode as parseNode };
+        export { pushParseAndPop as pushParseAndPop };
+        export { pushSerializeAndPop as pushSerializeAndPop };
+        export { registerDocument as registerDocument };
+        export { registerXMLSerializer as registerXMLSerializer };
+        export { serialize as serialize };
     }
-
 }
 //# sourceMappingURL=ol.d.ts.map
 declare var map: ol.Map;

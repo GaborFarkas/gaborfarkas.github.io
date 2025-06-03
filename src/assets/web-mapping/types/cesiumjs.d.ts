@@ -653,7 +653,7 @@ export class ArcGISTiledElevationTerrainProvider {
      * at points and in rectangles. This property may be undefined if availability
      * information is not available.
      */
-    readonly availability: TileAvailability;
+    readonly availability: TileAvailability | undefined;
     /**
      * Creates a {@link TerrainProvider} that produces terrain geometry by tessellating height maps
      * retrieved from Elevation Tiles of an an ArcGIS ImageService.
@@ -2912,7 +2912,7 @@ export class CesiumTerrainProvider {
      * exists deeper in the tree rather than it all being discoverable at the root. However, a tile that
      * is available now will not become unavailable in the future.
      */
-    readonly availability: TileAvailability;
+    readonly availability: TileAvailability | undefined;
     /**
      * Gets the maximum geometric error allowed in a tile at a given level.
      * @param level - The tile level for which to get the maximum geometric error.
@@ -3023,7 +3023,10 @@ export const Check: {
      * @param {*} test The value to test
      * @exception {DeveloperError} test must be typeof 'object'
      */
-    object(name: string, test: any): asserts test is object;
+    object(
+      name: string,
+      test: any,
+    ): asserts test is Record<string | number | symbol, any>;
     /**
      * Throws if test is not typeof 'boolean'
      *
@@ -6212,7 +6215,7 @@ export class EllipsoidRhumbLine {
     interpolateUsingFraction(fraction: number, result?: Cartographic): Cartographic;
     /**
      * Provides the location of a point at the indicated distance along the rhumb line.
-     * @param distance - The distance from the inital point to the point of interest along the rhumbLine.
+     * @param distance - The distance from the initial point to the point of interest along the rhumbLine.
      * @param [result] - The object in which to store the result.
      * @returns The location of the point along the rhumb line.
      */
@@ -6367,7 +6370,7 @@ export class EllipsoidTerrainProvider {
      * at points and in rectangles. This property may be undefined if availability
      * information is not available.
      */
-    readonly availability: TileAvailability;
+    readonly availability: TileAvailability | undefined;
     /**
      * Requests the geometry for a given tile. The result includes terrain
      * data and indicates that all child tiles are available.
@@ -6569,6 +6572,22 @@ export namespace FeatureDetection {
      * @returns true if the browser supports ECMAScript modules in web workers.
      */
     function supportsEsmWebWorkers(): boolean;
+}
+
+/**
+ * Utilities helpful for setting a default value for a parameter.
+ */
+export namespace Frozen {
+    /**
+     * A frozen empty object that can be used as the default value for options passed as
+     * an object literal.
+     */
+    var EMPTY_OBJECT: any;
+    /**
+     * A frozen empty array that can be used as the default value for options passed as
+     * an array literal.
+     */
+    var EMPTY_ARRAY: any[];
 }
 
 /**
@@ -7568,7 +7587,7 @@ export class GoogleEarthEnterpriseTerrainData {
      * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
      * Values in between 0 and 255 are allowed as well to smoothly blend between land and water.
      */
-    waterMask: Uint8Array | HTMLImageElement | HTMLCanvasElement;
+    waterMask: Uint8Array | HTMLImageElement | HTMLCanvasElement | undefined;
     /**
      * Computes the terrain height at a specified longitude and latitude.
      * @param rectangle - The rectangle covered by this terrain data.
@@ -7679,7 +7698,7 @@ export class GoogleEarthEnterpriseTerrainProvider {
      * at points and in rectangles. This property may be undefined if availability
      * information is not available.
      */
-    readonly availability: TileAvailability;
+    readonly availability: TileAvailability | undefined;
     /**
      * Creates a GoogleEarthTerrainProvider from GoogleEarthEnterpriseMetadata
      * @example
@@ -8109,7 +8128,7 @@ export class HeightmapTerrainData {
      * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
      * Values in between 0 and 255 are allowed as well to smoothly blend between land and water.
      */
-    waterMask: Uint8Array | HTMLImageElement | HTMLCanvasElement;
+    waterMask: Uint8Array | HTMLImageElement | HTMLCanvasElement | undefined;
     /**
      * Computes the terrain height at a specified longitude and latitude.
      * @param rectangle - The rectangle covered by this terrain data.
@@ -8407,8 +8426,17 @@ export namespace ITwinPlatform {
     }
     /**
      * Gets or sets the default iTwin access token. This token should have the <code>itwin-platform</code> scope.
+     *
+     * This value will be ignored if {@link ITwinPlatform.defaultShareKey} is defined.
      */
     var defaultAccessToken: string | undefined;
+    /**
+     * Gets or sets the default iTwin share key. If this value is provided it will override {@link ITwinPlatform.defaultAccessToken} in all requests.
+     *
+     * Share keys can be generated using the iTwin Shares api
+     * https://developer.bentley.com/apis/access-control-v2/operations/create-itwin-share/
+     */
+    var defaultShareKey: string | undefined;
     /**
      * Gets or sets the default iTwin API endpoint.
      */
@@ -13109,8 +13137,9 @@ export class PolygonGeometry {
      * @param array - The packed array.
      * @param [startingIndex = 0] - The starting index of the element to be unpacked.
      * @param [result] - The object into which to store the result.
+     * @returns The modified result parameter or a new PolygonGeometry instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: PolygonGeometry): void;
+    static unpack(array: number[], startingIndex?: number, result?: PolygonGeometry): PolygonGeometry;
     /**
      * Computes a rectangle which encloses the polygon defined by the list of positions, including cases over the international date line and the poles.
      * @param positions - A linear ring defining the outer boundary of the polygon.
@@ -13658,7 +13687,7 @@ export class QuantizedMeshTerrainData {
      * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
      * Values in between 0 and 255 are allowed as well to smoothly blend between land and water.
      */
-    waterMask: Uint8Array | HTMLImageElement | HTMLCanvasElement;
+    waterMask: Uint8Array | HTMLImageElement | HTMLCanvasElement | undefined;
     /**
      * Upsamples this terrain data for use by a descendant tile.  The resulting instance will contain a subset of the
      * vertices in this instance, interpolated if necessary.
@@ -13685,7 +13714,7 @@ export class QuantizedMeshTerrainData {
     interpolateHeight(rectangle: Rectangle, longitude: number, latitude: number): number;
     /**
      * Determines if a given child tile is available, based on the
-     * {@link HeightmapTerrainData.childTileMask}.  The given child tile coordinates are assumed
+     * {@link QuantizedMeshTerrainData.childTileMask}.  The given child tile coordinates are assumed
      * to be one of the four children of this tile.  If non-child tile coordinates are
      * given, the availability of the southeast child tile is returned.
      * @param thisX - The tile X coordinate of this (the parent) tile.
@@ -14602,7 +14631,7 @@ export class RectangleOutlineGeometry {
      * @param array - The packed array.
      * @param [startingIndex = 0] - The starting index of the element to be unpacked.
      * @param [result] - The object into which to store the result.
-     * @returns The modified result parameter or a new Quaternion instance if one was not provided.
+     * @returns The modified result parameter or a new RectangleOutlineGeometry instance if one was not provided.
      */
     static unpack(array: number[], startingIndex?: number, result?: RectangleOutlineGeometry): RectangleOutlineGeometry;
     /**
@@ -16412,7 +16441,7 @@ export class TerrainData {
      * Uint8Array or image where a value of 255 indicates water and a value of 0 indicates land.
      * Values in between 0 and 255 are allowed as well to smoothly blend between land and water.
      */
-    waterMask: Uint8Array | HTMLImageElement | HTMLCanvasElement;
+    waterMask: Uint8Array | HTMLImageElement | HTMLCanvasElement | undefined;
     /**
      * Computes the terrain height at a specified longitude and latitude.
      * @param rectangle - The rectangle covered by this terrain data.
@@ -16504,7 +16533,7 @@ export class TerrainProvider {
      * at points and in rectangles. This property may be undefined if availability
      * information is not available.
      */
-    readonly availability: TileAvailability;
+    readonly availability: TileAvailability | undefined;
     /**
      * Gets a list of indices for a triangle mesh representing a regular grid.  Calling
      * this function multiple times with the same grid width and height returns the
@@ -17705,7 +17734,7 @@ export class VRTheWorldTerrainProvider {
      * at points and in rectangles. This property may be undefined if availability
      * information is not available.
      */
-    readonly availability: TileAvailability;
+    readonly availability: TileAvailability | undefined;
     /**
      * Creates a {@link TerrainProvider} that produces terrain geometry by tessellating height maps
      * retrieved from a {@link http://vr-theworld.com/|VT MÄK VR-TheWorld server}.
@@ -26383,11 +26412,11 @@ export class Billboard {
     /**
      * Gets or sets a width for the billboard. If undefined, the image width will be used.
      */
-    width: number;
+    width: number | undefined;
     /**
      * Gets or sets a height for the billboard. If undefined, the image height will be used.
      */
-    height: number;
+    height: number | undefined;
     /**
      * Gets or sets if the billboard size is in meters or pixels. <code>true</code> to size the billboard in meters;
      * otherwise, the size is in pixels.
@@ -26590,7 +26619,7 @@ export class BillboardCollection {
      * {@link BillboardCollection#get} to iterate over all the billboards
      * in the collection.
      */
-    length: number;
+    readonly length: number;
     /**
      * Creates and adds a billboard with the specified initial properties to the collection.
      * The added billboard is returned so it can be modified or removed from the collection later.
@@ -27581,12 +27610,12 @@ export class Camera {
     getPixelSize(boundingSphere: BoundingSphere, drawingBufferWidth: number, drawingBufferHeight: number): number;
     /**
      * Cancels the current camera flight and leaves the camera at its current location.
-     * If no flight is in progress, this this function does nothing.
+     * If no flight is in progress, this function does nothing.
      */
     cancelFlight(): void;
     /**
      * Completes the current camera flight and moves the camera immediately to its final destination.
-     * If no flight is in progress, this this function does nothing.
+     * If no flight is in progress, this function does nothing.
      */
     completeFlight(): void;
     /**
@@ -29113,6 +29142,44 @@ export class Cesium3DTileStyle {
     meta: StyleExpression;
 }
 
+export namespace Cesium3DTilesVoxelProvider {
+    /**
+     * Initialization options for the Cesium3DTilesVoxelProvider constructor
+     * @property className - The class in the tileset schema describing voxel metadata.
+     * @property names - The metadata names.
+     * @property types - The metadata types.
+     * @property componentTypes - The metadata component types.
+     * @property shape - The {@link VoxelShapeType}.
+     * @property dimensions - The number of voxels per dimension of a tile. This is the same for all tiles in the dataset.
+     * @property [paddingBefore = Cartesian3.ZERO] - The number of padding voxels before the tile. This improves rendering quality when sampling the edge of a tile, but it increases memory usage.
+     * @property [paddingAfter = Cartesian3.ZERO] - The number of padding voxels after the tile. This improves rendering quality when sampling the edge of a tile, but it increases memory usage.
+     * @property [globalTransform = Matrix4.IDENTITY] - A transform from local space to global space.
+     * @property [shapeTransform = Matrix4.IDENTITY] - A transform from shape space to local space.
+     * @property [minBounds] - The minimum bounds.
+     * @property [maxBounds] - The maximum bounds.
+     * @property [minimumValues] - The metadata minimum values.
+     * @property [maximumValues] - The metadata maximum values.
+     * @property [maximumTileCount] - The maximum number of tiles that exist for this provider. This value is used as a hint to the voxel renderer to allocate an appropriate amount of GPU memory. If this value is not known it can be undefined.
+     */
+    type ConstructorOptions = {
+        className: string;
+        names: string[];
+        types: MetadataType[];
+        componentTypes: MetadataComponentType[];
+        shape: VoxelShapeType;
+        dimensions: Cartesian3;
+        paddingBefore?: Cartesian3;
+        paddingAfter?: Cartesian3;
+        globalTransform?: Matrix4;
+        shapeTransform?: Matrix4;
+        minBounds?: Cartesian3;
+        maxBounds?: Cartesian3;
+        minimumValues?: number[][];
+        maximumValues?: number[][];
+        maximumTileCount?: number;
+    };
+}
+
 /**
  * A {@link VoxelProvider} that fetches voxel data from a 3D Tiles tileset.
  * <p>
@@ -29121,102 +29188,112 @@ export class Cesium3DTileStyle {
  * <div class="notice">
  * This object is normally not instantiated directly, use {@link Cesium3DTilesVoxelProvider.fromUrl}.
  * </div>
- * @param options - Object with the following properties:
+ * @param options - An object describing initialization options
  */
 export class Cesium3DTilesVoxelProvider extends VoxelProvider {
-    constructor(options: any);
+    constructor(options: Cesium3DTilesVoxelProvider.ConstructorOptions);
     /**
-     * Creates a {@link VoxelProvider} that fetches voxel data from a 3D Tiles tileset.
-     * @param url - The URL to a tileset JSON file
-     * @returns The created provider
+     * A transform from local space to global space.
      */
-    static fromUrl(url: Resource | string): Promise<Cesium3DTilesVoxelProvider>;
+    readonly globalTransform: Matrix4;
     /**
-     * A transform from local space to global space. If undefined, the identity matrix will be used instead.
+     * A transform from shape space to local space.
      */
-    readonly globalTransform: Matrix4 | undefined;
-    /**
-     * A transform from shape space to local space. If undefined, the identity matrix will be used instead.
-     */
-    readonly shapeTransform: Matrix4 | undefined;
+    readonly shapeTransform: Matrix4;
     /**
      * Gets the {@link VoxelShapeType}
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly shape: VoxelShapeType;
     /**
      * Gets the minimum bounds.
      * If undefined, the shape's default minimum bounds will be used instead.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly minBounds: Cartesian3 | undefined;
     /**
      * Gets the maximum bounds.
      * If undefined, the shape's default maximum bounds will be used instead.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly maxBounds: Cartesian3 | undefined;
     /**
      * Gets the number of voxels per dimension of a tile. This is the same for all tiles in the dataset.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly dimensions: Cartesian3;
     /**
      * Gets the number of padding voxels before the tile. This improves rendering quality when sampling the edge of a tile, but it increases memory usage.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
-    readonly paddingBefore: Cartesian3 | undefined;
+    readonly paddingBefore: Cartesian3;
     /**
      * Gets the number of padding voxels after the tile. This improves rendering quality when sampling the edge of a tile, but it increases memory usage.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
-    readonly paddingAfter: Cartesian3 | undefined;
+    readonly paddingAfter: Cartesian3;
+    /**
+     * The metadata class for this tileset.
+     */
+    readonly className: string;
     /**
      * Gets the metadata names.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly names: string[];
     /**
      * Gets the metadata types.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly types: MetadataType[];
     /**
      * Gets the metadata component types.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly componentTypes: MetadataComponentType[];
     /**
      * Gets the metadata minimum values.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly minimumValues: number[][] | undefined;
     /**
      * Gets the metadata maximum values.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly maximumValues: number[][] | undefined;
     /**
-     * The maximum number of tiles that exist for this provider. This value is used as a hint to the voxel renderer to allocate an appropriate amount of GPU memory. If this value is not known it can be undefined.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
+     * The maximum number of tiles that exist for this provider.
+     * This value is used as a hint to the voxel renderer to allocate an appropriate amount of GPU memory.
+     * If this value is not known it can be undefined.
      */
     readonly maximumTileCount: number | undefined;
     /**
-     * Requests the data for a given tile. The data is a flattened 3D array ordered by X, then Y, then Z.
-     * This function should not be called before {@link VoxelProvider#ready} returns true.
+     * The number of levels of detail containing available tiles in the tileset.
+     */
+    readonly availableLevels: number | undefined;
+    /**
+     * Creates a {@link Cesium3DTilesVoxelProvider} that fetches voxel data from a 3D Tiles tileset.
+     * @example
+     * try {
+     *   const voxelProvider = await Cesium3DTilesVoxelProvider.fromUrl(
+     *     "http://localhost:8002/tilesets/voxel/tileset.json"
+     *   );
+     *   const voxelPrimitive = new VoxelPrimitive({
+     *     provider: voxelProvider,
+     *     customShader: customShader,
+     *   });
+     *   scene.primitives.add(voxelPrimitive);
+     * } catch (error) {
+     *   console.error(`Error creating voxel primitive: ${error}`);
+     * }
+     * @param url - The URL to a tileset JSON file
+     * @returns The created provider
+     */
+    static fromUrl(url: Resource | string): Promise<Cesium3DTilesVoxelProvider>;
+    /**
+     * Requests the data for a given tile.
      * @param [options] - Object with the following properties:
      * @param [options.tileLevel = 0] - The tile's level.
      * @param [options.tileX = 0] - The tile's X coordinate.
      * @param [options.tileY = 0] - The tile's Y coordinate.
      * @param [options.tileZ = 0] - The tile's Z coordinate.
-     * @returns A promise to an array of typed arrays containing the requested voxel data or undefined if there was a problem loading the data.
+     * @returns A promise resolving to a VoxelContent containing the data for the tile, or undefined if the request could not be scheduled this frame.
      */
     requestData(options?: {
         tileLevel?: number;
         tileX?: number;
         tileY?: number;
         tileZ?: number;
-    }): Promise<any[][]> | undefined;
+    }): Promise<VoxelContent> | undefined;
 }
 
 export namespace Cesium3DTileset {
@@ -29273,6 +29350,7 @@ export namespace Cesium3DTileset {
      * @property [enableCollision = false] - When <code>true</code>, enables collisions for camera or CPU picking. While this is <code>true</code> the camera will be prevented from going below the tileset surface if {@link ScreenSpaceCameraController#enableCollisionDetection} is true.
      * @property [projectTo2D = false] - Whether to accurately project the tileset to 2D. If this is true, the tileset will be projected accurately to 2D, but it will use more memory to do so. If this is false, the tileset will use less memory and will still render in 2D / CV mode, but its projected positions may be inaccurate. This cannot be set after the tileset has been created.
      * @property [enablePick = false] - Whether to allow collision and CPU picking with <code>pick</code> when using WebGL 1. If using WebGL 2 or above, this option will be ignored. If using WebGL 1 and this is true, the <code>pick</code> operation will work correctly, but it will use more memory to do so. If running with WebGL 1 and this is false, the model will use less memory, but <code>pick</code> will always return <code>undefined</code>. This cannot be set after the tileset has loaded.
+     * @property [asynchronouslyLoadImagery = false] - Whether loading imagery that is draped over the tileset should be done asynchronously. If this is <code>true</code>, then tile content will be displayed with its original texture until the imagery texture is loaded. If this is <code>false</code>, then the tile content will not be displayed until the imagery is ready.
      * @property [debugHeatmapTilePropertyName] - The tile variable to colorize as a heatmap. All rendered tiles will be colorized relative to each other's specified variable value.
      * @property [debugFreezeFrame = false] - For debugging only. Determines if only the tiles from last frame should be used for rendering.
      * @property [debugColorizeTiles = false] - For debugging only. When true, assigns a random color to each tile.
@@ -29338,6 +29416,7 @@ export namespace Cesium3DTileset {
         enableCollision?: boolean;
         projectTo2D?: boolean;
         enablePick?: boolean;
+        asynchronouslyLoadImagery?: boolean;
         debugHeatmapTilePropertyName?: string;
         debugFreezeFrame?: boolean;
         debugColorizeTiles?: boolean;
@@ -29843,6 +29922,20 @@ export class Cesium3DTileset {
      * The {@link ClippingPolygonCollection} used to selectively disable rendering the tileset.
      */
     clippingPolygons: ClippingPolygonCollection;
+    /**
+     * The collection of <code>ImageryLayer</code> objects providing 2D georeferenced
+     * image data that will be rendered over the tileset.
+     *
+     * The imagery will be draped over glTF, B3DM, PNTS, or GeoJSON tile content.
+     * @example
+     * // Drape Bing Maps Aerial imagery over the tileset
+     * const imageryProvider = await Cesium.createWorldImageryAsync({
+     *   style: Cesium.IonWorldImageryStyle.AERIAL,
+     * });
+     * const imageryLayer = new ImageryLayer(imageryProvider);
+     * tileset.imageryLayers.add(imageryLayer);
+     */
+    readonly imageryLayers: ImageryLayerCollection;
     /**
      * Gets the tileset's properties dictionary object, which contains metadata about per-feature properties.
      * <p>
@@ -34150,7 +34243,7 @@ export namespace ImageryLayer {
      *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
      *                          current frame state, this layer, and the x, y, and level coordinates
      *                          of the imagery tile for which the hue is required, and it is expected to return
-     *                          the contrast value to use for the tile.  The function is executed for every
+     *                          the hue value to use for the tile.  The function is executed for every
      *                          frame and for every tile, so it must be fast.
      * @property [saturation = 1.0] - The saturation of this layer.  1.0 uses the unmodified imagery color.
      *                          Less than 1.0 reduces the saturation while greater than 1.0 increases it.
@@ -34158,7 +34251,7 @@ export namespace ImageryLayer {
      *                          <code>function(frameState, layer, x, y, level)</code>.  The function is passed the
      *                          current frame state, this layer, and the x, y, and level coordinates
      *                          of the imagery tile for which the saturation is required, and it is expected to return
-     *                          the contrast value to use for the tile.  The function is executed for every
+     *                          the saturation value to use for the tile.  The function is executed for every
      *                          frame and for every tile, so it must be fast.
      * @property [gamma = 1.0] - The gamma correction to apply to this layer.  1.0 uses the unmodified imagery color.
      *                          This can either be a simple number or a function with the signature
@@ -34219,7 +34312,7 @@ export namespace ImageryLayer {
 
 /**
  * An imagery layer that displays tiled image data from a single imagery provider
- * on a {@link Globe}.
+ * on a {@link Globe} or {@link Cesium3DTileset}.
  * @example
  * // Add an OpenStreetMaps layer
  * const imageryLayer = new Cesium.ImageryLayer(new Cesium.OpenStreetMapImageryProvider({
@@ -34235,6 +34328,18 @@ export namespace ImageryLayer {
  * const imageryLayer = Cesium.ImageryLayer.fromProviderAsync(Cesium.IonImageryProvider.fromAssetId(3812));
  * imageryLayer.alpha = 0.5;
  * scene.imageryLayers.add(imageryLayer);
+ * @example
+ * // Drape Bing Maps Aerial imagery over a 3D tileset
+ * const tileset = await Cesium.Cesium3DTileset.fromUrl(
+ *   "http://localhost:8002/tilesets/Seattle/tileset.json"
+ * );
+ * scene.primitives.add(tileset);
+ *
+ * const imageryProvider = await Cesium.createWorldImageryAsync({
+ *   style: Cesium.IonWorldImageryStyle.AERIAL,
+ * });
+ * const imageryLayer = new ImageryLayer(imageryProvider);
+ * tileset.imageryLayers.add(imageryLayer);
  * @param [imageryProvider] - The imagery provider to use.
  * @param [options] - An object describing initialization options
  */
@@ -34484,7 +34589,7 @@ export class ImageryLayer {
 }
 
 /**
- * An ordered collection of imagery layers.
+ * An ordered collection of imagery layers for rendering raster imagery on a {@link Globe} or {@link Cesium3DTileset}.
  */
 export class ImageryLayerCollection {
     constructor();
@@ -35364,7 +35469,7 @@ export class LabelCollection {
      * {@link LabelCollection#get} to iterate over all the labels
      * in the collection.
      */
-    length: number;
+    readonly length: number;
     /**
      * Creates and adds a label with the specified initial properties to the collection.
      * The added label is returned so it can be modified or removed from the collection later.
@@ -36931,6 +37036,25 @@ export class CustomShader {
      * @param value - The new value of the uniform.
      */
     setUniform(uniformName: string, value: boolean | number | Cartesian2 | Cartesian3 | Cartesian4 | Matrix2 | Matrix3 | Matrix4 | string | Resource | TextureUniform): void;
+    /**
+     * Returns true if this object was destroyed; otherwise, false.
+     * <br /><br />
+     * If this object was destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
+     * @returns True if this object was destroyed; otherwise, false.
+     */
+    isDestroyed(): boolean;
+    /**
+     * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
+     * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
+     * <br /><br />
+     * Once an object is destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
+     * assign the return value (<code>undefined</code>) to the object as done in the example.
+     * @example
+     * customShader = customShader && customShader.destroy();
+     */
+    destroy(): void;
 }
 
 /**
@@ -38320,6 +38444,26 @@ export class ModelNode {
 }
 
 /**
+ * Reads and returns a value with the given type
+ * at the given byte offset from the data view, in little-endian
+ * order
+ * @param dataView - Typed data view into a binary buffer
+ * @param byteOffset - The offset, in bytes, from the start of the view to read the data from
+ * @param numberOfComponents - The number of components to read
+ * @param result - The array in which to read the result
+ */
+export type ComponentsReaderCallback = (dataView: DataView, byteOffset: number, numberOfComponents: number, result: number[]) => void;
+
+/**
+ * Reads and returns a value with the given type
+ * at the given byte offset from the data view, in little-endian
+ * order
+ * @param dataView - Typed data view into a binary buffer
+ * @param byteOffset - The offset, in bytes, from the start of the view to read the data from
+ */
+export type ComponentReaderCallback = (dataView: DataView, byteOffset: number) => number | bigint;
+
+/**
  * A simple struct that serves as a value of a <code>sampler2D</code>-valued
  * uniform. This is used with {@link CustomShader} and {@link TextureManager}
  * @param options - An object with the following properties:
@@ -38449,9 +38593,9 @@ export enum VaryingType {
     /**
      * A 3x3 matrix of floating point values.
      */
-    MAT3 = "mat2",
+    MAT3 = "mat3",
     /**
-     * A 3x3 matrix of floating point values.
+     * A 4x4 matrix of floating point values.
      */
     MAT4 = "mat4"
 }
@@ -40911,6 +41055,42 @@ export class PrimitiveCollection {
      */
     destroy(): void;
 }
+
+/**
+ * A simple Least Recently Used (LRU) cache implementation.
+ */
+export class LRUCache {
+}
+
+/**
+ * Creates a spatial hash key for the given longitude, latitude, and tile level.
+ * The precision is adjusted based on the tile level and extent to achieve finer precision at higher levels.
+ *
+ * This function calculates the spatial hash key by first determining the precision at the given tile for the current maximum screenspace error (MAX_ERROR_PX),
+ * and then rounding the longitude and latitude to that precision for consistency.
+ *
+ * The steps for computing the level precision are as follows:
+ *
+ * 1. Compute the resolution (meters per pixel) at the given level:
+ *      level_resolution_m = (2 * PI * RADIUS) / (2^level * TILE_SIZE)
+ *
+ * 2. Compute the target precision in meters:
+ *      level_precision_m = level_resolution_m * MAX_ERROR_PX
+ *
+ * 3. Compute the target precision to radians:
+ *      level_precision_rad = level_precision_m / BODY_RADIUS
+ *
+ * This simplifies to:
+ *      level_precision_rad = (2 * PI * MAX_ERROR_PX) / (2^level * TILE_SIZE)
+ * which can also be written as:
+ *      level_precision_rad = (PI * MAX_ERROR_PX) / (2^(level-1) * TILE_SIZE)
+ *
+ * The computed level_precision_rad is then used to round the input longitude and latitude,
+ * ensuring that positions that fall within the same spatial bin produce the same hash key.
+ *
+ * The constants below are computed once since they are fixed for the given configuration.
+ */
+export const TILE_SIZE = 256;
 
 /**
  * The container for all 3D graphical objects and state in a Cesium virtual scene.  Generally,
@@ -43519,12 +43699,36 @@ export class VoxelCell {
 }
 
 /**
+ * <div class="notice">
+ * To construct a VoxelContent, call {@link VoxelContent.fromMetadataArray} or {@link VoxelContent.fromGltf}. Do not call the constructor directly.
+ * </div>
+ * An object representing voxel content for a {@link Cesium3DTilesVoxelProvider}.
+ */
+export class VoxelContent {
+    constructor();
+    /**
+     * Constructs a VoxelContent from an array of metadata.
+     * @param metadata - The metadata to use for this voxel content.
+     * @returns A VoxelContent containing the specified metadata.
+     */
+    static fromMetadataArray(metadata: Int8Array[] | Uint8Array[] | Int16Array[] | Uint16Array[] | Int32Array[] | Uint32Array[] | Float32Array[] | Float64Array[]): VoxelContent;
+}
+
+/**
+ * The metadata for this voxel content.
+ * The metadata is an array of typed arrays, one for each field.
+ * The data for one field is a flattened 3D array ordered by X, then Y, then Z.
+ */
+export const metadata: Int8Array[] | Uint8Array[] | Int16Array[] | Uint16Array[] | Int32Array[] | Uint32Array[] | Float32Array[] | Float64Array[];
+
+/**
  * A primitive that renders voxel data from a {@link VoxelProvider}.
  * @param [options] - Object with the following properties:
  * @param [options.provider] - The voxel provider that supplies the primitive with tile data.
  * @param [options.modelMatrix = Matrix4.IDENTITY] - The model matrix used to transform the primitive.
  * @param [options.customShader] - The custom shader used to style the primitive.
  * @param [options.clock] - The clock used to control time dynamic behavior.
+ * @param [options.calculateStatistics] - Generate statistics for performance profile.
  */
 export class VoxelPrimitive {
     constructor(options?: {
@@ -43532,11 +43736,8 @@ export class VoxelPrimitive {
         modelMatrix?: Matrix4;
         customShader?: CustomShader;
         clock?: Clock;
+        calculateStatistics?: boolean;
     });
-    /**
-     * The number of levels of detail containing available tiles in the tileset.
-     */
-    readonly availableLevels: number | undefined;
     /**
      * The event fired to indicate that a tile's content was loaded.
      * <p>
@@ -43647,9 +43848,23 @@ export class VoxelPrimitive {
      */
     readonly shape: VoxelShapeType;
     /**
-     * Gets the voxel dimensions.
+     * Gets the dimensions of each voxel tile, in z-up orientation.
+     * Does not include padding.
      */
     readonly dimensions: Cartesian3;
+    /**
+     * Gets the dimensions of one tile of the input voxel data, in the input orientation.
+     * Includes padding.
+     */
+    readonly inputDimensions: Cartesian3;
+    /**
+     * Gets the padding before the voxel data.
+     */
+    readonly paddingBefore: Cartesian3;
+    /**
+     * Gets the padding after the voxel data.
+     */
+    readonly paddingAfter: Cartesian3;
     /**
      * Gets the minimum value per channel of the voxel data.
      */
@@ -43751,110 +43966,86 @@ export class VoxelPrimitive {
 export class VoxelProvider {
     constructor();
     /**
-     * A transform from local space to global space. If undefined, the identity matrix will be used instead.
+     * A transform from local space to global space.
      */
-    readonly globalTransform: Matrix4 | undefined;
+    readonly globalTransform: Matrix4;
     /**
-     * A transform from shape space to local space. If undefined, the identity matrix will be used instead.
+     * A transform from shape space to local space.
      */
-    readonly shapeTransform: Matrix4 | undefined;
+    readonly shapeTransform: Matrix4;
     /**
      * Gets the {@link VoxelShapeType}
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly shape: VoxelShapeType;
     /**
      * Gets the minimum bounds.
      * If undefined, the shape's default minimum bounds will be used instead.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly minBounds: Cartesian3 | undefined;
     /**
      * Gets the maximum bounds.
      * If undefined, the shape's default maximum bounds will be used instead.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly maxBounds: Cartesian3 | undefined;
     /**
      * Gets the number of voxels per dimension of a tile. This is the same for all tiles in the dataset.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly dimensions: Cartesian3;
     /**
      * Gets the number of padding voxels before the tile. This improves rendering quality when sampling the edge of a tile, but it increases memory usage.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
-    readonly paddingBefore: Cartesian3 | undefined;
+    readonly paddingBefore: Cartesian3;
     /**
      * Gets the number of padding voxels after the tile. This improves rendering quality when sampling the edge of a tile, but it increases memory usage.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
-    readonly paddingAfter: Cartesian3 | undefined;
+    readonly paddingAfter: Cartesian3;
     /**
      * Gets the metadata names.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly names: string[];
     /**
      * Gets the metadata types.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly types: MetadataType[];
     /**
      * Gets the metadata component types.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly componentTypes: MetadataComponentType[];
     /**
      * Gets the metadata minimum values.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly minimumValues: number[][] | undefined;
     /**
      * Gets the metadata maximum values.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
      */
     readonly maximumValues: number[][] | undefined;
     /**
-     * The maximum number of tiles that exist for this provider. This value is used as a hint to the voxel renderer to allocate an appropriate amount of GPU memory. If this value is not known it can be undefined.
-     * This should not be called before {@link VoxelProvider#ready} returns true.
+     * The maximum number of tiles that exist for this provider.
+     * This value is used as a hint to the voxel renderer to allocate an appropriate amount of GPU memory.
+     * If this value is not known it can be undefined.
      */
     readonly maximumTileCount: number | undefined;
     /**
-     * Requests the data for a given tile. The data is a flattened 3D array ordered by X, then Y, then Z.
-     * This function should not be called before {@link VoxelProvider#ready} returns true.
+     * Requests the data for a given tile.
      * @param [options] - Object with the following properties:
      * @param [options.tileLevel = 0] - The tile's level.
      * @param [options.tileX = 0] - The tile's X coordinate.
      * @param [options.tileY = 0] - The tile's Y coordinate.
      * @param [options.tileZ = 0] - The tile's Z coordinate.
-     * @returns A promise to an array of typed arrays containing the requested voxel data or undefined if there was a problem loading the data.
+     * @returns A promise resolving to a VoxelContent containing the data for the tile, or undefined if the request could not be scheduled this frame.
      */
     requestData(options?: {
         tileLevel?: number;
         tileX?: number;
         tileY?: number;
         tileZ?: number;
-    }): Promise<any[][]> | undefined;
+    }): Promise<VoxelContent> | undefined;
 }
 
 /**
  * The number of levels of detail containing available tiles in the tileset.
  */
 export const availableLevels: number | undefined;
-
-export const shaderUniforms: {
-    [key: string]: any;
-};
-
-export const shaderDefines: {
-    [key: string]: any;
-};
-
-/**
- * The maximum number of intersections against the shape for any ray direction.
- */
-export const shaderMaximumIntersectionsLength: number;
 
 /**
  * An enum of voxel shapes. The shape controls how the voxel grid is mapped to 3D space.
