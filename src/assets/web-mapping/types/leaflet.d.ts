@@ -2087,7 +2087,7 @@ declare class ImageOverlay extends Layer {
     getBounds(): LatLngBounds;
 
     /** Get the center of the bounds this ImageOverlay covers */
-    getCenter(): Point;
+    getCenter(): LatLng;
 
     /** Get the img element that represents the ImageOverlay on the map */
     getElement(): HTMLImageElement | undefined;
@@ -2127,7 +2127,7 @@ declare class SVGOverlay extends Layer {
     getBounds(): LatLngBounds;
 
     /** Get the center of the bounds this ImageOverlay covers */
-    getCenter(): Point;
+    getCenter(): LatLng;
 
     /** Get the img element that represents the SVGOverlay on the map */
     getElement(): SVGElement | undefined;
@@ -2183,7 +2183,7 @@ declare class VideoOverlay extends Layer {
     getBounds(): LatLngBounds;
 
     /** Get the center of the bounds this ImageOverlay covers */
-    getCenter(): Point;
+    getCenter(): LatLng;
 
     /** Get the video element that represents the VideoOverlay on the map */
     getElement(): HTMLVideoElement | undefined;
@@ -2845,6 +2845,8 @@ declare class Popup extends DivOverlay {
     options: PopupOptions;
 }
 
+declare function popup(latlng: LatLngExpression, options?: PopupOptions): Popup;
+
 declare function popup(options?: PopupOptions, source?: Layer): Popup;
 
 type Direction = "right" | "left" | "top" | "bottom" | "center" | "auto";
@@ -2865,6 +2867,8 @@ declare class Tooltip extends DivOverlay {
 
     options: TooltipOptions;
 }
+
+declare function tooltip(latlng: LatLngExpression, options?: TooltipOptions): Tooltip;
 
 declare function tooltip(options?: TooltipOptions, source?: Layer): Tooltip;
 

@@ -12741,6 +12741,22 @@ export enum PixelFormat {
      */
     RGBA = WebGLConstants.RGBA,
     /**
+     * A pixel format containing a red channel as an integer.
+     */
+    RED_INTEGER = WebGLConstants.RED_INTEGER,
+    /**
+     * A pixel format containing red and green channels as integers.
+     */
+    RG_INTEGER = WebGLConstants.RG_INTEGER,
+    /**
+     * A pixel format containing red, green, and blue channels as integers.
+     */
+    RGB_INTEGER = WebGLConstants.RGB_INTEGER,
+    /**
+     * A pixel format containing red, green, blue, and alpha channels as integers.
+     */
+    RGBA_INTEGER = WebGLConstants.RGBA_INTEGER,
+    /**
      * A pixel format containing a luminance (intensity) channel.
      */
     LUMINANCE = WebGLConstants.LUMINANCE,
@@ -29332,6 +29348,8 @@ export namespace Cesium3DTileset {
      * @property [clippingPlanes] - The {@link ClippingPlaneCollection} used to selectively disable rendering the tileset.
      * @property [clippingPolygons] - The {@link ClippingPolygonCollection} used to selectively disable rendering the tileset.
      * @property [classificationType] - Determines whether terrain, 3D Tiles or both will be classified by this tileset. See {@link Cesium3DTileset#classificationType} for details about restrictions and limitations.
+     * @property [heightReference] - Sets the {@link HeightReference} for point features in vector tilesets.
+     * @property [scene] - The {@link CesiumWidget#scene} that the tileset will be rendered in, required for tilesets that specify a {@link heightReference} value for clamping 3D Tiles vector data content- like points, lines, and labels- to terrain or 3D tiles.
      * @property [ellipsoid = Ellipsoid.WGS84] - The ellipsoid determining the size and shape of the globe.
      * @property [pointCloudShading] - Options for constructing a {@link PointCloudShading} object to control point attenuation based on geometric error and lighting.
      * @property [lightColor] - The light color when shading models. When <code>undefined</code> the scene's light color is used instead.
@@ -29398,6 +29416,8 @@ export namespace Cesium3DTileset {
         clippingPlanes?: ClippingPlaneCollection;
         clippingPolygons?: ClippingPolygonCollection;
         classificationType?: ClassificationType;
+        heightReference?: HeightReference;
+        scene?: Scene;
         ellipsoid?: Ellipsoid;
         pointCloudShading?: any;
         lightColor?: Cartesian3;
@@ -30123,6 +30143,14 @@ export class Cesium3DTileset {
      */
     readonly classificationType: ClassificationType;
     /**
+     * Specifies if the height is relative to terrain, 3D Tiles, or both.
+     * <p>
+     * This option is only applied to point features in tilesets containing vector data.
+     * This option requires the Viewer's scene to be passed in through options.scene.
+     * </p>
+     */
+    readonly heightReference: HeightReference | undefined;
+    /**
      * Gets an ellipsoid describing the shape of the globe.
      */
     readonly ellipsoid: Ellipsoid;
@@ -30309,6 +30337,11 @@ export class Cesium3DTileset {
      */
     getHeight(cartographic: Cartographic, scene: Scene): number | undefined;
 }
+
+/**
+ * The {@link CesiumWidget#scene} that the tileset will be rendered in, required for tilesets that specify a {@link heightReference} value for clamping 3D Tiles vector data content- like points, lines, and labels- to terrain or 3D tiles.
+ */
+export const of = "undefined";
 
 /**
  * A ParticleEmitter that emits particles from a circle.
@@ -30798,6 +30831,16 @@ export class ClippingPolygonCollection {
         enabled?: boolean;
         inverse?: boolean;
     });
+    /**
+     * If true, clipping will be enabled.
+     */
+    enabled: boolean;
+    /**
+     * If true, a region will be clipped if it is outside of every polygon in the
+     * collection. Otherwise, a region will only be clipped if it is
+     * inside of any polygon.
+     */
+    inverse: boolean;
     /**
      * An event triggered when a new clipping polygon is added to the collection.  Event handlers
      * are passed the new polygon and the index at which it was added.
@@ -38555,7 +38598,7 @@ export enum UniformType {
      */
     MAT3 = "mat3",
     /**
-     * A 3x3 matrix of floating point values.
+     * A 4x4 matrix of floating point values.
      */
     MAT4 = "mat4",
     /**

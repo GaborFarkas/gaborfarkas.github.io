@@ -7719,7 +7719,7 @@ declare const checkedFonts: BaseObject;
 declare const textHeights: {
     [x: string]: number;
 };
-declare function registerFont(fontSpec: any): void;
+declare function registerFont(fontSpec: any): Promise<void>;
 declare function measureTextHeight(fontSpec: any): number;
 type BuilderType = "Circle" | "Image" | "LineString" | "Polygon" | "Text" | "Default";
 type FillState = {
@@ -13473,7 +13473,11 @@ type Options$1D = {
     render?: ((arg0: MapEvent) => void) | undefined;
     /**
      * Optional attribution(s) that will always be
-     * displayed regardless of the layers rendered
+     * displayed regardless of the layers rendered.
+     * **Caution:** Attributions are rendered dynamically using `innerHTML`, which can lead to potential
+     * [**XSS (Cross-Site Scripting)**](https://en.wikipedia.org/wiki/Cross-site_scripting) vulnerabilities.
+     * Use this feature only for trusted content
+     * or ensure that the content is properly sanitized before inserting it.
      */
     attributions?: string | Array<string> | undefined;
 };
@@ -13503,7 +13507,11 @@ type Options$1D = {
  * the control should be re-rendered. This is called in a `requestAnimationFrame`
  * callback.
  * @property {string|Array<string>|undefined} [attributions] Optional attribution(s) that will always be
- * displayed regardless of the layers rendered
+ * displayed regardless of the layers rendered.
+ * **Caution:** Attributions are rendered dynamically using `innerHTML`, which can lead to potential
+ * [**XSS (Cross-Site Scripting)**](https://en.wikipedia.org/wiki/Cross-site_scripting) vulnerabilities.
+ * Use this feature only for trusted content
+ * or ensure that the content is properly sanitized before inserting it.
  */
 /**
  * @classdesc
@@ -15036,6 +15044,8 @@ declare const CLASS_CONTROL: string;
  * @type {string}
  */
 declare const CLASS_COLLAPSED: string;
+/** @type {Object<string|number, number>} */
+declare const fontWeights: any;
 declare function getFontParameters(fontSpec: string): FontParameters | null;
 type FontParameters = {
     /**
@@ -15424,38 +15434,38 @@ type EncodedExpression = LiteralValue | any[];
  * See below for details on the available operators (with notes for those that are WebGL or Canvas only).
  *
  * Reading operators:
- *   `['band', bandIndex, xOffset, yOffset]` For tile layers only. Fetches pixel values from band
+ *   * `['band', bandIndex, xOffset, yOffset]` For tile layers only. Fetches pixel values from band
  *     `bandIndex` of the source's data. The first `bandIndex` of the source data is `1`. Fetched values
  *     are in the 0..1 range. {@link import ("../source/TileImage.js").default} sources have 4 bands: red,
  *     green, blue and alpha. {@link import ("../source/DataTile.js").default} sources can have any number
  *     of bands, depending on the underlying data source and
  *     {@link import ("../source/GeoTIFF.js").Options configuration}. `xOffset` and `yOffset` are optional
  *     and allow specifying pixel offsets for x and y. This is used for sampling data from neighboring pixels (WebGL only).
- *   `['get', attributeName]` fetches a feature property value, similar to `feature.get('attributeName')`.
- *   `['get', attributeName, keyOrArrayIndex, ...]` (Canvas only) Access nested properties and array items of a
+ *   * `['get', attributeName]` fetches a feature property value, similar to `feature.get('attributeName')`.
+ *   * `['get', attributeName, keyOrArrayIndex, ...]` (Canvas only) Access nested properties and array items of a
  *     feature property. The result is `undefined` when there is nothing at the specified key or index.
- *   `['geometry-type']` returns a feature's geometry type as string, either: 'LineString', 'Point' or 'Polygon'
+ *   * `['geometry-type']` returns a feature's geometry type as string, either: 'LineString', 'Point' or 'Polygon'
  *     `Multi*` values are returned as their singular equivalent
  *     `Circle` geometries are returned as 'Polygon'
  *     `GeometryCollection` geometries are returned as the type of the first geometry found in the collection (WebGL only).
- *   `['resolution']` returns the current resolution
- *   `['time']` The time in seconds since the creation of the layer (WebGL only).
- *   `['var', 'varName']` fetches a value from the style variables; will throw an error if that variable is undefined
- *   `['zoom']` The current zoom level (WebGL only).
- *   `['line-metric']` returns the M component of the current point on a line (WebGL only); in case where the geometry layout of the line
+ *   * `['resolution']` returns the current resolution
+ *   * `['time']` The time in seconds since the creation of the layer (WebGL only).
+ *   * `['var', 'varName']` fetches a value from the style variables; will throw an error if that variable is undefined
+ *   * `['zoom']` The current zoom level (WebGL only).
+ *   * `['line-metric']` returns the M component of the current point on a line (WebGL only); in case where the geometry layout of the line
  *      does not contain an M component (e.g. XY or XYZ), 0 is returned; 0 is also returned for geometries other than lines.
  *      Please note that the M component will be linearly interpolated between the two points composing a segment.
  *
  * Math operators:
- *   `['*', value1, value2, ...]` multiplies the values (either numbers or colors)
- *   `['/', value1, value2]` divides `value1` by `value2`
- *   `['+', value1, value2, ...]` adds the values
- *   `['-', value1, value2]` subtracts `value2` from `value1`
- *   `['clamp', value, low, high]` clamps `value` between `low` and `high`
- *   `['%', value1, value2]` returns the result of `value1 % value2` (modulo)
- *   `['^', value1, value2]` returns the value of `value1` raised to the `value2` power
- *   `['abs', value1]` returns the absolute value of `value1`
- *   `['floor', value1]` returns the nearest integer less than or equal to `value1`
+ *   * `['*', value1, value2, ...]` multiplies the values (either numbers or colors)
+ *   * `['/', value1, value2]` divides `value1` by `value2`
+ *   * `['+', value1, value2, ...]` adds the values
+ *   * `['-', value1, value2]` subtracts `value2` from `value1`
+ *   * `['clamp', value, low, high]` clamps `value` between `low` and `high`
+ *   * `['%', value1, value2]` returns the result of `value1 % value2` (modulo)
+ *   * `['^', value1, value2]` returns the value of `value1` raised to the `value2` power
+ *   * `['abs', value1]` returns the absolute value of `value1`
+ *   * `['floor', value1]` returns the nearest integer less than or equal to `value1`
  *   * `['round', value1]` returns the nearest integer to `value1`
  *   * `['ceil', value1]` returns the nearest integer greater than or equal to `value1`
  *   * `['sin', value1]` returns the sine of `value1`
@@ -22877,10 +22887,10 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
      * @param {function(FeatureType):boolean} [filter] Feature filter function.
      *     The filter function will receive one argument, the {@link module:ol/Feature~Feature feature}
      *     and it should return a boolean value. By default, no filtering is made.
-     * @return {FeatureType} Closest feature.
+     * @return {FeatureType|null} Closest feature (or `null` if none found).
      * @api
      */
-    getClosestFeatureToCoordinate(coordinate: Coordinate, filter?: (arg0: FeatureType) => boolean): FeatureType;
+    getClosestFeatureToCoordinate(coordinate: Coordinate, filter?: (arg0: FeatureType) => boolean): FeatureType | null;
     /**
      * Get the extent of the features currently in the source.
      *
@@ -25121,6 +25131,11 @@ declare class WebGLHelper extends Disposable {
      */
     private startTime_;
     /**
+     * @type {number}
+     * @private
+     */
+    private maxAttributeCount_;
+    /**
      * @param {Object<string, UniformValue>} uniforms Uniform definitions.
      */
     setUniforms(uniforms: {
@@ -25308,6 +25323,11 @@ declare class WebGLHelper extends Disposable {
      * @param {Array<number>} value Matrix value
      */
     setUniformMatrixValue(uniform: string, value: Array<number>): void;
+    /**
+     * Disable all vertex attributes.
+     * @private
+     */
+    private disableAllAttributes_;
     /**
      * Will set the currently bound buffer to an attribute of the shader program. Used by `#enableAttributes`
      * internally.
@@ -25792,11 +25812,16 @@ declare class WebGLPointsLayerRenderer extends WebGLLayerRenderer<any> {
 declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_screenToWorldMatrix;\nuniform vec2 u_viewportSizePx;\nuniform float u_pixelRatio;\nuniform float u_globalAlpha;\nuniform float u_time;\nuniform float u_zoom;\nuniform float u_resolution;\nuniform float u_rotation;\nuniform vec4 u_renderExtent;\nuniform vec2 u_patternOrigin;\nuniform float u_depth;\nuniform mediump int u_hitDetection;\n\nconst float PI = 3.141592653589793238;\nconst float TWO_PI = 2.0 * PI;\nfloat currentLineMetric = 0.; // an actual value will be used in the stroke shaders\n";
 /**
  * @typedef {Object} AttributeDescription
- * @property {string} name Attribute name, as will be declared in the headers (including a_)
- * @property {string} type Attribute type, either `float`, `vec2`, `vec4`...
- * @property {string} varyingName Varying name, as will be declared in the fragment shader (including v_)
+ * @property {string} name Attribute name, as will be declared in the header of the vertex shader (including a_)
+ * @property {string} type Attribute GLSL type, either `float`, `vec2`, `vec4`...
+ * @property {string} varyingName Varying name, as will be declared in the header of both shaders (including v_)
  * @property {string} varyingType Varying type, either `float`, `vec2`, `vec4`...
- * @property {string} varyingExpression GLSL expression to assign to the varying in the vertex shader
+ * @property {string} varyingExpression GLSL expression to assign to the varying in the vertex shader (e.g. `unpackColor(a_myAttr)`)
+ */
+/**
+ * @typedef {Object} UniformDescription
+ * @property {string} name Uniform name, as will be declared in the header of the vertex shader (including u_)
+ * @property {string} type Uniform GLSL type, either `float`, `vec2`, `vec4`...
  */
 /**
  * @classdesc
@@ -25805,8 +25830,8 @@ declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp
  *
  * ```js
  * const shader = new ShaderBuilder()
- *   .addVarying('v_width', 'float', 'a_width')
- *   .addUniform('u_time')
+ *   .addAttribute('a_width', 'float')
+ *   .addUniform('u_time', 'float)
  *   .setColorExpression('...')
  *   .setSymbolSizeExpression('...')
  *   .getSymbolFragmentShader();
@@ -25819,7 +25844,7 @@ declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp
 declare class ShaderBuilder {
     /**
      * Uniforms; these will be declared in the header (should include the type).
-     * @type {Array<string>}
+     * @type {Array<UniformDescription>}
      * @private
      */
     private uniforms_;
@@ -25927,23 +25952,24 @@ declare class ShaderBuilder {
     /**
      * Adds a uniform accessible in both fragment and vertex shaders.
      * The given name should include a type, such as `sampler2D u_texture`.
-     * @param {string} name Uniform name
+     * @param {string} name Uniform name, including the `u_` prefix
+     * @param {'float'|'vec2'|'vec3'|'vec4'|'sampler2D'} type GLSL type
      * @return {ShaderBuilder} the builder object
      */
-    addUniform(name: string): ShaderBuilder;
+    addUniform(name: string, type: "float" | "vec2" | "vec3" | "vec4" | "sampler2D"): ShaderBuilder;
     /**
      * Adds an attribute accessible in the vertex shader, read from the geometry buffer.
      * The given name should include a type, such as `vec2 a_position`.
      * Attributes will also be made available under the same name in fragment shaders.
-     * @param {string} name Attribute name
-     * @param {'float'|'vec2'|'vec3'|'vec4'} type Type
-     * @param {string} [transform] Expression which will be assigned to the varying in the vertex shader, and
+     * @param {string} name Attribute name, including the `a_` prefix
+     * @param {'float'|'vec2'|'vec3'|'vec4'} type GLSL type
+     * @param {string} [varyingExpression] Expression which will be assigned to the varying in the vertex shader, and
      * passed on to the fragment shader.
-     * @param {'float'|'vec2'|'vec3'|'vec4'} [transformedType] Type of the attribute after transformation;
+     * @param {'float'|'vec2'|'vec3'|'vec4'} [varyingType] Type of the attribute after transformation;
      * e.g. `vec4` after unpacking color components
      * @return {ShaderBuilder} the builder object
      */
-    addAttribute(name: string, type: "float" | "vec2" | "vec3" | "vec4", transform?: string, transformedType?: "float" | "vec2" | "vec3" | "vec4"): ShaderBuilder;
+    addAttribute(name: string, type: "float" | "vec2" | "vec3" | "vec4", varyingExpression?: string, varyingType?: "float" | "vec2" | "vec3" | "vec4"): ShaderBuilder;
     /**
      * Sets an expression to compute the size of the shape.
      * This expression can use all the uniforms and attributes available
@@ -26347,8 +26373,9 @@ declare class MixedGeometryBatch {
     private removeRef_;
     /**
      * @param {Feature|RenderFeature} feature Feature
+     * @param {import("../../proj.js").TransformFunction} [projectionTransform] Projection transform.
      */
-    changeFeature(feature: Feature | RenderFeature): void;
+    changeFeature(feature: Feature | RenderFeature, projectionTransform?: TransformFunction): void;
     /**
      * @param {Feature|RenderFeature} feature Feature
      */
@@ -26818,6 +26845,7 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
      */
     private handleSourceFeatureAdded_;
     /**
+     * @param {import("../../proj.js").TransformFunction} projectionTransform Transform function.
      * @param {import("../../source/Vector.js").VectorSourceEvent} event Event.
      * @private
      */
@@ -31817,6 +31845,10 @@ type Options$C = {
      * Should include `{x}`, `{y}` or `{-y}`, and `{z}` placeholders.
      */
     template?: string | undefined;
+    /**
+     * CSS color to fill text and stroke grid lines of each tile.
+     */
+    color?: string | undefined;
 };
 /**
  * @typedef {Object} Options
@@ -31832,6 +31864,7 @@ type Options$C = {
  * If both `source` and individual options are specified the individual options will have precedence.
  * @property {string} [template='z:{z} x:{x} y:{y}'] Template for labeling the tiles.
  * Should include `{x}`, `{y}` or `{-y}`, and `{z}` placeholders.
+ * @property {string} [color='grey'] CSS color to fill text and stroke grid lines of each tile.
  */
 /**
  * @classdesc
@@ -33915,11 +33948,6 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      * @type {import("../../proj/Projection.js").default|null}
      */
     protected renderedProjection: Projection | null;
-    /**
-     * @private
-     * @type {number}
-     */
-    private renderedRevision_;
     /**
      * @protected
      * @type {!Array<import("../../Tile.js").default>}
@@ -36418,27 +36446,6 @@ type Options$l = {
      */
     constrainResolution?: boolean | undefined;
 };
-/**
- * @typedef {'trackpad' | 'wheel'} Mode
- */
-/**
- * @typedef {Object} Options
- * @property {import("../events/condition.js").Condition} [condition] A function that
- * takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
- * boolean to indicate whether that event should be handled. Default is
- * {@link module:ol/events/condition.always}.
- * @property {boolean} [onFocusOnly=false] When the map's target has a `tabindex` attribute set,
- * the interaction will only handle events when the map has the focus.
- * @property {number} [maxDelta=1] Maximum mouse wheel delta.
- * @property {number} [duration=250] Animation duration in milliseconds.
- * @property {number} [timeout=80] Mouse wheel timeout duration in milliseconds.
- * @property {boolean} [useAnchor=true] Enable zooming using the mouse's
- * location as the anchor. When set to `false`, zooming in and out will zoom to
- * the center of the screen instead of zooming on the mouse's location.
- * @property {boolean} [constrainResolution=false] If true, the mouse wheel zoom
- * event will always animate to the closest zoom level after an interaction;
- * false means intermediary zoom levels are allowed.
- */
 /**
  * @classdesc
  * Allows the user to zoom the map by scrolling the mouse wheel.
@@ -43682,6 +43689,7 @@ declare class WebGLPostProcessingPass {
         export { CLASS_SELECTABLE as CLASS_SELECTABLE };
         export { CLASS_UNSELECTABLE as CLASS_UNSELECTABLE };
         export { CLASS_UNSUPPORTED as CLASS_UNSUPPORTED };
+        export { fontWeights as fontWeights };
         export { getFontParameters as getFontParameters };
     }
     export namespace dom {
@@ -44610,6 +44618,7 @@ declare class WebGLPostProcessingPass {
         export { registerXMLSerializer as registerXMLSerializer };
         export { serialize as serialize };
     }
+
 }
 //# sourceMappingURL=ol.d.ts.map
 declare var map: ol.Map;
