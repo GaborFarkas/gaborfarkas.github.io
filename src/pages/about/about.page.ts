@@ -26,6 +26,10 @@ export class AboutPage {
                 {
                     question: ' the company name?',
                     answer: 'It\'s Gábor Farkas s.p. in English, shorthand for Gábor Farkas sole proprietorship. A conventional naming in Hungary, which you will see on every invoice as well. Since honesty and transparency are cornerstones in my business policy, I\'m not comfortable with complicating things with a better-sounding fake name.'
+                },
+                {
+                    question: ' is happiness so important to you?',
+                    answer: 'If you came from the partnership page and read the paragraph about my philosophy, you must have noted that ideology has an important role in my professional life. The world is changing, and I believe we are in the midst of some sort of neo-Renaissance transformation, where we need to refound ourselves as a species. That will take several generations and tons of paradigm shifts. I also realize that in this new world, central governance has lost its power; individualism will be key for a stable society. I have no idea what kind of system we will end up with, so I picked the most common requirement for humans on all scales: happiness. I decided to put most of my work time into maximizing happiness the best I can, aiding our journey into a new era.'
                 }
             ]
         },
@@ -65,6 +69,10 @@ export class AboutPage {
                 {
                     question: ' are you selecting your partners?',
                     answer: 'I\'m quite widely available for small projects and counsels, but long-term partnerships are always considered very carefully. To start a cooperation spanning over several years, I must strongly agree with the values and the intentions of the project (i.e. the potential good it can bring to the industry, or even better, to humanity).'
+                },
+                {
+                    question: ' would you phrase your ideology?',
+                    answer: ''
                 }
             ]
         }
