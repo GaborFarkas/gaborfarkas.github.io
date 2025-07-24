@@ -69,10 +69,6 @@ export class AboutPage {
                 {
                     question: ' are you selecting your partners?',
                     answer: 'I\'m quite widely available for small projects and counsels, but long-term partnerships are always considered very carefully. To start a cooperation spanning over several years, I must strongly agree with the values and the intentions of the project (i.e. the potential good it can bring to the industry, or even better, to humanity).'
-                },
-                {
-                    question: ' would you phrase your ideology?',
-                    answer: ''
                 }
             ]
         }
