@@ -64,7 +64,7 @@ export class AboutPage {
             sections: [
                 {
                     question: ' do you prioritize your time?',
-                    answer: 'University is the first. I reduced my duties to 10 hours per week teaching only, but classes have fixed time and students are entitled to uncompromised knowledge. With respect to this, long-term partners always get a fixed weekly budget of my time. Counsels and short-term side projects are managed from the rest.'
+                    answer: 'University is the first. I reduced my duties to 4-5 hours per week teaching only, but classes have fixed time and students are entitled to uncompromised knowledge. With respect to this, long-term partners always get a fixed weekly budget of my time. Counsels and short-term side projects are managed from the rest.'
                 },
                 {
                     question: ' are you selecting your partners?',
