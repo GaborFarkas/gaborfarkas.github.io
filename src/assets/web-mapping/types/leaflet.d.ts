@@ -2274,7 +2274,7 @@ declare class Rectangle<P = any> extends Polygon<P> {
 declare function rectangle<P = any>(latLngBounds: LatLngBoundsExpression, options?: PolylineOptions): Rectangle<P>;
 
 interface CircleMarkerOptions extends PathOptions {
-    radius: number;
+    radius?: number | undefined;
 }
 
 declare class CircleMarker<P = any> extends Path {

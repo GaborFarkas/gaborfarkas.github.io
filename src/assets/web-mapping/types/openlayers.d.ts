@@ -2,6 +2,13 @@ declare namespace ol {
 
 
 
+
+
+
+
+
+
+
 /**
  * @module ol/events/Event
  */
@@ -853,6 +860,7 @@ declare function equals$2(arr1: Array<any> | Uint8ClampedArray, arr2: Array<any>
  * @param {Array<*>} arr The array to sort (modifies original).
  * @param {!function(*, *): number} compareFnc Comparison function.
  * @api
+ * @deprecated
  */
 declare function stableSort(arr: Array<any>, compareFnc: (arg0: any, arg1: any) => number): void;
 /**
@@ -2319,6 +2327,12 @@ declare function determinant(mat: Transform): number;
  */
 declare function toString$1(mat: Transform): string;
 /**
+ * Create a transform from a CSS transform matrix string.
+ * @param {string} cssTransform The CSS string to parse.
+ * @return {!Transform} The transform.
+ */
+declare function fromString$1(cssTransform: string): Transform;
+/**
  * Compare two matrices for equality.
  * @param {!string} cssTransform1 A CSS transform matrix string.
  * @param {!string} cssTransform2 A CSS transform matrix string.
@@ -3105,388 +3119,343 @@ declare class TileGrid {
 }
 
 /**
- * @module ol/tilecoord
- */
-/**
- * An array of three numbers representing the location of a tile in a tile
- * grid. The order is `z` (zoom level), `x` (column), and `y` (row).
- * @typedef {Array<number>} TileCoord
- * @api
- */
-/**
- * @param {number} z Z.
- * @param {number} x X.
- * @param {number} y Y.
- * @param {TileCoord} [tileCoord] Tile coordinate.
- * @return {TileCoord} Tile coordinate.
- */
-declare function createOrUpdate(z: number, x: number, y: number, tileCoord?: TileCoord): TileCoord;
-/**
- * @param {number} z Z.
- * @param {number} x X.
- * @param {number} y Y.
- * @return {string} Key.
- */
-declare function getKeyZXY(z: number, x: number, y: number): string;
-/**
- * Get the key for a tile coord.
- * @param {TileCoord} tileCoord The tile coord.
- * @return {string} Key.
- */
-declare function getKey(tileCoord: TileCoord): string;
-/**
- * Get the tile cache key for a tile key obtained through `tile.getKey()`.
- * @param {string} tileKey The tile key.
- * @return {string} The cache key.
- */
-declare function getCacheKeyForTileKey(tileKey: string): string;
-/**
- * Get a tile coord given a key.
- * @param {string} key The tile coord key.
- * @return {TileCoord} The tile coord.
- */
-declare function fromKey(key: string): TileCoord;
-/**
- * @param {TileCoord} tileCoord Tile coord.
- * @return {number} Hash.
- */
-declare function hash(tileCoord: TileCoord): number;
-/**
- * @param {number} z The tile z coordinate.
- * @param {number} x The tile x coordinate.
- * @param {number} y The tile y coordinate.
- * @return {number} Hash.
- */
-declare function hashZXY(z: number, x: number, y: number): number;
-/**
- * @param {TileCoord} tileCoord Tile coordinate.
- * @param {!import("./tilegrid/TileGrid.js").default} tileGrid Tile grid.
- * @return {boolean} Tile coordinate is within extent and zoom level range.
- */
-declare function withinExtentAndZ(tileCoord: TileCoord, tileGrid: TileGrid): boolean;
-/**
- * An array of three numbers representing the location of a tile in a tile
- * grid. The order is `z` (zoom level), `x` (column), and `y` (row).
- */
-type TileCoord = Array<number>;
-
-/**
- * A function that takes a {@link module :ol/Tile~Tile} for the tile and a
- * `{string}` for the url as arguments. The default is
- * ```js
- * source.setTileLoadFunction(function(tile, src) {
- *   tile.getImage().src = src;
- * });
- * ```
- * For more fine grained control, the load function can use fetch or XMLHttpRequest and involve
- * error handling:
- *
- * ```js
- * import TileState from 'ol/TileState.js';
- *
- * source.setTileLoadFunction(function(tile, src) {
- *   const xhr = new XMLHttpRequest();
- *   xhr.responseType = 'blob';
- *   xhr.addEventListener('loadend', function (evt) {
- *     const data = this.response;
- *     if (data !== undefined) {
- *       tile.getImage().src = URL.createObjectURL(data);
- *     } else {
- *       tile.setState(TileState.ERROR);
- *     }
- *   });
- *   xhr.addEventListener('error', function () {
- *     tile.setState(TileState.ERROR);
- *   });
- *   xhr.open('GET', src);
- *   xhr.send();
- * });
- * ```
- */
-type LoadFunction$1 = (arg0: Tile$1, arg1: string) => void;
-/**
- * {@link module :ol/source/Tile~TileSource} sources use a function of this type to get
- * the url that provides a tile for a given tile coordinate.
- *
- * This function takes a {@link module :ol/tilecoord~TileCoord} for the tile
- * coordinate, a `{number}` representing the pixel ratio and a
- * {@link module :ol/proj/Projection~Projection} for the projection  as arguments
- * and returns a `{string}` representing the tile URL, or undefined if no tile
- * should be requested for the passed tile coordinate.
- */
-type UrlFunction = (arg0: TileCoord, arg1: number, arg2: Projection) => (string | undefined);
-type Options$1R = {
-    /**
-     * A duration for tile opacity
-     * transitions in milliseconds. A duration of 0 disables the opacity transition.
-     */
-    transition?: number | undefined;
-    /**
-     * Use interpolated values when resampling.  By default,
-     * the nearest neighbor is used when resampling.
-     */
-    interpolate?: boolean | undefined;
-};
-/**
- * A function that takes a {@link module:ol/Tile~Tile} for the tile and a
- * `{string}` for the url as arguments. The default is
- * ```js
- * source.setTileLoadFunction(function(tile, src) {
- *   tile.getImage().src = src;
- * });
- * ```
- * For more fine grained control, the load function can use fetch or XMLHttpRequest and involve
- * error handling:
- *
- * ```js
- * import TileState from 'ol/TileState.js';
- *
- * source.setTileLoadFunction(function(tile, src) {
- *   const xhr = new XMLHttpRequest();
- *   xhr.responseType = 'blob';
- *   xhr.addEventListener('loadend', function (evt) {
- *     const data = this.response;
- *     if (data !== undefined) {
- *       tile.getImage().src = URL.createObjectURL(data);
- *     } else {
- *       tile.setState(TileState.ERROR);
- *     }
- *   });
- *   xhr.addEventListener('error', function () {
- *     tile.setState(TileState.ERROR);
- *   });
- *   xhr.open('GET', src);
- *   xhr.send();
- * });
- * ```
- *
- * @typedef {function(Tile, string): void} LoadFunction
- * @api
- */
-/**
- * {@link module:ol/source/Tile~TileSource} sources use a function of this type to get
- * the url that provides a tile for a given tile coordinate.
- *
- * This function takes a {@link module:ol/tilecoord~TileCoord} for the tile
- * coordinate, a `{number}` representing the pixel ratio and a
- * {@link module:ol/proj/Projection~Projection} for the projection  as arguments
- * and returns a `{string}` representing the tile URL, or undefined if no tile
- * should be requested for the passed tile coordinate.
- *
- * @typedef {function(import("./tilecoord.js").TileCoord, number,
- *           import("./proj/Projection.js").default): (string|undefined)} UrlFunction
- * @api
- */
-/**
- * @typedef {Object} Options
- * @property {number} [transition=250] A duration for tile opacity
- * transitions in milliseconds. A duration of 0 disables the opacity transition.
- * @property {boolean} [interpolate=false] Use interpolated values when resampling.  By default,
- * the nearest neighbor is used when resampling.
- * @api
+ * @typedef {Object} Entry
+ * @property {string} key_ Key.
+ * @property {Entry|null} newer Newer.
+ * @property {Entry|null} older Older.
+ * @property {*} value_ Value.
  */
 /**
  * @classdesc
- * Base class for tiles.
+ * Implements a Least-Recently-Used cache where the keys do not conflict with
+ * Object's properties (e.g. 'hasOwnProperty' is not allowed as a key). Expiring
+ * items from the cache is the responsibility of the user.
  *
- * @abstract
+ * @fires import("../events/Event.js").default
+ * @template T
  */
-declare class Tile$1 extends Target {
+declare class LRUCache<T> {
     /**
-     * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
-     * @param {import("./TileState.js").default} state State.
-     * @param {Options} [options] Tile options.
+     * @param {number} [highWaterMark] High water mark.
      */
-    constructor(tileCoord: TileCoord, state: any, options?: Options$1R);
+    constructor(highWaterMark?: number);
     /**
-     * @type {import("./tilecoord.js").TileCoord}
+     * Desired max cache size after expireCache(). If set to 0, no cache entries
+     * will be pruned at all.
+     * @type {number}
      */
-    tileCoord: TileCoord;
+    highWaterMark: number;
     /**
-     * @protected
-     * @type {import("./TileState.js").default}
-     */
-    protected state: any;
-    /**
-     * A key assigned to the tile. This is used in conjunction with a source key
-     * to determine if a cached version of this tile may be used by the renderer.
-     * @type {string}
-     */
-    key: string;
-    /**
-     * The duration for the opacity transition.
      * @private
      * @type {number}
      */
-    private transition_;
+    private count_;
     /**
-     * Lookup of start times for rendering transitions.  If the start time is
-     * equal to -1, the transition is complete.
      * @private
-     * @type {Object<string, number>}
+     * @type {!Object<string, Entry>}
      */
-    private transitionStarts_;
+    private entries_;
     /**
-     * @type {boolean}
+     * @private
+     * @type {?Entry}
      */
-    interpolate: boolean;
+    private oldest_;
     /**
-     * @protected
+     * @private
+     * @type {?Entry}
      */
-    protected changed(): void;
+    private newest_;
+    deleteOldest(): void;
     /**
-     * Called by the tile cache when the tile is removed from the cache due to expiry
+     * @return {boolean} Can expire cache.
      */
-    release(): void;
+    canExpireCache(): boolean;
     /**
-     * @return {string} Key.
+     * Expire the cache. When the cache entry is a {@link module:ol/Disposable~Disposable},
+     * the entry will be disposed.
+     * @param {!Object<string, boolean>} [keep] Keys to keep. To be implemented by subclasses.
      */
-    getKey(): string;
+    expireCache(keep?: {
+        [x: string]: boolean;
+    }): void;
     /**
-     * Get the tile coordinate for this tile.
-     * @return {import("./tilecoord.js").TileCoord} The tile coordinate.
+     * FIXME empty description for jsdoc
+     */
+    clear(): void;
+    /**
+     * @param {string} key Key.
+     * @return {boolean} Contains key.
+     */
+    containsKey(key: string): boolean;
+    /**
+     * @param {function(T, string, LRUCache<T>): ?} f The function
+     *     to call for every entry from the oldest to the newer. This function takes
+     *     3 arguments (the entry value, the entry key and the LRUCache object).
+     *     The return value is ignored.
+     */
+    forEach(f: (arg0: T, arg1: string, arg2: LRUCache<T>) => unknown): void;
+    /**
+     * @param {string} key Key.
+     * @param {*} [options] Options (reserved for subclasses).
+     * @return {T} Value.
+     */
+    get(key: string, options?: any): T;
+    /**
+     * Remove an entry from the cache.
+     * @param {string} key The entry key.
+     * @return {T} The removed entry.
+     */
+    remove(key: string): T;
+    /**
+     * @return {number} Count.
+     */
+    getCount(): number;
+    /**
+     * @return {Array<string>} Keys.
+     */
+    getKeys(): Array<string>;
+    /**
+     * @return {Array<T>} Values.
+     */
+    getValues(): Array<T>;
+    /**
+     * @return {T} Last value.
+     */
+    peekLast(): T;
+    /**
+     * @return {string} Last key.
+     */
+    peekLastKey(): string;
+    /**
+     * Get the key of the newest item in the cache.  Throws if the cache is empty.
+     * @return {string} The newest key.
+     */
+    peekFirstKey(): string;
+    /**
+     * Return an entry without updating least recently used time.
+     * @param {string} key Key.
+     * @return {T|undefined} Value.
+     */
+    peek(key: string): T | undefined;
+    /**
+     * @return {T} value Value.
+     */
+    pop(): T;
+    /**
+     * @param {string} key Key.
+     * @param {T} value Value.
+     */
+    replace(key: string, value: T): void;
+    /**
+     * @param {string} key Key.
+     * @param {T} value Value.
+     */
+    set(key: string, value: T): void;
+    /**
+     * Set a maximum number of entries for the cache.
+     * @param {number} size Cache size.
      * @api
      */
-    getTileCoord(): TileCoord;
-    /**
-     * @return {import("./TileState.js").default} State.
-     */
-    getState(): any;
-    /**
-     * Sets the state of this tile. If you write your own {@link module:ol/Tile~LoadFunction tileLoadFunction} ,
-     * it is important to set the state correctly to {@link module:ol/TileState~ERROR}
-     * when the tile cannot be loaded. Otherwise the tile cannot be removed from
-     * the tile queue and will block other requests.
-     * @param {import("./TileState.js").default} state State.
-     * @api
-     */
-    setState(state: any): void;
-    /**
-     * Load the image or retry if loading previously failed.
-     * Loading is taken care of by the tile queue, and calling this method is
-     * only needed for preloading or for reloading in case of an error.
-     * @abstract
-     * @api
-     */
-    load(): void;
-    /**
-     * Get the alpha value for rendering.
-     * @param {string} id An id for the renderer.
-     * @param {number} time The render frame time.
-     * @return {number} A number between 0 and 1.
-     */
-    getAlpha(id: string, time: number): number;
-    /**
-     * Determine if a tile is in an alpha transition.  A tile is considered in
-     * transition if tile.getAlpha() has not yet been called or has been called
-     * and returned 1.
-     * @param {string} id An id for the renderer.
-     * @return {boolean} The tile is in transition.
-     */
-    inTransition(id: string): boolean;
-    /**
-     * Mark a transition as complete.
-     * @param {string} id An id for the renderer.
-     */
-    endTransition(id: string): void;
+    setSize(size: number): void;
 }
 
-type ImageLike = HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap;
-type ArrayLike = Uint8Array | Uint8ClampedArray | Float32Array | DataView;
-/**
- * Data that can be used with a DataTile.
- */
-type Data = ArrayLike | ImageLike;
-type Options$1Q = {
+type Options$1R = {
     /**
-     * Tile coordinate.
+     * Extent for the tile grid. No tiles
+     * outside this extent will be requested by {@link module :ol/source/Tile~TileSource} sources.
+     * When no `origin` or `origins` are configured, the `origin` will be set to the
+     * top-left corner of the extent.
      */
-    tileCoord: TileCoord;
+    extent?: Extent$1 | undefined;
     /**
-     * Data loader.  For loaders that generate images,
-     * the promise should not resolve until the image is loaded.
+     * The tile grid origin, i.e.
+     * where the `x` and `y` axes meet (`[z, 0, 0]`). Tile coordinates increase left
+     * to right and downwards. If not specified, `extent` or `origins` must be provided.
      */
-    loader: () => Promise<Data>;
+    origin?: Coordinate | undefined;
     /**
-     * A duration for tile opacity
-     * transitions in milliseconds. A duration of 0 disables the opacity transition.
+     * Tile grid origins,
+     * i.e. where the `x` and `y` axes meet (`[z, 0, 0]`), for each zoom level. If
+     * given, the array length should match the length of the `resolutions` array, i.e.
+     * each resolution can have a different origin. Tile coordinates increase left to
+     * right and downwards. If not specified, `extent` or `origin` must be provided.
      */
-    transition?: number | undefined;
+    origins?: Coordinate[] | undefined;
     /**
-     * Use interpolated values when resampling.  By default,
-     * the nearest neighbor is used when resampling.
+     * Resolutions. The array index of each
+     * resolution needs to match the zoom level. This means that even if a `minZoom`
+     * is configured, the resolutions array will have a length of `maxZoom + 1`
      */
-    interpolate?: boolean | undefined;
+    resolutions: Array<number>;
+    /**
+     * matrix IDs. The length of this array needs
+     * to match the length of the `resolutions` array.
+     */
+    matrixIds: Array<string>;
+    /**
+     * Number of tile rows and columns
+     * of the grid for each zoom level. The values here are the `TileMatrixWidth` and
+     * `TileMatrixHeight` advertised in the GetCapabilities response of the WMTS, and
+     * define each zoom level's extent together with the `origin` or `origins`.
+     * A grid `extent` can be configured in addition, and will further limit the extent for
+     * which tile requests are made by sources. If the bottom-left corner of
+     * an extent is used as `origin` or `origins`, then the `y` value must be
+     * negative because OpenLayers tile coordinates use the top left as the origin.
+     */
+    sizes?: Size[] | undefined;
     /**
      * Tile size.
      */
-    size?: Size | undefined;
+    tileSize?: number | Size | undefined;
     /**
-     * An abort controller.
+     * Tile sizes. The length of
+     * this array needs to match the length of the `resolutions` array.
      */
-    controller?: AbortController | undefined;
+    tileSizes?: (number | Size)[] | undefined;
 };
 /**
  * @typedef {Object} Options
- * @property {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
- * @property {function(): Promise<Data>} loader Data loader.  For loaders that generate images,
- * the promise should not resolve until the image is loaded.
- * @property {number} [transition=250] A duration for tile opacity
- * transitions in milliseconds. A duration of 0 disables the opacity transition.
- * @property {boolean} [interpolate=false] Use interpolated values when resampling.  By default,
- * the nearest neighbor is used when resampling.
- * @property {import('./size.js').Size} [size=[256, 256]] Tile size.
- * @property {AbortController} [controller] An abort controller.
+ * @property {import("../extent.js").Extent} [extent] Extent for the tile grid. No tiles
+ * outside this extent will be requested by {@link module:ol/source/Tile~TileSource} sources.
+ * When no `origin` or `origins` are configured, the `origin` will be set to the
+ * top-left corner of the extent.
+ * @property {import("../coordinate.js").Coordinate} [origin] The tile grid origin, i.e.
+ * where the `x` and `y` axes meet (`[z, 0, 0]`). Tile coordinates increase left
+ * to right and downwards. If not specified, `extent` or `origins` must be provided.
+ * @property {Array<import("../coordinate.js").Coordinate>} [origins] Tile grid origins,
+ * i.e. where the `x` and `y` axes meet (`[z, 0, 0]`), for each zoom level. If
+ * given, the array length should match the length of the `resolutions` array, i.e.
+ * each resolution can have a different origin. Tile coordinates increase left to
+ * right and downwards. If not specified, `extent` or `origin` must be provided.
+ * @property {!Array<number>} resolutions Resolutions. The array index of each
+ * resolution needs to match the zoom level. This means that even if a `minZoom`
+ * is configured, the resolutions array will have a length of `maxZoom + 1`
+ * @property {!Array<string>} matrixIds matrix IDs. The length of this array needs
+ * to match the length of the `resolutions` array.
+ * @property {Array<import("../size.js").Size>} [sizes] Number of tile rows and columns
+ * of the grid for each zoom level. The values here are the `TileMatrixWidth` and
+ * `TileMatrixHeight` advertised in the GetCapabilities response of the WMTS, and
+ * define each zoom level's extent together with the `origin` or `origins`.
+ * A grid `extent` can be configured in addition, and will further limit the extent for
+ * which tile requests are made by sources. If the bottom-left corner of
+ * an extent is used as `origin` or `origins`, then the `y` value must be
+ * negative because OpenLayers tile coordinates use the top left as the origin.
+ * @property {number|import("../size.js").Size} [tileSize] Tile size.
+ * @property {Array<number|import("../size.js").Size>} [tileSizes] Tile sizes. The length of
+ * this array needs to match the length of the `resolutions` array.
+ */
+/**
+ * @classdesc
+ * Set the grid pattern for sources accessing WMTS tiled-image servers.
  * @api
  */
-declare class DataTile extends Tile$1 {
+declare class WMTSTileGrid extends TileGrid {
     /**
-     * @param {Options} options Tile options.
+     * @param {Options} options WMTS options.
      */
-    constructor(options: Options$1Q);
+    constructor(options: Options$1R);
     /**
-     * @type {function(): Promise<Data>}
      * @private
+     * @type {!Array<string>}
      */
-    private loader_;
+    private matrixIds_;
     /**
-     * @type {Data}
-     * @private
+     * @param {number} z Z.
+     * @return {string} MatrixId..
      */
-    private data_;
+    getMatrixId(z: number): string;
     /**
-     * @type {Error}
-     * @private
-     */
-    private error_;
-    /**
-     * @type {import('./size.js').Size|null}
-     * @private
-     */
-    private size_;
-    /**
-     * @type {AbortController|null}
-     * @private
-     */
-    private controller_;
-    /**
-     * Get the tile size.
-     * @return {import('./size.js').Size} Tile size.
-     */
-    getSize(): Size;
-    /**
-     * Get the data for the tile.
-     * @return {Data} Tile data.
+     * Get the list of matrix identifiers.
+     * @return {Array<string>} MatrixIds.
      * @api
      */
-    getData(): Data;
-    /**
-     * Get any loading error.
-     * @return {Error} Loading error.
-     * @api
-     */
-    getError(): Error;
+    getMatrixIds(): Array<string>;
 }
+
+/**
+ * @param {import("./proj/Projection.js").default} projection Projection.
+ * @return {!TileGrid} Default tile grid for the
+ * passed projection.
+ */
+declare function getForProjection(projection: Projection): TileGrid;
+/**
+ * @param {TileGrid} tileGrid Tile grid.
+ * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
+ * @param {import("./proj/Projection.js").default} projection Projection.
+ * @return {import("./tilecoord.js").TileCoord} Tile coordinate.
+ */
+declare function wrapX(tileGrid: TileGrid, tileCoord: TileCoord, projection: Projection): TileCoord;
+/**
+ * @param {import("./extent.js").Extent} extent Extent.
+ * @param {number} [maxZoom] Maximum zoom level (default is
+ *     DEFAULT_MAX_ZOOM).
+ * @param {number|import("./size.js").Size} [tileSize] Tile size (default uses
+ *     DEFAULT_TILE_SIZE).
+ * @param {import("./extent.js").Corner} [corner] Extent corner (default is `'top-left'`).
+ * @return {!TileGrid} TileGrid instance.
+ */
+declare function createForExtent(extent: Extent$1, maxZoom?: number, tileSize?: number | Size, corner?: Corner): TileGrid;
+/**
+ * @typedef {Object} XYZOptions
+ * @property {import("./extent.js").Extent} [extent] Extent for the tile grid. The origin for an XYZ tile grid is the
+ * top-left corner of the extent. If `maxResolution` is not provided the zero level of the grid is defined by the resolution
+ * at which one tile fits in the provided extent. If not provided, the extent of the EPSG:3857 projection is used.
+ * @property {number} [maxResolution] Resolution at level zero.
+ * @property {number} [maxZoom] Maximum zoom. The default is `42`. This determines the number of levels
+ * in the grid set. For example, a `maxZoom` of 21 means there are 22 levels in the grid set.
+ * @property {number} [minZoom=0] Minimum zoom.
+ * @property {number|import("./size.js").Size} [tileSize=[256, 256]] Tile size in pixels.
+ */
+/**
+ * Creates a tile grid with a standard XYZ tiling scheme.
+ * @param {XYZOptions} [options] Tile grid options.
+ * @return {!TileGrid} Tile grid instance.
+ * @api
+ */
+declare function createXYZ(options?: XYZOptions): TileGrid;
+/**
+ * @param {import("./proj.js").ProjectionLike} projection Projection.
+ * @param {number} [maxZoom] Maximum zoom level (default is
+ *     DEFAULT_MAX_ZOOM).
+ * @param {number|import("./size.js").Size} [tileSize] Tile size (default uses
+ *     DEFAULT_TILE_SIZE).
+ * @param {import("./extent.js").Corner} [corner] Extent corner (default is `'top-left'`).
+ * @return {!TileGrid} TileGrid instance.
+ */
+declare function createForProjection(projection: ProjectionLike, maxZoom?: number, tileSize?: number | Size, corner?: Corner): TileGrid;
+/**
+ * Generate a tile grid extent from a projection.  If the projection has an
+ * extent, it is used.  If not, a global extent is assumed.
+ * @param {import("./proj.js").ProjectionLike} projection Projection.
+ * @return {import("./extent.js").Extent} Extent.
+ */
+declare function extentFromProjection(projection: ProjectionLike): Extent$1;
+
+type XYZOptions = {
+    /**
+     * Extent for the tile grid. The origin for an XYZ tile grid is the
+     * top-left corner of the extent. If `maxResolution` is not provided the zero level of the grid is defined by the resolution
+     * at which one tile fits in the provided extent. If not provided, the extent of the EPSG:3857 projection is used.
+     */
+    extent?: Extent$1 | undefined;
+    /**
+     * Resolution at level zero.
+     */
+    maxResolution?: number | undefined;
+    /**
+     * Maximum zoom. The default is `42`. This determines the number of levels
+     * in the grid set. For example, a `maxZoom` of 21 means there are 22 levels in the grid set.
+     */
+    maxZoom?: number | undefined;
+    /**
+     * Minimum zoom.
+     */
+    minZoom?: number | undefined;
+    /**
+     * Tile size in pixels.
+     */
+    tileSize?: number | Size | undefined;
+};
 
 /**
  * Return the color as an rgba string.
@@ -3615,7 +3584,7 @@ type PatternDescriptor = {
  */
 type ColorLike = string | CanvasPattern | CanvasGradient;
 
-type Options$1P = {
+type Options$1Q = {
     /**
      * A color, gradient or pattern.
      * See {@link module :ol/color~Color} and {@link module :ol/colorlike~ColorLike} for possible formats.
@@ -3674,7 +3643,7 @@ declare class Stroke {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1P);
+    constructor(options?: Options$1Q);
     /**
      * @private
      * @type {import("../color.js").Color|import("../colorlike.js").ColorLike}
@@ -3809,7 +3778,7 @@ declare class Stroke {
     setWidth(width: number | undefined): void;
 }
 
-type Options$1O = {
+type Options$1P = {
     /**
      * A color,
      * gradient or pattern.
@@ -3836,7 +3805,7 @@ declare class Fill {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1O);
+    constructor(options?: Options$1P);
     /**
      * @private
      * @type {import("./IconImage.js").default|null}
@@ -3888,7 +3857,7 @@ declare class Fill {
  */
 type TextPlacement = "point" | "line";
 type TextJustify = "left" | "center" | "right";
-type Options$1N = {
+type Options$1O = {
     /**
      * Font style as CSS `font` value, see:
      * https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font. Default is `'10px sans-serif'`
@@ -4041,7 +4010,7 @@ declare class Text$1 {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1N);
+    constructor(options?: Options$1O);
     /**
      * @private
      * @type {string|undefined}
@@ -4430,7 +4399,7 @@ declare class Text$1 {
     setPadding(padding: Array<number> | null): void;
 }
 
-type Options$1M = {
+type Options$1N = {
     /**
      * Opacity.
      */
@@ -4477,7 +4446,7 @@ declare class ImageStyle {
     /**
      * @param {Options} options Options.
      */
-    constructor(options: Options$1M);
+    constructor(options: Options$1N);
     /**
      * @private
      * @type {number}
@@ -4664,1402 +4633,56 @@ declare class ImageStyle {
 }
 
 /**
- * @module ol/resolution
- */
-/**
- * @typedef {number|Array<number>} ResolutionLike
- */
-/**
- * @param {ResolutionLike} resolution Resolution.
- * @return {number} Resolution.
- */
-declare function fromResolutionLike(resolution: ResolutionLike): number;
-type ResolutionLike = number | Array<number>;
-
-/**
- * A function that takes an {@link module :ol/Image~ImageWrapper} for the image and a
- * `{string}` for the src as arguments. It is supposed to make it so the
- * underlying image {@link module :ol/Image~ImageWrapper#getImage} is assigned the
- * content specified by the src. If not specified, the default is
+ * A function that takes a {@link module :ol/Tile~Tile} for the tile and a
+ * `{string}` for the url as arguments. The default is
+ * ```js
+ * source.setTileLoadFunction(function(tile, src) {
+ *   tile.getImage().src = src;
+ * });
+ * ```
+ * For more fine grained control, the load function can use fetch or XMLHttpRequest and involve
+ * error handling:
  *
- *     function(image, src) {
- *       image.getImage().src = src;
+ * ```js
+ * import TileState from 'ol/TileState.js';
+ *
+ * source.setTileLoadFunction(function(tile, src) {
+ *   const xhr = new XMLHttpRequest();
+ *   xhr.responseType = 'blob';
+ *   xhr.addEventListener('loadend', function (evt) {
+ *     const data = this.response;
+ *     if (data !== undefined) {
+ *       tile.getImage().src = URL.createObjectURL(data);
+ *     } else {
+ *       tile.setState(TileState.ERROR);
  *     }
+ *   });
+ *   xhr.addEventListener('error', function () {
+ *     tile.setState(TileState.ERROR);
+ *   });
+ *   xhr.open('GET', src);
+ *   xhr.send();
+ * });
+ * ```
+ */
+type LoadFunction$1 = (arg0: Tile$1, arg1: string) => void;
+/**
+ * {@link module :ol/source/Tile~TileSource} sources use a function of this type to get
+ * the url that provides a tile for a given tile coordinate.
  *
- * Providing a custom `imageLoadFunction` can be useful to load images with
- * post requests or - in general - through XHR requests, where the src of the
- * image element would be set to a data URI when the content is loaded.
+ * This function takes a {@link module :ol/tilecoord~TileCoord} for the tile
+ * coordinate, a `{number}` representing the pixel ratio and a
+ * {@link module :ol/proj/Projection~Projection} for the projection  as arguments
+ * and returns a `{string}` representing the tile URL, or undefined if no tile
+ * should be requested for the passed tile coordinate.
  */
-type LoadFunction = (arg0: ImageWrapper, arg1: string) => void;
-type ImageObject = {
+type UrlFunction = (arg0: TileCoord, arg1: number, arg2: Projection) => (string | undefined);
+type Options$1M = {
     /**
-     * Extent, if different from the requested one.
+     * A duration for tile opacity
+     * transitions in milliseconds. A duration of 0 disables the opacity transition.
      */
-    extent?: Extent$1 | undefined;
-    /**
-     * Resolution, if different from the requested one.
-     * When x and y resolution are different, use the array type (`[xResolution, yResolution]`).
-     */
-    resolution?: ResolutionLike | undefined;
-    /**
-     * Pixel ratio, if different from the requested one.
-     */
-    pixelRatio?: number | undefined;
-    /**
-     * Image.
-     */
-    image: ImageLike;
-};
-/**
- * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
- * For images that cover any extent and resolution (static images), the loader function should not accept
- * any arguments. The function returns an {@link import ("./DataTile.js").ImageLike image}, an
- * {@link import ("./Image.js").ImageObject image object}, or a promise for the same.
- * For loaders that generate images, the promise should not resolve until the image is loaded.
- * If the returned image does not match the extent, resolution or pixel ratio passed to the loader,
- * it has to return an {@link import ("./Image.js").ImageObject image object} with the `image` and the
- * correct `extent`, `resolution` and `pixelRatio`.
- */
-type Loader$3 = (arg0: Extent$1, arg1: number, arg2: number, arg3: ((arg0: HTMLImageElement, arg1: string) => void) | undefined) => ImageLike | ImageObject | Promise<ImageLike | ImageObject>;
-/**
- * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
- * The function returns a promise for an  {@link import ("./Image.js").ImageObject image object}.
- */
-type ImageObjectPromiseLoader = (arg0: Extent$1, arg1: number, arg2: number, arg3: ((arg0: HTMLImageElement, arg1: string) => void) | undefined) => Promise<ImageLike | ImageObject>;
-/**
- * A function that takes an {@link module:ol/Image~ImageWrapper} for the image and a
- * `{string}` for the src as arguments. It is supposed to make it so the
- * underlying image {@link module:ol/Image~ImageWrapper#getImage} is assigned the
- * content specified by the src. If not specified, the default is
- *
- *     function(image, src) {
- *       image.getImage().src = src;
- *     }
- *
- * Providing a custom `imageLoadFunction` can be useful to load images with
- * post requests or - in general - through XHR requests, where the src of the
- * image element would be set to a data URI when the content is loaded.
- *
- * @typedef {function(import("./Image.js").default, string): void} LoadFunction
- * @api
- */
-/**
- * @typedef {Object} ImageObject
- * @property {import("./extent.js").Extent} [extent] Extent, if different from the requested one.
- * @property {import("./resolution.js").ResolutionLike} [resolution] Resolution, if different from the requested one.
- * When x and y resolution are different, use the array type (`[xResolution, yResolution]`).
- * @property {number} [pixelRatio] Pixel ratio, if different from the requested one.
- * @property {import('./DataTile.js').ImageLike} image Image.
- */
-/**
- * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
- * For images that cover any extent and resolution (static images), the loader function should not accept
- * any arguments. The function returns an {@link import("./DataTile.js").ImageLike image}, an
- * {@link import("./Image.js").ImageObject image object}, or a promise for the same.
- * For loaders that generate images, the promise should not resolve until the image is loaded.
- * If the returned image does not match the extent, resolution or pixel ratio passed to the loader,
- * it has to return an {@link import("./Image.js").ImageObject image object} with the `image` and the
- * correct `extent`, `resolution` and `pixelRatio`.
- *
- * @typedef {function(import("./extent.js").Extent, number, number, (function(HTMLImageElement, string): void)=): import("./DataTile.js").ImageLike|ImageObject|Promise<import("./DataTile.js").ImageLike|ImageObject>} Loader
- * @api
- */
-/**
- * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
- * The function returns a promise for an  {@link import("./Image.js").ImageObject image object}.
- *
- * @typedef {function(import("./extent.js").Extent, number, number, (function(HTMLImageElement, string): void)=): Promise<import("./DataTile.js").ImageLike|ImageObject>} ImageObjectPromiseLoader
- */
-declare class ImageWrapper extends Target {
-    /**
-     * @param {import("./extent.js").Extent} extent Extent.
-     * @param {number|Array<number>|undefined} resolution Resolution. If provided as array, x and y
-     * resolution will be assumed.
-     * @param {number} pixelRatio Pixel ratio.
-     * @param {import("./ImageState.js").default|Loader} stateOrLoader State.
-     */
-    constructor(extent: Extent$1, resolution: number | Array<number> | undefined, pixelRatio: number, stateOrLoader: any | Loader$3);
-    /**
-     * @protected
-     * @type {import("./extent.js").Extent}
-     */
-    protected extent: Extent$1;
-    /**
-     * @private
-     * @type {number}
-     */
-    private pixelRatio_;
-    /**
-     * @protected
-     * @type {number|Array<number>|undefined}
-     */
-    protected resolution: number | Array<number> | undefined;
-    /**
-     * @protected
-     * @type {import("./ImageState.js").default}
-     */
-    protected state: any;
-    /**
-     * @private
-     * @type {import('./DataTile.js').ImageLike|null}
-     */
-    private image_;
-    /**
-     * @protected
-     * @type {Loader|null}
-     */
-    protected loader: Loader$3 | null;
-    /**
-     * @protected
-     */
-    protected changed(): void;
-    /**
-     * @return {import("./extent.js").Extent} Extent.
-     */
-    getExtent(): Extent$1;
-    /**
-     * @return {import('./DataTile.js').ImageLike} Image.
-     */
-    getImage(): ImageLike;
-    /**
-     * @return {number} PixelRatio.
-     */
-    getPixelRatio(): number;
-    /**
-     * @return {number|Array<number>} Resolution.
-     */
-    getResolution(): number | Array<number>;
-    /**
-     * @return {import("./ImageState.js").default} State.
-     */
-    getState(): any;
-    /**
-     * Load not yet loaded URI.
-     */
-    load(): void;
-    /**
-     * @param {import('./DataTile.js').ImageLike} image The image.
-     */
-    setImage(image: ImageLike): void;
-    /**
-     * @param {number|Array<number>} resolution Resolution.
-     */
-    setResolution(resolution: number | Array<number>): void;
-}
-
-/**
- * @template {import("../layer/Layer.js").default} LayerType
- */
-declare class LayerRenderer<LayerType extends Layer> extends Observable {
-    /**
-     * @param {LayerType} layer Layer.
-     */
-    constructor(layer: LayerType);
-    /**
-     * The renderer is initialized and ready to render.
-     * @type {boolean}
-     */
-    ready: boolean;
-    /** @private */
-    private boundHandleImageChange_;
-    /**
-     * @private
-     * @type {LayerType}
-     */
-    private layer_;
-    /**
-     * @type {Array<string>}
-     * @private
-     */
-    private staleKeys_;
-    /**
-     * @type {number}
-     * @protected
-     */
-    protected maxStaleKeys: number;
-    /**
-     * @return {Array<string>} Get the list of stale keys.
-     */
-    getStaleKeys(): Array<string>;
-    /**
-     * @param {string} key The new stale key.
-     */
-    prependStaleKey(key: string): void;
-    /**
-     * Asynchronous layer level hit detection.
-     * @param {import("../pixel.js").Pixel} pixel Pixel.
-     * @return {Promise<Array<import("../Feature").FeatureLike>>} Promise that resolves with
-     * an array of features.
-     */
-    getFeatures(pixel: Pixel): Promise<Array<FeatureLike>>;
-    /**
-     * @param {import("../pixel.js").Pixel} pixel Pixel.
-     * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Pixel data.
-     */
-    getData(pixel: Pixel): Uint8ClampedArray | Uint8Array | Float32Array | DataView | null;
-    /**
-     * Determine whether render should be called.
-     * @abstract
-     * @param {import("../Map.js").FrameState} frameState Frame state.
-     * @return {boolean} Layer is ready to be rendered.
-     */
-    prepareFrame(frameState: FrameState): boolean;
-    /**
-     * Render the layer.
-     * @abstract
-     * @param {import("../Map.js").FrameState} frameState Frame state.
-     * @param {HTMLElement|null} target Target that may be used to render content to.
-     * @return {HTMLElement} The rendered element.
-     */
-    renderFrame(frameState: FrameState, target: HTMLElement | null): HTMLElement;
-    /**
-     * @abstract
-     * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
-     * @param {import("../Map.js").FrameState} frameState Frame state.
-     * @param {number} hitTolerance Hit tolerance in pixels.
-     * @param {import("./vector.js").FeatureCallback<T>} callback Feature callback.
-     * @param {Array<import("./Map.js").HitMatch<T>>} matches The hit detected matches with tolerance.
-     * @return {T|undefined} Callback result.
-     * @template T
-     */
-    forEachFeatureAtCoordinate<T>(coordinate: Coordinate, frameState: FrameState, hitTolerance: number, callback: FeatureCallback<T>, matches: Array<HitMatch<T>>): T | undefined;
-    /**
-     * @return {LayerType} Layer.
-     */
-    getLayer(): LayerType;
-    /**
-     * Perform action necessary to get the layer rendered after new fonts have loaded
-     * @abstract
-     */
-    handleFontsChanged(): void;
-    /**
-     * Handle changes in image state.
-     * @param {import("../events/Event.js").default} event Image change event.
-     * @private
-     */
-    private handleImageChange_;
-    /**
-     * Load the image if not already loaded, and register the image change
-     * listener if needed.
-     * @param {import("../Image.js").default} image Image.
-     * @return {boolean} `true` if the image is already loaded, `false` otherwise.
-     * @protected
-     */
-    protected loadImage(image: ImageWrapper): boolean;
-    /**
-     * @protected
-     */
-    protected renderIfReadyAndVisible(): void;
-    /**
-     * @param {import("../Map.js").FrameState} frameState Frame state.
-     */
-    renderDeferred(frameState: FrameState): void;
-}
-//# sourceMappingURL=Layer.d.ts.map
-
-/**
- * @typedef {function((number|undefined), boolean=): (number|undefined)} Type
- */
-/**
- * @param {number|undefined} rotation Rotation.
- * @return {number|undefined} Rotation.
- */
-declare function disable(rotation: number | undefined): number | undefined;
-/**
- * @param {number|undefined} rotation Rotation.
- * @return {number|undefined} Rotation.
- */
-declare function none$1(rotation: number | undefined): number | undefined;
-/**
- * @param {number} n N.
- * @return {Type} Rotation constraint.
- */
-declare function createSnapToN(n: number): Type$4;
-/**
- * @param {number} [tolerance] Tolerance.
- * @return {Type} Rotation constraint.
- */
-declare function createSnapToZero(tolerance?: number): Type$4;
-type Type$4 = (arg0: (number | undefined), arg1: boolean | undefined) => (number | undefined);
-
-/**
- * @param {Array<number>} resolutions Resolutions.
- * @param {boolean} [smooth] If true, the view will be able to slightly exceed resolution limits. Default: true.
- * @param {import("./extent.js").Extent} [maxExtent] Maximum allowed extent.
- * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
- * @return {Type} Zoom function.
- */
-declare function createSnapToResolutions(resolutions: Array<number>, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$3;
-/**
- * @param {number} power Power.
- * @param {number} maxResolution Maximum resolution.
- * @param {number} [minResolution] Minimum resolution.
- * @param {boolean} [smooth] If true, the view will be able to slightly exceed resolution limits. Default: true.
- * @param {import("./extent.js").Extent} [maxExtent] Maximum allowed extent.
- * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
- * @return {Type} Zoom function.
- */
-declare function createSnapToPower(power: number, maxResolution: number, minResolution?: number, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$3;
-/**
- * @param {number} maxResolution Max resolution.
- * @param {number} minResolution Min resolution.
- * @param {boolean} [smooth] If true, the view will be able to slightly exceed resolution limits. Default: true.
- * @param {import("./extent.js").Extent} [maxExtent] Maximum allowed extent.
- * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
- * @return {Type} Zoom function.
- */
-declare function createMinMaxResolution(maxResolution: number, minResolution: number, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$3;
-type Type$3 = (arg0: (number | undefined), arg1: number, arg2: Size, arg3: boolean | undefined) => (number | undefined);
-
-/**
- * @typedef {function((import("./coordinate.js").Coordinate|undefined), number, import("./size.js").Size, boolean=, Array<number>=): (import("./coordinate.js").Coordinate|undefined)} Type
- */
-/**
- * @param {import("./extent.js").Extent} extent Extent.
- * @param {boolean} onlyCenter If true, the constraint will only apply to the view center.
- * @param {boolean} smooth If true, the view will be able to go slightly out of the given extent
- * (only during interaction and animation).
- * @return {Type} The constraint.
- */
-declare function createExtent(extent: Extent$1, onlyCenter: boolean, smooth: boolean): Type$2;
-/**
- * @param {import("./coordinate.js").Coordinate} [center] Center.
- * @return {import("./coordinate.js").Coordinate|undefined} Center.
- */
-declare function none(center?: Coordinate): Coordinate | undefined;
-type Type$2 = (arg0: (Coordinate | undefined), arg1: number, arg2: Size, arg3: boolean | undefined, arg4: Array<number> | undefined) => (Coordinate | undefined);
-
-type Constraints = {
-    /**
-     * Center.
-     */
-    center: Type$2;
-    /**
-     * Resolution.
-     */
-    resolution: Type$3;
-    /**
-     * Rotation.
-     */
-    rotation: Type$4;
-};
-type FitOptions = {
-    /**
-     * The size in pixels of the box to
-     * fit the extent into. Defaults to the size of the map the view is associated with.
-     * If no map or multiple maps are connected to the view, provide the desired box size
-     * (e.g. `map.getSize()`).
-     */
-    size?: Size | undefined;
-    /**
-     * Padding (in pixels) to be
-     * cleared inside the view. Values in the array are top, right, bottom and left
-     * padding.
-     */
-    padding?: number[] | undefined;
-    /**
-     * If the view `constrainResolution` option is `true`,
-     * get the nearest extent instead of the closest that actually fits the view.
-     */
-    nearest?: boolean | undefined;
-    /**
-     * Minimum resolution that we zoom to.
-     */
-    minResolution?: number | undefined;
-    /**
-     * Maximum zoom level that we zoom to. If
-     * `minResolution` is given, this property is ignored.
-     */
-    maxZoom?: number | undefined;
-    /**
-     * The duration of the animation in milliseconds.
-     * By default, there is no animation to the target extent.
-     */
-    duration?: number | undefined;
-    /**
-     * The easing function used during
-     * the animation (defaults to {@link module :ol/easing.inAndOut}).
-     * The function will be called for each frame with a number representing a
-     * fraction of the animation's duration.  The function should return a number
-     * between 0 and 1 representing the progress toward the destination state.
-     */
-    easing?: ((arg0: number) => number) | undefined;
-    /**
-     * Function called when the view is in
-     * its final position. The callback will be called with `true` if the animation
-     * series completed on its own or `false` if it was cancelled.
-     */
-    callback?: ((arg0: boolean) => void) | undefined;
-};
-type ViewOptions = {
-    /**
-     * The initial center for
-     * the view. If a user projection is not set, the coordinate system for the center is
-     * specified with the `projection` option. Layer sources will not be fetched if this
-     * is not set, but the center can be set later with {@link  #setCenter}.
-     */
-    center?: Coordinate | undefined;
-    /**
-     * Rotation constraint.
-     * `false` means no constraint. `true` means no constraint, but snap to zero
-     * near zero. A number constrains the rotation to that number of values. For
-     * example, `4` will constrain the rotation to 0, 90, 180, and 270 degrees.
-     */
-    constrainRotation?: number | boolean | undefined;
-    /**
-     * Enable rotation.
-     * If `false`, a rotation constraint that always sets the rotation to zero is
-     * used. The `constrainRotation` option has no effect if `enableRotation` is
-     * `false`.
-     */
-    enableRotation?: boolean | undefined;
-    /**
-     * The extent that constrains the
-     * view, in other words, nothing outside of this extent can be visible on the map.
-     */
-    extent?: Extent$1 | undefined;
-    /**
-     * If true, the extent
-     * constraint will only apply to the view center and not the whole extent.
-     */
-    constrainOnlyCenter?: boolean | undefined;
-    /**
-     * If true, the extent
-     * constraint will be applied smoothly, i.e. allow the view to go slightly outside
-     * of the given `extent`.
-     */
-    smoothExtentConstraint?: boolean | undefined;
-    /**
-     * The maximum resolution used to determine
-     * the resolution constraint. It is used together with `minResolution` (or
-     * `maxZoom`) and `zoomFactor`. If unspecified it is calculated in such a way
-     * that the projection's validity extent fits in a 256x256 px tile. If the
-     * projection is Spherical Mercator (the default) then `maxResolution` defaults
-     * to `40075016.68557849 / 256 = 156543.03392804097`.
-     */
-    maxResolution?: number | undefined;
-    /**
-     * The minimum resolution used to determine
-     * the resolution constraint.  It is used together with `maxResolution` (or
-     * `minZoom`) and `zoomFactor`.  If unspecified it is calculated assuming 29
-     * zoom levels (with a factor of 2). If the projection is Spherical Mercator
-     * (the default) then `minResolution` defaults to
-     * `40075016.68557849 / 256 / Math.pow(2, 28) = 0.0005831682455839253`.
-     */
-    minResolution?: number | undefined;
-    /**
-     * The maximum zoom level used to determine the
-     * resolution constraint. It is used together with `minZoom` (or
-     * `maxResolution`) and `zoomFactor`.  Note that if `minResolution` is also
-     * provided, it is given precedence over `maxZoom`.
-     */
-    maxZoom?: number | undefined;
-    /**
-     * The minimum zoom level used to determine the
-     * resolution constraint. It is used together with `maxZoom` (or
-     * `minResolution`) and `zoomFactor`.  Note that if `maxResolution` is also
-     * provided, it is given precedence over `minZoom`.
-     */
-    minZoom?: number | undefined;
-    /**
-     * If `false` the view is constrained so
-     * only one world is visible, and you cannot pan off the edge.  If `true` the map
-     * may show multiple worlds at low zoom levels.  Only used if the `projection` is
-     * global.  Note that if `extent` is also provided it is given precedence.
-     */
-    multiWorld?: boolean | undefined;
-    /**
-     * If true, the view will always
-     * animate to the closest zoom level after an interaction; false means
-     * intermediary zoom levels are allowed.
-     */
-    constrainResolution?: boolean | undefined;
-    /**
-     * If true, the resolution
-     * min/max values will be applied smoothly, i. e. allow the view to exceed slightly
-     * the given resolution or zoom bounds.
-     */
-    smoothResolutionConstraint?: boolean | undefined;
-    /**
-     * Allow the view to be zoomed out to
-     * show the full configured extent. By default, when a view is configured with an
-     * extent, users will not be able to zoom out so the viewport exceeds the extent in
-     * either dimension. This means the full extent may not be visible if the viewport
-     * is taller or wider than the aspect ratio of the configured extent. If
-     * showFullExtent is true, the user will be able to zoom out so that the viewport
-     * exceeds the height or width of the configured extent, but not both, allowing the
-     * full extent to be shown.
-     */
-    showFullExtent?: boolean | undefined;
-    /**
-     * The
-     * projection. The default is Spherical Mercator.
-     */
-    projection?: ProjectionLike;
-    /**
-     * The initial resolution for the view. The
-     * units are `projection` units per pixel (e.g. meters per pixel). An
-     * alternative to setting this is to set `zoom`. Layer sources will not be
-     * fetched if neither this nor `zoom` are defined, but they can be set later
-     * with {@link  #setZoom} or {@link  #setResolution}.
-     */
-    resolution?: number | undefined;
-    /**
-     * Resolutions that determine the
-     * zoom levels if specified. The index in the array corresponds to the zoom level,
-     * therefore the resolution values have to be in descending order. It also constrains
-     * the resolution by the minimum and maximum value. If set the `maxResolution`,
-     * `minResolution`, `minZoom`, `maxZoom`, and `zoomFactor` options are ignored.
-     */
-    resolutions?: number[] | undefined;
-    /**
-     * The initial rotation for the view in radians
-     * (positive rotation clockwise, 0 means North).
-     */
-    rotation?: number | undefined;
-    /**
-     * Only used if `resolution` is not defined. Zoom
-     * level used to calculate the initial resolution for the view.
-     */
-    zoom?: number | undefined;
-    /**
-     * The zoom factor used to compute the
-     * corresponding resolution.
-     */
-    zoomFactor?: number | undefined;
-    /**
-     * Padding (in css pixels).
-     * If the map viewport is partially covered with other content (overlays) along
-     * its edges, this setting allows to shift the center of the viewport away from
-     * that content. The order of the values is top, right, bottom, left.
-     */
-    padding?: number[] | undefined;
-};
-type AnimationOptions = {
-    /**
-     * The center of the view at the end of
-     * the animation.
-     */
-    center?: Coordinate | undefined;
-    /**
-     * The zoom level of the view at the end of the
-     * animation. This takes precedence over `resolution`.
-     */
-    zoom?: number | undefined;
-    /**
-     * The resolution of the view at the end
-     * of the animation.  If `zoom` is also provided, this option will be ignored.
-     */
-    resolution?: number | undefined;
-    /**
-     * The rotation of the view at the end of
-     * the animation.
-     */
-    rotation?: number | undefined;
-    /**
-     * Optional anchor to remain fixed
-     * during a rotation or resolution animation.
-     */
-    anchor?: Coordinate | undefined;
-    /**
-     * The duration of the animation in milliseconds.
-     */
-    duration?: number | undefined;
-    /**
-     * The easing function used
-     * during the animation (defaults to {@link module :ol/easing.inAndOut}).
-     * The function will be called for each frame with a number representing a
-     * fraction of the animation's duration.  The function should return a number
-     * between 0 and 1 representing the progress toward the destination state.
-     */
-    easing?: ((arg0: number) => number) | undefined;
-};
-type State$3 = {
-    /**
-     * Center (in view projection coordinates).
-     */
-    center: Coordinate;
-    /**
-     * Projection.
-     */
-    projection: Projection;
-    /**
-     * Resolution.
-     */
-    resolution: number;
-    /**
-     * The next center during an animation series.
-     */
-    nextCenter?: Coordinate | undefined;
-    /**
-     * The next resolution during an animation series.
-     */
-    nextResolution?: number | undefined;
-    /**
-     * The next rotation during an animation series.
-     */
-    nextRotation?: number | undefined;
-    /**
-     * Rotation.
-     */
-    rotation: number;
-    /**
-     * Zoom.
-     */
-    zoom: number;
-};
-/**
- * Like {@link import ("./Map.js").FrameState}, but just `viewState` and `extent`.
- */
-type ViewStateLayerStateExtent = {
-    /**
-     * View state.
-     */
-    viewState: State$3;
-    /**
-     * Extent (in user projection coordinates).
-     */
-    extent: Extent$1;
-    /**
-     * Layer states.
-     */
-    layerStatesArray?: State$1[] | undefined;
-};
-type ViewObjectEventTypes = Types$2 | "change:center" | "change:resolution" | "change:rotation";
-/**
- * *
- */
-type ViewOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<ViewObjectEventTypes, ObjectEvent, Return> & CombinedOnSignature<EventTypes | ViewObjectEventTypes, Return>;
-/**
- * @typedef {import("./ObjectEventType").Types|'change:center'|'change:resolution'|'change:rotation'} ViewObjectEventTypes
- */
-/***
- * @template Return
- * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
- *   import("./Observable").OnSignature<ViewObjectEventTypes, import("./Object").ObjectEvent, Return> &
- *   import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|ViewObjectEventTypes, Return>} ViewOnSignature
- */
-/**
- * @classdesc
- * A View object represents a simple 2D view of the map.
- *
- * This is the object to act upon to change the center, resolution,
- * and rotation of the map.
- *
- * A View has a `projection`. The projection determines the
- * coordinate system of the center, and its units determine the units of the
- * resolution (projection units per pixel). The default projection is
- * Web Mercator (EPSG:3857).
- *
- * ### The view states
- *
- * A View is determined by three states: `center`, `resolution`,
- * and `rotation`. Each state has a corresponding getter and setter, e.g.
- * `getCenter` and `setCenter` for the `center` state.
- *
- * The `zoom` state is actually not saved on the view: all computations
- * internally use the `resolution` state. Still, the `setZoom` and `getZoom`
- * methods are available, as well as `getResolutionForZoom` and
- * `getZoomForResolution` to switch from one system to the other.
- *
- * ### The constraints
- *
- * `setCenter`, `setResolution` and `setRotation` can be used to change the
- * states of the view, but any constraint defined in the constructor will
- * be applied along the way.
- *
- * A View object can have a *resolution constraint*, a *rotation constraint*
- * and a *center constraint*.
- *
- * The *resolution constraint* typically restricts min/max values and
- * snaps to specific resolutions. It is determined by the following
- * options: `resolutions`, `maxResolution`, `maxZoom` and `zoomFactor`.
- * If `resolutions` is set, the other three options are ignored. See
- * documentation for each option for more information. By default, the view
- * only has a min/max restriction and allow intermediary zoom levels when
- * pinch-zooming for example.
- *
- * The *rotation constraint* snaps to specific angles. It is determined
- * by the following options: `enableRotation` and `constrainRotation`.
- * By default rotation is allowed and its value is snapped to zero when approaching the
- * horizontal.
- *
- * The *center constraint* is determined by the `extent` option. By
- * default the view center is not constrained at all.
- *
- * ### Changing the view state
- *
- * It is important to note that `setZoom`, `setResolution`, `setCenter` and
- * `setRotation` are subject to the above mentioned constraints. As such, it
- * may sometimes not be possible to know in advance the resulting state of the
- * View. For example, calling `setResolution(10)` does not guarantee that
- * `getResolution()` will return `10`.
- *
- * A consequence of this is that, when applying a delta on the view state, one
- * should use `adjustCenter`, `adjustRotation`, `adjustZoom` and `adjustResolution`
- * rather than the corresponding setters. This will let view do its internal
- * computations. Besides, the `adjust*` methods also take an `anchor`
- * argument which allows specifying an origin for the transformation.
- *
- * ### Interacting with the view
- *
- * View constraints are usually only applied when the view is *at rest*, meaning that
- * no interaction or animation is ongoing. As such, if the user puts the view in a
- * state that is not equivalent to a constrained one (e.g. rotating the view when
- * the snap angle is 0), an animation will be triggered at the interaction end to
- * put back the view to a stable state;
- *
- * @api
- */
-declare class View extends BaseObject {
-    /**
-     * @param {ViewOptions} [options] View options.
-     */
-    constructor(options?: ViewOptions);
-    /***
-     * @type {ViewOnSignature<import("./events").EventsKey>}
-     */
-    on: ViewOnSignature<EventsKey>;
-    /***
-     * @type {ViewOnSignature<import("./events").EventsKey>}
-     */
-    once: ViewOnSignature<EventsKey>;
-    /***
-     * @type {ViewOnSignature<void>}
-     */
-    un: ViewOnSignature<void>;
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private hints_;
-    /**
-     * @private
-     * @type {Array<Array<Animation>>}
-     */
-    private animations_;
-    /**
-     * @private
-     * @type {number|undefined}
-     */
-    private updateAnimationKey_;
-    /**
-     * @private
-     * @const
-     * @type {import("./proj/Projection.js").default}
-     */
-    private projection_;
-    /**
-     * @private
-     * @type {import("./size.js").Size}
-     */
-    private viewportSize_;
-    /**
-     * @private
-     * @type {import("./coordinate.js").Coordinate|undefined}
-     */
-    private targetCenter_;
-    /**
-     * @private
-     * @type {number|undefined}
-     */
-    private targetResolution_;
-    /**
-     * @private
-     * @type {number|undefined}
-     */
-    private targetRotation_;
-    /**
-     * @private
-     * @type {import("./coordinate.js").Coordinate}
-     */
-    private nextCenter_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private nextResolution_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private nextRotation_;
-    /**
-     * @private
-     * @type {import("./coordinate.js").Coordinate|undefined}
-     */
-    private cancelAnchor_;
-    /**
-     * Set up the view with the given options.
-     * @param {ViewOptions} options View options.
-     */
-    applyOptions_(options: ViewOptions): void;
-    /**
-     * @private
-     * @type {number}
-     */
-    private maxResolution_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private minResolution_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private zoomFactor_;
-    /**
-     * @private
-     * @type {Array<number>|undefined}
-     */
-    private resolutions_;
-    /**
-     * @type {Array<number>|undefined}
-     * @private
-     */
-    private padding_;
-    /**
-     * @private
-     * @type {number}
-     */
-    private minZoom_;
-    /**
-     * @private
-     * @type {Constraints}
-     */
-    private constraints_;
-    set padding(padding: Array<number> | undefined);
-    /**
-     * Padding (in css pixels).
-     * If the map viewport is partially covered with other content (overlays) along
-     * its edges, this setting allows to shift the center of the viewport away from that
-     * content. The order of the values in the array is top, right, bottom, left.
-     * The default is no padding, which is equivalent to `[0, 0, 0, 0]`.
-     * @type {Array<number>|undefined}
-     * @api
-     */
-    get padding(): Array<number> | undefined;
-    /**
-     * Get an updated version of the view options used to construct the view.  The
-     * current resolution (or zoom), center, and rotation are applied to any stored
-     * options.  The provided options can be used to apply new min/max zoom or
-     * resolution limits.
-     * @param {ViewOptions} newOptions New options to be applied.
-     * @return {ViewOptions} New options updated with the current view state.
-     */
-    getUpdatedOptions_(newOptions: ViewOptions): ViewOptions;
-    /**
-     * Animate the view.  The view's center, zoom (or resolution), and rotation
-     * can be animated for smooth transitions between view states.  For example,
-     * to animate the view to a new zoom level:
-     *
-     *     view.animate({zoom: view.getZoom() + 1});
-     *
-     * By default, the animation lasts one second and uses in-and-out easing.  You
-     * can customize this behavior by including `duration` (in milliseconds) and
-     * `easing` options (see {@link module:ol/easing}).
-     *
-     * To chain together multiple animations, call the method with multiple
-     * animation objects.  For example, to first zoom and then pan:
-     *
-     *     view.animate({zoom: 10}, {center: [0, 0]});
-     *
-     * If you provide a function as the last argument to the animate method, it
-     * will get called at the end of an animation series.  The callback will be
-     * called with `true` if the animation series completed on its own or `false`
-     * if it was cancelled.
-     *
-     * Animations are cancelled by user interactions (e.g. dragging the map) or by
-     * calling `view.setCenter()`, `view.setResolution()`, or `view.setRotation()`
-     * (or another method that calls one of these).
-     *
-     * @param {...(AnimationOptions|function(boolean): void)} var_args Animation
-     *     options.  Multiple animations can be run in series by passing multiple
-     *     options objects.  To run multiple animations in parallel, call the method
-     *     multiple times.  An optional callback can be provided as a final
-     *     argument.  The callback will be called with a boolean indicating whether
-     *     the animation completed without being cancelled.
-     * @api
-     */
-    animate(...args: (AnimationOptions | ((arg0: boolean) => void))[]): void;
-    /**
-     * @param {...(AnimationOptions|function(boolean): void)} var_args Animation options.
-     */
-    animateInternal(...args: (AnimationOptions | ((arg0: boolean) => void))[]): void;
-    /**
-     * Determine if the view is being animated.
-     * @return {boolean} The view is being animated.
-     * @api
-     */
-    getAnimating(): boolean;
-    /**
-     * Determine if the user is interacting with the view, such as panning or zooming.
-     * @return {boolean} The view is being interacted with.
-     * @api
-     */
-    getInteracting(): boolean;
-    /**
-     * Cancel any ongoing animations.
-     * @api
-     */
-    cancelAnimations(): void;
-    /**
-     * Update all animations.
-     */
-    updateAnimations_(): void;
-    /**
-     * @param {number} rotation Target rotation.
-     * @param {import("./coordinate.js").Coordinate} anchor Rotation anchor.
-     * @return {import("./coordinate.js").Coordinate|undefined} Center for rotation and anchor.
-     */
-    calculateCenterRotate(rotation: number, anchor: Coordinate): Coordinate | undefined;
-    /**
-     * @param {number} resolution Target resolution.
-     * @param {import("./coordinate.js").Coordinate} anchor Zoom anchor.
-     * @return {import("./coordinate.js").Coordinate|undefined} Center for resolution and anchor.
-     */
-    calculateCenterZoom(resolution: number, anchor: Coordinate): Coordinate | undefined;
-    /**
-     * Returns the current viewport size.
-     * @private
-     * @param {number} [rotation] Take into account the rotation of the viewport when giving the size
-     * @return {import("./size.js").Size} Viewport size or `[100, 100]` when no viewport is found.
-     */
-    private getViewportSize_;
-    /**
-     * Stores the viewport size on the view. The viewport size is not read every time from the DOM
-     * to avoid performance hit and layout reflow.
-     * This should be done on map size change.
-     * Note: the constraints are not resolved during an animation to avoid stopping it
-     * @param {import("./size.js").Size} [size] Viewport size; if undefined, [100, 100] is assumed
-     */
-    setViewportSize(size?: Size): void;
-    /**
-     * Get the view center.
-     * @return {import("./coordinate.js").Coordinate|undefined} The center of the view.
-     * @observable
-     * @api
-     */
-    getCenter(): Coordinate | undefined;
-    /**
-     * Get the view center without transforming to user projection.
-     * @return {import("./coordinate.js").Coordinate|undefined} The center of the view.
-     */
-    getCenterInternal(): Coordinate | undefined;
-    /**
-     * @return {Constraints} Constraints.
-     */
-    getConstraints(): Constraints;
-    /**
-     * @return {boolean} Resolution constraint is set
-     */
-    getConstrainResolution(): boolean;
-    /**
-     * @param {Array<number>} [hints] Destination array.
-     * @return {Array<number>} Hint.
-     */
-    getHints(hints?: Array<number>): Array<number>;
-    /**
-     * Calculate the extent for the current view state and the passed box size.
-     * @param {import("./size.js").Size} [size] The pixel dimensions of the box
-     * into which the calculated extent should fit. Defaults to the size of the
-     * map the view is associated with.
-     * If no map or multiple maps are connected to the view, provide the desired
-     * box size (e.g. `map.getSize()`).
-     * @return {import("./extent.js").Extent} Extent.
-     * @api
-     */
-    calculateExtent(size?: Size): Extent$1;
-    /**
-     * @param {import("./size.js").Size} [size] Box pixel size. If not provided,
-     * the map's last known viewport size will be used.
-     * @return {import("./extent.js").Extent} Extent.
-     */
-    calculateExtentInternal(size?: Size): Extent$1;
-    /**
-     * Get the maximum resolution of the view.
-     * @return {number} The maximum resolution of the view.
-     * @api
-     */
-    getMaxResolution(): number;
-    /**
-     * Get the minimum resolution of the view.
-     * @return {number} The minimum resolution of the view.
-     * @api
-     */
-    getMinResolution(): number;
-    /**
-     * Get the maximum zoom level for the view.
-     * @return {number} The maximum zoom level.
-     * @api
-     */
-    getMaxZoom(): number;
-    /**
-     * Set a new maximum zoom level for the view.
-     * @param {number} zoom The maximum zoom level.
-     * @api
-     */
-    setMaxZoom(zoom: number): void;
-    /**
-     * Get the minimum zoom level for the view.
-     * @return {number} The minimum zoom level.
-     * @api
-     */
-    getMinZoom(): number;
-    /**
-     * Set a new minimum zoom level for the view.
-     * @param {number} zoom The minimum zoom level.
-     * @api
-     */
-    setMinZoom(zoom: number): void;
-    /**
-     * Set whether the view should allow intermediary zoom levels.
-     * @param {boolean} enabled Whether the resolution is constrained.
-     * @api
-     */
-    setConstrainResolution(enabled: boolean): void;
-    /**
-     * Get the view projection.
-     * @return {import("./proj/Projection.js").default} The projection of the view.
-     * @api
-     */
-    getProjection(): Projection;
-    /**
-     * Get the view resolution.
-     * @return {number|undefined} The resolution of the view.
-     * @observable
-     * @api
-     */
-    getResolution(): number | undefined;
-    /**
-     * Get the resolutions for the view. This returns the array of resolutions
-     * passed to the constructor of the View, or undefined if none were given.
-     * @return {Array<number>|undefined} The resolutions of the view.
-     * @api
-     */
-    getResolutions(): Array<number> | undefined;
-    /**
-     * Get the resolution for a provided extent (in map units) and size (in pixels).
-     * @param {import("./extent.js").Extent} extent Extent.
-     * @param {import("./size.js").Size} [size] Box pixel size.
-     * @return {number} The resolution at which the provided extent will render at
-     *     the given size.
-     * @api
-     */
-    getResolutionForExtent(extent: Extent$1, size?: Size): number;
-    /**
-     * Get the resolution for a provided extent (in map units) and size (in pixels).
-     * @param {import("./extent.js").Extent} extent Extent.
-     * @param {import("./size.js").Size} [size] Box pixel size.
-     * @return {number} The resolution at which the provided extent will render at
-     *     the given size.
-     */
-    getResolutionForExtentInternal(extent: Extent$1, size?: Size): number;
-    /**
-     * Return a function that returns a value between 0 and 1 for a
-     * resolution. Exponential scaling is assumed.
-     * @param {number} [power] Power.
-     * @return {function(number): number} Resolution for value function.
-     */
-    getResolutionForValueFunction(power?: number): (arg0: number) => number;
-    /**
-     * Get the view rotation.
-     * @return {number} The rotation of the view in radians.
-     * @observable
-     * @api
-     */
-    getRotation(): number;
-    /**
-     * Return a function that returns a resolution for a value between
-     * 0 and 1. Exponential scaling is assumed.
-     * @param {number} [power] Power.
-     * @return {function(number): number} Value for resolution function.
-     */
-    getValueForResolutionFunction(power?: number): (arg0: number) => number;
-    /**
-     * Returns the size of the viewport minus padding.
-     * @private
-     * @param {number} [rotation] Take into account the rotation of the viewport when giving the size
-     * @return {import("./size.js").Size} Viewport size reduced by the padding.
-     */
-    private getViewportSizeMinusPadding_;
-    /**
-     * @return {State} View state.
-     */
-    getState(): State$3;
-    /**
-     * @return {ViewStateLayerStateExtent} Like `FrameState`, but just `viewState` and `extent`.
-     */
-    getViewStateAndExtent(): ViewStateLayerStateExtent;
-    /**
-     * Get the current zoom level. This method may return non-integer zoom levels
-     * if the view does not constrain the resolution, or if an interaction or
-     * animation is underway.
-     * @return {number|undefined} Zoom.
-     * @api
-     */
-    getZoom(): number | undefined;
-    /**
-     * Get the zoom level for a resolution.
-     * @param {number} resolution The resolution.
-     * @return {number|undefined} The zoom level for the provided resolution.
-     * @api
-     */
-    getZoomForResolution(resolution: number): number | undefined;
-    /**
-     * Get the resolution for a zoom level.
-     * @param {number} zoom Zoom level.
-     * @return {number} The view resolution for the provided zoom level.
-     * @api
-     */
-    getResolutionForZoom(zoom: number): number;
-    /**
-     * Fit the given geometry or extent based on the given map size and border.
-     * The size is pixel dimensions of the box to fit the extent into.
-     * In most cases you will want to use the map size, that is `map.getSize()`.
-     * Takes care of the map angle.
-     * @param {import("./geom/SimpleGeometry.js").default|import("./extent.js").Extent} geometryOrExtent The geometry or
-     *     extent to fit the view to.
-     * @param {FitOptions} [options] Options.
-     * @api
-     */
-    fit(geometryOrExtent: SimpleGeometry | Extent$1, options?: FitOptions): void;
-    /**
-     * Calculate rotated extent
-     * @param {import("./geom/SimpleGeometry.js").default} geometry The geometry.
-     * @return {import("./extent").Extent} The rotated extent for the geometry.
-     */
-    rotatedExtentForGeometry(geometry: SimpleGeometry): Extent$1;
-    /**
-     * @param {import("./geom/SimpleGeometry.js").default} geometry The geometry.
-     * @param {FitOptions} [options] Options.
-     */
-    fitInternal(geometry: SimpleGeometry, options?: FitOptions): void;
-    /**
-     * Center on coordinate and view position.
-     * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
-     * @param {import("./size.js").Size} size Box pixel size.
-     * @param {import("./pixel.js").Pixel} position Position on the view to center on.
-     * @api
-     */
-    centerOn(coordinate: Coordinate, size: Size, position: Pixel): void;
-    /**
-     * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
-     * @param {import("./size.js").Size} size Box pixel size.
-     * @param {import("./pixel.js").Pixel} position Position on the view to center on.
-     */
-    centerOnInternal(coordinate: Coordinate, size: Size, position: Pixel): void;
-    /**
-     * Calculates the shift between map and viewport center.
-     * @param {import("./coordinate.js").Coordinate} center Center.
-     * @param {number} resolution Resolution.
-     * @param {number} rotation Rotation.
-     * @param {import("./size.js").Size} size Size.
-     * @return {Array<number>|undefined} Center shift.
-     */
-    calculateCenterShift(center: Coordinate, resolution: number, rotation: number, size: Size): Array<number> | undefined;
-    /**
-     * @return {boolean} Is defined.
-     */
-    isDef(): boolean;
-    /**
-     * Adds relative coordinates to the center of the view. Any extent constraint will apply.
-     * @param {import("./coordinate.js").Coordinate} deltaCoordinates Relative value to add.
-     * @api
-     */
-    adjustCenter(deltaCoordinates: Coordinate): void;
-    /**
-     * Adds relative coordinates to the center of the view. Any extent constraint will apply.
-     * @param {import("./coordinate.js").Coordinate} deltaCoordinates Relative value to add.
-     */
-    adjustCenterInternal(deltaCoordinates: Coordinate): void;
-    /**
-     * Multiply the view resolution by a ratio, optionally using an anchor. Any resolution
-     * constraint will apply.
-     * @param {number} ratio The ratio to apply on the view resolution.
-     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
-     * @api
-     */
-    adjustResolution(ratio: number, anchor?: Coordinate): void;
-    /**
-     * Multiply the view resolution by a ratio, optionally using an anchor. Any resolution
-     * constraint will apply.
-     * @param {number} ratio The ratio to apply on the view resolution.
-     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
-     */
-    adjustResolutionInternal(ratio: number, anchor?: Coordinate): void;
-    /**
-     * Adds a value to the view zoom level, optionally using an anchor. Any resolution
-     * constraint will apply.
-     * @param {number} delta Relative value to add to the zoom level.
-     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
-     * @api
-     */
-    adjustZoom(delta: number, anchor?: Coordinate): void;
-    /**
-     * Adds a value to the view rotation, optionally using an anchor. Any rotation
-     * constraint will apply.
-     * @param {number} delta Relative value to add to the zoom rotation, in radians.
-     * @param {import("./coordinate.js").Coordinate} [anchor] The rotation center.
-     * @api
-     */
-    adjustRotation(delta: number, anchor?: Coordinate): void;
-    /**
-     * @param {number} delta Relative value to add to the zoom rotation, in radians.
-     * @param {import("./coordinate.js").Coordinate} [anchor] The rotation center.
-     */
-    adjustRotationInternal(delta: number, anchor?: Coordinate): void;
-    /**
-     * Set the center of the current view. Any extent constraint will apply.
-     * @param {import("./coordinate.js").Coordinate|undefined} center The center of the view.
-     * @observable
-     * @api
-     */
-    setCenter(center: Coordinate | undefined): void;
-    /**
-     * Set the center using the view projection (not the user projection).
-     * @param {import("./coordinate.js").Coordinate|undefined} center The center of the view.
-     */
-    setCenterInternal(center: Coordinate | undefined): void;
-    /**
-     * @param {import("./ViewHint.js").default} hint Hint.
-     * @param {number} delta Delta.
-     * @return {number} New value.
-     */
-    setHint(hint: any, delta: number): number;
-    /**
-     * Set the resolution for this view. Any resolution constraint will apply.
-     * @param {number|undefined} resolution The resolution of the view.
-     * @observable
-     * @api
-     */
-    setResolution(resolution: number | undefined): void;
-    /**
-     * Set the rotation for this view. Any rotation constraint will apply.
-     * @param {number} rotation The rotation of the view in radians.
-     * @observable
-     * @api
-     */
-    setRotation(rotation: number): void;
-    /**
-     * Zoom to a specific zoom level. Any resolution constrain will apply.
-     * @param {number} zoom Zoom level.
-     * @api
-     */
-    setZoom(zoom: number): void;
-    /**
-     * Recompute rotation/resolution/center based on target values.
-     * Note: we have to compute rotation first, then resolution and center considering that
-     * parameters can influence one another in case a view extent constraint is present.
-     * @param {boolean} [doNotCancelAnims] Do not cancel animations.
-     * @param {boolean} [forceMoving] Apply constraints as if the view is moving.
-     * @private
-     */
-    private applyTargetState_;
-    /**
-     * If any constraints need to be applied, an animation will be triggered.
-     * This is typically done on interaction end.
-     * Note: calling this with a duration of 0 will apply the constrained values straight away,
-     * without animation.
-     * @param {number} [duration] The animation duration in ms.
-     * @param {number} [resolutionDirection] Which direction to zoom.
-     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
-     */
-    resolveConstraints(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
-    /**
-     * Notify the View that an interaction has started.
-     * The view state will be resolved to a stable one if needed
-     * (depending on its constraints).
-     * @api
-     */
-    beginInteraction(): void;
-    /**
-     * Notify the View that an interaction has ended. The view state will be resolved
-     * to a stable one if needed (depending on its constraints).
-     * @param {number} [duration] Animation duration in ms.
-     * @param {number} [resolutionDirection] Which direction to zoom.
-     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
-     * @api
-     */
-    endInteraction(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
-    /**
-     * Notify the View that an interaction has ended. The view state will be resolved
-     * to a stable one if needed (depending on its constraints).
-     * @param {number} [duration] Animation duration in ms.
-     * @param {number} [resolutionDirection] Which direction to zoom.
-     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
-     */
-    endInteractionInternal(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
-    /**
-     * Get a valid position for the view center according to the current constraints.
-     * @param {import("./coordinate.js").Coordinate|undefined} targetCenter Target center position.
-     * @param {number} [targetResolution] Target resolution. If not supplied, the current one will be used.
-     * This is useful to guess a valid center position at a different zoom level.
-     * @return {import("./coordinate.js").Coordinate|undefined} Valid center position.
-     */
-    getConstrainedCenter(targetCenter: Coordinate | undefined, targetResolution?: number): Coordinate | undefined;
-    /**
-     * Get a valid zoom level according to the current view constraints.
-     * @param {number|undefined} targetZoom Target zoom.
-     * @param {number} [direction] Indicate which resolution should be used
-     * by a renderer if the view resolution does not match any resolution of the tile source.
-     * If 0, the nearest resolution will be used. If 1, the nearest lower resolution
-     * will be used. If -1, the nearest higher resolution will be used.
-     * @return {number|undefined} Valid zoom level.
-     */
-    getConstrainedZoom(targetZoom: number | undefined, direction?: number): number | undefined;
-    /**
-     * Get a valid resolution according to the current view constraints.
-     * @param {number|undefined} targetResolution Target resolution.
-     * @param {number} [direction] Indicate which resolution should be used
-     * by a renderer if the view resolution does not match any resolution of the tile source.
-     * If 0, the nearest resolution will be used. If 1, the nearest lower resolution
-     * will be used. If -1, the nearest higher resolution will be used.
-     * @return {number|undefined} Valid resolution.
-     */
-    getConstrainedResolution(targetResolution: number | undefined, direction?: number): number | undefined;
-}
-
-/**
- * State of the source, one of 'undefined', 'loading', 'ready' or 'error'.
- */
-type State$2 = "undefined" | "loading" | "ready" | "error";
-/**
- * A function that takes a {@link import ("../View.js").ViewStateLayerStateExtent} and returns a string or
- * an array of strings representing source attributions.
- */
-type Attribution$1 = (arg0: ViewStateLayerStateExtent) => (string | Array<string>);
-/**
- * A type that can be used to provide attribution information for data sources.
- *
- * It represents either
- * a simple string (e.g. `'© Acme Inc.'`)
- * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
- * a function that returns a string or array of strings ({@link module :ol/source/Source~Attribution})
- */
-type AttributionLike = string | Array<string> | Attribution$1;
-type Options$1L = {
-    /**
-     * Attributions.
-     */
-    attributions?: AttributionLike | undefined;
-    /**
-     * Attributions are collapsible.
-     */
-    attributionsCollapsible?: boolean | undefined;
-    /**
-     * Projection. Default is the view projection.
-     */
-    projection?: ProjectionLike;
-    /**
-     * State.
-     */
-    state?: State$2 | undefined;
-    /**
-     * WrapX.
-     */
-    wrapX?: boolean | undefined;
+    transition?: number | undefined;
     /**
      * Use interpolated values when resampling.  By default,
      * the nearest neighbor is used when resampling.
@@ -6067,849 +4690,167 @@ type Options$1L = {
     interpolate?: boolean | undefined;
 };
 /**
- * @typedef {'undefined' | 'loading' | 'ready' | 'error'} State
- * State of the source, one of 'undefined', 'loading', 'ready' or 'error'.
+ * A function that takes a {@link module:ol/Tile~Tile} for the tile and a
+ * `{string}` for the url as arguments. The default is
+ * ```js
+ * source.setTileLoadFunction(function(tile, src) {
+ *   tile.getImage().src = src;
+ * });
+ * ```
+ * For more fine grained control, the load function can use fetch or XMLHttpRequest and involve
+ * error handling:
+ *
+ * ```js
+ * import TileState from 'ol/TileState.js';
+ *
+ * source.setTileLoadFunction(function(tile, src) {
+ *   const xhr = new XMLHttpRequest();
+ *   xhr.responseType = 'blob';
+ *   xhr.addEventListener('loadend', function (evt) {
+ *     const data = this.response;
+ *     if (data !== undefined) {
+ *       tile.getImage().src = URL.createObjectURL(data);
+ *     } else {
+ *       tile.setState(TileState.ERROR);
+ *     }
+ *   });
+ *   xhr.addEventListener('error', function () {
+ *     tile.setState(TileState.ERROR);
+ *   });
+ *   xhr.open('GET', src);
+ *   xhr.send();
+ * });
+ * ```
+ *
+ * @typedef {function(Tile, string): void} LoadFunction
+ * @api
  */
 /**
- * A function that takes a {@link import("../View.js").ViewStateLayerStateExtent} and returns a string or
- * an array of strings representing source attributions.
+ * {@link module:ol/source/Tile~TileSource} sources use a function of this type to get
+ * the url that provides a tile for a given tile coordinate.
  *
- * @typedef {function(import("../View.js").ViewStateLayerStateExtent): (string|Array<string>)} Attribution
- */
-/**
- * A type that can be used to provide attribution information for data sources.
+ * This function takes a {@link module:ol/tilecoord~TileCoord} for the tile
+ * coordinate, a `{number}` representing the pixel ratio and a
+ * {@link module:ol/proj/Projection~Projection} for the projection  as arguments
+ * and returns a `{string}` representing the tile URL, or undefined if no tile
+ * should be requested for the passed tile coordinate.
  *
- * It represents either
- * a simple string (e.g. `'© Acme Inc.'`)
- * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
- * a function that returns a string or array of strings ({@link module:ol/source/Source~Attribution})
- *
- * @typedef {string|Array<string>|Attribution} AttributionLike
+ * @typedef {function(import("./tilecoord.js").TileCoord, number,
+ *           import("./proj/Projection.js").default): (string|undefined)} UrlFunction
+ * @api
  */
 /**
  * @typedef {Object} Options
- * @property {AttributionLike} [attributions] Attributions.
- * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
- * @property {import("../proj.js").ProjectionLike} [projection] Projection. Default is the view projection.
- * @property {import("./Source.js").State} [state='ready'] State.
- * @property {boolean} [wrapX=false] WrapX.
+ * @property {number} [transition=250] A duration for tile opacity
+ * transitions in milliseconds. A duration of 0 disables the opacity transition.
  * @property {boolean} [interpolate=false] Use interpolated values when resampling.  By default,
  * the nearest neighbor is used when resampling.
+ * @api
  */
 /**
  * @classdesc
- * Abstract base class; normally only used for creating subclasses and not
- * instantiated in apps.
- * Base class for {@link module:ol/layer/Layer~Layer} sources.
+ * Base class for tiles.
  *
- * A generic `change` event is triggered when the state of the source changes.
  * @abstract
- * @api
  */
-declare class Source extends BaseObject {
+declare class Tile$1 extends Target {
     /**
-     * @param {Options} options Source options.
+     * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
+     * @param {import("./TileState.js").default} state State.
+     * @param {Options} [options] Tile options.
      */
-    constructor(options: Options$1L);
+    constructor(tileCoord: TileCoord, state: any, options?: Options$1M);
+    /**
+     * @type {import("./tilecoord.js").TileCoord}
+     */
+    tileCoord: TileCoord;
     /**
      * @protected
-     * @type {import("../proj/Projection.js").default|null}
+     * @type {import("./TileState.js").default}
      */
-    protected projection: Projection | null;
+    protected state: any;
     /**
-     * @private
-     * @type {?Attribution}
-     */
-    private attributions_;
-    /**
-     * @private
-     * @type {boolean}
-     */
-    private attributionsCollapsible_;
-    /**
-     * This source is currently loading data. Sources that defer loading to the
-     * map's tile queue never set this to `true`.
-     * @type {boolean}
-     */
-    loading: boolean;
-    /**
-     * @private
-     * @type {import("./Source.js").State}
-     */
-    private state_;
-    /**
-     * @private
-     * @type {boolean}
-     */
-    private wrapX_;
-    /**
-     * @private
-     * @type {boolean}
-     */
-    private interpolate_;
-    /**
-     * @protected
-     * @type {function(import("../View.js").ViewOptions):void}
-     */
-    protected viewResolver: (arg0: ViewOptions) => void;
-    /**
-     * @protected
-     * @type {function(Error):void}
-     */
-    protected viewRejector: (arg0: Error) => void;
-    /**
-     * @private
-     * @type {Promise<import("../View.js").ViewOptions>}
-     */
-    private viewPromise_;
-    /**
-     * Get the attribution function for the source.
-     * @return {?Attribution} Attribution function.
-     * @api
-     */
-    getAttributions(): Attribution$1 | null;
-    /**
-     * @return {boolean} Attributions are collapsible.
-     * @api
-     */
-    getAttributionsCollapsible(): boolean;
-    /**
-     * Get the projection of the source.
-     * @return {import("../proj/Projection.js").default|null} Projection.
-     * @api
-     */
-    getProjection(): Projection | null;
-    /**
-     * @param {import("../proj/Projection").default} [projection] Projection.
-     * @return {Array<number>|null} Resolutions.
-     */
-    getResolutions(projection?: Projection): Array<number> | null;
-    /**
-     * @return {Promise<import("../View.js").ViewOptions>} A promise for view-related properties.
-     */
-    getView(): Promise<ViewOptions>;
-    /**
-     * Get the state of the source, see {@link import("./Source.js").State} for possible states.
-     * @return {import("./Source.js").State} State.
-     * @api
-     */
-    getState(): State$2;
-    /**
-     * @return {boolean|undefined} Wrap X.
-     */
-    getWrapX(): boolean | undefined;
-    /**
-     * @return {boolean} Use linear interpolation when resampling.
-     */
-    getInterpolate(): boolean;
-    /**
-     * Refreshes the source. The source will be cleared, and data from the server will be reloaded.
-     * @api
-     */
-    refresh(): void;
-    /**
-     * Set the attributions of the source.
-     * @param {AttributionLike|undefined} attributions Attributions.
-     *     Can be passed as `string`, `Array<string>`, {@link module:ol/source/Source~Attribution},
-     *     or `undefined`.
-     * @api
-     */
-    setAttributions(attributions: AttributionLike | undefined): void;
-    /**
-     * Set the state of the source.
-     * @param {import("./Source.js").State} state State.
-     */
-    setState(state: State$2): void;
-}
-
-type MapRenderEventTypes = "postrender" | "precompose" | "postcompose" | "rendercomplete";
-type LayerRenderEventTypes = "postrender" | "prerender";
-
-/**
- * A css color, or a function called with a view resolution returning a css color.
- */
-type BackgroundColor = string | ((arg0: number) => string);
-type BaseLayerObjectEventTypes = Types$2 | "change:extent" | "change:maxResolution" | "change:maxZoom" | "change:minResolution" | "change:minZoom" | "change:opacity" | "change:visible" | "change:zIndex";
-/**
- * *
- */
-type BaseLayerOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes, ObjectEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes, Return>;
-type Options$1K = {
-    /**
-     * A CSS class name to set to the layer element.
-     */
-    className?: string | undefined;
-    /**
-     * Opacity (0, 1).
-     */
-    opacity?: number | undefined;
-    /**
-     * Visibility.
-     */
-    visible?: boolean | undefined;
-    /**
-     * The bounding extent for layer rendering.  The layer will not be
-     * rendered outside of this extent.
-     */
-    extent?: Extent$1 | undefined;
-    /**
-     * The z-index for layer rendering.  At rendering time, the layers
-     * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
-     * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
-     * method was used.
-     */
-    zIndex?: number | undefined;
-    /**
-     * The minimum resolution (inclusive) at which this layer will be
-     * visible.
-     */
-    minResolution?: number | undefined;
-    /**
-     * The maximum resolution (exclusive) below which this layer will
-     * be visible.
-     */
-    maxResolution?: number | undefined;
-    /**
-     * The minimum view zoom level (exclusive) above which this layer will be
-     * visible.
-     */
-    minZoom?: number | undefined;
-    /**
-     * The maximum view zoom level (inclusive) at which this layer will
-     * be visible.
-     */
-    maxZoom?: number | undefined;
-    /**
-     * Background color for the layer. If not specified, no background
-     * will be rendered.
-     */
-    background?: BackgroundColor | undefined;
-    /**
-     * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
-     */
-    properties?: {
-        [x: string]: any;
-    } | undefined;
-};
-/**
- * A css color, or a function called with a view resolution returning a css color.
- *
- * @typedef {string|function(number):string} BackgroundColor
- * @api
- */
-/**
- * @typedef {import("../ObjectEventType").Types|'change:extent'|'change:maxResolution'|'change:maxZoom'|
- *    'change:minResolution'|'change:minZoom'|'change:opacity'|'change:visible'|'change:zIndex'} BaseLayerObjectEventTypes
- */
-/***
- * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<BaseLayerObjectEventTypes, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|BaseLayerObjectEventTypes, Return>} BaseLayerOnSignature
- */
-/**
- * @typedef {Object} Options
- * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
- * @property {number} [opacity=1] Opacity (0, 1).
- * @property {boolean} [visible=true] Visibility.
- * @property {import("../extent.js").Extent} [extent] The bounding extent for layer rendering.  The layer will not be
- * rendered outside of this extent.
- * @property {number | undefined} [zIndex] The z-index for layer rendering.  At rendering time, the layers
- * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
- * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
- * method was used.
- * @property {number} [minResolution] The minimum resolution (inclusive) at which this layer will be
- * visible.
- * @property {number} [maxResolution] The maximum resolution (exclusive) below which this layer will
- * be visible.
- * @property {number} [minZoom] The minimum view zoom level (exclusive) above which this layer will be
- * visible.
- * @property {number} [maxZoom] The maximum view zoom level (inclusive) at which this layer will
- * be visible.
- * @property {BackgroundColor} [background] Background color for the layer. If not specified, no background
- * will be rendered.
- * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
- */
-/**
- * @classdesc
- * Abstract base class; normally only used for creating subclasses and not
- * instantiated in apps.
- * Note that with {@link module:ol/layer/Base~BaseLayer} and all its subclasses, any property set in
- * the options is set as a {@link module:ol/Object~BaseObject} property on the layer object, so
- * is observable, and has get/set accessors.
- *
- * @api
- */
-declare class BaseLayer extends BaseObject {
-    /**
-     * @param {Options} options Layer options.
-     */
-    constructor(options: Options$1K);
-    /***
-     * @type {BaseLayerOnSignature<import("../events").EventsKey>}
-     */
-    on: BaseLayerOnSignature<EventsKey>;
-    /***
-     * @type {BaseLayerOnSignature<import("../events").EventsKey>}
-     */
-    once: BaseLayerOnSignature<EventsKey>;
-    /***
-     * @type {BaseLayerOnSignature<void>}
-     */
-    un: BaseLayerOnSignature<void>;
-    /**
-     * @type {BackgroundColor|false}
-     * @private
-     */
-    private background_;
-    /**
+     * A key assigned to the tile. This is used in conjunction with a source key
+     * to determine if a cached version of this tile may be used by the renderer.
      * @type {string}
+     */
+    key: string;
+    /**
+     * The duration for the opacity transition.
      * @private
+     * @type {number}
      */
-    private className_;
+    private transition_;
     /**
-     * @type {import("./Layer.js").State}
+     * Lookup of start times for rendering transitions.  If the start time is
+     * equal to -1, the transition is complete.
      * @private
+     * @type {Object<string, number>}
      */
-    private state_;
+    private transitionStarts_;
     /**
-     * Get the background for this layer.
-     * @return {BackgroundColor|false} Layer background.
-     */
-    getBackground(): BackgroundColor | false;
-    /**
-     * @return {string} CSS class name.
-     */
-    getClassName(): string;
-    /**
-     * This method is not meant to be called by layers or layer renderers because the state
-     * is incorrect if the layer is included in a layer group.
-     *
-     * @param {boolean} [managed] Layer is managed.
-     * @return {import("./Layer.js").State} Layer state.
-     */
-    getLayerState(managed?: boolean): State$1;
-    /**
-     * @abstract
-     * @param {Array<import("./Layer.js").default>} [array] Array of layers (to be
-     *     modified in place).
-     * @return {Array<import("./Layer.js").default>} Array of layers.
-     */
-    getLayersArray(array?: Array<Layer>): Array<Layer>;
-    /**
-     * @abstract
-     * @param {Array<import("./Layer.js").State>} [states] Optional list of layer
-     *     states (to be modified in place).
-     * @return {Array<import("./Layer.js").State>} List of layer states.
-     */
-    getLayerStatesArray(states?: Array<State$1>): Array<State$1>;
-    /**
-     * Return the {@link module:ol/extent~Extent extent} of the layer or `undefined` if it
-     * will be visible regardless of extent.
-     * @return {import("../extent.js").Extent|undefined} The layer extent.
-     * @observable
-     * @api
-     */
-    getExtent(): Extent$1 | undefined;
-    /**
-     * Return the maximum resolution of the layer. Returns Infinity if
-     * the layer has no maximum resolution set.
-     * @return {number} The maximum resolution of the layer.
-     * @observable
-     * @api
-     */
-    getMaxResolution(): number;
-    /**
-     * Return the minimum resolution of the layer. Returns 0 if
-     * the layer has no minimum resolution set.
-     * @return {number} The minimum resolution of the layer.
-     * @observable
-     * @api
-     */
-    getMinResolution(): number;
-    /**
-     * Return the minimum zoom level of the layer. Returns -Infinity if
-     * the layer has no minimum zoom set.
-     * @return {number} The minimum zoom level of the layer.
-     * @observable
-     * @api
-     */
-    getMinZoom(): number;
-    /**
-     * Return the maximum zoom level of the layer. Returns Infinity if
-     * the layer has no maximum zoom set.
-     * @return {number} The maximum zoom level of the layer.
-     * @observable
-     * @api
-     */
-    getMaxZoom(): number;
-    /**
-     * Return the opacity of the layer (between 0 and 1).
-     * @return {number} The opacity of the layer.
-     * @observable
-     * @api
-     */
-    getOpacity(): number;
-    /**
-     * @abstract
-     * @return {import("../source/Source.js").State} Source state.
-     */
-    getSourceState(): State$2;
-    /**
-     * Return the value of this layer's `visible` property. To find out whether the layer
-     * is visible on a map, use `isVisible()` instead.
-     * @return {boolean} The value of the `visible` property of the layer.
-     * @observable
-     * @api
-     */
-    getVisible(): boolean;
-    /**
-     * Return the Z-index of the layer, which is used to order layers before
-     * rendering. Returns undefined if the layer is unmanaged.
-     * @return {number|undefined} The Z-index of the layer.
-     * @observable
-     * @api
-     */
-    getZIndex(): number | undefined;
-    /**
-     * Sets the background color.
-     * @param {BackgroundColor} [background] Background color.
-     */
-    setBackground(background?: BackgroundColor): void;
-    /**
-     * Set the extent at which the layer is visible.  If `undefined`, the layer
-     * will be visible at all extents.
-     * @param {import("../extent.js").Extent|undefined} extent The extent of the layer.
-     * @observable
-     * @api
-     */
-    setExtent(extent: Extent$1 | undefined): void;
-    /**
-     * Set the maximum resolution at which the layer is visible.
-     * @param {number} maxResolution The maximum resolution of the layer.
-     * @observable
-     * @api
-     */
-    setMaxResolution(maxResolution: number): void;
-    /**
-     * Set the minimum resolution at which the layer is visible.
-     * @param {number} minResolution The minimum resolution of the layer.
-     * @observable
-     * @api
-     */
-    setMinResolution(minResolution: number): void;
-    /**
-     * Set the maximum zoom (exclusive) at which the layer is visible.
-     * Note that the zoom levels for layer visibility are based on the
-     * view zoom level, which may be different from a tile source zoom level.
-     * @param {number} maxZoom The maximum zoom of the layer.
-     * @observable
-     * @api
-     */
-    setMaxZoom(maxZoom: number): void;
-    /**
-     * Set the minimum zoom (inclusive) at which the layer is visible.
-     * Note that the zoom levels for layer visibility are based on the
-     * view zoom level, which may be different from a tile source zoom level.
-     * @param {number} minZoom The minimum zoom of the layer.
-     * @observable
-     * @api
-     */
-    setMinZoom(minZoom: number): void;
-    /**
-     * Set the opacity of the layer, allowed values range from 0 to 1.
-     * @param {number} opacity The opacity of the layer.
-     * @observable
-     * @api
-     */
-    setOpacity(opacity: number): void;
-    /**
-     * Set the visibility of the layer (`true` or `false`).
-     * @param {boolean} visible The visibility of the layer.
-     * @observable
-     * @api
-     */
-    setVisible(visible: boolean): void;
-    /**
-     * Set Z-index of the layer, which is used to order layers before rendering.
-     * The default Z-index is 0.
-     * @param {number} zindex The z-index of the layer.
-     * @observable
-     * @api
-     */
-    setZIndex(zindex: number): void;
-}
-
-type RenderFunction$1 = (arg0: FrameState) => HTMLElement;
-type LayerEventType = "sourceready" | "change:source";
-/**
- * *
- */
-type LayerOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes | LayerEventType, ObjectEvent, Return> & OnSignature<LayerRenderEventTypes, RenderEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes | LayerEventType | LayerRenderEventTypes, Return>;
-type Options$1J<SourceType extends Source = Source> = {
-    /**
-     * A CSS class name to set to the layer element.
-     */
-    className?: string | undefined;
-    /**
-     * Opacity (0, 1).
-     */
-    opacity?: number | undefined;
-    /**
-     * Visibility.
-     */
-    visible?: boolean | undefined;
-    /**
-     * The bounding extent for layer rendering.  The layer will not be
-     * rendered outside of this extent.
-     */
-    extent?: Extent$1 | undefined;
-    /**
-     * The z-index for layer rendering.  At rendering time, the layers
-     * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
-     * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
-     * method was used.
-     */
-    zIndex?: number | undefined;
-    /**
-     * The minimum resolution (inclusive) at which this layer will be
-     * visible.
-     */
-    minResolution?: number | undefined;
-    /**
-     * The maximum resolution (exclusive) below which this layer will
-     * be visible.
-     */
-    maxResolution?: number | undefined;
-    /**
-     * The minimum view zoom level (exclusive) above which this layer will be
-     * visible.
-     */
-    minZoom?: number | undefined;
-    /**
-     * The maximum view zoom level (inclusive) at which this layer will
-     * be visible.
-     */
-    maxZoom?: number | undefined;
-    /**
-     * Source for this layer.  If not provided to the constructor,
-     * the source can be set by calling {@link module :ol/layer/Layer~Layer#setSource layer.setSource(source)} after
-     * construction.
-     */
-    source?: SourceType | undefined;
-    /**
-     * Map.
-     */
-    map?: Map | null | undefined;
-    /**
-     * Render function. Takes the frame state as input and is expected to return an
-     * HTML element. Will overwrite the default rendering for the layer.
-     */
-    render?: RenderFunction$1 | undefined;
-    /**
-     * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
-     */
-    properties?: {
-        [x: string]: any;
-    } | undefined;
-};
-type State$1 = {
-    /**
-     * Layer.
-     */
-    layer: Layer;
-    /**
-     * Opacity, the value is rounded to two digits to appear after the decimal point.
-     */
-    opacity: number;
-    /**
-     * Visible.
-     */
-    visible: boolean;
-    /**
-     * Managed.
-     */
-    managed: boolean;
-    /**
-     * Extent.
-     */
-    extent?: Extent$1 | undefined;
-    /**
-     * ZIndex.
-     */
-    zIndex: number;
-    /**
-     * Maximum resolution.
-     */
-    maxResolution: number;
-    /**
-     * Minimum resolution.
-     */
-    minResolution: number;
-    /**
-     * Minimum zoom.
-     */
-    minZoom: number;
-    /**
-     * Maximum zoom.
-     */
-    maxZoom: number;
-};
-/**
- * @typedef {function(import("../Map.js").FrameState):HTMLElement} RenderFunction
- */
-/**
- * @typedef {'sourceready'|'change:source'} LayerEventType
- */
-/***
- * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("./Base").BaseLayerObjectEventTypes|
- *     LayerEventType, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<import("../render/EventType").LayerRenderEventTypes, import("../render/Event").default, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("./Base").BaseLayerObjectEventTypes|LayerEventType|
- *     import("../render/EventType").LayerRenderEventTypes, Return>} LayerOnSignature
- */
-/**
- * @template {import("../source/Source.js").default} [SourceType=import("../source/Source.js").default]
- * @typedef {Object} Options
- * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
- * @property {number} [opacity=1] Opacity (0, 1).
- * @property {boolean} [visible=true] Visibility.
- * @property {import("../extent.js").Extent} [extent] The bounding extent for layer rendering.  The layer will not be
- * rendered outside of this extent.
- * @property {number} [zIndex] The z-index for layer rendering.  At rendering time, the layers
- * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
- * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
- * method was used.
- * @property {number} [minResolution] The minimum resolution (inclusive) at which this layer will be
- * visible.
- * @property {number} [maxResolution] The maximum resolution (exclusive) below which this layer will
- * be visible.
- * @property {number} [minZoom] The minimum view zoom level (exclusive) above which this layer will be
- * visible.
- * @property {number} [maxZoom] The maximum view zoom level (inclusive) at which this layer will
- * be visible.
- * @property {SourceType} [source] Source for this layer.  If not provided to the constructor,
- * the source can be set by calling {@link module:ol/layer/Layer~Layer#setSource layer.setSource(source)} after
- * construction.
- * @property {import("../Map.js").default|null} [map] Map.
- * @property {RenderFunction} [render] Render function. Takes the frame state as input and is expected to return an
- * HTML element. Will overwrite the default rendering for the layer.
- * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
- */
-/**
- * @typedef {Object} State
- * @property {import("./Layer.js").default} layer Layer.
- * @property {number} opacity Opacity, the value is rounded to two digits to appear after the decimal point.
- * @property {boolean} visible Visible.
- * @property {boolean} managed Managed.
- * @property {import("../extent.js").Extent} [extent] Extent.
- * @property {number} zIndex ZIndex.
- * @property {number} maxResolution Maximum resolution.
- * @property {number} minResolution Minimum resolution.
- * @property {number} minZoom Minimum zoom.
- * @property {number} maxZoom Maximum zoom.
- */
-/**
- * @classdesc
- * Base class from which all layer types are derived. This should only be instantiated
- * in the case where a custom layer is added to the map with a custom `render` function.
- * Such a function can be specified in the `options` object, and is expected to return an HTML element.
- *
- * A visual representation of raster or vector map data.
- * Layers group together those properties that pertain to how the data is to be
- * displayed, irrespective of the source of that data.
- *
- * Layers are usually added to a map with [map.addLayer()]{@link import("../Map.js").default#addLayer}.
- * Components like {@link module:ol/interaction/Draw~Draw} use unmanaged layers
- * internally. These unmanaged layers are associated with the map using
- * [layer.setMap()]{@link module:ol/layer/Layer~Layer#setMap} instead.
- *
- * A generic `change` event is fired when the state of the source changes.
- * A `sourceready` event is fired when the layer's source is ready.
- *
- * @fires import("../render/Event.js").RenderEvent#prerender
- * @fires import("../render/Event.js").RenderEvent#postrender
- * @fires import("../events/Event.js").BaseEvent#sourceready
- *
- * @template {import("../source/Source.js").default} [SourceType=import("../source/Source.js").default]
- * @template {import("../renderer/Layer.js").default} [RendererType=import("../renderer/Layer.js").default]
- * @api
- */
-declare class Layer<SourceType extends Source = Source, RendererType extends LayerRenderer<any> = LayerRenderer<any>> extends BaseLayer {
-    /**
-     * @param {Options<SourceType>} options Layer options.
-     */
-    constructor(options: Options$1J<SourceType>);
-    /***
-     * @type {LayerOnSignature<import("../events").EventsKey>}
-     */
-    on: LayerOnSignature<EventsKey>;
-    /***
-     * @type {LayerOnSignature<import("../events").EventsKey>}
-     */
-    once: LayerOnSignature<EventsKey>;
-    /***
-     * @type {LayerOnSignature<void>}
-     */
-    un: LayerOnSignature<void>;
-    /**
-     * @private
-     * @type {?import("../events.js").EventsKey}
-     */
-    private mapPrecomposeKey_;
-    /**
-     * @private
-     * @type {?import("../events.js").EventsKey}
-     */
-    private mapRenderKey_;
-    /**
-     * @private
-     * @type {?import("../events.js").EventsKey}
-     */
-    private sourceChangeKey_;
-    /**
-     * @private
-     * @type {RendererType}
-     */
-    private renderer_;
-    /**
-     * @private
      * @type {boolean}
      */
-    private sourceReady_;
+    interpolate: boolean;
     /**
      * @protected
-     * @type {boolean}
      */
-    protected rendered: boolean;
+    protected changed(): void;
     /**
-     * In charge to manage the rendering of the layer. One layer type is
-     * bounded with one layer renderer.
-     * @param {?import("../Map.js").FrameState} frameState Frame state.
-     * @param {HTMLElement} target Target which the renderer may (but need not) use
-     * for rendering its content.
-     * @return {HTMLElement|null} The rendered element.
+     * Called by the tile cache when the tile is removed from the cache due to expiry
      */
-    render(frameState: FrameState | null, target: HTMLElement): HTMLElement | null;
+    release(): void;
     /**
-     * Get the layer source.
-     * @return {SourceType|null} The layer source (or `null` if not yet set).
-     * @observable
+     * @return {string} Key.
+     */
+    getKey(): string;
+    /**
+     * Get the tile coordinate for this tile.
+     * @return {import("./tilecoord.js").TileCoord} The tile coordinate.
      * @api
      */
-    getSource(): SourceType | null;
+    getTileCoord(): TileCoord;
     /**
-     * @return {SourceType|null} The source being rendered.
+     * @return {import("./TileState.js").default} State.
      */
-    getRenderSource(): SourceType | null;
+    getState(): any;
     /**
-     * @private
-     */
-    private handleSourceChange_;
-    /**
-     * @private
-     */
-    private handleSourcePropertyChange_;
-    /**
-     * @param {import("../pixel").Pixel} pixel Pixel.
-     * @return {Promise<Array<import("../Feature").FeatureLike>>} Promise that resolves with
-     * an array of features.
-     */
-    getFeatures(pixel: Pixel): Promise<Array<FeatureLike>>;
-    /**
-     * @param {import("../pixel").Pixel} pixel Pixel.
-     * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Pixel data.
-     */
-    getData(pixel: Pixel): Uint8ClampedArray | Uint8Array | Float32Array | DataView | null;
-    /**
-     * The layer is visible on the map view, i.e. within its min/max resolution or zoom and
-     * extent, not set to `visible: false`, and not inside a layer group that is set
-     * to `visible: false`.
-     * @param {View|import("../View.js").ViewStateLayerStateExtent} [view] View or {@link import("../Map.js").FrameState}.
-     * Only required when the layer is not added to a map.
-     * @return {boolean} The layer is visible in the map view.
+     * Sets the state of this tile. If you write your own {@link module:ol/Tile~LoadFunction tileLoadFunction} ,
+     * it is important to set the state correctly to {@link module:ol/TileState~ERROR}
+     * when the tile cannot be loaded. Otherwise the tile cannot be removed from
+     * the tile queue and will block other requests.
+     * @param {import("./TileState.js").default} state State.
      * @api
      */
-    isVisible(view?: View | ViewStateLayerStateExtent): boolean;
+    setState(state: any): void;
     /**
-     * Get the attributions of the source of this layer for the given view.
-     * @param {View|import("../View.js").ViewStateLayerStateExtent} [view] View or {@link import("../Map.js").FrameState}.
-     * Only required when the layer is not added to a map.
-     * @return {Array<string>} Attributions for this layer at the given view.
+     * Load the image or retry if loading previously failed.
+     * Loading is taken care of by the tile queue, and calling this method is
+     * only needed for preloading or for reloading in case of an error.
+     * @abstract
      * @api
      */
-    getAttributions(view?: View | ViewStateLayerStateExtent): Array<string>;
+    load(): void;
     /**
-     * Called when a layer is not visible during a map render.
+     * Get the alpha value for rendering.
+     * @param {string} id An id for the renderer.
+     * @param {number} time The render frame time.
+     * @return {number} A number between 0 and 1.
      */
-    unrender(): void;
-    /** @return {string} Declutter */
-    getDeclutter(): string;
+    getAlpha(id: string, time: number): number;
     /**
-     * @param {import("../Map.js").FrameState} frameState Frame state.
-     * @param {import("../layer/Layer.js").State} layerState Layer state.
+     * Determine if a tile is in an alpha transition.  A tile is considered in
+     * transition if tile.getAlpha() has not yet been called or has been called
+     * and returned 1.
+     * @param {string} id An id for the renderer.
+     * @return {boolean} The tile is in transition.
      */
-    renderDeclutter(frameState: FrameState, layerState: State$1): void;
+    inTransition(id: string): boolean;
     /**
-     * When the renderer follows a layout -> render approach, do the final rendering here.
-     * @param {import('../Map.js').FrameState} frameState Frame state
+     * Mark a transition as complete.
+     * @param {string} id An id for the renderer.
      */
-    renderDeferred(frameState: FrameState): void;
-    /**
-     * For use inside the library only.
-     * @param {import("../Map.js").default|null} map Map.
-     */
-    setMapInternal(map: Map | null): void;
-    /**
-     * For use inside the library only.
-     * @return {import("../Map.js").default|null} Map.
-     */
-    getMapInternal(): Map | null;
-    /**
-     * Sets the layer to be rendered on top of other layers on a map. The map will
-     * not manage this layer in its layers collection. This
-     * is useful for temporary layers. To remove an unmanaged layer from the map,
-     * use `#setMap(null)`.
-     *
-     * To add the layer to a map and have it managed by the map, use
-     * {@link module:ol/Map~Map#addLayer} instead.
-     * @param {import("../Map.js").default|null} map Map.
-     * @api
-     */
-    setMap(map: Map | null): void;
-    /**
-     * @param {import("../events/Event.js").default} renderEvent Render event
-     * @private
-     */
-    private handlePrecompose_;
-    /**
-     * Set the layer source.
-     * @param {SourceType|null} source The layer source.
-     * @observable
-     * @api
-     */
-    setSource(source: SourceType | null): void;
-    /**
-     * Get the renderer for this layer.
-     * @return {RendererType|null} The layer renderer.
-     */
-    getRenderer(): RendererType | null;
-    /**
-     * @return {boolean} The layer has a renderer.
-     */
-    hasRenderer(): boolean;
-    /**
-     * Create a renderer for this layer.
-     * @return {RendererType} A layer renderer.
-     * @protected
-     */
-    protected createRenderer(): RendererType;
-    /**
-     * This will clear the renderer so that a new one can be created next time it is needed
-     */
-    clearRenderer(): void;
+    endTransition(id: string): void;
 }
 
 interface BBox$1 {
@@ -7207,10 +5148,10 @@ declare class RBush<T extends unknown> {
     concat(rbush: RBush<T>): void;
 }
 
-type ZIndexContextProxy = CanvasRenderingContext2D & {
+type ZIndexContextProxy = CanvasRenderingContext2D | (OffscreenCanvasRenderingContext2D & {
     globalAlpha: any;
-};
-/** @typedef {CanvasRenderingContext2D & {globalAlpha: any}} ZIndexContextProxy */
+});
+/** @typedef {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D & {globalAlpha: any}} ZIndexContextProxy */
 /**
  * @extends {CanvasRenderingContext2D}
  */
@@ -7259,9 +5200,9 @@ declare class ZIndexContext {
      */
     getContext(): ZIndexContextProxy;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      */
-    draw(context: CanvasRenderingContext2D): void;
+    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): void;
     clear(): void;
     /**
      * Offsets the zIndex by the highest current zIndex. Useful for rendering multiple worlds or tiles, to
@@ -7310,7 +5251,7 @@ type ImageOrLabelDimensions = {
     canvasTransform: Transform;
 };
 type ReplayImageOrLabelArgs = {
-    0: CanvasRenderingContext2D;
+    0: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
     1: Size;
     2: Label | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
     3: ImageOrLabelDimensions;
@@ -7474,12 +5415,12 @@ declare class Executor {
     private replayImageOrLabel_;
     /**
      * @private
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      */
     private fill_;
     /**
      * @private
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {Array<*>} instruction Instruction.
      */
     private setStrokeStyle_;
@@ -7494,7 +5435,7 @@ declare class Executor {
     private drawLabelWithPointPlacement_;
     /**
      * @private
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size
      * @param {import("../../transform.js").Transform} transform Transform.
      * @param {Array<*>} instructions Instructions array.
@@ -7508,16 +5449,16 @@ declare class Executor {
      */
     private execute_;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import('../../size.js').Size} scaledCanvasSize Scaled canvas size.
      * @param {import("../../transform.js").Transform} transform Transform.
      * @param {number} viewRotation View rotation.
      * @param {boolean} snapToPixel Snap point symbols and text to integer pixels.
      * @param {import("rbush").default<DeclutterEntry>} [declutterTree] Declutter tree.
      */
-    execute(context: CanvasRenderingContext2D, scaledCanvasSize: Size, transform: Transform, viewRotation: number, snapToPixel: boolean, declutterTree?: RBush$1<DeclutterEntry>): void;
+    execute(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, scaledCanvasSize: Size, transform: Transform, viewRotation: number, snapToPixel: boolean, declutterTree?: RBush$1<DeclutterEntry>): void;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import("../../transform.js").Transform} transform Transform.
      * @param {number} viewRotation View rotation.
      * @param {FeatureCallback<T>} [featureCallback] Feature callback.
@@ -7526,7 +5467,7 @@ declare class Executor {
      * @return {T|undefined} Callback result.
      * @template T
      */
-    executeHitDetection<T>(context: CanvasRenderingContext2D, transform: Transform, viewRotation: number, featureCallback?: FeatureCallback$1<T>, hitExtent?: Extent$1): T | undefined;
+    executeHitDetection<T>(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, transform: Transform, viewRotation: number, featureCallback?: FeatureCallback$1<T>, hitExtent?: Extent$1): T | undefined;
 }
 
 /**
@@ -8973,6 +6914,324 @@ declare class MapRenderer extends Disposable {
 }
 
 /**
+ * A css color, or a function called with a view resolution returning a css color.
+ */
+type BackgroundColor = string | ((arg0: number) => string);
+type BaseLayerObjectEventTypes = Types$2 | "change:extent" | "change:maxResolution" | "change:maxZoom" | "change:minResolution" | "change:minZoom" | "change:opacity" | "change:visible" | "change:zIndex";
+/**
+ * *
+ */
+type BaseLayerOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes, ObjectEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes, Return>;
+type Options$1L = {
+    /**
+     * A CSS class name to set to the layer element.
+     */
+    className?: string | undefined;
+    /**
+     * Opacity (0, 1).
+     */
+    opacity?: number | undefined;
+    /**
+     * Visibility.
+     */
+    visible?: boolean | undefined;
+    /**
+     * The bounding extent for layer rendering.  The layer will not be
+     * rendered outside of this extent.
+     */
+    extent?: Extent$1 | undefined;
+    /**
+     * The z-index for layer rendering.  At rendering time, the layers
+     * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
+     * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
+     * method was used.
+     */
+    zIndex?: number | undefined;
+    /**
+     * The minimum resolution (inclusive) at which this layer will be
+     * visible.
+     */
+    minResolution?: number | undefined;
+    /**
+     * The maximum resolution (exclusive) below which this layer will
+     * be visible.
+     */
+    maxResolution?: number | undefined;
+    /**
+     * The minimum view zoom level (exclusive) above which this layer will be
+     * visible.
+     */
+    minZoom?: number | undefined;
+    /**
+     * The maximum view zoom level (inclusive) at which this layer will
+     * be visible.
+     */
+    maxZoom?: number | undefined;
+    /**
+     * Background color for the layer. If not specified, no background
+     * will be rendered.
+     */
+    background?: BackgroundColor | undefined;
+    /**
+     * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+     */
+    properties?: {
+        [x: string]: any;
+    } | undefined;
+};
+/**
+ * A css color, or a function called with a view resolution returning a css color.
+ *
+ * @typedef {string|function(number):string} BackgroundColor
+ * @api
+ */
+/**
+ * @typedef {import("../ObjectEventType").Types|'change:extent'|'change:maxResolution'|'change:maxZoom'|
+ *    'change:minResolution'|'change:minZoom'|'change:opacity'|'change:visible'|'change:zIndex'} BaseLayerObjectEventTypes
+ */
+/***
+ * @template Return
+ * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable").OnSignature<BaseLayerObjectEventTypes, import("../Object").ObjectEvent, Return> &
+ *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|BaseLayerObjectEventTypes, Return>} BaseLayerOnSignature
+ */
+/**
+ * @typedef {Object} Options
+ * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
+ * @property {number} [opacity=1] Opacity (0, 1).
+ * @property {boolean} [visible=true] Visibility.
+ * @property {import("../extent.js").Extent} [extent] The bounding extent for layer rendering.  The layer will not be
+ * rendered outside of this extent.
+ * @property {number | undefined} [zIndex] The z-index for layer rendering.  At rendering time, the layers
+ * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
+ * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
+ * method was used.
+ * @property {number} [minResolution] The minimum resolution (inclusive) at which this layer will be
+ * visible.
+ * @property {number} [maxResolution] The maximum resolution (exclusive) below which this layer will
+ * be visible.
+ * @property {number} [minZoom] The minimum view zoom level (exclusive) above which this layer will be
+ * visible.
+ * @property {number} [maxZoom] The maximum view zoom level (inclusive) at which this layer will
+ * be visible.
+ * @property {BackgroundColor} [background] Background color for the layer. If not specified, no background
+ * will be rendered.
+ * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+ */
+/**
+ * @classdesc
+ * Abstract base class; normally only used for creating subclasses and not
+ * instantiated in apps.
+ * Note that with {@link module:ol/layer/Base~BaseLayer} and all its subclasses, any property set in
+ * the options is set as a {@link module:ol/Object~BaseObject} property on the layer object, so
+ * is observable, and has get/set accessors.
+ *
+ * @api
+ */
+declare class BaseLayer extends BaseObject {
+    /**
+     * @param {Options} options Layer options.
+     */
+    constructor(options: Options$1L);
+    /***
+     * @type {BaseLayerOnSignature<import("../events").EventsKey>}
+     */
+    on: BaseLayerOnSignature<EventsKey>;
+    /***
+     * @type {BaseLayerOnSignature<import("../events").EventsKey>}
+     */
+    once: BaseLayerOnSignature<EventsKey>;
+    /***
+     * @type {BaseLayerOnSignature<void>}
+     */
+    un: BaseLayerOnSignature<void>;
+    /**
+     * @type {BackgroundColor|false}
+     * @private
+     */
+    private background_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private className_;
+    /**
+     * @type {import("./Layer.js").State}
+     * @private
+     */
+    private state_;
+    /**
+     * Get the background for this layer.
+     * @return {BackgroundColor|false} Layer background.
+     */
+    getBackground(): BackgroundColor | false;
+    /**
+     * @return {string} CSS class name.
+     */
+    getClassName(): string;
+    /**
+     * This method is not meant to be called by layers or layer renderers because the state
+     * is incorrect if the layer is included in a layer group.
+     *
+     * @param {boolean} [managed] Layer is managed.
+     * @return {import("./Layer.js").State} Layer state.
+     */
+    getLayerState(managed?: boolean): State$2;
+    /**
+     * @abstract
+     * @param {Array<import("./Layer.js").default>} [array] Array of layers (to be
+     *     modified in place).
+     * @return {Array<import("./Layer.js").default>} Array of layers.
+     */
+    getLayersArray(array?: Array<Layer>): Array<Layer>;
+    /**
+     * @abstract
+     * @param {Array<import("./Layer.js").State>} [states] Optional list of layer
+     *     states (to be modified in place).
+     * @return {Array<import("./Layer.js").State>} List of layer states.
+     */
+    getLayerStatesArray(states?: Array<State$2>): Array<State$2>;
+    /**
+     * Return the {@link module:ol/extent~Extent extent} of the layer or `undefined` if it
+     * will be visible regardless of extent.
+     * @return {import("../extent.js").Extent|undefined} The layer extent.
+     * @observable
+     * @api
+     */
+    getExtent(): Extent$1 | undefined;
+    /**
+     * Return the maximum resolution of the layer. Returns Infinity if
+     * the layer has no maximum resolution set.
+     * @return {number} The maximum resolution of the layer.
+     * @observable
+     * @api
+     */
+    getMaxResolution(): number;
+    /**
+     * Return the minimum resolution of the layer. Returns 0 if
+     * the layer has no minimum resolution set.
+     * @return {number} The minimum resolution of the layer.
+     * @observable
+     * @api
+     */
+    getMinResolution(): number;
+    /**
+     * Return the minimum zoom level of the layer. Returns -Infinity if
+     * the layer has no minimum zoom set.
+     * @return {number} The minimum zoom level of the layer.
+     * @observable
+     * @api
+     */
+    getMinZoom(): number;
+    /**
+     * Return the maximum zoom level of the layer. Returns Infinity if
+     * the layer has no maximum zoom set.
+     * @return {number} The maximum zoom level of the layer.
+     * @observable
+     * @api
+     */
+    getMaxZoom(): number;
+    /**
+     * Return the opacity of the layer (between 0 and 1).
+     * @return {number} The opacity of the layer.
+     * @observable
+     * @api
+     */
+    getOpacity(): number;
+    /**
+     * @abstract
+     * @return {import("../source/Source.js").State} Source state.
+     */
+    getSourceState(): State;
+    /**
+     * Return the value of this layer's `visible` property. To find out whether the layer
+     * is visible on a map, use `isVisible()` instead.
+     * @return {boolean} The value of the `visible` property of the layer.
+     * @observable
+     * @api
+     */
+    getVisible(): boolean;
+    /**
+     * Return the Z-index of the layer, which is used to order layers before
+     * rendering. Returns undefined if the layer is unmanaged.
+     * @return {number|undefined} The Z-index of the layer.
+     * @observable
+     * @api
+     */
+    getZIndex(): number | undefined;
+    /**
+     * Sets the background color.
+     * @param {BackgroundColor} [background] Background color.
+     */
+    setBackground(background?: BackgroundColor): void;
+    /**
+     * Set the extent at which the layer is visible.  If `undefined`, the layer
+     * will be visible at all extents.
+     * @param {import("../extent.js").Extent|undefined} extent The extent of the layer.
+     * @observable
+     * @api
+     */
+    setExtent(extent: Extent$1 | undefined): void;
+    /**
+     * Set the maximum resolution at which the layer is visible.
+     * @param {number} maxResolution The maximum resolution of the layer.
+     * @observable
+     * @api
+     */
+    setMaxResolution(maxResolution: number): void;
+    /**
+     * Set the minimum resolution at which the layer is visible.
+     * @param {number} minResolution The minimum resolution of the layer.
+     * @observable
+     * @api
+     */
+    setMinResolution(minResolution: number): void;
+    /**
+     * Set the maximum zoom (exclusive) at which the layer is visible.
+     * Note that the zoom levels for layer visibility are based on the
+     * view zoom level, which may be different from a tile source zoom level.
+     * @param {number} maxZoom The maximum zoom of the layer.
+     * @observable
+     * @api
+     */
+    setMaxZoom(maxZoom: number): void;
+    /**
+     * Set the minimum zoom (inclusive) at which the layer is visible.
+     * Note that the zoom levels for layer visibility are based on the
+     * view zoom level, which may be different from a tile source zoom level.
+     * @param {number} minZoom The minimum zoom of the layer.
+     * @observable
+     * @api
+     */
+    setMinZoom(minZoom: number): void;
+    /**
+     * Set the opacity of the layer, allowed values range from 0 to 1.
+     * @param {number} opacity The opacity of the layer.
+     * @observable
+     * @api
+     */
+    setOpacity(opacity: number): void;
+    /**
+     * Set the visibility of the layer (`true` or `false`).
+     * @param {boolean} visible The visibility of the layer.
+     * @observable
+     * @api
+     */
+    setVisible(visible: boolean): void;
+    /**
+     * Set Z-index of the layer, which is used to order layers before rendering.
+     * The default Z-index is 0.
+     * @param {number} zindex The z-index of the layer.
+     * @observable
+     * @api
+     */
+    setZIndex(zindex: number): void;
+}
+
+type MapRenderEventTypes = "postrender" | "precompose" | "postcompose" | "rendercomplete";
+type LayerRenderEventTypes = "postrender" | "prerender";
+
+/**
  * @classdesc
  * Events emitted as map events are instances of this type.
  * See {@link module:ol/Map~Map} for which events trigger a map event.
@@ -9010,7 +7269,7 @@ type Types$1 = "postrender" | "movestart" | "moveend" | "loadstart" | "loadend";
  * See {@link module:ol/Map~Map} for which events trigger a map browser event.
  * @template {PointerEvent|KeyboardEvent|WheelEvent} [EVENT=PointerEvent|KeyboardEvent|WheelEvent]
  */
-declare class MapBrowserEvent<EVENT extends PointerEvent | KeyboardEvent | WheelEvent = KeyboardEvent | WheelEvent | PointerEvent> extends MapEvent {
+declare class MapBrowserEvent<EVENT extends PointerEvent | KeyboardEvent | WheelEvent = PointerEvent | KeyboardEvent | WheelEvent> extends MapEvent {
     /**
      * @param {string} type Event type.
      * @param {import("./Map.js").default} map Map.
@@ -9080,7 +7339,7 @@ type Types = "singleclick" | "click" | "dblclick" | "pointerdrag" | "pointermove
  * `'top-center'`, or `'top-right'`.
  */
 type Positioning = "bottom-left" | "bottom-center" | "bottom-right" | "center-left" | "center-center" | "center-right" | "top-left" | "top-center" | "top-right";
-type Options$1I = {
+type Options$1K = {
     /**
      * Set the overlay id. The overlay id can be used
      * with the {@link module :ol/Map~Map#getOverlayById} method.
@@ -9202,7 +7461,7 @@ declare class Overlay extends BaseObject {
     /**
      * @param {Options} options Overlay options.
      */
-    constructor(options: Options$1I);
+    constructor(options: Options$1K);
     /***
      * @type {OverlayOnSignature<import("./events").EventsKey>}
      */
@@ -9219,7 +7478,7 @@ declare class Overlay extends BaseObject {
      * @protected
      * @type {Options}
      */
-    protected options: Options$1I;
+    protected options: Options$1K;
     /**
      * @protected
      * @type {number|string|undefined}
@@ -9408,7 +7667,7 @@ declare class Overlay extends BaseObject {
      * returns the options this Overlay has been created with
      * @return {Options} overlay options
      */
-    getOptions(): Options$1I;
+    getOptions(): Options$1K;
 }
 
 /**
@@ -9517,7 +7776,7 @@ declare class Interaction extends BaseObject {
     setMap(map: Map | null): void;
 }
 
-type Options$1H = {
+type Options$1J = {
     /**
      * The element is the control's
      * container element. This only needs to be specified if you're developing
@@ -9575,7 +7834,7 @@ declare class Control extends BaseObject {
     /**
      * @param {Options} options Control options.
      */
-    constructor(options: Options$1H);
+    constructor(options: Options$1J);
     /**
      * @protected
      * @type {HTMLElement}
@@ -9799,9 +8058,6 @@ declare class TileQueue extends PriorityQueue<TileQueueElement> {
 }
 
 /**
- * @typedef {'addlayer'|'removelayer'} GroupEventType
- */
-/**
  * @classdesc
  * A layer group triggers 'addlayer' and 'removelayer' events when layers are added to or removed from
  * the group or one of its child groups.  When a layer group is added to or removed from another layer group,
@@ -9821,12 +8077,11 @@ declare class GroupEvent extends BaseEvent {
     layer: BaseLayer;
 }
 
-type GroupEventType = "addlayer" | "removelayer";
 /**
  * *
  */
-type GroupOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes | "change:layers", ObjectEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes | "change:layers", Return>;
-type Options$1G = {
+type GroupOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes | "change:layers", ObjectEvent, Return> & OnSignature<"addlayer" | "removelayer", GroupEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes | "addlayer" | "removelayer" | "change:layers", Return>;
+type Options$1I = {
     /**
      * Opacity (0, 1).
      */
@@ -9879,19 +8134,25 @@ type Options$1G = {
     } | undefined;
 };
 
+type GroupEventType = string;
+declare namespace GroupEventType {
+    let ADDLAYER: string;
+    let REMOVELAYER: string;
+}
 /**
  * @classdesc
  * A {@link module:ol/Collection~Collection} of layers that are handled together.
  *
  * A generic `change` event is triggered when the group/Collection changes.
  *
+ * @fires GroupEvent
  * @api
  */
 declare class LayerGroup extends BaseLayer {
     /**
      * @param {Options} [options] Layer options.
      */
-    constructor(options?: Options$1G);
+    constructor(options?: Options$1I);
     /***
      * @type {GroupOnSignature<import("../events").EventsKey>}
      */
@@ -9980,7 +8241,7 @@ type FrameState = {
     /**
      * The state of the current view.
      */
-    viewState: State$3;
+    viewState: State$1;
     /**
      * Animate.
      */
@@ -10011,7 +8272,7 @@ type FrameState = {
     /**
      * LayerStatesArray.
      */
-    layerStatesArray: Array<State$1>;
+    layerStatesArray: Array<State$2>;
     /**
      * LayerIndex.
      */
@@ -10095,7 +8356,7 @@ type MapEventHandler<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSi
 type MapOptions = {
     /**
      * Controls initially added to the map. If not specified,
-     * {@link module :ol/control/defaults.defaults} is used.
+     * {@link module :ol/control/defaults.defaults} is used. In a worker, no controls are added by default.
      */
     controls?: Collection<Control> | Control[] | undefined;
     /**
@@ -10105,7 +8366,7 @@ type MapOptions = {
     pixelRatio?: number | undefined;
     /**
      * Interactions that are initially added to the map. If not specified,
-     * {@link module :ol/interaction/defaults.defaults} is used.
+     * {@link module :ol/interaction/defaults.defaults} is used. In a worker, no interactions are added by default.
      */
     interactions?: Collection<Interaction> | Interaction[] | undefined;
     /**
@@ -10146,12 +8407,13 @@ type MapOptions = {
      * element itself or the `id` of the element. If not specified at construction
      * time, {@link module :ol/Map~Map#setTarget} must be called for the map to be
      * rendered. If passed by element, the container can be in a secondary document.
+     * For use in workers or when exporting a map, use an `OffscreenCanvas` or `HTMLCanvasElement` as target.
      * For accessibility (focus and keyboard events for map navigation), the `target` element must have a
      * properly configured `tabindex` attribute. If the `target` element is inside a Shadow DOM, the
      * `tabindex` atribute must be set on the custom element's host element.
      * **Note:** CSS `transform` support for the target element is limited to `scale`.
      */
-    target?: string | HTMLElement | undefined;
+    target?: string | HTMLElement | HTMLCanvasElement | OffscreenCanvas | undefined;
     /**
      * The map's view.  No layer sources will be
      * fetched unless this is specified at construction time or through
@@ -10305,11 +8567,7 @@ declare class Map extends BaseObject {
      * @type {?Array<import("./events.js").EventsKey>}
      */
     private layerGroupPropertyListenerKeys_;
-    /**
-     * @private
-     * @type {!HTMLElement}
-     */
-    private viewport_;
+    viewport_: HTMLDivElement | undefined;
     /**
      * @private
      * @type {!HTMLElement}
@@ -10811,9 +9069,9 @@ declare class RenderEvent extends BaseEvent {
      * @param {import("../transform.js").Transform} [inversePixelTransform] Transform for
      *     CSS pixels to rendered pixels.
      * @param {import("../Map.js").FrameState} [frameState] Frame state.
-     * @param {?(CanvasRenderingContext2D|WebGLRenderingContext)} [context] Context.
+     * @param {?(CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D|WebGLRenderingContext)} [context] Context.
      */
-    constructor(type: any, inversePixelTransform?: Transform, frameState?: FrameState, context?: (CanvasRenderingContext2D | WebGLRenderingContext) | null);
+    constructor(type: any, inversePixelTransform?: Transform, frameState?: FrameState, context?: (CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | WebGLRenderingContext) | null);
     /**
      * Transform from CSS pixels (relative to the top-left corner of the map viewport)
      * to rendered pixels on this event's `context`. Only available when a Canvas renderer is used, null otherwise.
@@ -10831,10 +9089,10 @@ declare class RenderEvent extends BaseEvent {
      * Canvas context. Not available when the event is dispatched by the map. For Canvas 2D layers,
      * the context will be the 2D rendering context.  For WebGL layers, the context will be the WebGL
      * context.
-     * @type {CanvasRenderingContext2D|WebGLRenderingContext|undefined}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D|WebGLRenderingContext|undefined}
      * @api
      */
-    context: CanvasRenderingContext2D | WebGLRenderingContext | undefined;
+    context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | WebGLRenderingContext | undefined;
 }
 //# sourceMappingURL=Event.d.ts.map
 
@@ -10849,7 +9107,7 @@ declare class RenderEvent extends BaseEvent {
  */
 declare class CanvasImmediateRenderer extends VectorContext {
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../../extent.js").Extent} extent Extent.
      * @param {import("../../transform.js").Transform} transform Transform.
@@ -10857,10 +9115,10 @@ declare class CanvasImmediateRenderer extends VectorContext {
      * @param {number} [squaredTolerance] Optional squared tolerance for simplification.
      * @param {import("../../proj.js").TransformFunction} [userTransform] Transform from user to view projection.
      */
-    constructor(context: CanvasRenderingContext2D, pixelRatio: number, extent: Extent$1, transform: Transform, viewRotation: number, squaredTolerance?: number, userTransform?: TransformFunction);
+    constructor(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, pixelRatio: number, extent: Extent$1, transform: Transform, viewRotation: number, squaredTolerance?: number, userTransform?: TransformFunction);
     /**
      * @private
-     * @type {CanvasRenderingContext2D}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D}
      */
     private context_;
     /**
@@ -11261,7 +9519,7 @@ declare function getVectorContext(event: RenderEvent): CanvasImmediateRenderer;
  * @api
  */
 declare function getRenderPixel(event: RenderEvent, pixel: Pixel): Pixel;
-type State = {
+type State$3 = {
     /**
      * Canvas context that the layer is being rendered to.
      */
@@ -11340,8 +9598,8 @@ type GeometryFunction$2 = (arg0: FeatureLike) => (Geometry$1 | RenderFeature | u
  * 1. The pixel coordinates of the geometry in GeoJSON notation.
  * 2. The {@link module :ol/render~State} of the layer renderer.
  */
-type RenderFunction = (arg0: (Coordinate | Array<Coordinate> | Array<Array<Coordinate>> | Array<Array<Array<Coordinate>>>), arg1: State) => void;
-type Options$1F = {
+type RenderFunction$1 = (arg0: (Coordinate | Array<Coordinate> | Array<Array<Coordinate>> | Array<Array<Array<Coordinate>>>), arg1: State$3) => void;
+type Options$1H = {
     /**
      * Feature property or geometry
      * or function returning a geometry to render for this style.
@@ -11359,12 +9617,12 @@ type Options$1F = {
      * Custom renderer. When configured, `fill`, `stroke` and `image` will be
      * ignored, and the provided function will be called with each render frame for each geometry.
      */
-    renderer?: RenderFunction | undefined;
+    renderer?: RenderFunction$1 | undefined;
     /**
      * Custom renderer for hit detection. If provided will be used
      * in hit detection rendering.
      */
-    hitDetectionRenderer?: RenderFunction | undefined;
+    hitDetectionRenderer?: RenderFunction$1 | undefined;
     /**
      * Stroke style.
      */
@@ -11528,7 +9786,7 @@ declare class Style$2 {
     /**
      * @param {Options} [options] Style options.
      */
-    constructor(options?: Options$1F);
+    constructor(options?: Options$1H);
     /**
      * @private
      * @type {string|import("../geom/Geometry.js").default|GeometryFunction|null}
@@ -11586,28 +9844,28 @@ declare class Style$2 {
      * @return {RenderFunction|null} Custom renderer function.
      * @api
      */
-    getRenderer(): RenderFunction | null;
+    getRenderer(): RenderFunction$1 | null;
     /**
      * Sets a custom renderer function for this style. When set, `fill`, `stroke`
      * and `image` options of the style will be ignored.
      * @param {RenderFunction|null} renderer Custom renderer function.
      * @api
      */
-    setRenderer(renderer: RenderFunction | null): void;
+    setRenderer(renderer: RenderFunction$1 | null): void;
     /**
      * Sets a custom renderer function for this style used
      * in hit detection.
      * @param {RenderFunction|null} renderer Custom renderer function.
      * @api
      */
-    setHitDetectionRenderer(renderer: RenderFunction | null): void;
+    setHitDetectionRenderer(renderer: RenderFunction$1 | null): void;
     /**
      * Get the custom renderer function that was configured with
      * {@link #setHitDetectionRenderer} or the `hitDetectionRenderer` constructor option.
      * @return {RenderFunction|null} Custom renderer function.
      * @api
      */
-    getHitDetectionRenderer(): RenderFunction | null;
+    getHitDetectionRenderer(): RenderFunction$1 | null;
     /**
      * Get the geometry to be rendered.
      * @return {string|import("../geom/Geometry.js").default|GeometryFunction|null}
@@ -11699,7 +9957,7 @@ declare class Style$2 {
  * The geometry type.  One of `'Point'`, `'LineString'`, `'LinearRing'`,
  * `'Polygon'`, `'MultiPoint'` or 'MultiLineString'`.
  */
-type Type$1 = "Point" | "LineString" | "LinearRing" | "Polygon" | "MultiPoint" | "MultiLineString";
+type Type$4 = "Point" | "LineString" | "LinearRing" | "Polygon" | "MultiPoint" | "MultiLineString";
 /**
  * Lightweight, read-only, {@link module:ol/Feature~Feature} and {@link module:ol/geom/Geometry~Geometry} like
  * structure, optimized for vector tile rendering and styling. Geometry access
@@ -11715,7 +9973,7 @@ declare class RenderFeature {
      * @param {Object<string, *>} properties Properties.
      * @param {number|string|undefined} id Feature id.
      */
-    constructor(type: Type$1, flatCoordinates: Array<number>, ends: Array<number>, stride: number, properties: {
+    constructor(type: Type$4, flatCoordinates: Array<number>, ends: Array<number>, stride: number, properties: {
         [x: string]: any;
     }, id: number | string | undefined);
     /**
@@ -11865,7 +10123,7 @@ declare class RenderFeature {
      * @return {Type} Geometry type.
      * @api
      */
-    getType(): Type$1;
+    getType(): Type$4;
     /**
      * Transform geometry coordinates from tile pixel space to projected.
      *
@@ -12113,6 +10371,2337 @@ declare class Feature$2<Geometry extends Geometry$1 = Geometry$1> extends BaseOb
 }
 
 /**
+ * @module ol/resolution
+ */
+/**
+ * @typedef {number|Array<number>} ResolutionLike
+ */
+/**
+ * @param {ResolutionLike} resolution Resolution.
+ * @return {number} Resolution.
+ */
+declare function fromResolutionLike(resolution: ResolutionLike): number;
+type ResolutionLike = number | Array<number>;
+
+/**
+ * A function that takes an {@link module :ol/Image~ImageWrapper} for the image and a
+ * `{string}` for the src as arguments. It is supposed to make it so the
+ * underlying image {@link module :ol/Image~ImageWrapper#getImage} is assigned the
+ * content specified by the src. If not specified, the default is
+ *
+ *     function(image, src) {
+ *       image.getImage().src = src;
+ *     }
+ *
+ * Providing a custom `imageLoadFunction` can be useful to load images with
+ * post requests or - in general - through XHR requests, where the src of the
+ * image element would be set to a data URI when the content is loaded.
+ */
+type LoadFunction = (arg0: ImageWrapper, arg1: string) => void;
+type ImageObject = {
+    /**
+     * Extent, if different from the requested one.
+     */
+    extent?: Extent$1 | undefined;
+    /**
+     * Resolution, if different from the requested one.
+     * When x and y resolution are different, use the array type (`[xResolution, yResolution]`).
+     */
+    resolution?: ResolutionLike | undefined;
+    /**
+     * Pixel ratio, if different from the requested one.
+     */
+    pixelRatio?: number | undefined;
+    /**
+     * Image.
+     */
+    image: ImageLike;
+};
+/**
+ * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
+ * For images that cover any extent and resolution (static images), the loader function should not accept
+ * any arguments. The function returns an {@link import ("./DataTile.js").ImageLike image}, an
+ * {@link import ("./Image.js").ImageObject image object}, or a promise for the same.
+ * For loaders that generate images, the promise should not resolve until the image is loaded.
+ * If the returned image does not match the extent, resolution or pixel ratio passed to the loader,
+ * it has to return an {@link import ("./Image.js").ImageObject image object} with the `image` and the
+ * correct `extent`, `resolution` and `pixelRatio`.
+ */
+type Loader$3 = (arg0: Extent$1, arg1: number, arg2: number, arg3: ((arg0: HTMLImageElement, arg1: string) => void) | undefined) => ImageLike | ImageObject | Promise<ImageLike | ImageObject>;
+/**
+ * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
+ * The function returns a promise for an  {@link import ("./Image.js").ImageObject image object}.
+ */
+type ImageObjectPromiseLoader = (arg0: Extent$1, arg1: number, arg2: number, arg3: ((arg0: HTMLImageElement, arg1: string) => void) | undefined) => Promise<ImageLike | ImageObject>;
+/**
+ * A function that takes an {@link module:ol/Image~ImageWrapper} for the image and a
+ * `{string}` for the src as arguments. It is supposed to make it so the
+ * underlying image {@link module:ol/Image~ImageWrapper#getImage} is assigned the
+ * content specified by the src. If not specified, the default is
+ *
+ *     function(image, src) {
+ *       image.getImage().src = src;
+ *     }
+ *
+ * Providing a custom `imageLoadFunction` can be useful to load images with
+ * post requests or - in general - through XHR requests, where the src of the
+ * image element would be set to a data URI when the content is loaded.
+ *
+ * @typedef {function(import("./Image.js").default, string): void} LoadFunction
+ * @api
+ */
+/**
+ * @typedef {Object} ImageObject
+ * @property {import("./extent.js").Extent} [extent] Extent, if different from the requested one.
+ * @property {import("./resolution.js").ResolutionLike} [resolution] Resolution, if different from the requested one.
+ * When x and y resolution are different, use the array type (`[xResolution, yResolution]`).
+ * @property {number} [pixelRatio] Pixel ratio, if different from the requested one.
+ * @property {import('./DataTile.js').ImageLike} image Image.
+ */
+/**
+ * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
+ * For images that cover any extent and resolution (static images), the loader function should not accept
+ * any arguments. The function returns an {@link import("./DataTile.js").ImageLike image}, an
+ * {@link import("./Image.js").ImageObject image object}, or a promise for the same.
+ * For loaders that generate images, the promise should not resolve until the image is loaded.
+ * If the returned image does not match the extent, resolution or pixel ratio passed to the loader,
+ * it has to return an {@link import("./Image.js").ImageObject image object} with the `image` and the
+ * correct `extent`, `resolution` and `pixelRatio`.
+ *
+ * @typedef {function(import("./extent.js").Extent, number, number, (function(HTMLImageElement, string): void)=): import("./DataTile.js").ImageLike|ImageObject|Promise<import("./DataTile.js").ImageLike|ImageObject>} Loader
+ * @api
+ */
+/**
+ * Loader function used for image sources. Receives extent, resolution and pixel ratio as arguments.
+ * The function returns a promise for an  {@link import("./Image.js").ImageObject image object}.
+ *
+ * @typedef {function(import("./extent.js").Extent, number, number, (function(HTMLImageElement, string): void)=): Promise<import("./DataTile.js").ImageLike|ImageObject>} ImageObjectPromiseLoader
+ */
+declare class ImageWrapper extends Target {
+    /**
+     * @param {import("./extent.js").Extent} extent Extent.
+     * @param {number|Array<number>|undefined} resolution Resolution. If provided as array, x and y
+     * resolution will be assumed.
+     * @param {number} pixelRatio Pixel ratio.
+     * @param {import("./ImageState.js").default|Loader} stateOrLoader State.
+     */
+    constructor(extent: Extent$1, resolution: number | Array<number> | undefined, pixelRatio: number, stateOrLoader: any | Loader$3);
+    /**
+     * @protected
+     * @type {import("./extent.js").Extent}
+     */
+    protected extent: Extent$1;
+    /**
+     * @private
+     * @type {number}
+     */
+    private pixelRatio_;
+    /**
+     * @protected
+     * @type {number|Array<number>|undefined}
+     */
+    protected resolution: number | Array<number> | undefined;
+    /**
+     * @protected
+     * @type {import("./ImageState.js").default}
+     */
+    protected state: any;
+    /**
+     * @private
+     * @type {import('./DataTile.js').ImageLike|null}
+     */
+    private image_;
+    /**
+     * @protected
+     * @type {Loader|null}
+     */
+    protected loader: Loader$3 | null;
+    /**
+     * @protected
+     */
+    protected changed(): void;
+    /**
+     * @return {import("./extent.js").Extent} Extent.
+     */
+    getExtent(): Extent$1;
+    /**
+     * @return {import('./DataTile.js').ImageLike} Image.
+     */
+    getImage(): ImageLike;
+    /**
+     * @return {number} PixelRatio.
+     */
+    getPixelRatio(): number;
+    /**
+     * @return {number|Array<number>} Resolution.
+     */
+    getResolution(): number | Array<number>;
+    /**
+     * @return {import("./ImageState.js").default} State.
+     */
+    getState(): any;
+    /**
+     * Load not yet loaded URI.
+     */
+    load(): void;
+    /**
+     * @param {import('./DataTile.js').ImageLike} image The image.
+     */
+    setImage(image: ImageLike): void;
+    /**
+     * @param {number|Array<number>} resolution Resolution.
+     */
+    setResolution(resolution: number | Array<number>): void;
+}
+
+/**
+ * @template {import("../layer/Layer.js").default} LayerType
+ */
+declare class LayerRenderer<LayerType extends Layer> extends Observable {
+    /**
+     * @param {LayerType} layer Layer.
+     */
+    constructor(layer: LayerType);
+    /**
+     * The renderer is initialized and ready to render.
+     * @type {boolean}
+     */
+    ready: boolean;
+    /** @private */
+    private boundHandleImageChange_;
+    /**
+     * @private
+     * @type {LayerType}
+     */
+    private layer_;
+    /**
+     * @type {Array<string>}
+     * @private
+     */
+    private staleKeys_;
+    /**
+     * @type {number}
+     * @protected
+     */
+    protected maxStaleKeys: number;
+    /**
+     * @return {Array<string>} Get the list of stale keys.
+     */
+    getStaleKeys(): Array<string>;
+    /**
+     * @param {string} key The new stale key.
+     */
+    prependStaleKey(key: string): void;
+    /**
+     * Asynchronous layer level hit detection.
+     * @param {import("../pixel.js").Pixel} pixel Pixel.
+     * @return {Promise<Array<import("../Feature").FeatureLike>>} Promise that resolves with
+     * an array of features.
+     */
+    getFeatures(pixel: Pixel): Promise<Array<FeatureLike>>;
+    /**
+     * @param {import("../pixel.js").Pixel} pixel Pixel.
+     * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Pixel data.
+     */
+    getData(pixel: Pixel): Uint8ClampedArray | Uint8Array | Float32Array | DataView | null;
+    /**
+     * Determine whether render should be called.
+     * @abstract
+     * @param {import("../Map.js").FrameState} frameState Frame state.
+     * @return {boolean} Layer is ready to be rendered.
+     */
+    prepareFrame(frameState: FrameState): boolean;
+    /**
+     * Render the layer.
+     * @abstract
+     * @param {import("../Map.js").FrameState} frameState Frame state.
+     * @param {HTMLElement|null} target Target that may be used to render content to.
+     * @return {HTMLElement} The rendered element.
+     */
+    renderFrame(frameState: FrameState, target: HTMLElement | null): HTMLElement;
+    /**
+     * @abstract
+     * @param {import("../coordinate.js").Coordinate} coordinate Coordinate.
+     * @param {import("../Map.js").FrameState} frameState Frame state.
+     * @param {number} hitTolerance Hit tolerance in pixels.
+     * @param {import("./vector.js").FeatureCallback<T>} callback Feature callback.
+     * @param {Array<import("./Map.js").HitMatch<T>>} matches The hit detected matches with tolerance.
+     * @return {T|undefined} Callback result.
+     * @template T
+     */
+    forEachFeatureAtCoordinate<T>(coordinate: Coordinate, frameState: FrameState, hitTolerance: number, callback: FeatureCallback<T>, matches: Array<HitMatch<T>>): T | undefined;
+    /**
+     * @return {LayerType} Layer.
+     */
+    getLayer(): LayerType;
+    /**
+     * Perform action necessary to get the layer rendered after new fonts have loaded
+     * @abstract
+     */
+    handleFontsChanged(): void;
+    /**
+     * Handle changes in image state.
+     * @param {import("../events/Event.js").default} event Image change event.
+     * @private
+     */
+    private handleImageChange_;
+    /**
+     * Load the image if not already loaded, and register the image change
+     * listener if needed.
+     * @param {import("../Image.js").default} image Image.
+     * @return {boolean} `true` if the image is already loaded, `false` otherwise.
+     * @protected
+     */
+    protected loadImage(image: ImageWrapper): boolean;
+    /**
+     * @protected
+     */
+    protected renderIfReadyAndVisible(): void;
+    /**
+     * @param {import("../Map.js").FrameState} frameState Frame state.
+     */
+    renderDeferred(frameState: FrameState): void;
+}
+//# sourceMappingURL=Layer.d.ts.map
+
+type RenderFunction = (arg0: FrameState) => HTMLElement;
+type LayerEventType = "sourceready" | "change:source";
+/**
+ * *
+ */
+type LayerOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<BaseLayerObjectEventTypes | LayerEventType, ObjectEvent, Return> & OnSignature<LayerRenderEventTypes, RenderEvent, Return> & CombinedOnSignature<EventTypes | BaseLayerObjectEventTypes | LayerEventType | LayerRenderEventTypes, Return>;
+type Options$1G<SourceType extends Source = Source> = {
+    /**
+     * A CSS class name to set to the layer element.
+     */
+    className?: string | undefined;
+    /**
+     * Opacity (0, 1).
+     */
+    opacity?: number | undefined;
+    /**
+     * Visibility.
+     */
+    visible?: boolean | undefined;
+    /**
+     * The bounding extent for layer rendering.  The layer will not be
+     * rendered outside of this extent.
+     */
+    extent?: Extent$1 | undefined;
+    /**
+     * The z-index for layer rendering.  At rendering time, the layers
+     * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
+     * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
+     * method was used.
+     */
+    zIndex?: number | undefined;
+    /**
+     * The minimum resolution (inclusive) at which this layer will be
+     * visible.
+     */
+    minResolution?: number | undefined;
+    /**
+     * The maximum resolution (exclusive) below which this layer will
+     * be visible.
+     */
+    maxResolution?: number | undefined;
+    /**
+     * The minimum view zoom level (exclusive) above which this layer will be
+     * visible.
+     */
+    minZoom?: number | undefined;
+    /**
+     * The maximum view zoom level (inclusive) at which this layer will
+     * be visible.
+     */
+    maxZoom?: number | undefined;
+    /**
+     * Source for this layer.  If not provided to the constructor,
+     * the source can be set by calling {@link module :ol/layer/Layer~Layer#setSource layer.setSource(source)} after
+     * construction.
+     */
+    source?: SourceType | undefined;
+    /**
+     * Map.
+     */
+    map?: Map | null | undefined;
+    /**
+     * Render function. Takes the frame state as input and is expected to return an
+     * HTML element. Will overwrite the default rendering for the layer.
+     */
+    render?: RenderFunction | undefined;
+    /**
+     * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+     */
+    properties?: {
+        [x: string]: any;
+    } | undefined;
+};
+type State$2 = {
+    /**
+     * Layer.
+     */
+    layer: Layer;
+    /**
+     * Opacity, the value is rounded to two digits to appear after the decimal point.
+     */
+    opacity: number;
+    /**
+     * Visible.
+     */
+    visible: boolean;
+    /**
+     * Managed.
+     */
+    managed: boolean;
+    /**
+     * Extent.
+     */
+    extent?: Extent$1 | undefined;
+    /**
+     * ZIndex.
+     */
+    zIndex: number;
+    /**
+     * Maximum resolution.
+     */
+    maxResolution: number;
+    /**
+     * Minimum resolution.
+     */
+    minResolution: number;
+    /**
+     * Minimum zoom.
+     */
+    minZoom: number;
+    /**
+     * Maximum zoom.
+     */
+    maxZoom: number;
+};
+/**
+ * @typedef {function(import("../Map.js").FrameState):HTMLElement} RenderFunction
+ */
+/**
+ * @typedef {'sourceready'|'change:source'} LayerEventType
+ */
+/***
+ * @template Return
+ * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable").OnSignature<import("./Base").BaseLayerObjectEventTypes|
+ *     LayerEventType, import("../Object").ObjectEvent, Return> &
+ *   import("../Observable").OnSignature<import("../render/EventType").LayerRenderEventTypes, import("../render/Event").default, Return> &
+ *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("./Base").BaseLayerObjectEventTypes|LayerEventType|
+ *     import("../render/EventType").LayerRenderEventTypes, Return>} LayerOnSignature
+ */
+/**
+ * @template {import("../source/Source.js").default} [SourceType=import("../source/Source.js").default]
+ * @typedef {Object} Options
+ * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
+ * @property {number} [opacity=1] Opacity (0, 1).
+ * @property {boolean} [visible=true] Visibility.
+ * @property {import("../extent.js").Extent} [extent] The bounding extent for layer rendering.  The layer will not be
+ * rendered outside of this extent.
+ * @property {number} [zIndex] The z-index for layer rendering.  At rendering time, the layers
+ * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
+ * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
+ * method was used.
+ * @property {number} [minResolution] The minimum resolution (inclusive) at which this layer will be
+ * visible.
+ * @property {number} [maxResolution] The maximum resolution (exclusive) below which this layer will
+ * be visible.
+ * @property {number} [minZoom] The minimum view zoom level (exclusive) above which this layer will be
+ * visible.
+ * @property {number} [maxZoom] The maximum view zoom level (inclusive) at which this layer will
+ * be visible.
+ * @property {SourceType} [source] Source for this layer.  If not provided to the constructor,
+ * the source can be set by calling {@link module:ol/layer/Layer~Layer#setSource layer.setSource(source)} after
+ * construction.
+ * @property {import("../Map.js").default|null} [map] Map.
+ * @property {RenderFunction} [render] Render function. Takes the frame state as input and is expected to return an
+ * HTML element. Will overwrite the default rendering for the layer.
+ * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+ */
+/**
+ * @typedef {Object} State
+ * @property {import("./Layer.js").default} layer Layer.
+ * @property {number} opacity Opacity, the value is rounded to two digits to appear after the decimal point.
+ * @property {boolean} visible Visible.
+ * @property {boolean} managed Managed.
+ * @property {import("../extent.js").Extent} [extent] Extent.
+ * @property {number} zIndex ZIndex.
+ * @property {number} maxResolution Maximum resolution.
+ * @property {number} minResolution Minimum resolution.
+ * @property {number} minZoom Minimum zoom.
+ * @property {number} maxZoom Maximum zoom.
+ */
+/**
+ * @classdesc
+ * Base class from which all layer types are derived. This should only be instantiated
+ * in the case where a custom layer is added to the map with a custom `render` function.
+ * Such a function can be specified in the `options` object, and is expected to return an HTML element.
+ *
+ * A visual representation of raster or vector map data.
+ * Layers group together those properties that pertain to how the data is to be
+ * displayed, irrespective of the source of that data.
+ *
+ * Layers are usually added to a map with [map.addLayer()]{@link import("../Map.js").default#addLayer}.
+ * Components like {@link module:ol/interaction/Draw~Draw} use unmanaged layers
+ * internally. These unmanaged layers are associated with the map using
+ * [layer.setMap()]{@link module:ol/layer/Layer~Layer#setMap} instead.
+ *
+ * A generic `change` event is fired when the state of the source changes.
+ * A `sourceready` event is fired when the layer's source is ready.
+ *
+ * @fires import("../render/Event.js").RenderEvent#prerender
+ * @fires import("../render/Event.js").RenderEvent#postrender
+ * @fires import("../events/Event.js").BaseEvent#sourceready
+ *
+ * @template {import("../source/Source.js").default} [SourceType=import("../source/Source.js").default]
+ * @template {import("../renderer/Layer.js").default} [RendererType=import("../renderer/Layer.js").default]
+ * @api
+ */
+declare class Layer<SourceType extends Source = Source, RendererType extends LayerRenderer<any> = LayerRenderer<any>> extends BaseLayer {
+    /**
+     * @param {Options<SourceType>} options Layer options.
+     */
+    constructor(options: Options$1G<SourceType>);
+    /***
+     * @type {LayerOnSignature<import("../events").EventsKey>}
+     */
+    on: LayerOnSignature<EventsKey>;
+    /***
+     * @type {LayerOnSignature<import("../events").EventsKey>}
+     */
+    once: LayerOnSignature<EventsKey>;
+    /***
+     * @type {LayerOnSignature<void>}
+     */
+    un: LayerOnSignature<void>;
+    /**
+     * @private
+     * @type {?import("../events.js").EventsKey}
+     */
+    private mapPrecomposeKey_;
+    /**
+     * @private
+     * @type {?import("../events.js").EventsKey}
+     */
+    private mapRenderKey_;
+    /**
+     * @private
+     * @type {?import("../events.js").EventsKey}
+     */
+    private sourceChangeKey_;
+    /**
+     * @private
+     * @type {RendererType}
+     */
+    private renderer_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private sourceReady_;
+    /**
+     * @protected
+     * @type {boolean}
+     */
+    protected rendered: boolean;
+    /**
+     * In charge to manage the rendering of the layer. One layer type is
+     * bounded with one layer renderer.
+     * @param {?import("../Map.js").FrameState} frameState Frame state.
+     * @param {HTMLElement} target Target which the renderer may (but need not) use
+     * for rendering its content.
+     * @return {HTMLElement|null} The rendered element.
+     */
+    render(frameState: FrameState | null, target: HTMLElement): HTMLElement | null;
+    /**
+     * Get the layer source.
+     * @return {SourceType|null} The layer source (or `null` if not yet set).
+     * @observable
+     * @api
+     */
+    getSource(): SourceType | null;
+    /**
+     * @return {SourceType|null} The source being rendered.
+     */
+    getRenderSource(): SourceType | null;
+    /**
+     * @private
+     */
+    private handleSourceChange_;
+    /**
+     * @private
+     */
+    private handleSourcePropertyChange_;
+    /**
+     * @param {import("../pixel").Pixel} pixel Pixel.
+     * @return {Promise<Array<import("../Feature").FeatureLike>>} Promise that resolves with
+     * an array of features.
+     */
+    getFeatures(pixel: Pixel): Promise<Array<FeatureLike>>;
+    /**
+     * @param {import("../pixel").Pixel} pixel Pixel.
+     * @return {Uint8ClampedArray|Uint8Array|Float32Array|DataView|null} Pixel data.
+     */
+    getData(pixel: Pixel): Uint8ClampedArray | Uint8Array | Float32Array | DataView | null;
+    /**
+     * The layer is visible on the map view, i.e. within its min/max resolution or zoom and
+     * extent, not set to `visible: false`, and not inside a layer group that is set
+     * to `visible: false`.
+     * @param {View|import("../View.js").ViewStateLayerStateExtent} [view] View or {@link import("../Map.js").FrameState}.
+     * Only required when the layer is not added to a map.
+     * @return {boolean} The layer is visible in the map view.
+     * @api
+     */
+    isVisible(view?: View | ViewStateLayerStateExtent): boolean;
+    /**
+     * Get the attributions of the source of this layer for the given view.
+     * @param {View|import("../View.js").ViewStateLayerStateExtent} [view] View or {@link import("../Map.js").FrameState}.
+     * Only required when the layer is not added to a map.
+     * @return {Array<string>} Attributions for this layer at the given view.
+     * @api
+     */
+    getAttributions(view?: View | ViewStateLayerStateExtent): Array<string>;
+    /**
+     * Called when a layer is not visible during a map render.
+     */
+    unrender(): void;
+    /** @return {string} Declutter */
+    getDeclutter(): string;
+    /**
+     * @param {import("../Map.js").FrameState} frameState Frame state.
+     * @param {import("../layer/Layer.js").State} layerState Layer state.
+     */
+    renderDeclutter(frameState: FrameState, layerState: State$2): void;
+    /**
+     * When the renderer follows a layout -> render approach, do the final rendering here.
+     * @param {import('../Map.js').FrameState} frameState Frame state
+     */
+    renderDeferred(frameState: FrameState): void;
+    /**
+     * For use inside the library only.
+     * @param {import("../Map.js").default|null} map Map.
+     */
+    setMapInternal(map: Map | null): void;
+    /**
+     * For use inside the library only.
+     * @return {import("../Map.js").default|null} Map.
+     */
+    getMapInternal(): Map | null;
+    /**
+     * Sets the layer to be rendered on top of other layers on a map. The map will
+     * not manage this layer in its layers collection. This
+     * is useful for temporary layers. To remove an unmanaged layer from the map,
+     * use `#setMap(null)`.
+     *
+     * To add the layer to a map and have it managed by the map, use
+     * {@link module:ol/Map~Map#addLayer} instead.
+     * @param {import("../Map.js").default|null} map Map.
+     * @api
+     */
+    setMap(map: Map | null): void;
+    /**
+     * @param {import("../events/Event.js").default} renderEvent Render event
+     * @private
+     */
+    private handlePrecompose_;
+    /**
+     * Set the layer source.
+     * @param {SourceType|null} source The layer source.
+     * @observable
+     * @api
+     */
+    setSource(source: SourceType | null): void;
+    /**
+     * Get the renderer for this layer.
+     * @return {RendererType|null} The layer renderer.
+     */
+    getRenderer(): RendererType | null;
+    /**
+     * @return {boolean} The layer has a renderer.
+     */
+    hasRenderer(): boolean;
+    /**
+     * Create a renderer for this layer.
+     * @return {RendererType} A layer renderer.
+     * @protected
+     */
+    protected createRenderer(): RendererType;
+    /**
+     * This will clear the renderer so that a new one can be created next time it is needed
+     */
+    clearRenderer(): void;
+}
+
+/**
+ * @typedef {function((number|undefined), boolean=): (number|undefined)} Type
+ */
+/**
+ * @param {number|undefined} rotation Rotation.
+ * @return {number|undefined} Rotation.
+ */
+declare function disable(rotation: number | undefined): number | undefined;
+/**
+ * @param {number|undefined} rotation Rotation.
+ * @return {number|undefined} Rotation.
+ */
+declare function none$1(rotation: number | undefined): number | undefined;
+/**
+ * @param {number} n N.
+ * @return {Type} Rotation constraint.
+ */
+declare function createSnapToN(n: number): Type$3;
+/**
+ * @param {number} [tolerance] Tolerance.
+ * @return {Type} Rotation constraint.
+ */
+declare function createSnapToZero(tolerance?: number): Type$3;
+type Type$3 = (arg0: (number | undefined), arg1: boolean | undefined) => (number | undefined);
+
+/**
+ * @param {Array<number>} resolutions Resolutions.
+ * @param {boolean} [smooth] If true, the view will be able to slightly exceed resolution limits. Default: true.
+ * @param {import("./extent.js").Extent} [maxExtent] Maximum allowed extent.
+ * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
+ * @return {Type} Zoom function.
+ */
+declare function createSnapToResolutions(resolutions: Array<number>, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$2;
+/**
+ * @param {number} power Power.
+ * @param {number} maxResolution Maximum resolution.
+ * @param {number} [minResolution] Minimum resolution.
+ * @param {boolean} [smooth] If true, the view will be able to slightly exceed resolution limits. Default: true.
+ * @param {import("./extent.js").Extent} [maxExtent] Maximum allowed extent.
+ * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
+ * @return {Type} Zoom function.
+ */
+declare function createSnapToPower(power: number, maxResolution: number, minResolution?: number, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$2;
+/**
+ * @param {number} maxResolution Max resolution.
+ * @param {number} minResolution Min resolution.
+ * @param {boolean} [smooth] If true, the view will be able to slightly exceed resolution limits. Default: true.
+ * @param {import("./extent.js").Extent} [maxExtent] Maximum allowed extent.
+ * @param {boolean} [showFullExtent] If true, allows us to show the full extent. Default: false.
+ * @return {Type} Zoom function.
+ */
+declare function createMinMaxResolution(maxResolution: number, minResolution: number, smooth?: boolean, maxExtent?: Extent$1, showFullExtent?: boolean): Type$2;
+type Type$2 = (arg0: (number | undefined), arg1: number, arg2: Size, arg3: boolean | undefined) => (number | undefined);
+
+/**
+ * @typedef {function((import("./coordinate.js").Coordinate|undefined), number, import("./size.js").Size, boolean=, Array<number>=): (import("./coordinate.js").Coordinate|undefined)} Type
+ */
+/**
+ * @param {import("./extent.js").Extent} extent Extent.
+ * @param {boolean} onlyCenter If true, the constraint will only apply to the view center.
+ * @param {boolean} smooth If true, the view will be able to go slightly out of the given extent
+ * (only during interaction and animation).
+ * @return {Type} The constraint.
+ */
+declare function createExtent(extent: Extent$1, onlyCenter: boolean, smooth: boolean): Type$1;
+/**
+ * @param {import("./coordinate.js").Coordinate} [center] Center.
+ * @return {import("./coordinate.js").Coordinate|undefined} Center.
+ */
+declare function none(center?: Coordinate): Coordinate | undefined;
+type Type$1 = (arg0: (Coordinate | undefined), arg1: number, arg2: Size, arg3: boolean | undefined, arg4: Array<number> | undefined) => (Coordinate | undefined);
+
+type Constraints = {
+    /**
+     * Center.
+     */
+    center: Type$1;
+    /**
+     * Resolution.
+     */
+    resolution: Type$2;
+    /**
+     * Rotation.
+     */
+    rotation: Type$3;
+};
+type FitOptions = {
+    /**
+     * The size in pixels of the box to
+     * fit the extent into. Defaults to the size of the map the view is associated with.
+     * If no map or multiple maps are connected to the view, provide the desired box size
+     * (e.g. `map.getSize()`).
+     */
+    size?: Size | undefined;
+    /**
+     * Padding (in pixels) to be
+     * cleared inside the view. Values in the array are top, right, bottom and left
+     * padding.
+     */
+    padding?: number[] | undefined;
+    /**
+     * If the view `constrainResolution` option is `true`,
+     * get the nearest extent instead of the closest that actually fits the view.
+     */
+    nearest?: boolean | undefined;
+    /**
+     * Minimum resolution that we zoom to.
+     */
+    minResolution?: number | undefined;
+    /**
+     * Maximum zoom level that we zoom to. If
+     * `minResolution` is given, this property is ignored.
+     */
+    maxZoom?: number | undefined;
+    /**
+     * The duration of the animation in milliseconds.
+     * By default, there is no animation to the target extent.
+     */
+    duration?: number | undefined;
+    /**
+     * The easing function used during
+     * the animation (defaults to {@link module :ol/easing.inAndOut}).
+     * The function will be called for each frame with a number representing a
+     * fraction of the animation's duration.  The function should return a number
+     * between 0 and 1 representing the progress toward the destination state.
+     */
+    easing?: ((arg0: number) => number) | undefined;
+    /**
+     * Function called when the view is in
+     * its final position. The callback will be called with `true` if the animation
+     * series completed on its own or `false` if it was cancelled.
+     */
+    callback?: ((arg0: boolean) => void) | undefined;
+};
+type ViewOptions = {
+    /**
+     * The initial center for
+     * the view. If a user projection is not set, the coordinate system for the center is
+     * specified with the `projection` option. Layer sources will not be fetched if this
+     * is not set, but the center can be set later with {@link  #setCenter}.
+     */
+    center?: Coordinate | undefined;
+    /**
+     * Rotation constraint.
+     * `false` means no constraint. `true` means no constraint, but snap to zero
+     * near zero. A number constrains the rotation to that number of values. For
+     * example, `4` will constrain the rotation to 0, 90, 180, and 270 degrees.
+     */
+    constrainRotation?: number | boolean | undefined;
+    /**
+     * Enable rotation.
+     * If `false`, a rotation constraint that always sets the rotation to zero is
+     * used. The `constrainRotation` option has no effect if `enableRotation` is
+     * `false`.
+     */
+    enableRotation?: boolean | undefined;
+    /**
+     * The extent that constrains the
+     * view, in other words, nothing outside of this extent can be visible on the map.
+     */
+    extent?: Extent$1 | undefined;
+    /**
+     * If true, the extent
+     * constraint will only apply to the view center and not the whole extent.
+     */
+    constrainOnlyCenter?: boolean | undefined;
+    /**
+     * If true, the extent
+     * constraint will be applied smoothly, i.e. allow the view to go slightly outside
+     * of the given `extent`.
+     */
+    smoothExtentConstraint?: boolean | undefined;
+    /**
+     * The maximum resolution used to determine
+     * the resolution constraint. It is used together with `minResolution` (or
+     * `maxZoom`) and `zoomFactor`. If unspecified it is calculated in such a way
+     * that the projection's validity extent fits in a 256x256 px tile. If the
+     * projection is Spherical Mercator (the default) then `maxResolution` defaults
+     * to `40075016.68557849 / 256 = 156543.03392804097`.
+     */
+    maxResolution?: number | undefined;
+    /**
+     * The minimum resolution used to determine
+     * the resolution constraint.  It is used together with `maxResolution` (or
+     * `minZoom`) and `zoomFactor`.  If unspecified it is calculated assuming 29
+     * zoom levels (with a factor of 2). If the projection is Spherical Mercator
+     * (the default) then `minResolution` defaults to
+     * `40075016.68557849 / 256 / Math.pow(2, 28) = 0.0005831682455839253`.
+     */
+    minResolution?: number | undefined;
+    /**
+     * The maximum zoom level used to determine the
+     * resolution constraint. It is used together with `minZoom` (or
+     * `maxResolution`) and `zoomFactor`.  Note that if `minResolution` is also
+     * provided, it is given precedence over `maxZoom`.
+     */
+    maxZoom?: number | undefined;
+    /**
+     * The minimum zoom level used to determine the
+     * resolution constraint. It is used together with `maxZoom` (or
+     * `minResolution`) and `zoomFactor`.  Note that if `maxResolution` is also
+     * provided, it is given precedence over `minZoom`.
+     */
+    minZoom?: number | undefined;
+    /**
+     * If `false` the view is constrained so
+     * only one world is visible, and you cannot pan off the edge.  If `true` the map
+     * may show multiple worlds at low zoom levels.  Only used if the `projection` is
+     * global.  Note that if `extent` is also provided it is given precedence.
+     */
+    multiWorld?: boolean | undefined;
+    /**
+     * If true, the view will always
+     * animate to the closest zoom level after an interaction; false means
+     * intermediary zoom levels are allowed.
+     */
+    constrainResolution?: boolean | undefined;
+    /**
+     * If true, the resolution
+     * min/max values will be applied smoothly, i. e. allow the view to exceed slightly
+     * the given resolution or zoom bounds.
+     */
+    smoothResolutionConstraint?: boolean | undefined;
+    /**
+     * Allow the view to be zoomed out to
+     * show the full configured extent. By default, when a view is configured with an
+     * extent, users will not be able to zoom out so the viewport exceeds the extent in
+     * either dimension. This means the full extent may not be visible if the viewport
+     * is taller or wider than the aspect ratio of the configured extent. If
+     * showFullExtent is true, the user will be able to zoom out so that the viewport
+     * exceeds the height or width of the configured extent, but not both, allowing the
+     * full extent to be shown.
+     */
+    showFullExtent?: boolean | undefined;
+    /**
+     * The
+     * projection. The default is Spherical Mercator.
+     */
+    projection?: ProjectionLike;
+    /**
+     * The initial resolution for the view. The
+     * units are `projection` units per pixel (e.g. meters per pixel). An
+     * alternative to setting this is to set `zoom`. Layer sources will not be
+     * fetched if neither this nor `zoom` are defined, but they can be set later
+     * with {@link  #setZoom} or {@link  #setResolution}.
+     */
+    resolution?: number | undefined;
+    /**
+     * Resolutions that determine the
+     * zoom levels if specified. The index in the array corresponds to the zoom level,
+     * therefore the resolution values have to be in descending order. It also constrains
+     * the resolution by the minimum and maximum value. If set the `maxResolution`,
+     * `minResolution`, `minZoom`, `maxZoom`, and `zoomFactor` options are ignored.
+     */
+    resolutions?: number[] | undefined;
+    /**
+     * The initial rotation for the view in radians
+     * (positive rotation clockwise, 0 means North).
+     */
+    rotation?: number | undefined;
+    /**
+     * Only used if `resolution` is not defined. Zoom
+     * level used to calculate the initial resolution for the view.
+     */
+    zoom?: number | undefined;
+    /**
+     * The zoom factor used to compute the
+     * corresponding resolution.
+     */
+    zoomFactor?: number | undefined;
+    /**
+     * Padding (in css pixels).
+     * If the map viewport is partially covered with other content (overlays) along
+     * its edges, this setting allows to shift the center of the viewport away from
+     * that content. The order of the values is top, right, bottom, left.
+     */
+    padding?: number[] | undefined;
+};
+type AnimationOptions = {
+    /**
+     * The center of the view at the end of
+     * the animation.
+     */
+    center?: Coordinate | undefined;
+    /**
+     * The zoom level of the view at the end of the
+     * animation. This takes precedence over `resolution`.
+     */
+    zoom?: number | undefined;
+    /**
+     * The resolution of the view at the end
+     * of the animation.  If `zoom` is also provided, this option will be ignored.
+     */
+    resolution?: number | undefined;
+    /**
+     * The rotation of the view at the end of
+     * the animation.
+     */
+    rotation?: number | undefined;
+    /**
+     * Optional anchor to remain fixed
+     * during a rotation or resolution animation.
+     */
+    anchor?: Coordinate | undefined;
+    /**
+     * The duration of the animation in milliseconds.
+     */
+    duration?: number | undefined;
+    /**
+     * The easing function used
+     * during the animation (defaults to {@link module :ol/easing.inAndOut}).
+     * The function will be called for each frame with a number representing a
+     * fraction of the animation's duration.  The function should return a number
+     * between 0 and 1 representing the progress toward the destination state.
+     */
+    easing?: ((arg0: number) => number) | undefined;
+};
+type State$1 = {
+    /**
+     * Center (in view projection coordinates).
+     */
+    center: Coordinate;
+    /**
+     * Projection.
+     */
+    projection: Projection;
+    /**
+     * Resolution.
+     */
+    resolution: number;
+    /**
+     * The next center during an animation series.
+     */
+    nextCenter?: Coordinate | undefined;
+    /**
+     * The next resolution during an animation series.
+     */
+    nextResolution?: number | undefined;
+    /**
+     * The next rotation during an animation series.
+     */
+    nextRotation?: number | undefined;
+    /**
+     * Rotation.
+     */
+    rotation: number;
+    /**
+     * Zoom.
+     */
+    zoom: number;
+};
+/**
+ * Like {@link import ("./Map.js").FrameState}, but just `viewState` and `extent`.
+ */
+type ViewStateLayerStateExtent = {
+    /**
+     * View state.
+     */
+    viewState: State$1;
+    /**
+     * Extent (in user projection coordinates).
+     */
+    extent: Extent$1;
+    /**
+     * Layer states.
+     */
+    layerStatesArray?: State$2[] | undefined;
+};
+type ViewObjectEventTypes = Types$2 | "change:center" | "change:resolution" | "change:rotation";
+/**
+ * *
+ */
+type ViewOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<ViewObjectEventTypes, ObjectEvent, Return> & CombinedOnSignature<EventTypes | ViewObjectEventTypes, Return>;
+/**
+ * @typedef {import("./ObjectEventType").Types|'change:center'|'change:resolution'|'change:rotation'} ViewObjectEventTypes
+ */
+/***
+ * @template Return
+ * @typedef {import("./Observable").OnSignature<import("./Observable").EventTypes, import("./events/Event.js").default, Return> &
+ *   import("./Observable").OnSignature<ViewObjectEventTypes, import("./Object").ObjectEvent, Return> &
+ *   import("./Observable").CombinedOnSignature<import("./Observable").EventTypes|ViewObjectEventTypes, Return>} ViewOnSignature
+ */
+/**
+ * @classdesc
+ * A View object represents a simple 2D view of the map.
+ *
+ * This is the object to act upon to change the center, resolution,
+ * and rotation of the map.
+ *
+ * A View has a `projection`. The projection determines the
+ * coordinate system of the center, and its units determine the units of the
+ * resolution (projection units per pixel). The default projection is
+ * Web Mercator (EPSG:3857).
+ *
+ * ### The view states
+ *
+ * A View is determined by three states: `center`, `resolution`,
+ * and `rotation`. Each state has a corresponding getter and setter, e.g.
+ * `getCenter` and `setCenter` for the `center` state.
+ *
+ * The `zoom` state is actually not saved on the view: all computations
+ * internally use the `resolution` state. Still, the `setZoom` and `getZoom`
+ * methods are available, as well as `getResolutionForZoom` and
+ * `getZoomForResolution` to switch from one system to the other.
+ *
+ * ### The constraints
+ *
+ * `setCenter`, `setResolution` and `setRotation` can be used to change the
+ * states of the view, but any constraint defined in the constructor will
+ * be applied along the way.
+ *
+ * A View object can have a *resolution constraint*, a *rotation constraint*
+ * and a *center constraint*.
+ *
+ * The *resolution constraint* typically restricts min/max values and
+ * snaps to specific resolutions. It is determined by the following
+ * options: `resolutions`, `maxResolution`, `maxZoom` and `zoomFactor`.
+ * If `resolutions` is set, the other three options are ignored. See
+ * documentation for each option for more information. By default, the view
+ * only has a min/max restriction and allow intermediary zoom levels when
+ * pinch-zooming for example.
+ *
+ * The *rotation constraint* snaps to specific angles. It is determined
+ * by the following options: `enableRotation` and `constrainRotation`.
+ * By default rotation is allowed and its value is snapped to zero when approaching the
+ * horizontal.
+ *
+ * The *center constraint* is determined by the `extent` option. By
+ * default the view center is not constrained at all.
+ *
+ * ### Changing the view state
+ *
+ * It is important to note that `setZoom`, `setResolution`, `setCenter` and
+ * `setRotation` are subject to the above mentioned constraints. As such, it
+ * may sometimes not be possible to know in advance the resulting state of the
+ * View. For example, calling `setResolution(10)` does not guarantee that
+ * `getResolution()` will return `10`.
+ *
+ * A consequence of this is that, when applying a delta on the view state, one
+ * should use `adjustCenter`, `adjustRotation`, `adjustZoom` and `adjustResolution`
+ * rather than the corresponding setters. This will let view do its internal
+ * computations. Besides, the `adjust*` methods also take an `anchor`
+ * argument which allows specifying an origin for the transformation.
+ *
+ * ### Interacting with the view
+ *
+ * View constraints are usually only applied when the view is *at rest*, meaning that
+ * no interaction or animation is ongoing. As such, if the user puts the view in a
+ * state that is not equivalent to a constrained one (e.g. rotating the view when
+ * the snap angle is 0), an animation will be triggered at the interaction end to
+ * put back the view to a stable state;
+ *
+ * @api
+ */
+declare class View extends BaseObject {
+    /**
+     * @param {ViewOptions} [options] View options.
+     */
+    constructor(options?: ViewOptions);
+    /***
+     * @type {ViewOnSignature<import("./events").EventsKey>}
+     */
+    on: ViewOnSignature<EventsKey>;
+    /***
+     * @type {ViewOnSignature<import("./events").EventsKey>}
+     */
+    once: ViewOnSignature<EventsKey>;
+    /***
+     * @type {ViewOnSignature<void>}
+     */
+    un: ViewOnSignature<void>;
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private hints_;
+    /**
+     * @private
+     * @type {Array<Array<Animation>>}
+     */
+    private animations_;
+    /**
+     * @private
+     * @type {number|undefined}
+     */
+    private updateAnimationKey_;
+    /**
+     * @private
+     * @const
+     * @type {import("./proj/Projection.js").default}
+     */
+    private projection_;
+    /**
+     * @private
+     * @type {import("./size.js").Size}
+     */
+    private viewportSize_;
+    /**
+     * @private
+     * @type {import("./coordinate.js").Coordinate|undefined}
+     */
+    private targetCenter_;
+    /**
+     * @private
+     * @type {number|undefined}
+     */
+    private targetResolution_;
+    /**
+     * @private
+     * @type {number|undefined}
+     */
+    private targetRotation_;
+    /**
+     * @private
+     * @type {import("./coordinate.js").Coordinate}
+     */
+    private nextCenter_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private nextResolution_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private nextRotation_;
+    /**
+     * @private
+     * @type {import("./coordinate.js").Coordinate|undefined}
+     */
+    private cancelAnchor_;
+    /**
+     * Set up the view with the given options.
+     * @param {ViewOptions} options View options.
+     */
+    applyOptions_(options: ViewOptions): void;
+    /**
+     * @private
+     * @type {number}
+     */
+    private maxResolution_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private minResolution_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private zoomFactor_;
+    /**
+     * @private
+     * @type {Array<number>|undefined}
+     */
+    private resolutions_;
+    /**
+     * @type {Array<number>|undefined}
+     * @private
+     */
+    private padding_;
+    /**
+     * @private
+     * @type {number}
+     */
+    private minZoom_;
+    /**
+     * @private
+     * @type {Constraints}
+     */
+    private constraints_;
+    set padding(padding: Array<number> | undefined);
+    /**
+     * Padding (in css pixels).
+     * If the map viewport is partially covered with other content (overlays) along
+     * its edges, this setting allows to shift the center of the viewport away from that
+     * content. The order of the values in the array is top, right, bottom, left.
+     * The default is no padding, which is equivalent to `[0, 0, 0, 0]`.
+     * @type {Array<number>|undefined}
+     * @api
+     */
+    get padding(): Array<number> | undefined;
+    /**
+     * Get an updated version of the view options used to construct the view.  The
+     * current resolution (or zoom), center, and rotation are applied to any stored
+     * options.  The provided options can be used to apply new min/max zoom or
+     * resolution limits.
+     * @param {ViewOptions} newOptions New options to be applied.
+     * @return {ViewOptions} New options updated with the current view state.
+     */
+    getUpdatedOptions_(newOptions: ViewOptions): ViewOptions;
+    /**
+     * Animate the view.  The view's center, zoom (or resolution), and rotation
+     * can be animated for smooth transitions between view states.  For example,
+     * to animate the view to a new zoom level:
+     *
+     *     view.animate({zoom: view.getZoom() + 1});
+     *
+     * By default, the animation lasts one second and uses in-and-out easing.  You
+     * can customize this behavior by including `duration` (in milliseconds) and
+     * `easing` options (see {@link module:ol/easing}).
+     *
+     * To chain together multiple animations, call the method with multiple
+     * animation objects.  For example, to first zoom and then pan:
+     *
+     *     view.animate({zoom: 10}, {center: [0, 0]});
+     *
+     * If you provide a function as the last argument to the animate method, it
+     * will get called at the end of an animation series.  The callback will be
+     * called with `true` if the animation series completed on its own or `false`
+     * if it was cancelled.
+     *
+     * Animations are cancelled by user interactions (e.g. dragging the map) or by
+     * calling `view.setCenter()`, `view.setResolution()`, or `view.setRotation()`
+     * (or another method that calls one of these).
+     *
+     * @param {...(AnimationOptions|function(boolean): void)} var_args Animation
+     *     options.  Multiple animations can be run in series by passing multiple
+     *     options objects.  To run multiple animations in parallel, call the method
+     *     multiple times.  An optional callback can be provided as a final
+     *     argument.  The callback will be called with a boolean indicating whether
+     *     the animation completed without being cancelled.
+     * @api
+     */
+    animate(...args: (AnimationOptions | ((arg0: boolean) => void))[]): void;
+    /**
+     * @param {...(AnimationOptions|function(boolean): void)} var_args Animation options.
+     */
+    animateInternal(...args: (AnimationOptions | ((arg0: boolean) => void))[]): void;
+    /**
+     * Determine if the view is being animated.
+     * @return {boolean} The view is being animated.
+     * @api
+     */
+    getAnimating(): boolean;
+    /**
+     * Determine if the user is interacting with the view, such as panning or zooming.
+     * @return {boolean} The view is being interacted with.
+     * @api
+     */
+    getInteracting(): boolean;
+    /**
+     * Cancel any ongoing animations.
+     * @api
+     */
+    cancelAnimations(): void;
+    /**
+     * Update all animations.
+     */
+    updateAnimations_(): void;
+    /**
+     * @param {number} rotation Target rotation.
+     * @param {import("./coordinate.js").Coordinate} anchor Rotation anchor.
+     * @return {import("./coordinate.js").Coordinate|undefined} Center for rotation and anchor.
+     */
+    calculateCenterRotate(rotation: number, anchor: Coordinate): Coordinate | undefined;
+    /**
+     * @param {number} resolution Target resolution.
+     * @param {import("./coordinate.js").Coordinate} anchor Zoom anchor.
+     * @return {import("./coordinate.js").Coordinate|undefined} Center for resolution and anchor.
+     */
+    calculateCenterZoom(resolution: number, anchor: Coordinate): Coordinate | undefined;
+    /**
+     * Returns the current viewport size.
+     * @private
+     * @param {number} [rotation] Take into account the rotation of the viewport when giving the size
+     * @return {import("./size.js").Size} Viewport size or `[100, 100]` when no viewport is found.
+     */
+    private getViewportSize_;
+    /**
+     * Stores the viewport size on the view. The viewport size is not read every time from the DOM
+     * to avoid performance hit and layout reflow.
+     * This should be done on map size change.
+     * Note: the constraints are not resolved during an animation to avoid stopping it
+     * @param {import("./size.js").Size} [size] Viewport size; if undefined, [100, 100] is assumed
+     */
+    setViewportSize(size?: Size): void;
+    /**
+     * Get the view center.
+     * @return {import("./coordinate.js").Coordinate|undefined} The center of the view.
+     * @observable
+     * @api
+     */
+    getCenter(): Coordinate | undefined;
+    /**
+     * Get the view center without transforming to user projection.
+     * @return {import("./coordinate.js").Coordinate|undefined} The center of the view.
+     */
+    getCenterInternal(): Coordinate | undefined;
+    /**
+     * @return {Constraints} Constraints.
+     */
+    getConstraints(): Constraints;
+    /**
+     * @return {boolean} Resolution constraint is set
+     */
+    getConstrainResolution(): boolean;
+    /**
+     * @param {Array<number>} [hints] Destination array.
+     * @return {Array<number>} Hint.
+     */
+    getHints(hints?: Array<number>): Array<number>;
+    /**
+     * Calculate the extent for the current view state and the passed box size.
+     * @param {import("./size.js").Size} [size] The pixel dimensions of the box
+     * into which the calculated extent should fit. Defaults to the size of the
+     * map the view is associated with.
+     * If no map or multiple maps are connected to the view, provide the desired
+     * box size (e.g. `map.getSize()`).
+     * @return {import("./extent.js").Extent} Extent.
+     * @api
+     */
+    calculateExtent(size?: Size): Extent$1;
+    /**
+     * @param {import("./size.js").Size} [size] Box pixel size. If not provided,
+     * the map's last known viewport size will be used.
+     * @return {import("./extent.js").Extent} Extent.
+     */
+    calculateExtentInternal(size?: Size): Extent$1;
+    /**
+     * Get the maximum resolution of the view.
+     * @return {number} The maximum resolution of the view.
+     * @api
+     */
+    getMaxResolution(): number;
+    /**
+     * Get the minimum resolution of the view.
+     * @return {number} The minimum resolution of the view.
+     * @api
+     */
+    getMinResolution(): number;
+    /**
+     * Get the maximum zoom level for the view.
+     * @return {number} The maximum zoom level.
+     * @api
+     */
+    getMaxZoom(): number;
+    /**
+     * Set a new maximum zoom level for the view.
+     * @param {number} zoom The maximum zoom level.
+     * @api
+     */
+    setMaxZoom(zoom: number): void;
+    /**
+     * Get the minimum zoom level for the view.
+     * @return {number} The minimum zoom level.
+     * @api
+     */
+    getMinZoom(): number;
+    /**
+     * Set a new minimum zoom level for the view.
+     * @param {number} zoom The minimum zoom level.
+     * @api
+     */
+    setMinZoom(zoom: number): void;
+    /**
+     * Set whether the view should allow intermediary zoom levels.
+     * @param {boolean} enabled Whether the resolution is constrained.
+     * @api
+     */
+    setConstrainResolution(enabled: boolean): void;
+    /**
+     * Get the view projection.
+     * @return {import("./proj/Projection.js").default} The projection of the view.
+     * @api
+     */
+    getProjection(): Projection;
+    /**
+     * Get the view resolution.
+     * @return {number|undefined} The resolution of the view.
+     * @observable
+     * @api
+     */
+    getResolution(): number | undefined;
+    /**
+     * Get the resolutions for the view. This returns the array of resolutions
+     * passed to the constructor of the View, or undefined if none were given.
+     * @return {Array<number>|undefined} The resolutions of the view.
+     * @api
+     */
+    getResolutions(): Array<number> | undefined;
+    /**
+     * Get the resolution for a provided extent (in map units) and size (in pixels).
+     * @param {import("./extent.js").Extent} extent Extent.
+     * @param {import("./size.js").Size} [size] Box pixel size.
+     * @return {number} The resolution at which the provided extent will render at
+     *     the given size.
+     * @api
+     */
+    getResolutionForExtent(extent: Extent$1, size?: Size): number;
+    /**
+     * Get the resolution for a provided extent (in map units) and size (in pixels).
+     * @param {import("./extent.js").Extent} extent Extent.
+     * @param {import("./size.js").Size} [size] Box pixel size.
+     * @return {number} The resolution at which the provided extent will render at
+     *     the given size.
+     */
+    getResolutionForExtentInternal(extent: Extent$1, size?: Size): number;
+    /**
+     * Return a function that returns a value between 0 and 1 for a
+     * resolution. Exponential scaling is assumed.
+     * @param {number} [power] Power.
+     * @return {function(number): number} Resolution for value function.
+     */
+    getResolutionForValueFunction(power?: number): (arg0: number) => number;
+    /**
+     * Get the view rotation.
+     * @return {number} The rotation of the view in radians.
+     * @observable
+     * @api
+     */
+    getRotation(): number;
+    /**
+     * Return a function that returns a resolution for a value between
+     * 0 and 1. Exponential scaling is assumed.
+     * @param {number} [power] Power.
+     * @return {function(number): number} Value for resolution function.
+     */
+    getValueForResolutionFunction(power?: number): (arg0: number) => number;
+    /**
+     * Returns the size of the viewport minus padding.
+     * @private
+     * @param {number} [rotation] Take into account the rotation of the viewport when giving the size
+     * @return {import("./size.js").Size} Viewport size reduced by the padding.
+     */
+    private getViewportSizeMinusPadding_;
+    /**
+     * @return {State} View state.
+     */
+    getState(): State$1;
+    /**
+     * @return {ViewStateLayerStateExtent} Like `FrameState`, but just `viewState` and `extent`.
+     */
+    getViewStateAndExtent(): ViewStateLayerStateExtent;
+    /**
+     * Get the current zoom level. This method may return non-integer zoom levels
+     * if the view does not constrain the resolution, or if an interaction or
+     * animation is underway.
+     * @return {number|undefined} Zoom.
+     * @api
+     */
+    getZoom(): number | undefined;
+    /**
+     * Get the zoom level for a resolution.
+     * @param {number} resolution The resolution.
+     * @return {number|undefined} The zoom level for the provided resolution.
+     * @api
+     */
+    getZoomForResolution(resolution: number): number | undefined;
+    /**
+     * Get the resolution for a zoom level.
+     * @param {number} zoom Zoom level.
+     * @return {number} The view resolution for the provided zoom level.
+     * @api
+     */
+    getResolutionForZoom(zoom: number): number;
+    /**
+     * Fit the given geometry or extent based on the given map size and border.
+     * The size is pixel dimensions of the box to fit the extent into.
+     * In most cases you will want to use the map size, that is `map.getSize()`.
+     * Takes care of the map angle.
+     * @param {import("./geom/SimpleGeometry.js").default|import("./extent.js").Extent} geometryOrExtent The geometry or
+     *     extent to fit the view to.
+     * @param {FitOptions} [options] Options.
+     * @api
+     */
+    fit(geometryOrExtent: SimpleGeometry | Extent$1, options?: FitOptions): void;
+    /**
+     * Calculate rotated extent
+     * @param {import("./geom/SimpleGeometry.js").default} geometry The geometry.
+     * @return {import("./extent").Extent} The rotated extent for the geometry.
+     */
+    rotatedExtentForGeometry(geometry: SimpleGeometry): Extent$1;
+    /**
+     * @param {import("./geom/SimpleGeometry.js").default} geometry The geometry.
+     * @param {FitOptions} [options] Options.
+     */
+    fitInternal(geometry: SimpleGeometry, options?: FitOptions): void;
+    /**
+     * Center on coordinate and view position.
+     * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
+     * @param {import("./size.js").Size} size Box pixel size.
+     * @param {import("./pixel.js").Pixel} position Position on the view to center on.
+     * @api
+     */
+    centerOn(coordinate: Coordinate, size: Size, position: Pixel): void;
+    /**
+     * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
+     * @param {import("./size.js").Size} size Box pixel size.
+     * @param {import("./pixel.js").Pixel} position Position on the view to center on.
+     */
+    centerOnInternal(coordinate: Coordinate, size: Size, position: Pixel): void;
+    /**
+     * Calculates the shift between map and viewport center.
+     * @param {import("./coordinate.js").Coordinate} center Center.
+     * @param {number} resolution Resolution.
+     * @param {number} rotation Rotation.
+     * @param {import("./size.js").Size} size Size.
+     * @return {Array<number>|undefined} Center shift.
+     */
+    calculateCenterShift(center: Coordinate, resolution: number, rotation: number, size: Size): Array<number> | undefined;
+    /**
+     * @return {boolean} Is defined.
+     */
+    isDef(): boolean;
+    /**
+     * Adds relative coordinates to the center of the view. Any extent constraint will apply.
+     * @param {import("./coordinate.js").Coordinate} deltaCoordinates Relative value to add.
+     * @api
+     */
+    adjustCenter(deltaCoordinates: Coordinate): void;
+    /**
+     * Adds relative coordinates to the center of the view. Any extent constraint will apply.
+     * @param {import("./coordinate.js").Coordinate} deltaCoordinates Relative value to add.
+     */
+    adjustCenterInternal(deltaCoordinates: Coordinate): void;
+    /**
+     * Multiply the view resolution by a ratio, optionally using an anchor. Any resolution
+     * constraint will apply.
+     * @param {number} ratio The ratio to apply on the view resolution.
+     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
+     * @api
+     */
+    adjustResolution(ratio: number, anchor?: Coordinate): void;
+    /**
+     * Multiply the view resolution by a ratio, optionally using an anchor. Any resolution
+     * constraint will apply.
+     * @param {number} ratio The ratio to apply on the view resolution.
+     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
+     */
+    adjustResolutionInternal(ratio: number, anchor?: Coordinate): void;
+    /**
+     * Adds a value to the view zoom level, optionally using an anchor. Any resolution
+     * constraint will apply.
+     * @param {number} delta Relative value to add to the zoom level.
+     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
+     * @api
+     */
+    adjustZoom(delta: number, anchor?: Coordinate): void;
+    /**
+     * Adds a value to the view rotation, optionally using an anchor. Any rotation
+     * constraint will apply.
+     * @param {number} delta Relative value to add to the zoom rotation, in radians.
+     * @param {import("./coordinate.js").Coordinate} [anchor] The rotation center.
+     * @api
+     */
+    adjustRotation(delta: number, anchor?: Coordinate): void;
+    /**
+     * @param {number} delta Relative value to add to the zoom rotation, in radians.
+     * @param {import("./coordinate.js").Coordinate} [anchor] The rotation center.
+     */
+    adjustRotationInternal(delta: number, anchor?: Coordinate): void;
+    /**
+     * Set the center of the current view. Any extent constraint will apply.
+     * @param {import("./coordinate.js").Coordinate|undefined} center The center of the view.
+     * @observable
+     * @api
+     */
+    setCenter(center: Coordinate | undefined): void;
+    /**
+     * Set the center using the view projection (not the user projection).
+     * @param {import("./coordinate.js").Coordinate|undefined} center The center of the view.
+     */
+    setCenterInternal(center: Coordinate | undefined): void;
+    /**
+     * @param {import("./ViewHint.js").default} hint Hint.
+     * @param {number} delta Delta.
+     * @return {number} New value.
+     */
+    setHint(hint: any, delta: number): number;
+    /**
+     * Set the resolution for this view. Any resolution constraint will apply.
+     * @param {number|undefined} resolution The resolution of the view.
+     * @observable
+     * @api
+     */
+    setResolution(resolution: number | undefined): void;
+    /**
+     * Set the rotation for this view. Any rotation constraint will apply.
+     * @param {number} rotation The rotation of the view in radians.
+     * @observable
+     * @api
+     */
+    setRotation(rotation: number): void;
+    /**
+     * Zoom to a specific zoom level. Any resolution constrain will apply.
+     * @param {number} zoom Zoom level.
+     * @api
+     */
+    setZoom(zoom: number): void;
+    /**
+     * Recompute rotation/resolution/center based on target values.
+     * Note: we have to compute rotation first, then resolution and center considering that
+     * parameters can influence one another in case a view extent constraint is present.
+     * @param {boolean} [doNotCancelAnims] Do not cancel animations.
+     * @param {boolean} [forceMoving] Apply constraints as if the view is moving.
+     * @private
+     */
+    private applyTargetState_;
+    /**
+     * If any constraints need to be applied, an animation will be triggered.
+     * This is typically done on interaction end.
+     * Note: calling this with a duration of 0 will apply the constrained values straight away,
+     * without animation.
+     * @param {number} [duration] The animation duration in ms.
+     * @param {number} [resolutionDirection] Which direction to zoom.
+     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
+     */
+    resolveConstraints(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
+    /**
+     * Notify the View that an interaction has started.
+     * The view state will be resolved to a stable one if needed
+     * (depending on its constraints).
+     * @api
+     */
+    beginInteraction(): void;
+    /**
+     * Notify the View that an interaction has ended. The view state will be resolved
+     * to a stable one if needed (depending on its constraints).
+     * @param {number} [duration] Animation duration in ms.
+     * @param {number} [resolutionDirection] Which direction to zoom.
+     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
+     * @api
+     */
+    endInteraction(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
+    /**
+     * Notify the View that an interaction has ended. The view state will be resolved
+     * to a stable one if needed (depending on its constraints).
+     * @param {number} [duration] Animation duration in ms.
+     * @param {number} [resolutionDirection] Which direction to zoom.
+     * @param {import("./coordinate.js").Coordinate} [anchor] The origin of the transformation.
+     */
+    endInteractionInternal(duration?: number, resolutionDirection?: number, anchor?: Coordinate): void;
+    /**
+     * Get a valid position for the view center according to the current constraints.
+     * @param {import("./coordinate.js").Coordinate|undefined} targetCenter Target center position.
+     * @param {number} [targetResolution] Target resolution. If not supplied, the current one will be used.
+     * This is useful to guess a valid center position at a different zoom level.
+     * @return {import("./coordinate.js").Coordinate|undefined} Valid center position.
+     */
+    getConstrainedCenter(targetCenter: Coordinate | undefined, targetResolution?: number): Coordinate | undefined;
+    /**
+     * Get a valid zoom level according to the current view constraints.
+     * @param {number|undefined} targetZoom Target zoom.
+     * @param {number} [direction] Indicate which resolution should be used
+     * by a renderer if the view resolution does not match any resolution of the tile source.
+     * If 0, the nearest resolution will be used. If 1, the nearest lower resolution
+     * will be used. If -1, the nearest higher resolution will be used.
+     * @return {number|undefined} Valid zoom level.
+     */
+    getConstrainedZoom(targetZoom: number | undefined, direction?: number): number | undefined;
+    /**
+     * Get a valid resolution according to the current view constraints.
+     * @param {number|undefined} targetResolution Target resolution.
+     * @param {number} [direction] Indicate which resolution should be used
+     * by a renderer if the view resolution does not match any resolution of the tile source.
+     * If 0, the nearest resolution will be used. If 1, the nearest lower resolution
+     * will be used. If -1, the nearest higher resolution will be used.
+     * @return {number|undefined} Valid resolution.
+     */
+    getConstrainedResolution(targetResolution: number | undefined, direction?: number): number | undefined;
+}
+
+/**
+ * State of the source, one of 'undefined', 'loading', 'ready' or 'error'.
+ */
+type State = "undefined" | "loading" | "ready" | "error";
+/**
+ * A function that takes a {@link import ("../View.js").ViewStateLayerStateExtent} and returns a string or
+ * an array of strings representing source attributions.
+ */
+type Attribution$1 = (arg0: ViewStateLayerStateExtent) => (string | Array<string>);
+/**
+ * A type that can be used to provide attribution information for data sources.
+ *
+ * It represents either
+ * a simple string (e.g. `'© Acme Inc.'`)
+ * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
+ * a function that returns a string or array of strings ({@link module :ol/source/Source~Attribution})
+ */
+type AttributionLike = string | Array<string> | Attribution$1;
+type Options$1F = {
+    /**
+     * Attributions.
+     */
+    attributions?: AttributionLike | undefined;
+    /**
+     * Attributions are collapsible.
+     */
+    attributionsCollapsible?: boolean | undefined;
+    /**
+     * Projection. Default is the view projection.
+     */
+    projection?: ProjectionLike;
+    /**
+     * State.
+     */
+    state?: State | undefined;
+    /**
+     * WrapX.
+     */
+    wrapX?: boolean | undefined;
+    /**
+     * Use interpolated values when resampling.  By default,
+     * the nearest neighbor is used when resampling.
+     */
+    interpolate?: boolean | undefined;
+};
+/**
+ * @typedef {'undefined' | 'loading' | 'ready' | 'error'} State
+ * State of the source, one of 'undefined', 'loading', 'ready' or 'error'.
+ */
+/**
+ * A function that takes a {@link import("../View.js").ViewStateLayerStateExtent} and returns a string or
+ * an array of strings representing source attributions.
+ *
+ * @typedef {function(import("../View.js").ViewStateLayerStateExtent): (string|Array<string>)} Attribution
+ */
+/**
+ * A type that can be used to provide attribution information for data sources.
+ *
+ * It represents either
+ * a simple string (e.g. `'© Acme Inc.'`)
+ * an array of simple strings (e.g. `['© Acme Inc.', '© Bacme Inc.']`)
+ * a function that returns a string or array of strings ({@link module:ol/source/Source~Attribution})
+ *
+ * @typedef {string|Array<string>|Attribution} AttributionLike
+ */
+/**
+ * @typedef {Object} Options
+ * @property {AttributionLike} [attributions] Attributions.
+ * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
+ * @property {import("../proj.js").ProjectionLike} [projection] Projection. Default is the view projection.
+ * @property {import("./Source.js").State} [state='ready'] State.
+ * @property {boolean} [wrapX=false] WrapX.
+ * @property {boolean} [interpolate=false] Use interpolated values when resampling.  By default,
+ * the nearest neighbor is used when resampling.
+ */
+/**
+ * @classdesc
+ * Abstract base class; normally only used for creating subclasses and not
+ * instantiated in apps.
+ * Base class for {@link module:ol/layer/Layer~Layer} sources.
+ *
+ * A generic `change` event is triggered when the state of the source changes.
+ * @abstract
+ * @api
+ */
+declare class Source extends BaseObject {
+    /**
+     * @param {Options} options Source options.
+     */
+    constructor(options: Options$1F);
+    /**
+     * @protected
+     * @type {import("../proj/Projection.js").default|null}
+     */
+    protected projection: Projection | null;
+    /**
+     * @private
+     * @type {?Attribution}
+     */
+    private attributions_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private attributionsCollapsible_;
+    /**
+     * This source is currently loading data. Sources that defer loading to the
+     * map's tile queue never set this to `true`.
+     * @type {boolean}
+     */
+    loading: boolean;
+    /**
+     * @private
+     * @type {import("./Source.js").State}
+     */
+    private state_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private wrapX_;
+    /**
+     * @private
+     * @type {boolean}
+     */
+    private interpolate_;
+    /**
+     * @protected
+     * @type {function(import("../View.js").ViewOptions):void}
+     */
+    protected viewResolver: (arg0: ViewOptions) => void;
+    /**
+     * @protected
+     * @type {function(Error):void}
+     */
+    protected viewRejector: (arg0: Error) => void;
+    /**
+     * @private
+     * @type {Promise<import("../View.js").ViewOptions>}
+     */
+    private viewPromise_;
+    /**
+     * Get the attribution function for the source.
+     * @return {?Attribution} Attribution function.
+     * @api
+     */
+    getAttributions(): Attribution$1 | null;
+    /**
+     * @return {boolean} Attributions are collapsible.
+     * @api
+     */
+    getAttributionsCollapsible(): boolean;
+    /**
+     * Get the projection of the source.
+     * @return {import("../proj/Projection.js").default|null} Projection.
+     * @api
+     */
+    getProjection(): Projection | null;
+    /**
+     * @param {import("../proj/Projection").default} [projection] Projection.
+     * @return {Array<number>|null} Resolutions.
+     */
+    getResolutions(projection?: Projection): Array<number> | null;
+    /**
+     * @return {Promise<import("../View.js").ViewOptions>} A promise for view-related properties.
+     */
+    getView(): Promise<ViewOptions>;
+    /**
+     * Get the state of the source, see {@link import("./Source.js").State} for possible states.
+     * @return {import("./Source.js").State} State.
+     * @api
+     */
+    getState(): State;
+    /**
+     * @return {boolean|undefined} Wrap X.
+     */
+    getWrapX(): boolean | undefined;
+    /**
+     * @return {boolean} Use linear interpolation when resampling.
+     */
+    getInterpolate(): boolean;
+    /**
+     * Refreshes the source. The source will be cleared, and data from the server will be reloaded.
+     * @api
+     */
+    refresh(): void;
+    /**
+     * Set the attributions of the source.
+     * @param {AttributionLike|undefined} attributions Attributions.
+     *     Can be passed as `string`, `Array<string>`, {@link module:ol/source/Source~Attribution},
+     *     or `undefined`.
+     * @api
+     */
+    setAttributions(attributions: AttributionLike | undefined): void;
+    /**
+     * Set the state of the source.
+     * @param {import("./Source.js").State} state State.
+     */
+    setState(state: State): void;
+}
+
+type TileSourceEventTypes = "tileloadstart" | "tileloadend" | "tileloaderror";
+
+/**
+ * @classdesc
+ * Events emitted by {@link module:ol/source/Tile~TileSource} instances are instances of this
+ * type.
+ */
+declare class TileSourceEvent extends BaseEvent {
+    /**
+     * @param {string} type Type.
+     * @param {import("../Tile.js").default} tile The tile.
+     */
+    constructor(type: string, tile: Tile$1);
+    /**
+     * The tile related to the event.
+     * @type {import("../Tile.js").default}
+     * @api
+     */
+    tile: Tile$1;
+}
+
+/**
+ * *
+ */
+type TileSourceOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2, ObjectEvent, Return> & OnSignature<TileSourceEventTypes, TileSourceEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | TileSourceEventTypes, Return>;
+type Options$1E = {
+    /**
+     * Attributions.
+     */
+    attributions?: AttributionLike | undefined;
+    /**
+     * Attributions are collapsible.
+     */
+    attributionsCollapsible?: boolean | undefined;
+    /**
+     * Deprecated.  Use the cacheSize option on the layer instead.
+     */
+    cacheSize?: number | undefined;
+    /**
+     * TilePixelRatio.
+     */
+    tilePixelRatio?: number | undefined;
+    /**
+     * Projection.
+     */
+    projection?: ProjectionLike;
+    /**
+     * State.
+     */
+    state?: State | undefined;
+    /**
+     * TileGrid.
+     */
+    tileGrid?: TileGrid | undefined;
+    /**
+     * WrapX.
+     */
+    wrapX?: boolean | undefined;
+    /**
+     * Transition.
+     */
+    transition?: number | undefined;
+    /**
+     * Key.
+     */
+    key?: string | undefined;
+    /**
+     * ZDirection.
+     */
+    zDirection?: number | NearestDirectionFunction | undefined;
+    /**
+     * Use interpolated values when resampling.  By default,
+     * the nearest neighbor is used when resampling.
+     */
+    interpolate?: boolean | undefined;
+};
+
+/***
+ * @template Return
+ * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
+ *   import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> &
+ *   import("../Observable").OnSignature<import("./TileEventType").TileSourceEventTypes, TileSourceEvent, Return> &
+ *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
+ *     import("./TileEventType").TileSourceEventTypes, Return>} TileSourceOnSignature
+ */
+/**
+ * @typedef {Object} Options
+ * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
+ * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
+ * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
+ * @property {number} [tilePixelRatio] TilePixelRatio.
+ * @property {import("../proj.js").ProjectionLike} [projection] Projection.
+ * @property {import("./Source.js").State} [state] State.
+ * @property {import("../tilegrid/TileGrid.js").default} [tileGrid] TileGrid.
+ * @property {boolean} [wrapX=false] WrapX.
+ * @property {number} [transition] Transition.
+ * @property {string} [key] Key.
+ * @property {number|import("../array.js").NearestDirectionFunction} [zDirection=0] ZDirection.
+ * @property {boolean} [interpolate=false] Use interpolated values when resampling.  By default,
+ * the nearest neighbor is used when resampling.
+ */
+/**
+ * @classdesc
+ * Abstract base class; normally only used for creating subclasses and not
+ * instantiated in apps.
+ * Base class for sources providing images divided into a tile grid.
+ *
+ * @template {import("../Tile.js").default} [TileType=import("../Tile.js").default]
+ * @abstract
+ * @api
+ */
+declare class TileSource<TileType extends Tile$1 = Tile$1> extends Source {
+    /**
+     * @param {Options} options SourceTile source options.
+     */
+    constructor(options: Options$1E);
+    /***
+     * @type {TileSourceOnSignature<import("../events").EventsKey>}
+     */
+    on: TileSourceOnSignature<EventsKey>;
+    /***
+     * @type {TileSourceOnSignature<import("../events").EventsKey>}
+     */
+    once: TileSourceOnSignature<EventsKey>;
+    /***
+     * @type {TileSourceOnSignature<void>}
+     */
+    un: TileSourceOnSignature<void>;
+    /**
+     * @private
+     * @type {number}
+     */
+    private tilePixelRatio_;
+    /**
+     * @type {import("../tilegrid/TileGrid.js").default|null}
+     * @protected
+     */
+    protected tileGrid: TileGrid | null;
+    /**
+     * @protected
+     * @type {import("../size.js").Size}
+     */
+    protected tmpSize: Size;
+    /**
+     * @private
+     * @type {string}
+     */
+    private key_;
+    /**
+     * @protected
+     * @type {import("../Tile.js").Options}
+     */
+    protected tileOptions: Options$1M;
+    /**
+     * zDirection hint, read by the renderer. Indicates which resolution should be used
+     * by a renderer if the views resolution does not match any resolution of the tile source.
+     * If 0, the nearest resolution will be used. If 1, the nearest lower resolution
+     * will be used. If -1, the nearest higher resolution will be used.
+     * @type {number|import("../array.js").NearestDirectionFunction}
+     */
+    zDirection: number | NearestDirectionFunction;
+    /**
+     * @param {import("../proj/Projection.js").default} projection Projection.
+     * @return {number} Gutter.
+     */
+    getGutterForProjection(projection: Projection): number;
+    /**
+     * Return the key to be used for all tiles in the source.
+     * @return {string} The key for all tiles.
+     */
+    getKey(): string;
+    /**
+     * Set the value to be used as the key for all tiles in the source.
+     * @param {string} key The key for tiles.
+     * @protected
+     */
+    protected setKey(key: string): void;
+    /**
+     * @abstract
+     * @param {number} z Tile coordinate z.
+     * @param {number} x Tile coordinate x.
+     * @param {number} y Tile coordinate y.
+     * @param {number} pixelRatio Pixel ratio.
+     * @param {import("../proj/Projection.js").default} projection Projection.
+     * @param {import("../structs/LRUCache.js").default<import("../Tile.js").default>} [tileCache] Tile cache.
+     * @return {TileType|null} Tile.
+     */
+    getTile(z: number, x: number, y: number, pixelRatio: number, projection: Projection, tileCache?: LRUCache<Tile$1>): TileType | null;
+    /**
+     * Return the tile grid of the tile source.
+     * @return {import("../tilegrid/TileGrid.js").default|null} Tile grid.
+     * @api
+     */
+    getTileGrid(): TileGrid | null;
+    /**
+     * @param {import("../proj/Projection.js").default} projection Projection.
+     * @return {!import("../tilegrid/TileGrid.js").default} Tile grid.
+     */
+    getTileGridForProjection(projection: Projection): TileGrid;
+    /**
+     * Get the tile pixel ratio for this source. Subclasses may override this
+     * method, which is meant to return a supported pixel ratio that matches the
+     * provided `pixelRatio` as close as possible.
+     * @param {number} pixelRatio Pixel ratio.
+     * @return {number} Tile pixel ratio.
+     */
+    getTilePixelRatio(pixelRatio: number): number;
+    /**
+     * @param {number} z Z.
+     * @param {number} pixelRatio Pixel ratio.
+     * @param {import("../proj/Projection.js").default} projection Projection.
+     * @return {import("../size.js").Size} Tile size.
+     */
+    getTilePixelSize(z: number, pixelRatio: number, projection: Projection): Size;
+    /**
+     * Returns a tile coordinate wrapped around the x-axis. When the tile coordinate
+     * is outside the resolution and extent range of the tile grid, `null` will be
+     * returned.
+     * @param {import("../tilecoord.js").TileCoord} tileCoord Tile coordinate.
+     * @param {import("../proj/Projection.js").default} [projection] Projection.
+     * @return {import("../tilecoord.js").TileCoord} Tile coordinate to be passed to the tileUrlFunction or
+     *     null if no tile URL should be created for the passed `tileCoord`.
+     */
+    getTileCoordForTileUrlFunction(tileCoord: TileCoord, projection?: Projection): TileCoord;
+    /**
+     * Remove all cached reprojected tiles from the source. The next render cycle will create new tiles.
+     * @api
+     */
+    clear(): void;
+}
+
+/**
+ * An array of three numbers representing the location of a tile in a tile
+ * grid. The order is `z` (zoom level), `x` (column), and `y` (row).
+ * @typedef {Array<number>} TileCoord
+ * @api
+ */
+/**
+ * @param {number} z Z.
+ * @param {number} x X.
+ * @param {number} y Y.
+ * @param {TileCoord} [tileCoord] Tile coordinate.
+ * @return {TileCoord} Tile coordinate.
+ */
+declare function createOrUpdate(z: number, x: number, y: number, tileCoord?: TileCoord): TileCoord;
+/**
+ * @param {number} z Z.
+ * @param {number} x X.
+ * @param {number} y Y.
+ * @return {string} Key.
+ */
+declare function getKeyZXY(z: number, x: number, y: number): string;
+/**
+ * Get the key for a tile coord.
+ * @param {TileCoord} tileCoord The tile coord.
+ * @return {string} Key.
+ */
+declare function getKey(tileCoord: TileCoord): string;
+/**
+ * Get the tile cache key for a tile key obtained through `tile.getKey()`.
+ * @param {string} tileKey The tile key.
+ * @return {string} The cache key.
+ */
+declare function getCacheKeyForTileKey(tileKey: string): string;
+/**
+ * @param {import("./source/Tile.js").default} source The tile source.
+ * @param {string} sourceKey The source key.
+ * @param {number} z The tile z level.
+ * @param {number} x The tile x level.
+ * @param {number} y The tile y level.
+ * @return {string} The cache key.
+ */
+declare function getCacheKey(source: TileSource, sourceKey: string, z: number, x: number, y: number): string;
+/**
+ * Get a tile coord given a key.
+ * @param {string} key The tile coord key.
+ * @return {TileCoord} The tile coord.
+ */
+declare function fromKey(key: string): TileCoord;
+/**
+ * @param {TileCoord} tileCoord Tile coord.
+ * @return {number} Hash.
+ */
+declare function hash(tileCoord: TileCoord): number;
+/**
+ * @param {number} z The tile z coordinate.
+ * @param {number} x The tile x coordinate.
+ * @param {number} y The tile y coordinate.
+ * @return {number} Hash.
+ */
+declare function hashZXY(z: number, x: number, y: number): number;
+/**
+ * @param {TileCoord} tileCoord Tile coordinate.
+ * @param {!import("./tilegrid/TileGrid.js").default} tileGrid Tile grid.
+ * @return {boolean} Tile coordinate is within extent and zoom level range.
+ */
+declare function withinExtentAndZ(tileCoord: TileCoord, tileGrid: TileGrid): boolean;
+/**
+ * An array of three numbers representing the location of a tile in a tile
+ * grid. The order is `z` (zoom level), `x` (column), and `y` (row).
+ */
+type TileCoord = Array<number>;
+
+type ImageLike = HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | HTMLVideoElement | ImageBitmap;
+type ArrayLike = Uint8Array | Uint8ClampedArray | Float32Array | DataView;
+/**
+ * Data that can be used with a DataTile.
+ */
+type Data = ArrayLike | ImageLike;
+type Options$1D = {
+    /**
+     * Tile coordinate.
+     */
+    tileCoord: TileCoord;
+    /**
+     * Data loader.  For loaders that generate images,
+     * the promise should not resolve until the image is loaded.
+     */
+    loader: () => Promise<Data>;
+    /**
+     * A duration for tile opacity
+     * transitions in milliseconds. A duration of 0 disables the opacity transition.
+     */
+    transition?: number | undefined;
+    /**
+     * Use interpolated values when resampling.  By default,
+     * the nearest neighbor is used when resampling.
+     */
+    interpolate?: boolean | undefined;
+    /**
+     * Tile size.
+     */
+    size?: Size | undefined;
+    /**
+     * An abort controller.
+     */
+    controller?: AbortController | undefined;
+};
+/**
+ * @typedef {Object} Options
+ * @property {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
+ * @property {function(): Promise<Data>} loader Data loader.  For loaders that generate images,
+ * the promise should not resolve until the image is loaded.
+ * @property {number} [transition=250] A duration for tile opacity
+ * transitions in milliseconds. A duration of 0 disables the opacity transition.
+ * @property {boolean} [interpolate=false] Use interpolated values when resampling.  By default,
+ * the nearest neighbor is used when resampling.
+ * @property {import('./size.js').Size} [size=[256, 256]] Tile size.
+ * @property {AbortController} [controller] An abort controller.
+ * @api
+ */
+declare class DataTile extends Tile$1 {
+    /**
+     * @param {Options} options Tile options.
+     */
+    constructor(options: Options$1D);
+    /**
+     * @type {function(): Promise<Data>}
+     * @private
+     */
+    private loader_;
+    /**
+     * @type {Data}
+     * @private
+     */
+    private data_;
+    /**
+     * @type {Error}
+     * @private
+     */
+    private error_;
+    /**
+     * @type {import('./size.js').Size|null}
+     * @private
+     */
+    private size_;
+    /**
+     * @type {AbortController|null}
+     * @private
+     */
+    private controller_;
+    /**
+     * Get the tile size.
+     * @return {import('./size.js').Size} Tile size.
+     */
+    getSize(): Size;
+    /**
+     * Get the data for the tile.
+     * @return {Data} Tile data.
+     * @api
+     */
+    getData(): Data;
+    /**
+     * Get any loading error.
+     * @return {Error} Loading error.
+     * @api
+     */
+    getError(): Error;
+}
+
+/**
  * @classdesc
  * Events emitted on [GeolocationPositionError](https://developer.mozilla.org/en-US/docs/Web/API/GeolocationPositionError).
  */
@@ -12135,7 +12724,7 @@ declare class GeolocationError extends BaseEvent {
     message: string;
 }
 
-type Options$1E = {
+type Options$1C = {
     /**
      * Start Tracking right after
      * instantiation.
@@ -12210,7 +12799,7 @@ declare class Geolocation extends BaseObject {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1E);
+    constructor(options?: Options$1C);
     /***
      * @type {GeolocationOnSignature<import("./events").EventsKey>}
      */
@@ -12385,11 +12974,11 @@ declare class ImageCanvas extends ImageWrapper {
      * @param {import("./extent.js").Extent} extent Extent.
      * @param {number} resolution Resolution.
      * @param {number} pixelRatio Pixel ratio.
-     * @param {HTMLCanvasElement} canvas Canvas.
+     * @param {HTMLCanvasElement|OffscreenCanvas} canvas Canvas.
      * @param {Loader} [loader] Optional loader function to
      *     support asynchronous canvas drawing.
      */
-    constructor(extent: Extent$1, resolution: number, pixelRatio: number, canvas: HTMLCanvasElement, loader?: Loader$2);
+    constructor(extent: Extent$1, resolution: number, pixelRatio: number, canvas: HTMLCanvasElement | OffscreenCanvas, loader?: Loader$2);
     /**
      * Optional canvas loader function.
      * @type {?Loader}
@@ -12398,7 +12987,7 @@ declare class ImageCanvas extends ImageWrapper {
     private loader_;
     /**
      * @private
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas}
      */
     private canvas_;
     /**
@@ -12418,10 +13007,10 @@ declare class ImageCanvas extends ImageWrapper {
      */
     private handleLoad_;
     /**
-     * @return {HTMLCanvasElement} Canvas element.
+     * @return {HTMLCanvasElement|OffscreenCanvas} Canvas element.
      * @override
      */
-    override getImage(): HTMLCanvasElement;
+    override getImage(): HTMLCanvasElement | OffscreenCanvas;
 }
 
 declare class ImageTile extends Tile$1 {
@@ -12433,7 +13022,7 @@ declare class ImageTile extends Tile$1 {
      * @param {import("./Tile.js").LoadFunction} tileLoadFunction Tile load function.
      * @param {import("./Tile.js").Options} [options] Tile options.
      */
-    constructor(tileCoord: TileCoord, state: any, src: string, crossOrigin: string | null, tileLoadFunction: LoadFunction$1, options?: Options$1R);
+    constructor(tileCoord: TileCoord, state: any, src: string, crossOrigin: string | null, tileLoadFunction: LoadFunction$1, options?: Options$1M);
     /**
      * @private
      * @type {?string}
@@ -12448,7 +13037,7 @@ declare class ImageTile extends Tile$1 {
     private src_;
     /**
      * @private
-     * @type {HTMLImageElement|HTMLCanvasElement}
+     * @type {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas}
      */
     private image_;
     /**
@@ -12462,16 +13051,21 @@ declare class ImageTile extends Tile$1 {
      */
     private tileLoadFunction_;
     /**
-     * Get the HTML image element for this tile (may be a Canvas, Image, or Video).
-     * @return {HTMLCanvasElement|HTMLImageElement|HTMLVideoElement} Image.
+     * Get the HTML image element for this tile (may be a Canvas, OffscreenCanvas, Image, or Video).
+     * @return {HTMLCanvasElement|OffscreenCanvas|HTMLImageElement|HTMLVideoElement} Image.
      * @api
      */
-    getImage(): HTMLCanvasElement | HTMLImageElement | HTMLVideoElement;
+    getImage(): HTMLCanvasElement | OffscreenCanvas | HTMLImageElement | HTMLVideoElement;
     /**
      * Sets an HTML image element for this tile (may be a Canvas or preloaded Image).
-     * @param {HTMLCanvasElement|HTMLImageElement} element Element.
+     * @param {HTMLCanvasElement|OffscreenCanvas|HTMLImageElement} element Element.
      */
-    setImage(element: HTMLCanvasElement | HTMLImageElement): void;
+    setImage(element: HTMLCanvasElement | OffscreenCanvas | HTMLImageElement): void;
+    /**
+     * Get the cross origin of the ImageTile.
+     * @return {string} Cross origin.
+     */
+    getCrossOrigin(): string;
     /**
      * Tracks loading or read errors.
      *
@@ -12755,7 +13349,7 @@ declare class ExecutorGroup {
     private executorsByZIndex_;
     /**
      * @private
-     * @type {CanvasRenderingContext2D}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D}
      */
     private hitDetectionContext_;
     /**
@@ -12765,7 +13359,7 @@ declare class ExecutorGroup {
     private hitDetectionTransform_;
     /**
      * @private
-     * @type {CanvasRenderingContext2D}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D}
      */
     private renderedContext_;
     /**
@@ -12774,10 +13368,10 @@ declare class ExecutorGroup {
      */
     private deferredZIndexContexts_;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import("../../transform.js").Transform} transform Transform.
      */
-    clip(context: CanvasRenderingContext2D, transform: Transform): void;
+    clip(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, transform: Transform): void;
     /**
      * Create executors and populate them using the provided instructions.
      * @private
@@ -12811,7 +13405,7 @@ declare class ExecutorGroup {
      */
     isEmpty(): boolean;
     /**
-     * @param {CanvasRenderingContext2D} targetContext Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} targetContext Context.
      * @param {import('../../size.js').Size} scaledCanvasSize Scale of the context.
      * @param {import("../../transform.js").Transform} transform Transform.
      * @param {number} viewRotation View rotation.
@@ -12821,11 +13415,11 @@ declare class ExecutorGroup {
      * @param {import("rbush").default<import('./Executor.js').DeclutterEntry>|null} [declutterTree] Declutter tree.
      *     When set to null, no decluttering is done, even when the executor group has a `ZIndexContext`.
      */
-    execute(targetContext: CanvasRenderingContext2D, scaledCanvasSize: Size, transform: Transform, viewRotation: number, snapToPixel: boolean, builderTypes?: Array<BuilderType>, declutterTree?: RBush$1<DeclutterEntry> | null): void;
+    execute(targetContext: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, scaledCanvasSize: Size, transform: Transform, viewRotation: number, snapToPixel: boolean, builderTypes?: Array<BuilderType>, declutterTree?: RBush$1<DeclutterEntry> | null): void;
     getDeferredZIndexContexts(): {
         [x: number]: ZIndexContext[];
     };
-    getRenderedContext(): CanvasRenderingContext2D;
+    getRenderedContext(): OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D;
     renderDeferred(): void;
 }
 
@@ -13189,7 +13783,7 @@ declare class VectorTile$1<FeatureType extends FeatureLike> extends Tile$1 {
      * @param {import("./Tile.js").LoadFunction} tileLoadFunction Tile load function.
      * @param {import("./Tile.js").Options} [options] Tile options.
      */
-    constructor(tileCoord: TileCoord, state: any, src: string, format: FeatureFormat<FeatureType>, tileLoadFunction: LoadFunction$1, options?: Options$1R);
+    constructor(tileCoord: TileCoord, state: any, src: string, format: FeatureFormat<FeatureType>, tileLoadFunction: LoadFunction$1, options?: Options$1M);
     /**
      * Extent of this tile; set by the source.
      * @type {import("./extent.js").Extent}
@@ -13313,7 +13907,7 @@ declare class VectorRenderTile extends Tile$1 {
     constructor(tileCoord: TileCoord, state: any, urlTileCoord: TileCoord, getSourceTiles: (arg0: VectorRenderTile) => Array<VectorTile$1<any>>, removeSourceTiles: (arg0: VectorRenderTile) => void);
     /**
      * @private
-     * @type {CanvasRenderingContext2D|null}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D|null}
      */
     private context_;
     /**
@@ -13367,18 +13961,18 @@ declare class VectorRenderTile extends Tile$1 {
      */
     wrappedTileCoord: TileCoord;
     /**
-     * @return {CanvasRenderingContext2D} The rendering context.
+     * @return {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} The rendering context.
      */
-    getContext(): CanvasRenderingContext2D;
+    getContext(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
     /**
      * @return {boolean} Tile has a rendering context.
      */
     hasContext(): boolean;
     /**
      * Get the Canvas for this tile.
-     * @return {HTMLCanvasElement} Canvas.
+     * @return {HTMLCanvasElement|OffscreenCanvas} Canvas.
      */
-    getImage(): HTMLCanvasElement;
+    getImage(): HTMLCanvasElement | OffscreenCanvas;
     /**
      * @param {import("./layer/Layer.js").default} layer Layer.
      * @return {ReplayState} The replay state.
@@ -13417,7 +14011,7 @@ declare function warn(...args: any[]): void;
 declare function error(...args: any[]): void;
 type Level = "info" | "warn" | "error" | "none";
 
-type Options$1D = {
+type Options$1B = {
     /**
      * CSS class name.
      */
@@ -13526,7 +14120,7 @@ declare class Attribution extends Control {
     /**
      * @param {Options} [options] Attribution options.
      */
-    constructor(options?: Options$1D);
+    constructor(options?: Options$1B);
     /**
      * @private
      * @type {HTMLElement}
@@ -13637,7 +14231,7 @@ declare class Attribution extends Control {
  * *
  */
 type FullScreenOnSignature<Return> = OnSignature<EventTypes | "enterfullscreen" | "leavefullscreen", BaseEvent, Return> & OnSignature<Types$2, ObjectEvent, Return> & CombinedOnSignature<EventTypes | "enterfullscreen" | "leavefullscreen" | Types$2, Return>;
-type Options$1C = {
+type Options$1A = {
     /**
      * CSS class name.
      */
@@ -13730,7 +14324,7 @@ declare class FullScreen extends Control {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1C);
+    constructor(options?: Options$1A);
     /***
      * @type {FullScreenOnSignature<import("../events").EventsKey>}
      */
@@ -13826,7 +14420,7 @@ declare class FullScreen extends Control {
  * *
  */
 type MousePositionOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2 | "change:coordinateFormat" | "change:projection", ObjectEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | "change:coordinateFormat" | "change:projection", Return>;
-type Options$1B = {
+type Options$1z = {
     /**
      * CSS class name.
      */
@@ -13906,7 +14500,7 @@ declare class MousePosition extends Control {
     /**
      * @param {Options} [options] Mouse position options.
      */
-    constructor(options?: Options$1B);
+    constructor(options?: Options$1z);
     /***
      * @type {MousePositionOnSignature<import("../events").EventsKey>}
      */
@@ -14003,7 +14597,7 @@ declare class MousePosition extends Control {
     private updateHTML_;
 }
 
-type Options$1A = {
+type Options$1y = {
     /**
      * CSS class name.
      */
@@ -14084,7 +14678,7 @@ declare class OverviewMap extends Control {
     /**
      * @param {Options} [options] OverviewMap options.
      */
-    constructor(options?: Options$1A);
+    constructor(options?: Options$1y);
     /**
      * @private
      */
@@ -14252,7 +14846,7 @@ declare class OverviewMap extends Control {
     getOverviewMap(): Map;
 }
 
-type Options$1z = {
+type Options$1x = {
     /**
      * CSS class name.
      */
@@ -14322,7 +14916,7 @@ declare class Rotate extends Control {
     /**
      * @param {Options} [options] Rotate options.
      */
-    constructor(options?: Options$1z);
+    constructor(options?: Options$1x);
     /**
      * @type {HTMLElement}
      * @private
@@ -14366,7 +14960,7 @@ type Units = "degrees" | "imperial" | "nautical" | "metric" | "us";
  * *
  */
 type ScaleLineOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2 | "change:units", ObjectEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | "change:units", Return>;
-type Options$1y = {
+type Options$1w = {
     /**
      * CSS class name. The default is `ol-scale-bar` when configured with
      * `bar: true`. Otherwise the default is `ol-scale-line`.
@@ -14466,7 +15060,7 @@ declare class ScaleLine extends Control {
     /**
      * @param {Options} [options] Scale line options.
      */
-    constructor(options?: Options$1y);
+    constructor(options?: Options$1w);
     /***
      * @type {ScaleLineOnSignature<import("../events").EventsKey>}
      */
@@ -14594,7 +15188,7 @@ declare class ScaleLine extends Control {
     getScaleForResolution(): number;
 }
 
-type Options$1x = {
+type Options$1v = {
     /**
      * Animation duration in milliseconds.
      */
@@ -14667,7 +15261,7 @@ declare class Zoom extends Control {
     /**
      * @param {Options} [options] Zoom options.
      */
-    constructor(options?: Options$1x);
+    constructor(options?: Options$1v);
     /**
      * @type {number}
      * @private
@@ -14686,7 +15280,7 @@ declare class Zoom extends Control {
     private zoomByDelta_;
 }
 
-type Options$1w = {
+type Options$1u = {
     /**
      * CSS class name.
      */
@@ -14729,7 +15323,7 @@ declare class ZoomSlider extends Control {
     /**
      * @param {Options} [options] Zoom slider options.
      */
-    constructor(options?: Options$1w);
+    constructor(options?: Options$1u);
     /**
      * @type {!Array<import("../events.js").EventsKey>}
      * @private
@@ -14865,7 +15459,7 @@ declare class ZoomSlider extends Control {
     private getPositionForResolution_;
 }
 
-type Options$1v = {
+type Options$1t = {
     /**
      * Class name.
      */
@@ -14889,6 +15483,11 @@ type Options$1v = {
      * extent of the view projection is used.
      */
     extent?: Extent$1 | undefined;
+    /**
+     * Options to pass to the view when fitting
+     * the extent (e.g. `padding`, `duration`, `minResolution`, `maxZoom`, `easing`, `callback`).
+     */
+    fitOptions?: FitOptions | undefined;
 };
 /**
  * @typedef {Object} Options
@@ -14900,6 +15499,8 @@ type Options$1v = {
  * @property {string} [tipLabel='Fit to extent'] Text label to use for the button tip.
  * @property {import("../extent.js").Extent} [extent] The extent to zoom to. If undefined the validity
  * extent of the view projection is used.
+ * @property {import("../View.js").FitOptions} [fitOptions] Options to pass to the view when fitting
+ * the extent (e.g. `padding`, `duration`, `minResolution`, `maxZoom`, `easing`, `callback`).
  */
 /**
  * @classdesc
@@ -14912,12 +15513,17 @@ declare class ZoomToExtent extends Control {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1v);
+    constructor(options?: Options$1t);
     /**
      * @type {?import("../extent.js").Extent|null}
      * @protected
      */
     protected extent: (Extent$1 | null) | null;
+    /**
+     * @type {import("../View.js").FitOptions}
+     * @protected
+     */
+    protected fitOptions: FitOptions;
     /**
      * @param {MouseEvent} event The event to handle
      * @private
@@ -14966,7 +15572,7 @@ type DefaultsOptions$1 = {
     /**
      * Options for {@link module :ol/control/Attribution~Attribution}.
      */
-    attributionOptions?: Options$1D | undefined;
+    attributionOptions?: Options$1B | undefined;
     /**
      * Include
      * {@link module :ol/control/Rotate~Rotate}.
@@ -14976,7 +15582,7 @@ type DefaultsOptions$1 = {
      * Options
      * for {@link module :ol/control/Rotate~Rotate}.
      */
-    rotateOptions?: Options$1z | undefined;
+    rotateOptions?: Options$1x | undefined;
     /**
      * Include {@link module :ol/control/Zoom~Zoom}.
      */
@@ -14985,7 +15591,7 @@ type DefaultsOptions$1 = {
      * Options for
      * {@link module :ol/control/Zoom~Zoom}.
      */
-    zoomOptions?: Options$1x | undefined;
+    zoomOptions?: Options$1v | undefined;
 };
 
 /**
@@ -15085,21 +15691,21 @@ type FontParameters = {
  * Create an html canvas element and returns its 2d context.
  * @param {number} [width] Canvas width.
  * @param {number} [height] Canvas height.
- * @param {Array<HTMLCanvasElement>} [canvasPool] Canvas pool to take existing canvas from.
+ * @param {Array<HTMLCanvasElement|OffscreenCanvas>} [canvasPool] Canvas pool to take existing canvas from.
  * @param {CanvasRenderingContext2DSettings} [settings] CanvasRenderingContext2DSettings
- * @return {CanvasRenderingContext2D} The context.
+ * @return {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} The context.
  */
-declare function createCanvasContext2D(width?: number, height?: number, canvasPool?: Array<HTMLCanvasElement>, settings?: CanvasRenderingContext2DSettings): CanvasRenderingContext2D;
+declare function createCanvasContext2D(width?: number, height?: number, canvasPool?: Array<HTMLCanvasElement | OffscreenCanvas>, settings?: CanvasRenderingContext2DSettings): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 /**
- * @return {CanvasRenderingContext2D} Shared canvas context.
+ * @return {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} Shared canvas context.
  */
-declare function getSharedCanvasContext2D(): CanvasRenderingContext2D;
+declare function getSharedCanvasContext2D(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 /**
  * Releases canvas memory to avoid exceeding memory limits in Safari.
  * See https://pqina.nl/blog/total-canvas-memory-use-exceeds-the-maximum-limit/
- * @param {CanvasRenderingContext2D} context Context.
+ * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
  */
-declare function releaseCanvas(context: CanvasRenderingContext2D): void;
+declare function releaseCanvas(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): void;
 /**
  * Get the current computed width for the given element including margin,
  * padding and border.
@@ -15134,6 +15740,17 @@ declare function removeChildren(node: Node): void;
  * @param {Array<Node>} children The desired children.
  */
 declare function replaceChildren(node: Node, children: Array<Node>): void;
+/**
+ * Creates a minimal structure that mocks a DIV to be used by the composite and
+ * layer renderer in a worker environment
+ * @return {HTMLDivElement} mocked DIV
+ */
+declare function createMockDiv(): HTMLDivElement;
+/***
+ * @param {*} obj The object to check.
+ * @return {obj is (HTMLCanvasElement | OffscreenCanvas)} The object is a canvas.
+ */
+declare function isCanvas(obj: any): obj is (HTMLCanvasElement | OffscreenCanvas);
 
 /**
  * @module ol/easing
@@ -15921,7 +16538,7 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$2<Geometry$1
 
 type EsriJSONFeatureSet = arcgis_rest_api.FeatureSet;
 type EsriJSONGeometry = arcgis_rest_api.Geometry;
-type Options$1u = {
+type Options$1s = {
     /**
      * Geometry name to use when creating features.
      */
@@ -15941,7 +16558,7 @@ declare class EsriJSON extends JSONFeature<Feature$2<Geometry$1>> {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1u);
+    constructor(options?: Options$1s);
     /**
      * Name of the geometry attribute for features.
      * @type {string|undefined}
@@ -16417,7 +17034,7 @@ declare class XMLFeature extends FeatureFormat<Feature$2<Geometry$1>> {
 }
 //# sourceMappingURL=XMLFeature.d.ts.map
 
-type Options$1t = {
+type Options$1r = {
     /**
      * Feature
      * namespace. If not defined will be derived from GML. If multiple
@@ -16522,7 +17139,7 @@ declare class GMLBase extends XMLFeature {
     /**
      * @param {Options} [options] Optional configuration object.
      */
-    constructor(options?: Options$1t);
+    constructor(options?: Options$1r);
     /**
      * @protected
      * @type {Array<string>|string|undefined}
@@ -17490,7 +18107,7 @@ type GPXMetadata = {
      */
     extensions?: any;
 };
-type Options$1s = {
+type Options$1q = {
     /**
      * Callback function
      * to process `extensions` nodes. To prevent memory leaks, this callback function must
@@ -17538,7 +18155,7 @@ declare class GPX extends XMLFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1s);
+    constructor(options?: Options$1q);
     /**
      * @type {ReadExtensions|undefined}
      * @private
@@ -17774,7 +18391,7 @@ type GeoJSONFeature = Feature$1;
 type GeoJSONFeatureCollection = FeatureCollection;
 type GeoJSONGeometry = Geometry;
 type GeoJSONGeometryCollection = GeometryCollection;
-type Options$1r<FeatureType extends FeatureLike = Feature$2<Geometry$1>> = {
+type Options$1p<FeatureType extends FeatureLike = Feature$2<Geometry$1>> = {
     /**
      * Default data projection.
      */
@@ -17845,7 +18462,7 @@ declare class GeoJSON<FeatureType extends FeatureLike = Feature$2<Geometry$1>> e
     /**
      * @param {Options<FeatureType>} [options] Options.
      */
-    constructor(options?: Options$1r<FeatureType>);
+    constructor(options?: Options$1p<FeatureType>);
     /**
      * Name of the geometry attribute for features.
      * @type {string|undefined}
@@ -18009,7 +18626,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1>> {
  * IGC altitude/z. One of 'barometric', 'gps', 'none'.
  */
 type IGCZ = "barometric" | "gps" | "none";
-type Options$1q = {
+type Options$1o = {
     /**
      * Altitude mode. Possible
      * values are `'barometric'`, `'gps'`, and `'none'`.
@@ -18035,7 +18652,7 @@ declare class IGC extends TextFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1q);
+    constructor(options?: Options$1o);
     /**
      * @private
      * @type {IGCZ}
@@ -18073,434 +18690,6 @@ declare class IGC extends TextFeature {
     private lodStop_;
 }
 
-type Options$1p = {
-    /**
-     * Extent for the tile grid. No tiles
-     * outside this extent will be requested by {@link module :ol/source/Tile~TileSource} sources.
-     * When no `origin` or `origins` are configured, the `origin` will be set to the
-     * top-left corner of the extent.
-     */
-    extent?: Extent$1 | undefined;
-    /**
-     * The tile grid origin, i.e.
-     * where the `x` and `y` axes meet (`[z, 0, 0]`). Tile coordinates increase left
-     * to right and downwards. If not specified, `extent` or `origins` must be provided.
-     */
-    origin?: Coordinate | undefined;
-    /**
-     * Tile grid origins,
-     * i.e. where the `x` and `y` axes meet (`[z, 0, 0]`), for each zoom level. If
-     * given, the array length should match the length of the `resolutions` array, i.e.
-     * each resolution can have a different origin. Tile coordinates increase left to
-     * right and downwards. If not specified, `extent` or `origin` must be provided.
-     */
-    origins?: Coordinate[] | undefined;
-    /**
-     * Resolutions. The array index of each
-     * resolution needs to match the zoom level. This means that even if a `minZoom`
-     * is configured, the resolutions array will have a length of `maxZoom + 1`
-     */
-    resolutions: Array<number>;
-    /**
-     * matrix IDs. The length of this array needs
-     * to match the length of the `resolutions` array.
-     */
-    matrixIds: Array<string>;
-    /**
-     * Number of tile rows and columns
-     * of the grid for each zoom level. The values here are the `TileMatrixWidth` and
-     * `TileMatrixHeight` advertised in the GetCapabilities response of the WMTS, and
-     * define each zoom level's extent together with the `origin` or `origins`.
-     * A grid `extent` can be configured in addition, and will further limit the extent for
-     * which tile requests are made by sources. If the bottom-left corner of
-     * an extent is used as `origin` or `origins`, then the `y` value must be
-     * negative because OpenLayers tile coordinates use the top left as the origin.
-     */
-    sizes?: Size[] | undefined;
-    /**
-     * Tile size.
-     */
-    tileSize?: number | Size | undefined;
-    /**
-     * Tile sizes. The length of
-     * this array needs to match the length of the `resolutions` array.
-     */
-    tileSizes?: (number | Size)[] | undefined;
-};
-/**
- * @typedef {Object} Options
- * @property {import("../extent.js").Extent} [extent] Extent for the tile grid. No tiles
- * outside this extent will be requested by {@link module:ol/source/Tile~TileSource} sources.
- * When no `origin` or `origins` are configured, the `origin` will be set to the
- * top-left corner of the extent.
- * @property {import("../coordinate.js").Coordinate} [origin] The tile grid origin, i.e.
- * where the `x` and `y` axes meet (`[z, 0, 0]`). Tile coordinates increase left
- * to right and downwards. If not specified, `extent` or `origins` must be provided.
- * @property {Array<import("../coordinate.js").Coordinate>} [origins] Tile grid origins,
- * i.e. where the `x` and `y` axes meet (`[z, 0, 0]`), for each zoom level. If
- * given, the array length should match the length of the `resolutions` array, i.e.
- * each resolution can have a different origin. Tile coordinates increase left to
- * right and downwards. If not specified, `extent` or `origin` must be provided.
- * @property {!Array<number>} resolutions Resolutions. The array index of each
- * resolution needs to match the zoom level. This means that even if a `minZoom`
- * is configured, the resolutions array will have a length of `maxZoom + 1`
- * @property {!Array<string>} matrixIds matrix IDs. The length of this array needs
- * to match the length of the `resolutions` array.
- * @property {Array<import("../size.js").Size>} [sizes] Number of tile rows and columns
- * of the grid for each zoom level. The values here are the `TileMatrixWidth` and
- * `TileMatrixHeight` advertised in the GetCapabilities response of the WMTS, and
- * define each zoom level's extent together with the `origin` or `origins`.
- * A grid `extent` can be configured in addition, and will further limit the extent for
- * which tile requests are made by sources. If the bottom-left corner of
- * an extent is used as `origin` or `origins`, then the `y` value must be
- * negative because OpenLayers tile coordinates use the top left as the origin.
- * @property {number|import("../size.js").Size} [tileSize] Tile size.
- * @property {Array<number|import("../size.js").Size>} [tileSizes] Tile sizes. The length of
- * this array needs to match the length of the `resolutions` array.
- */
-/**
- * @classdesc
- * Set the grid pattern for sources accessing WMTS tiled-image servers.
- * @api
- */
-declare class WMTSTileGrid extends TileGrid {
-    /**
-     * @param {Options} options WMTS options.
-     */
-    constructor(options: Options$1p);
-    /**
-     * @private
-     * @type {!Array<string>}
-     */
-    private matrixIds_;
-    /**
-     * @param {number} z Z.
-     * @return {string} MatrixId..
-     */
-    getMatrixId(z: number): string;
-    /**
-     * Get the list of matrix identifiers.
-     * @return {Array<string>} MatrixIds.
-     * @api
-     */
-    getMatrixIds(): Array<string>;
-}
-
-/**
- * @param {import("./proj/Projection.js").default} projection Projection.
- * @return {!TileGrid} Default tile grid for the
- * passed projection.
- */
-declare function getForProjection(projection: Projection): TileGrid;
-/**
- * @param {TileGrid} tileGrid Tile grid.
- * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
- * @param {import("./proj/Projection.js").default} projection Projection.
- * @return {import("./tilecoord.js").TileCoord} Tile coordinate.
- */
-declare function wrapX(tileGrid: TileGrid, tileCoord: TileCoord, projection: Projection): TileCoord;
-/**
- * @param {import("./extent.js").Extent} extent Extent.
- * @param {number} [maxZoom] Maximum zoom level (default is
- *     DEFAULT_MAX_ZOOM).
- * @param {number|import("./size.js").Size} [tileSize] Tile size (default uses
- *     DEFAULT_TILE_SIZE).
- * @param {import("./extent.js").Corner} [corner] Extent corner (default is `'top-left'`).
- * @return {!TileGrid} TileGrid instance.
- */
-declare function createForExtent(extent: Extent$1, maxZoom?: number, tileSize?: number | Size, corner?: Corner): TileGrid;
-/**
- * @typedef {Object} XYZOptions
- * @property {import("./extent.js").Extent} [extent] Extent for the tile grid. The origin for an XYZ tile grid is the
- * top-left corner of the extent. If `maxResolution` is not provided the zero level of the grid is defined by the resolution
- * at which one tile fits in the provided extent. If not provided, the extent of the EPSG:3857 projection is used.
- * @property {number} [maxResolution] Resolution at level zero.
- * @property {number} [maxZoom] Maximum zoom. The default is `42`. This determines the number of levels
- * in the grid set. For example, a `maxZoom` of 21 means there are 22 levels in the grid set.
- * @property {number} [minZoom=0] Minimum zoom.
- * @property {number|import("./size.js").Size} [tileSize=[256, 256]] Tile size in pixels.
- */
-/**
- * Creates a tile grid with a standard XYZ tiling scheme.
- * @param {XYZOptions} [options] Tile grid options.
- * @return {!TileGrid} Tile grid instance.
- * @api
- */
-declare function createXYZ(options?: XYZOptions): TileGrid;
-/**
- * @param {import("./proj.js").ProjectionLike} projection Projection.
- * @param {number} [maxZoom] Maximum zoom level (default is
- *     DEFAULT_MAX_ZOOM).
- * @param {number|import("./size.js").Size} [tileSize] Tile size (default uses
- *     DEFAULT_TILE_SIZE).
- * @param {import("./extent.js").Corner} [corner] Extent corner (default is `'top-left'`).
- * @return {!TileGrid} TileGrid instance.
- */
-declare function createForProjection(projection: ProjectionLike, maxZoom?: number, tileSize?: number | Size, corner?: Corner): TileGrid;
-/**
- * Generate a tile grid extent from a projection.  If the projection has an
- * extent, it is used.  If not, a global extent is assumed.
- * @param {import("./proj.js").ProjectionLike} projection Projection.
- * @return {import("./extent.js").Extent} Extent.
- */
-declare function extentFromProjection(projection: ProjectionLike): Extent$1;
-
-type XYZOptions = {
-    /**
-     * Extent for the tile grid. The origin for an XYZ tile grid is the
-     * top-left corner of the extent. If `maxResolution` is not provided the zero level of the grid is defined by the resolution
-     * at which one tile fits in the provided extent. If not provided, the extent of the EPSG:3857 projection is used.
-     */
-    extent?: Extent$1 | undefined;
-    /**
-     * Resolution at level zero.
-     */
-    maxResolution?: number | undefined;
-    /**
-     * Maximum zoom. The default is `42`. This determines the number of levels
-     * in the grid set. For example, a `maxZoom` of 21 means there are 22 levels in the grid set.
-     */
-    maxZoom?: number | undefined;
-    /**
-     * Minimum zoom.
-     */
-    minZoom?: number | undefined;
-    /**
-     * Tile size in pixels.
-     */
-    tileSize?: number | Size | undefined;
-};
-
-type TileSourceEventTypes = "tileloadstart" | "tileloadend" | "tileloaderror";
-
-/**
- * @classdesc
- * Events emitted by {@link module:ol/source/Tile~TileSource} instances are instances of this
- * type.
- */
-declare class TileSourceEvent extends BaseEvent {
-    /**
-     * @param {string} type Type.
-     * @param {import("../Tile.js").default} tile The tile.
-     */
-    constructor(type: string, tile: Tile$1);
-    /**
-     * The tile related to the event.
-     * @type {import("../Tile.js").default}
-     * @api
-     */
-    tile: Tile$1;
-}
-
-/**
- * *
- */
-type TileSourceOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & OnSignature<Types$2, ObjectEvent, Return> & OnSignature<TileSourceEventTypes, TileSourceEvent, Return> & CombinedOnSignature<EventTypes | Types$2 | TileSourceEventTypes, Return>;
-type Options$1o = {
-    /**
-     * Attributions.
-     */
-    attributions?: AttributionLike | undefined;
-    /**
-     * Attributions are collapsible.
-     */
-    attributionsCollapsible?: boolean | undefined;
-    /**
-     * Deprecated.  Use the cacheSize option on the layer instead.
-     */
-    cacheSize?: number | undefined;
-    /**
-     * TilePixelRatio.
-     */
-    tilePixelRatio?: number | undefined;
-    /**
-     * Projection.
-     */
-    projection?: ProjectionLike;
-    /**
-     * State.
-     */
-    state?: State$2 | undefined;
-    /**
-     * TileGrid.
-     */
-    tileGrid?: TileGrid | undefined;
-    /**
-     * WrapX.
-     */
-    wrapX?: boolean | undefined;
-    /**
-     * Transition.
-     */
-    transition?: number | undefined;
-    /**
-     * Key.
-     */
-    key?: string | undefined;
-    /**
-     * ZDirection.
-     */
-    zDirection?: number | NearestDirectionFunction | undefined;
-    /**
-     * Use interpolated values when resampling.  By default,
-     * the nearest neighbor is used when resampling.
-     */
-    interpolate?: boolean | undefined;
-};
-
-/***
- * @template Return
- * @typedef {import("../Observable").OnSignature<import("../Observable").EventTypes, import("../events/Event.js").default, Return> &
- *   import("../Observable").OnSignature<import("../ObjectEventType").Types, import("../Object").ObjectEvent, Return> &
- *   import("../Observable").OnSignature<import("./TileEventType").TileSourceEventTypes, TileSourceEvent, Return> &
- *   import("../Observable").CombinedOnSignature<import("../Observable").EventTypes|import("../ObjectEventType").Types|
- *     import("./TileEventType").TileSourceEventTypes, Return>} TileSourceOnSignature
- */
-/**
- * @typedef {Object} Options
- * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
- * @property {boolean} [attributionsCollapsible=true] Attributions are collapsible.
- * @property {number} [cacheSize] Deprecated.  Use the cacheSize option on the layer instead.
- * @property {number} [tilePixelRatio] TilePixelRatio.
- * @property {import("../proj.js").ProjectionLike} [projection] Projection.
- * @property {import("./Source.js").State} [state] State.
- * @property {import("../tilegrid/TileGrid.js").default} [tileGrid] TileGrid.
- * @property {boolean} [wrapX=false] WrapX.
- * @property {number} [transition] Transition.
- * @property {string} [key] Key.
- * @property {number|import("../array.js").NearestDirectionFunction} [zDirection=0] ZDirection.
- * @property {boolean} [interpolate=false] Use interpolated values when resampling.  By default,
- * the nearest neighbor is used when resampling.
- */
-/**
- * @classdesc
- * Abstract base class; normally only used for creating subclasses and not
- * instantiated in apps.
- * Base class for sources providing images divided into a tile grid.
- *
- * @template {import("../Tile.js").default} [TileType=import("../Tile.js").default]
- * @abstract
- * @api
- */
-declare class TileSource<TileType extends Tile$1 = Tile$1> extends Source {
-    /**
-     * @param {Options} options SourceTile source options.
-     */
-    constructor(options: Options$1o);
-    /***
-     * @type {TileSourceOnSignature<import("../events").EventsKey>}
-     */
-    on: TileSourceOnSignature<EventsKey>;
-    /***
-     * @type {TileSourceOnSignature<import("../events").EventsKey>}
-     */
-    once: TileSourceOnSignature<EventsKey>;
-    /***
-     * @type {TileSourceOnSignature<void>}
-     */
-    un: TileSourceOnSignature<void>;
-    /**
-     * @private
-     * @type {number}
-     */
-    private tilePixelRatio_;
-    /**
-     * @type {import("../tilegrid/TileGrid.js").default|null}
-     * @protected
-     */
-    protected tileGrid: TileGrid | null;
-    /**
-     * @protected
-     * @type {import("../size.js").Size}
-     */
-    protected tmpSize: Size;
-    /**
-     * @private
-     * @type {string}
-     */
-    private key_;
-    /**
-     * @protected
-     * @type {import("../Tile.js").Options}
-     */
-    protected tileOptions: Options$1R;
-    /**
-     * zDirection hint, read by the renderer. Indicates which resolution should be used
-     * by a renderer if the views resolution does not match any resolution of the tile source.
-     * If 0, the nearest resolution will be used. If 1, the nearest lower resolution
-     * will be used. If -1, the nearest higher resolution will be used.
-     * @type {number|import("../array.js").NearestDirectionFunction}
-     */
-    zDirection: number | NearestDirectionFunction;
-    /**
-     * @param {import("../proj/Projection.js").default} projection Projection.
-     * @return {number} Gutter.
-     */
-    getGutterForProjection(projection: Projection): number;
-    /**
-     * Return the key to be used for all tiles in the source.
-     * @return {string} The key for all tiles.
-     */
-    getKey(): string;
-    /**
-     * Set the value to be used as the key for all tiles in the source.
-     * @param {string} key The key for tiles.
-     * @protected
-     */
-    protected setKey(key: string): void;
-    /**
-     * @abstract
-     * @param {number} z Tile coordinate z.
-     * @param {number} x Tile coordinate x.
-     * @param {number} y Tile coordinate y.
-     * @param {number} pixelRatio Pixel ratio.
-     * @param {import("../proj/Projection.js").default} projection Projection.
-     * @return {TileType|null} Tile.
-     */
-    getTile(z: number, x: number, y: number, pixelRatio: number, projection: Projection): TileType | null;
-    /**
-     * Return the tile grid of the tile source.
-     * @return {import("../tilegrid/TileGrid.js").default|null} Tile grid.
-     * @api
-     */
-    getTileGrid(): TileGrid | null;
-    /**
-     * @param {import("../proj/Projection.js").default} projection Projection.
-     * @return {!import("../tilegrid/TileGrid.js").default} Tile grid.
-     */
-    getTileGridForProjection(projection: Projection): TileGrid;
-    /**
-     * Get the tile pixel ratio for this source. Subclasses may override this
-     * method, which is meant to return a supported pixel ratio that matches the
-     * provided `pixelRatio` as close as possible.
-     * @param {number} pixelRatio Pixel ratio.
-     * @return {number} Tile pixel ratio.
-     */
-    getTilePixelRatio(pixelRatio: number): number;
-    /**
-     * @param {number} z Z.
-     * @param {number} pixelRatio Pixel ratio.
-     * @param {import("../proj/Projection.js").default} projection Projection.
-     * @return {import("../size.js").Size} Tile size.
-     */
-    getTilePixelSize(z: number, pixelRatio: number, projection: Projection): Size;
-    /**
-     * Returns a tile coordinate wrapped around the x-axis. When the tile coordinate
-     * is outside the resolution and extent range of the tile grid, `null` will be
-     * returned.
-     * @param {import("../tilecoord.js").TileCoord} tileCoord Tile coordinate.
-     * @param {import("../proj/Projection.js").default} [projection] Projection.
-     * @return {import("../tilecoord.js").TileCoord} Tile coordinate to be passed to the tileUrlFunction or
-     *     null if no tile URL should be created for the passed `tileCoord`.
-     */
-    getTileCoordForTileUrlFunction(tileCoord: TileCoord, projection?: Projection): TileCoord;
-    /**
-     * Remove all cached reprojected tiles from the source. The next render cycle will create new tiles.
-     * @api
-     */
-    clear(): void;
-}
-
 type Options$1n = {
     /**
      * Attributions.
@@ -18521,7 +18710,7 @@ type Options$1n = {
     /**
      * State.
      */
-    state?: State$2 | undefined;
+    state?: State | undefined;
     /**
      * TileGrid.
      */
@@ -18717,7 +18906,7 @@ declare class ReprojTile extends Tile$1 {
      * @param {boolean} [renderEdges] Render reprojection edges.
      * @param {import("../Tile.js").Options} [options] Tile options.
      */
-    constructor(sourceProj: Projection, sourceTileGrid: TileGrid, targetProj: Projection, targetTileGrid: TileGrid, tileCoord: TileCoord, wrappedTileCoord: TileCoord, pixelRatio: number, gutter: number, getTileFunction: FunctionType$2, errorThreshold?: number, renderEdges?: boolean, options?: Options$1R);
+    constructor(sourceProj: Projection, sourceTileGrid: TileGrid, targetProj: Projection, targetTileGrid: TileGrid, tileCoord: TileCoord, wrappedTileCoord: TileCoord, pixelRatio: number, gutter: number, getTileFunction: FunctionType$2, errorThreshold?: number, renderEdges?: boolean, options?: Options$1M);
     /**
      * @private
      * @type {boolean}
@@ -18735,7 +18924,7 @@ declare class ReprojTile extends Tile$1 {
     private gutter_;
     /**
      * @private
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas}
      */
     private canvas_;
     /**
@@ -18780,9 +18969,9 @@ declare class ReprojTile extends Tile$1 {
     private triangulation_;
     /**
      * Get the HTML Canvas element for this tile.
-     * @return {HTMLCanvasElement} Canvas.
+     * @return {HTMLCanvasElement|OffscreenCanvas} Canvas.
      */
-    getImage(): HTMLCanvasElement;
+    getImage(): HTMLCanvasElement | OffscreenCanvas;
     /**
      * @private
      */
@@ -18829,7 +19018,7 @@ type Options$1m = {
     /**
      * Source state.
      */
-    state?: State$2 | undefined;
+    state?: State | undefined;
     /**
      * Class used to instantiate image tiles.
      * Default is {@link module :ol/ImageTile~ImageTile}.
@@ -18892,6 +19081,7 @@ type Options$1m = {
      */
     zDirection?: number | NearestDirectionFunction | undefined;
 };
+
 /**
  * @typedef {Object} Options
  * @property {import("./Source.js").AttributionLike} [attributions] Attributions.
@@ -18995,20 +19185,22 @@ declare class TileImage extends UrlTile {
      * @param {number} y Tile coordinate y.
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../proj/Projection.js").default} projection Projection.
+     * @param {import("../structs/LRUCache.js").default<import("../Tile.js").default>} [tileCache] Tile cache.
      * @return {!(ImageTile|ReprojTile)} Tile.
      * @override
      */
-    override getTile(z: number, x: number, y: number, pixelRatio: number, projection: Projection): (ImageTile | ReprojTile);
+    override getTile(z: number, x: number, y: number, pixelRatio: number, projection: Projection, tileCache?: LRUCache<Tile$1>): (ImageTile | ReprojTile);
     /**
      * @param {number} z Tile coordinate z.
      * @param {number} x Tile coordinate x.
      * @param {number} y Tile coordinate y.
      * @param {number} pixelRatio Pixel ratio.
      * @param {!import("../proj/Projection.js").default} projection Projection.
+     * @param {import("../structs/LRUCache.js").default<import("../Tile.js").default>} [tileCache] Tile cache.
      * @return {!ImageTile} Tile.
      * @protected
      */
-    protected getTileInternal(z: number, x: number, y: number, pixelRatio: number, projection: Projection): ImageTile;
+    protected getTileInternal(z: number, x: number, y: number, pixelRatio: number, projection: Projection, tileCache?: LRUCache<Tile$1>): ImageTile;
     /**
      * Sets whether to render reprojection edges or not (usually for debugging).
      * @param {boolean} render Render the edges.
@@ -19090,7 +19282,7 @@ type Options$1l = {
     /**
      * Source state.
      */
-    state?: State$2 | undefined;
+    state?: State | undefined;
     /**
      * Supported IIIF region and size calculation
      * features.
@@ -19317,7 +19509,7 @@ type Options$1k = {
     /**
      * Image object for the icon.
      */
-    img?: HTMLCanvasElement | HTMLImageElement | ImageBitmap | undefined;
+    img?: HTMLCanvasElement | OffscreenCanvas | HTMLImageElement | ImageBitmap | undefined;
     /**
      * Displacement of the icon in pixels.
      * Positive values will shift the icon right and up.
@@ -19466,23 +19658,29 @@ declare class Icon extends ImageStyle {
     /**
      * Get the image icon.
      * @param {number} pixelRatio Pixel ratio.
-     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image or Canvas element. If the Icon
+     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image or Canvas element. If the Icon
      * style was configured with `src` or with a not let loaded `img`, an `ImageBitmap` will be returned.
      * @api
      * @override
      */
-    override getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    override getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
     /**
-     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image element.
+     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image element.
      * @override
      */
-    override getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    override getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
     /**
      * Get the image URL.
      * @return {string|undefined} Image src.
      * @api
      */
     getSrc(): string | undefined;
+    /**
+     * Set the image URI
+     * @param {string} src Image source URI
+     * @api
+     */
+    setSrc(src: string): void;
     /**
      * Get the width of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
      * @return {number} Icon width (in pixels).
@@ -20287,7 +20485,7 @@ type WriteTransactionOptions = {
     /**
      * GML options for the WFS transaction writer.
      */
-    gmlOptions?: Options$1t | undefined;
+    gmlOptions?: Options$1r | undefined;
     /**
      * WFS version to use for the transaction. Can be either `1.0.0`, `1.1.0` or `2.0.0`.
      */
@@ -23725,6 +23923,11 @@ declare class DragZoom extends DragBox {
 }
 
 /**
+ * Coordinate type when drawing lines.
+ */
+type LineCoordType$1 = Array<Coordinate>;
+
+/**
  * @module ol/style/flat
  */
 /**
@@ -23838,17 +24041,18 @@ declare class DragZoom extends DragBox {
  * @property {NumberArrayExpression} [stroke-line-dash] Line dash pattern.
  * @property {NumberExpression} [stroke-line-dash-offset=0] Line dash offset.
  * @property {NumberExpression} [stroke-miter-limit=10] Miter limit.
- * @property {NumberExpression} [stroke-offset] Stroke offset in pixel. A positive value offsets the line to the right,
+ * @property {NumberExpression} [stroke-offset] Stroke offset in pixel along the normal. A positive value offsets the line to the right,
  * relative to the direction of the line. (WebGL only)
  * @property {string} [stroke-pattern-src] Stroke pattern image source URI. If `stroke-color` is defined as well,
  * it will be used to tint this image. (WebGL only)
  * @property {SizeExpression} [stroke-pattern-offset=[0, 0]] Offset, which, together with the size and the offset origin,
- * define the sub-rectangle to use from the original fill pattern image. (WebGL only)
+ * define the sub-rectangle to use from the original stroke pattern image. (WebGL only)
  * @property {import("./Icon.js").IconOrigin} [stroke-pattern-offset-origin='top-left'] Origin of the offset: `bottom-left`, `bottom-right`,
  * `top-left` or `top-right`. (WebGL only)
  * @property {SizeExpression} [stroke-pattern-size] Stroke pattern image size in pixel. Can be used together with `stroke-pattern-offset` to define the
  * sub-rectangle to use from the origin (sprite) fill pattern image. (WebGL only)
- * @property {NumberExpression} [stroke-pattern-spacing] Spacing between each pattern occurrence in pixels; 0 if undefined.
+ * @property {NumberExpression} [stroke-pattern-spacing] Spacing between each pattern occurrence in pixels; 0 if undefined. (WebGL only)
+ * @property {NumberExpression} [stroke-pattern-start-offset] Stroke pattern offset in pixels at the start of the line. (WebGL only)
  * @property {NumberExpression} [z-index] The zIndex of the style.
  */
 /**
@@ -24037,7 +24241,7 @@ type FlatStyle$1 = FlatFill & FlatStroke & FlatText & FlatIcon & FlatShape & Fla
 /**
  * A flat style literal or an array of the same.
  */
-type FlatStyleLike = FlatStyle$1 | Array<FlatStyle$1> | Array<Rule>;
+type FlatStyleLike$1 = FlatStyle$1 | Array<FlatStyle$1> | Array<Rule>;
 /**
  * Fill style properties applied to polygon features.
  */
@@ -24102,7 +24306,7 @@ type FlatStroke = {
      */
     "stroke-miter-limit"?: NumberExpression | undefined;
     /**
-     * Stroke offset in pixel. A positive value offsets the line to the right,
+     * Stroke offset in pixel along the normal. A positive value offsets the line to the right,
      * relative to the direction of the line. (WebGL only)
      */
     "stroke-offset"?: NumberExpression | undefined;
@@ -24113,7 +24317,7 @@ type FlatStroke = {
     "stroke-pattern-src"?: string | undefined;
     /**
      * Offset, which, together with the size and the offset origin,
-     * define the sub-rectangle to use from the original fill pattern image. (WebGL only)
+     * define the sub-rectangle to use from the original stroke pattern image. (WebGL only)
      */
     "stroke-pattern-offset"?: SizeExpression | undefined;
     /**
@@ -24127,9 +24331,13 @@ type FlatStroke = {
      */
     "stroke-pattern-size"?: SizeExpression | undefined;
     /**
-     * Spacing between each pattern occurrence in pixels; 0 if undefined.
+     * Spacing between each pattern occurrence in pixels; 0 if undefined. (WebGL only)
      */
     "stroke-pattern-spacing"?: NumberExpression | undefined;
+    /**
+     * Stroke pattern offset in pixels at the start of the line. (WebGL only)
+     */
+    "stroke-pattern-start-offset"?: NumberExpression | undefined;
     /**
      * The zIndex of the style.
      */
@@ -24859,9 +25067,9 @@ declare namespace ShaderType {
  */
 type AttributeDescription = {
     /**
-     * Attribute name to use in shaders
+     * Attribute name to use in shaders; if null, this attribute will not be enabled and is simply used as padding in the buffers
      */
-    name: string;
+    name: string | null;
     /**
      * Number of components per attributes
      */
@@ -25160,6 +25368,11 @@ declare class WebGLHelper extends Disposable {
      */
     getExtension(name: string): any | null;
     /**
+     * Will throw if the extension is not available
+     * @return {ANGLE_instanced_arrays} Extension
+     */
+    getInstancedRenderingExtension_(): ANGLE_instanced_arrays;
+    /**
      * Just bind the buffer if it's in the cache. Otherwise create
      * the WebGL buffer, bind it, populate it, and add an entry to
      * the cache.
@@ -25224,6 +25437,14 @@ declare class WebGLHelper extends Disposable {
      * @param {number} end End index.
      */
     drawElements(start: number, end: number): void;
+    /**
+     * Execute a draw call similar to `drawElements`, but using instanced rendering.
+     * Will have no effect if `enableAttributesInstanced` was not called for this rendering pass.
+     * @param {number} start Start index.
+     * @param {number} end End index.
+     * @param {number} instanceCount The number of instances to render
+     */
+    drawElementsInstanced(start: number, end: number, instanceCount: number): void;
     /**
      * Apply the successive post process passes which will eventually render to the actual canvas.
      * @param {import("../Map.js").FrameState} frameState current frame state
@@ -25336,9 +25557,16 @@ declare class WebGLHelper extends Disposable {
      * @param {number} type UNSIGNED_INT, UNSIGNED_BYTE, UNSIGNED_SHORT or FLOAT
      * @param {number} stride Stride in bytes (0 means attribs are packed)
      * @param {number} offset Offset in bytes
+     * @param {boolean} instanced Whether the attribute is used for instanced rendering
      * @private
      */
     private enableAttributeArray_;
+    /**
+     * @private
+     * @param {Array<AttributeDescription>} attributes Ordered list of attributes to read from the buffer
+     * @param {boolean} instanced Whether the attributes are instanced.
+     */
+    private enableAttributes_;
     /**
      * Will enable the following attributes to be read from the currently bound buffer,
      * i.e. tell the GPU where to read the different attributes in the buffer. An error in the
@@ -25346,6 +25574,12 @@ declare class WebGLHelper extends Disposable {
      * @param {Array<AttributeDescription>} attributes Ordered list of attributes to read from the buffer
      */
     enableAttributes(attributes: Array<AttributeDescription>): void;
+    /**
+     * Will enable these attributes as instanced, meaning that they will only be read
+     * once per instance instead of per vertex.
+     * @param {Array<AttributeDescription>} attributes Ordered list of attributes to read from the buffer
+     */
+    enableAttributesInstanced(attributes: Array<AttributeDescription>): void;
     /**
      * WebGL context was lost
      * @param {WebGLContextEvent} event The context loss event.
@@ -25680,6 +25914,10 @@ declare class WebGLPointsLayerRenderer extends WebGLLayerRenderer<any> {
     /**
      * @private
      */
+    private instanceAttributesBuffer_;
+    /**
+     * @private
+     */
     private indicesBuffer_;
     /**
      * @private
@@ -25700,11 +25938,14 @@ declare class WebGLPointsLayerRenderer extends WebGLLayerRenderer<any> {
      */
     private hitDetectionEnabled_;
     /**
-     * A list of attributes used by the renderer. By default only the position and
-     * index of the vertex (0 to 3) are required.
+     * A list of attributes used by the renderer.
      * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
      */
     attributes: Array<AttributeDescription>;
+    /**
+     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     */
+    instanceAttributes: Array<AttributeDescription>;
     customAttributes: CustomAttribute[];
     /**
      * @private
@@ -25809,7 +26050,7 @@ declare class WebGLPointsLayerRenderer extends WebGLLayerRenderer<any> {
     renderDeclutter(): void;
 }
 
-declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_screenToWorldMatrix;\nuniform vec2 u_viewportSizePx;\nuniform float u_pixelRatio;\nuniform float u_globalAlpha;\nuniform float u_time;\nuniform float u_zoom;\nuniform float u_resolution;\nuniform float u_rotation;\nuniform vec4 u_renderExtent;\nuniform vec2 u_patternOrigin;\nuniform float u_depth;\nuniform mediump int u_hitDetection;\n\nconst float PI = 3.141592653589793238;\nconst float TWO_PI = 2.0 * PI;\nfloat currentLineMetric = 0.; // an actual value will be used in the stroke shaders\n";
+declare const COMMON_HEADER: "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\nuniform mat4 u_projectionMatrix;\nuniform mat4 u_screenToWorldMatrix;\nuniform vec2 u_viewportSizePx;\nuniform float u_pixelRatio;\nuniform float u_globalAlpha;\nuniform float u_time;\nuniform float u_zoom;\nuniform float u_resolution;\nuniform float u_rotation;\nuniform vec4 u_renderExtent;\nuniform vec2 u_patternOrigin;\nuniform float u_depth;\nuniform mediump int u_hitDetection;\n\nconst float PI = 3.141592653589793238;\nconst float TWO_PI = 2.0 * PI;\nfloat currentLineMetric = 0.; // an actual value will be used in the stroke shaders\n\nvec4 unpackColor(vec2 packedColor) {\n  return vec4(\n    min(floor(packedColor[0] / 256.0) / 255.0, 1.0),\n    min(mod(packedColor[0], 256.0) / 255.0, 1.0),\n    min(floor(packedColor[1] / 256.0) / 255.0, 1.0),\n    min(mod(packedColor[1], 256.0) / 255.0, 1.0)\n  );\n}\n";
 /**
  * @typedef {Object} AttributeDescription
  * @property {string} name Attribute name, as will be declared in the header of the vertex shader (including a_)
@@ -25929,6 +26170,11 @@ declare class ShaderBuilder {
      * @private
      */
     private strokeDistanceFieldExpression_;
+    /**
+     * @private
+     * @type {string}
+     */
+    private strokePatternLengthExpression_;
     /**
      * @type {boolean}
      * @private
@@ -26084,6 +26330,20 @@ declare class ShaderBuilder {
      */
     setStrokeDistanceFieldExpression(expression: string): ShaderBuilder;
     /**
+     * Defining a pattern length for a stroke lets us avoid having visual artifacts when
+     * a linestring is very long and thus has very high "distance" attributes on its vertices.
+     * If we apply a pattern or dash array to a stroke we know for certain that the full distance value
+     * is not necessary and can be trimmed down using `mod(currentDistance, patternLength)`.
+     * @param {string} expression Stroke expression that evaluates to a`float; value is expected to be
+     * in pixels.
+     * @return {ShaderBuilder} the builder object
+     */
+    setStrokePatternLengthExpression(expression: string): ShaderBuilder;
+    /**
+     * @return {string} The current stroke pattern length expression.
+     */
+    getStrokePatternLengthExpression(): string;
+    /**
      * @param {string} expression Fill color expression, evaluate to `vec4`
      * @return {ShaderBuilder} the builder object
      */
@@ -26127,6 +26387,47 @@ declare class ShaderBuilder {
      */
     getFillFragmentShader(): string | null;
 }
+
+/**
+ * see https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+ * @param {Object|string} input The hash input, either an object or string
+ * @return {string} Hash (if the object cannot be serialized, it is based on `getUid`)
+ */
+declare function computeHash(input: any | string): string;
+/**
+ * @typedef {Object} StyleParseResult
+ * @property {ShaderBuilder} builder Shader builder pre-configured according to a given style
+ * @property {import("./VectorStyleRenderer.js").UniformDefinitions} uniforms Uniform definitions
+ * @property {import("./VectorStyleRenderer.js").AttributeDefinitions} attributes Attribute definitions
+ */
+/**
+ * Parses a {@link import("../../style/flat.js").FlatStyle} object and returns a {@link ShaderBuilder}
+ * object that has been configured according to the given style, as well as `attributes` and `uniforms`
+ * arrays to be fed to the `WebGLPointsRenderer` class.
+ *
+ * Also returns `uniforms` and `attributes` properties as expected by the
+ * {@link module:ol/renderer/webgl/PointsLayer~WebGLPointsLayerRenderer}.
+ *
+ * @param {import("../../style/flat.js").FlatStyle} style Flat style.
+ * @param {import('../../style/flat.js').StyleVariables} [variables] Style variables.
+ * @param {import("../../expr/expression.js").EncodedExpression} [filter] Filter (if any)
+ * @return {StyleParseResult} Result containing shader params, attributes and uniforms.
+ */
+declare function parseLiteralStyle(style: FlatStyle$1, variables?: StyleVariables, filter?: EncodedExpression): StyleParseResult;
+type StyleParseResult = {
+    /**
+     * Shader builder pre-configured according to a given style
+     */
+    builder: ShaderBuilder;
+    /**
+     * Uniform definitions
+     */
+    uniforms: UniformDefinitions;
+    /**
+     * Attribute definitions
+     */
+    attributes: AttributeDefinitions;
+};
 
 type Feature = Feature$2;
 /**
@@ -26419,54 +26720,30 @@ type AttributeDefinitions = {
 type UniformDefinitions = {
     [x: string]: UniformValue;
 };
+/**
+ * Buffers organized like so: [indicesBuffer, vertexAttributesBuffer, instanceAttributesBuffer]
+ */
+type WebGLArrayBufferSet = Array<WebGLArrayBuffer>;
 type WebGLBuffers = {
     /**
      * Array containing indices and vertices buffers for polygons
      */
-    polygonBuffers: Array<WebGLArrayBuffer>;
+    polygonBuffers: WebGLArrayBufferSet;
     /**
      * Array containing indices and vertices buffers for line strings
      */
-    lineStringBuffers: Array<WebGLArrayBuffer>;
+    lineStringBuffers: WebGLArrayBufferSet;
     /**
      * Array containing indices and vertices buffers for points
      */
-    pointBuffers: Array<WebGLArrayBuffer>;
+    pointBuffers: WebGLArrayBufferSet;
     /**
      * Inverse of the transform applied when generating buffers
      */
     invertVerticesTransform: Transform;
 };
-type AsShaders = {
-    /**
-     * Shader builder with the appropriate presets.
-     */
-    builder: ShaderBuilder;
-    /**
-     * Custom attributes made available in the vertex shaders.
-     * Default shaders rely on the attributes in {@link Attributes}.
-     */
-    attributes?: {
-        [x: string]: AttributeDefinition;
-    } | undefined;
-    /**
-     * Additional uniforms usable in shaders.
-     */
-    uniforms?: {
-        [x: string]: UniformValue;
-    } | undefined;
-};
-type AsRule = {
-    /**
-     * Style
-     */
-    style: FlatStyle$1;
-    /**
-     * Filter
-     */
-    filter?: EncodedExpression | undefined;
-};
-type VectorStyle = AsRule | AsShaders;
+type StyleShaders$2 = StyleParseResult;
+type FlatStyleLike = FlatStyleLike$1;
 /**
  * @typedef {Object} AttributeDefinition A description of a custom attribute to be passed on to the GPU, with a value different
  * for each feature.
@@ -26480,10 +26757,13 @@ type VectorStyle = AsRule | AsShaders;
  * @typedef {Object<string, import("../../webgl/Helper").UniformValue>} UniformDefinitions
  */
 /**
+ * @typedef {Array<WebGLArrayBuffer>} WebGLArrayBufferSet Buffers organized like so: [indicesBuffer, vertexAttributesBuffer, instanceAttributesBuffer]
+ */
+/**
  * @typedef {Object} WebGLBuffers
- * @property {Array<WebGLArrayBuffer>} polygonBuffers Array containing indices and vertices buffers for polygons
- * @property {Array<WebGLArrayBuffer>} lineStringBuffers Array containing indices and vertices buffers for line strings
- * @property {Array<WebGLArrayBuffer>} pointBuffers Array containing indices and vertices buffers for points
+ * @property {WebGLArrayBufferSet} polygonBuffers Array containing indices and vertices buffers for polygons
+ * @property {WebGLArrayBufferSet} lineStringBuffers Array containing indices and vertices buffers for line strings
+ * @property {WebGLArrayBufferSet} pointBuffers Array containing indices and vertices buffers for points
  * @property {import("../../transform.js").Transform} invertVerticesTransform Inverse of the transform applied when generating buffers
  */
 /**
@@ -26498,43 +26778,51 @@ type VectorStyle = AsRule | AsShaders;
  * @property {string} fragment Fragment shader source
  */
 /**
- * @typedef {Object} AsShaders
- * @property {import("./ShaderBuilder.js").ShaderBuilder} builder Shader builder with the appropriate presets.
- * @property {AttributeDefinitions} [attributes] Custom attributes made available in the vertex shaders.
- * Default shaders rely on the attributes in {@link Attributes}.
- * @property {UniformDefinitions} [uniforms] Additional uniforms usable in shaders.
+ * @typedef {import('./style.js').StyleParseResult} StyleShaders
  */
 /**
- * @typedef {Object} AsRule
- * @property {import('../../style/flat.js').FlatStyle} style Style
- * @property {import("../../expr/expression.js").EncodedExpression} [filter] Filter
+ * @typedef {import('../../style/flat.js').FlatStyleLike} FlatStyleLike
  */
 /**
- * @typedef {AsRule|AsShaders} VectorStyle
+ * @typedef {import('../../style/flat.js').FlatStyle} FlatStyle
+ */
+/**
+ * @typedef {import('../../style/flat.js').Rule} FlatStyleRule
+ */
+/**
+ * @typedef {Object} SubRenderPass
+ * @property {string} vertexShader Vertex shader
+ * @property {string} fragmentShader Fragment shader
+ * @property {Array<import('../../webgl/Helper.js').AttributeDescription>} attributesDesc Attributes description, defined for each primitive vertex
+ * @property {Array<import('../../webgl/Helper.js').AttributeDescription>} instancedAttributesDesc Attributes description, defined once per primitive
+ * @property {number} instancePrimitiveVertexCount Number of vertices per instance primitive in this render pass
+ * @property {WebGLProgram} [program] Program; this has to be recreated if the helper is lost/changed
+ */
+/**
+ * @typedef {Object} RenderPass
+ * @property {SubRenderPass} [fillRenderPass] Fill render pass; undefined if no fill in pass
+ * @property {SubRenderPass} [strokeRenderPass] Stroke render pass; undefined if no stroke in pass
+ * @property {SubRenderPass} [symbolRenderPass] Symbol render pass; undefined if no symbol in pass
  */
 /**
  * @classdesc This class is responsible for:
- * 1. generate WebGL buffers according to a provided style, using a MixedGeometryBatch as input
+ * 1. generating WebGL buffers according to a provided style, using a MixedGeometryBatch as input
  * 2. rendering geometries contained in said buffers
  *
- * A layer renderer will typically maintain several of these in order to have several styles rendered separately.
- *
- * A VectorStyleRenderer instance can be created either from a literal style or from shaders using either
- * `VectorStyleRenderer.fromStyle` or `VectorStyleRenderer.fromShaders`. The shaders should not be provided explicitly
- * but instead as a preconfigured ShaderBuilder instance.
+ * A VectorStyleRenderer instance can be created either from a literal style or from shaders.
+ * The shaders should not be provided explicitly but instead as a preconfigured ShaderBuilder instance.
  *
  * The `generateBuffers` method returns a promise resolving to WebGL buffers that are intended to be rendered by the
  * same renderer.
  */
 declare class VectorStyleRenderer {
     /**
-     * @param {VectorStyle} styleOrShaders Literal style or custom shaders
+     * @param {FlatStyleLike|StyleShaders|Array<StyleShaders>} styles Vector styles expressed as flat styles, flat style rules or style shaders
      * @param {import('../../style/flat.js').StyleVariables} variables Style variables
      * @param {import('../../webgl/Helper.js').default} helper Helper
      * @param {boolean} [enableHitDetection] Whether to enable the hit detection (needs compatible shader)
-     * @param {import("../../expr/expression.js").ExpressionValue} [filter] Optional filter expression
      */
-    constructor(styleOrShaders: VectorStyle, variables: StyleVariables, helper: WebGLHelper, enableHitDetection?: boolean, filter?: ExpressionValue);
+    constructor(styles: FlatStyleLike | StyleShaders$2 | Array<StyleShaders$2>, variables: StyleVariables, helper: WebGLHelper, enableHitDetection?: boolean);
     /**
      * @private
      * @type {import('../../webgl/Helper.js').default}
@@ -26545,94 +26833,28 @@ declare class VectorStyleRenderer {
      */
     private hitDetectionEnabled_;
     /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private fillProgram_;
-    /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private strokeProgram_;
-    /**
-     * @private
-     * @type {WebGLProgram}
-     */
-    private symbolProgram_;
-    /**
-     * @type {boolean}
+     * @type {Array<StyleShaders>}
      * @private
      */
-    private hasFill_;
+    private styleShaders;
     /**
-     * @private
-     */
-    private fillVertexShader_;
-    /**
-     * @private
-     */
-    private fillFragmentShader_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasStroke_;
-    /**
-     * @private
-     */
-    private strokeVertexShader_;
-    /**
-     * @private
-     */
-    private strokeFragmentShader_;
-    /**
-     * @type {boolean}
-     * @private
-     */
-    private hasSymbol_;
-    /**
-     * @private
-     */
-    private symbolVertexShader_;
-    /**
-     * @private
-     */
-    private symbolFragmentShader_;
-    /**
-     * @type {function(import('../../Feature.js').FeatureLike): boolean}
-     * @private
-     */
-    private featureFilter_;
-    /**
+     * @type {AttributeDefinitions}
      * @private
      */
     private customAttributes_;
     /**
+     @type {UniformDefinitions}
      * @private
      */
     private uniforms_;
     /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
+     * @type {Array<RenderPass>}
      * @private
      */
-    private polygonAttributesDesc_;
-    /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
-     * @private
-     */
-    private lineStringAttributesDesc_;
-    /**
-     * @type {Array<import('../../webgl/Helper.js').AttributeDescription>}
-     * @private
-     */
-    private pointAttributesDesc_;
-    /**
-     * Will apply the style filter when generating geometry batches (if it can be evaluated outside a map context)
-     * @param {import("../../expr/expression.js").ExpressionValue} filter Style filter
-     * @return {function(import('../../Feature.js').FeatureLike): boolean} Feature filter
-     * @private
-     */
-    private computeFeatureFilter;
+    private renderPasses_;
+    hasFill_: boolean;
+    hasStroke_: boolean;
+    hasSymbol_: boolean;
     /**
      * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
      * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
@@ -26650,7 +26872,7 @@ declare class VectorStyleRenderer {
      * @param {Float32Array|null} renderInstructions Render instructions
      * @param {import("../../geom/Geometry.js").Type} geometryType Geometry type
      * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
-     * @return {Promise<Array<WebGLArrayBuffer>>|null} Indices buffer and vertices buffer; null if nothing to render
+     * @return {Promise<WebGLArrayBufferSet>|null} Indices buffer and vertices buffer; null if nothing to render
      * @private
      */
     private generateBuffersForType_;
@@ -26663,9 +26885,9 @@ declare class VectorStyleRenderer {
     render(buffers: WebGLBuffers, frameState: FrameState, preRenderCallback: () => void): void;
     /**
      * @param {WebGLArrayBuffer} indicesBuffer Indices buffer
-     * @param {WebGLArrayBuffer} verticesBuffer Vertices buffer
-     * @param {WebGLProgram} program Program
-     * @param {Array<import('../../webgl/Helper.js').AttributeDescription>} attributes Attribute descriptions
+     * @param {WebGLArrayBuffer} vertexAttributesBuffer Vertex attributes buffer
+     * @param {WebGLArrayBuffer} instanceAttributesBuffer Instance attributes buffer
+     * @param {SubRenderPass} subRenderPass Render pass (program, attributes, etc.) specific to one geometry type
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @param {function(): void} preRenderCallback This callback will be called right before drawing, and can be used to set uniforms
      * @private
@@ -26678,7 +26900,8 @@ declare class VectorStyleRenderer {
     setHelper(helper: WebGLHelper, buffers?: WebGLBuffers): void;
 }
 
-type StyleAsShaders$2 = AsShaders;
+type StyleShaders$1 = StyleShaders$2;
+type LayerStyle$1 = FlatStyleLike$1 | Array<StyleShaders$1> | StyleShaders$1;
 type Options$_ = {
     /**
      * A CSS class name to set to the canvas element.
@@ -26687,7 +26910,7 @@ type Options$_ = {
     /**
      * Flat vector style; also accepts shaders
      */
-    style: FlatStyleLike | Array<StyleAsShaders$2> | StyleAsShaders$2;
+    style: LayerStyle$1;
     /**
      * Style variables
      */
@@ -26705,15 +26928,15 @@ type Options$_ = {
     postProcesses?: PostProcessesOptions[] | undefined;
 };
 /**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').AsShaders} StyleAsShaders
+ * @typedef {import('../../render/webgl/VectorStyleRenderer.js').StyleShaders} StyleShaders
  */
 /**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').AsRule} StyleAsRule
+ * @typedef {import('../../style/flat.js').FlatStyleLike | Array<StyleShaders> | StyleShaders} LayerStyle
  */
 /**
  * @typedef {Object} Options
  * @property {string} [className='ol-layer'] A CSS class name to set to the canvas element.
- * @property {import('../../style/flat.js').FlatStyleLike | Array<StyleAsShaders> | StyleAsShaders} style Flat vector style; also accepts shaders
+ * @property {LayerStyle} style Flat vector style; also accepts shaders
  * @property {Object<string, number|Array<number>|string|boolean>} variables Style variables
  * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
  * prevent all hit detection on the layer.
@@ -26792,17 +27015,17 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
      */
     private styleVariables_;
     /**
-     * @type {Array<StyleAsRule | StyleAsShaders>}
+     * @type {LayerStyle}
      * @private
      */
-    private styles_;
+    private style_;
     /**
-     * @type {Array<VectorStyleRenderer>}
-     * @private
+     * @type {VectorStyleRenderer}
+     * @public
      */
-    private styleRenderers_;
+    public styleRenderer_: VectorStyleRenderer;
     /**
-     * @type {Array<import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers>}
+     * @type {import('../../render/webgl/VectorStyleRenderer.js').WebGLBuffers}
      * @private
      */
     private buffers_;
@@ -26969,7 +27192,7 @@ type Options$Z<VectorSourceType extends VectorSource<FeatureType> = VectorSource
      * features that have their own style will be rendered. See {@link module :ol/style/Style~Style} for the default style
      * which will be used if this is not set.
      */
-    style?: StyleLike | FlatStyleLike | null | undefined;
+    style?: StyleLike | FlatStyleLike$1 | null | undefined;
     /**
      * Background color for the layer. If not specified, no background
      * will be rendered.
@@ -27120,7 +27343,7 @@ type Options$Y = {
     /**
      * State.
      */
-    state?: State$2 | undefined;
+    state?: State | undefined;
 };
 
 /***
@@ -27390,6 +27613,7 @@ declare class ImageLayer<ImageSourceType extends ImageSource> extends BaseImageL
  */
 declare class CanvasLayerRenderer<LayerType extends Layer> extends LayerRenderer<LayerType> {
     /**
+     * HTMLElement container for the layer to be rendered in.
      * @protected
      * @type {HTMLElement}
      */
@@ -27421,15 +27645,16 @@ declare class CanvasLayerRenderer<LayerType extends Layer> extends LayerRenderer
      */
     protected inversePixelTransform: Transform;
     /**
-     * @type {CanvasRenderingContext2D}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D}
      */
-    context: CanvasRenderingContext2D;
+    context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
     /**
      * @private
      * @type {ZIndexContext}
      */
     private deferredContext_;
     /**
+     * true if the container has been reused from the previous renderer
      * @type {boolean}
      */
     containerReused: boolean;
@@ -27458,12 +27683,12 @@ declare class CanvasLayerRenderer<LayerType extends Layer> extends LayerRenderer
      */
     useContainer(target: HTMLElement, transform: string, backgroundColor?: string): void;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @param {import("../../extent.js").Extent} extent Clip extent.
      * @protected
      */
-    protected clipUnrotated(context: CanvasRenderingContext2D, frameState: FrameState, extent: Extent$1): void;
+    protected clipUnrotated(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, frameState: FrameState, extent: Extent$1): void;
     /**
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @param {HTMLElement} target Target that may be used to render content to.
@@ -27472,23 +27697,23 @@ declare class CanvasLayerRenderer<LayerType extends Layer> extends LayerRenderer
     protected prepareContainer(frameState: FrameState, target: HTMLElement): void;
     /**
      * @param {import("../../render/EventType.js").default} type Event type.
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @private
      */
     private dispatchRenderEvent_;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @protected
      */
-    protected preRender(context: CanvasRenderingContext2D, frameState: FrameState): void;
+    protected preRender(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, frameState: FrameState): void;
     /**
-     * @param {CanvasRenderingContext2D} context Context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @protected
      */
-    protected postRender(context: CanvasRenderingContext2D, frameState: FrameState): void;
+    protected postRender(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, frameState: FrameState): void;
     /**
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      */
@@ -27664,6 +27889,10 @@ type Options$W = {
      * which is unique for each imagery set in BingMaps.
      */
     placeholderTiles?: boolean | undefined;
+    /**
+     * The Bing Map Metadata API URL.
+     */
+    url?: string | undefined;
 };
 type BingMapsImageryMetadataResponse = {
     /**
@@ -27770,6 +27999,7 @@ type CoverageArea = {
  * @property {boolean} [placeholderTiles] Whether to show BingMaps placeholder tiles when zoomed past the maximum level provided in an area. When `false`, requests beyond
  * the maximum zoom level will return no tile. When `true`, the placeholder tile will be returned. When not set, the default behaviour of the imagery set takes place,
  * which is unique for each imagery set in BingMaps.
+ * @property {string} [url='https://dev.virtualearth.net/REST/v1/Imagery/Metadata/'] The Bing Map Metadata API URL.
  */
 /**
  * @typedef {Object} BingMapsImageryMetadataResponse
@@ -28505,7 +28735,7 @@ type Options$S = {
     /**
      * The source state.
      */
-    state?: State$2 | undefined;
+    state?: State | undefined;
     /**
      * Render tiles beyond the antimeridian.
      */
@@ -28668,19 +28898,21 @@ declare class DataTileSource<TileType extends Tile$1 = DataTile> extends TileSou
      * @param {number} y Tile coordinate y.
      * @param {import("../proj/Projection.js").default} targetProj The output projection.
      * @param {import("../proj/Projection.js").default} sourceProj The input projection.
+     * @param {import("../structs/LRUCache.js").default<import("../Tile.js").default>} [tileCache] Tile cache.
      * @return {!TileType} Tile.
      */
-    getReprojTile_(z: number, x: number, y: number, targetProj: Projection, sourceProj: Projection): TileType;
+    getReprojTile_(z: number, x: number, y: number, targetProj: Projection, sourceProj: Projection, tileCache?: LRUCache<Tile$1>): TileType;
     /**
      * @param {number} z Tile coordinate z.
      * @param {number} x Tile coordinate x.
      * @param {number} y Tile coordinate y.
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../proj/Projection.js").default} [projection] Projection.
+     * @param {import("../structs/LRUCache.js").default<import("../Tile.js").default>} [tileCache] Tile cache.
      * @return {TileType|null} Tile (or null if outside source extent).
      * @override
      */
-    override getTile(z: number, x: number, y: number, pixelRatio: number, projection?: Projection): TileType | null;
+    override getTile(z: number, x: number, y: number, pixelRatio: number, projection?: Projection, tileCache?: LRUCache<Tile$1>): TileType | null;
     /**
      * Sets the tile grid to use when reprojecting the tiles to the given
      * projection instead of the default tile grid for the projection.
@@ -29430,6 +29662,10 @@ type Options$Q = {
      * zoom levels. See {@link module :ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
      */
     zDirection?: number | NearestDirectionFunction | undefined;
+    /**
+     * The Google Tile server URL.
+     */
+    url?: string | undefined;
 };
 /**
  * @typedef {Object} Options
@@ -29462,6 +29698,7 @@ type Options$Q = {
  * @property {number|import("../array.js").NearestDirectionFunction} [zDirection=0]
  * Choose whether to use tiles with a higher or lower zoom level when between integer
  * zoom levels. See {@link module:ol/tilegrid/TileGrid~TileGrid#getZForResolution}.
+ * @property {string} [url='https://tile.googleapis.com/'] The Google Tile server URL.
  */
 /**
  * @typedef {Object} SessionTokenRequest
@@ -29532,6 +29769,21 @@ declare class Google extends TileImage {
      * @private
      */
     private previousViewportExtent_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private createSessionUrl_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private tileUrl_;
+    /**
+     * @type {string}
+     * @private
+     */
+    private attributionUrl_;
     /**
      * @return {Error|null} A source loading error. When the source state is `error`, use this function
      * to get more information about the error. To debug a faulty configuration, you may want to use
@@ -29808,7 +30060,7 @@ type Options$O = {
     /**
      * Source state.
      */
-    state?: State$2 | undefined;
+    state?: State | undefined;
 };
 /**
  * A function returning the canvas element (`{HTMLCanvasElement}`)
@@ -30205,7 +30457,7 @@ type Options$L = {
     /**
      * The source state.
      */
-    state?: State$2 | undefined;
+    state?: State | undefined;
     /**
      * Render tiles beyond the antimeridian.
      */
@@ -30769,13 +31021,13 @@ type Options$I<FeatureType extends FeatureLike = RenderFeature> = {
      */
     overlaps?: boolean | undefined;
     /**
-     * Projection of the tile grid.
+     * Projection of the tile source.
      */
     projection?: ProjectionLike;
     /**
      * Source state.
      */
-    state?: State$2 | undefined;
+    state?: State | undefined;
     /**
      * Class used to instantiate tiles.
      * Default is {@link module :ol/VectorTile~VectorTile}.
@@ -30876,7 +31128,7 @@ type Options$I<FeatureType extends FeatureLike = RenderFeature> = {
  * to `false` (e.g. for sources with polygons that represent administrative
  * boundaries or TopoJSON sources) allows the renderer to optimise fill and
  * stroke operations.
- * @property {import("../proj.js").ProjectionLike} [projection='EPSG:3857'] Projection of the tile grid.
+ * @property {import("../proj.js").ProjectionLike} [projection='EPSG:3857'] Projection of the tile source.
  * @property {import("./Source.js").State} [state] Source state.
  * @property {typeof import("../VectorTile.js").default} [tileClass] Class used to instantiate tiles.
  * Default is {@link module:ol/VectorTile~VectorTile}.
@@ -33326,7 +33578,7 @@ type Options$w<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile
      * features that have their own style will be rendered. See {@link module :ol/style/Style~Style} for the default style
      * which will be used if this is not set.
      */
-    style?: StyleLike | FlatStyleLike | null | undefined;
+    style?: StyleLike | FlatStyleLike$1 | null | undefined;
     /**
      * Background color for the layer. If not specified, no
      * background will be rendered.
@@ -33756,147 +34008,6 @@ declare class TileLayer<TileSourceType extends TileSource = TileSource<Tile$1>> 
 }
 //# sourceMappingURL=Tile.d.ts.map
 
-/**
- * @typedef {Object} Entry
- * @property {string} key_ Key.
- * @property {Entry|null} newer Newer.
- * @property {Entry|null} older Older.
- * @property {*} value_ Value.
- */
-/**
- * @classdesc
- * Implements a Least-Recently-Used cache where the keys do not conflict with
- * Object's properties (e.g. 'hasOwnProperty' is not allowed as a key). Expiring
- * items from the cache is the responsibility of the user.
- *
- * @fires import("../events/Event.js").default
- * @template T
- */
-declare class LRUCache<T> {
-    /**
-     * @param {number} [highWaterMark] High water mark.
-     */
-    constructor(highWaterMark?: number);
-    /**
-     * Desired max cache size after expireCache(). If set to 0, no cache entries
-     * will be pruned at all.
-     * @type {number}
-     */
-    highWaterMark: number;
-    /**
-     * @private
-     * @type {number}
-     */
-    private count_;
-    /**
-     * @private
-     * @type {!Object<string, Entry>}
-     */
-    private entries_;
-    /**
-     * @private
-     * @type {?Entry}
-     */
-    private oldest_;
-    /**
-     * @private
-     * @type {?Entry}
-     */
-    private newest_;
-    deleteOldest(): void;
-    /**
-     * @return {boolean} Can expire cache.
-     */
-    canExpireCache(): boolean;
-    /**
-     * Expire the cache. When the cache entry is a {@link module:ol/Disposable~Disposable},
-     * the entry will be disposed.
-     * @param {!Object<string, boolean>} [keep] Keys to keep. To be implemented by subclasses.
-     */
-    expireCache(keep?: {
-        [x: string]: boolean;
-    }): void;
-    /**
-     * FIXME empty description for jsdoc
-     */
-    clear(): void;
-    /**
-     * @param {string} key Key.
-     * @return {boolean} Contains key.
-     */
-    containsKey(key: string): boolean;
-    /**
-     * @param {function(T, string, LRUCache<T>): ?} f The function
-     *     to call for every entry from the oldest to the newer. This function takes
-     *     3 arguments (the entry value, the entry key and the LRUCache object).
-     *     The return value is ignored.
-     */
-    forEach(f: (arg0: T, arg1: string, arg2: LRUCache<T>) => unknown): void;
-    /**
-     * @param {string} key Key.
-     * @param {*} [options] Options (reserved for subclasses).
-     * @return {T} Value.
-     */
-    get(key: string, options?: any): T;
-    /**
-     * Remove an entry from the cache.
-     * @param {string} key The entry key.
-     * @return {T} The removed entry.
-     */
-    remove(key: string): T;
-    /**
-     * @return {number} Count.
-     */
-    getCount(): number;
-    /**
-     * @return {Array<string>} Keys.
-     */
-    getKeys(): Array<string>;
-    /**
-     * @return {Array<T>} Values.
-     */
-    getValues(): Array<T>;
-    /**
-     * @return {T} Last value.
-     */
-    peekLast(): T;
-    /**
-     * @return {string} Last key.
-     */
-    peekLastKey(): string;
-    /**
-     * Get the key of the newest item in the cache.  Throws if the cache is empty.
-     * @return {string} The newest key.
-     */
-    peekFirstKey(): string;
-    /**
-     * Return an entry without updating least recently used time.
-     * @param {string} key Key.
-     * @return {T|undefined} Value.
-     */
-    peek(key: string): T | undefined;
-    /**
-     * @return {T} value Value.
-     */
-    pop(): T;
-    /**
-     * @param {string} key Key.
-     * @param {T} value Value.
-     */
-    replace(key: string, value: T): void;
-    /**
-     * @param {string} key Key.
-     * @param {T} value Value.
-     */
-    set(key: string, value: T): void;
-    /**
-     * Set a maximum number of entries for the cache.
-     * @param {number} size Cache size.
-     * @api
-     */
-    setSize(size: number): void;
-}
-
 type TileLookup = {
     [x: number]: Set<Tile$1>;
 };
@@ -33984,9 +34095,18 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      */
     private tileCache_;
     /**
+     * @type {import("../../structs/LRUCache.js").default<import("../../Tile.js").default|null>}
+     * @private
+     */
+    private sourceTileCache_;
+    /**
      * @return {LRUCache} Tile cache.
      */
     getTileCache(): LRUCache<any>;
+    /**
+     * @return {LRUCache} Tile cache.
+     */
+    getSourceTileCache(): LRUCache<any>;
     /**
      * Get a tile from the cache or create one if needed.
      *
@@ -34013,6 +34133,12 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      * @override
      */
     override getData(pixel: Pixel): Uint8ClampedArray;
+    /**
+     * Determine whether tiles for next extent should be enqueued for rendering.
+     * @return {boolean} Rendering tiles for next extent is supported.
+     * @protected
+     */
+    protected enqueueTilesForNextExtent(): boolean;
     /**
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @param {import("../../extent.js").Extent} extent The extent to be rendered.
@@ -34074,16 +34200,16 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      */
     protected drawTile(tile: Tile$1, frameState: FrameState, x: number, y: number, w: number, h: number, gutter: number, transition: boolean): void;
     /**
-     * @return {HTMLCanvasElement} Image
+     * @return {HTMLCanvasElement|OffscreenCanvas} Image
      */
-    getImage(): HTMLCanvasElement;
+    getImage(): HTMLCanvasElement | OffscreenCanvas;
     /**
      * Get the image from a tile.
      * @param {import("../../ImageTile.js").default} tile Tile.
-     * @return {HTMLCanvasElement|HTMLImageElement|HTMLVideoElement} Image.
+     * @return {HTMLCanvasElement|OffscreenCanvas|HTMLImageElement|HTMLVideoElement} Image.
      * @protected
      */
-    protected getTileImage(tile: ImageTile): HTMLCanvasElement | HTMLImageElement | HTMLVideoElement;
+    protected getTileImage(tile: ImageTile): HTMLCanvasElement | OffscreenCanvas | HTMLImageElement | HTMLVideoElement;
     /**
      * @param {!Object<string, !Object<string, boolean>>} usedTiles Used tiles.
      * @param {import("../../source/Tile.js").default} tileSource Tile source.
@@ -34176,7 +34302,7 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
      * @param {import("../../Map.js").FrameState} frameState Frame state.
      * @param {import("../../layer/Layer.js").State} layerState Layer state.
      */
-    renderDeclutter(frameState: FrameState, layerState: State$1): void;
+    renderDeclutter(frameState: FrameState, layerState: State$2): void;
     /**
      * @param {import("../../VectorRenderTile.js").default} tile The tile
      * @param {import('../../Map.js').FrameState} frameState Current frame state
@@ -34307,7 +34433,7 @@ declare class CanvasVectorLayerRenderer extends CanvasLayerRenderer<any> {
     clipping: boolean;
     /**
      * @private
-     * @type {CanvasRenderingContext2D}
+     * @type {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D}
      */
     private targetContext_;
     /**
@@ -34448,7 +34574,7 @@ type Options$t<FeatureType extends FeatureLike, VectorSourceType extends VectorS
      * features that have their own style will be rendered. See {@link module :ol/style/Style~Style} for the default style
      * which will be used if this is not set.
      */
-    style?: StyleLike | FlatStyleLike | null | undefined;
+    style?: StyleLike | FlatStyleLike$1 | null | undefined;
     /**
      * Background color for the layer. If not specified, no background
      * will be rendered.
@@ -34537,7 +34663,7 @@ declare class BaseVectorLayer<FeatureType extends FeatureLike, VectorSourceType 
      * @return {import("../style/Style.js").StyleLike|import("../style/flat.js").FlatStyleLike|null|undefined} Layer style.
      * @api
      */
-    getStyle(): StyleLike | FlatStyleLike | null | undefined;
+    getStyle(): StyleLike | FlatStyleLike$1 | null | undefined;
     /**
      * Get the style function.
      * @return {import("../style/Style.js").StyleFunction|undefined} Layer style function.
@@ -34580,7 +34706,7 @@ declare class BaseVectorLayer<FeatureType extends FeatureLike, VectorSourceType 
      * @param {import("../style/Style.js").StyleLike|import("../style/flat.js").FlatStyleLike|null} [style] Layer style.
      * @api
      */
-    setStyle(style?: StyleLike | FlatStyleLike | null): void;
+    setStyle(style?: StyleLike | FlatStyleLike$1 | null): void;
     /**
      * @param {boolean|string|number} declutter Declutter images and text.
      * @api
@@ -34669,7 +34795,7 @@ type Options$s<VectorSourceType extends VectorSource<FeatureType> = VectorSource
      * features that have their own style will be rendered. See {@link module :ol/style/Style~Style} for the default style
      * which will be used if this is not set.
      */
-    style?: StyleLike | FlatStyleLike | null | undefined;
+    style?: StyleLike | FlatStyleLike$1 | null | undefined;
     /**
      * Background color for the layer. If not specified, no background
      * will be rendered.
@@ -34854,7 +34980,7 @@ type Options$r = {
      * If the mode is `Circle`, and there is one point drawn, it will also contain a feature with a `Circle` geometry whose
      * center is the drawn point and the radius is determined by the distance between the drawn point and the cursor.
      */
-    style?: StyleLike | FlatStyleLike | undefined;
+    style?: StyleLike | FlatStyleLike$1 | undefined;
     /**
      * Function that is called when a geometry's coordinates are updated.
      */
@@ -34912,10 +35038,7 @@ type Options$r = {
  * Coordinate type when drawing points.
  */
 type PointCoordType = Coordinate;
-/**
- * Coordinate type when drawing lines.
- */
-type LineCoordType = Array<Coordinate>;
+type LineCoordType = LineCoordType$1;
 /**
  * Coordinate type when drawing polygons.
  */
@@ -34975,6 +35098,11 @@ declare class Draw extends PointerInteraction {
      * @type {DrawOnSignature<void>}
      */
     un: DrawOnSignature<void>;
+    /**
+     * @type {Options}
+     * @private
+     */
+    private options_;
     /**
      * @type {boolean}
      * @private
@@ -35043,6 +35171,14 @@ declare class Draw extends PointerInteraction {
      * @private
      */
     private stopClick_;
+    /**
+     * Ignore the next up event. This is set to `true` when a drag event is encountered,
+     * e.g. when the user pans the map while drawing. In this case, we do not want to bail
+     * out of tracing.
+     * @type {boolean}
+     * @private
+     */
+    private ignoreNextUpEvent_;
     /**
      * The number of points that must be drawn before a polygon ring or line
      * string can be finished.  The default is 3 for polygon rings and 2 for
@@ -35177,11 +35313,24 @@ declare class Draw extends PointerInteraction {
      */
     override setMap(map: Map): void;
     /**
+     * Set whether the drawing is done in freehand mode.
+     *
+     * @param {boolean} freehand Freehand drawing.
+     * @api
+     */
+    setFreehand(freehand: boolean): void;
+    /**
      * Get the overlay layer that this interaction renders sketch features to.
      * @return {VectorLayer} Overlay layer.
      * @api
      */
     getOverlay(): VectorLayer;
+    /**
+     * Get if this interaction is in freehand mode.
+     * @return {boolean} Freehand drawing.
+     * @api
+     */
+    getFreehand(): boolean;
     /**
      * Handles the {@link module:ol/MapBrowserEvent~MapBrowserEvent map browser event} and may actually draw or finish the drawing.
      * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Map browser event.
@@ -35232,6 +35381,12 @@ declare class Draw extends PointerInteraction {
      * @private
      */
     private updateTrace_;
+    /**
+     * Handle drag events.
+     * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Event.
+     * @override
+     */
+    override handleDragEvent(event: MapBrowserEvent<PointerEvent>): void;
     /**
      * Handle pointer up events.
      * @param {import("../MapBrowserEvent.js").default<PointerEvent>} event Event.
@@ -35372,6 +35527,17 @@ type Options$q = {
      */
     condition?: Condition | undefined;
     /**
+     * A function that
+     * takes a {@link module :ol/MapBrowserEvent~MapBrowserEvent} and returns a
+     * boolean to indicate whether that event should be handled to create a new extent.
+     * If `null`, the `condition` will also be used as `createCondition`.
+     */
+    createCondition?: Condition | null | undefined;
+    /**
+     * An extent can be dragged.
+     */
+    drag?: boolean | undefined;
+    /**
      * Initial extent. Defaults to no
      * initial extent.
      */
@@ -35418,7 +35584,8 @@ type ExtentOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return> & On
  * @classdesc
  * Allows the user to draw a vector box by clicking and dragging on the map.
  * Once drawn, the vector box can be modified by dragging its vertices or edges.
- * This interaction is only supported for mouse devices.
+ * The interaction can also be configured with an initial extent and a `createCondition`
+ * to prevent the creation of a new extent on `pointerdown`, if desired.
  *
  * @fires ExtentEvent
  * @api
@@ -35446,6 +35613,16 @@ declare class Extent extends PointerInteraction {
      * @private
      */
     private condition_;
+    /**
+     * @type {import("../events/condition.js").Condition}
+     * @private
+     */
+    private createCondition_;
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private drag_;
     /**
      * Extent of the drawn box
      * @type {import("../extent.js").Extent}
@@ -35503,6 +35680,7 @@ declare class Extent extends PointerInteraction {
     private snapToVertex_;
     /**
      * @param {import("../MapBrowserEvent.js").default} mapBrowserEvent pointer move event
+     * @return {boolean} The event was handled.
      * @private
      */
     private handlePointerMove_;
@@ -35514,10 +35692,16 @@ declare class Extent extends PointerInteraction {
     private createOrUpdateExtentFeature_;
     /**
      * @param {import("../coordinate.js").Coordinate} vertex location of feature
+     * @param {boolean} [createIfNotExists] create the feature if it does not exist
      * @return {Feature} vertex as feature
      * @private
      */
-    private createOrUpdatePointerFeature_;
+    private updatePointerFeature_;
+    /**
+     * Remove the vertex feature if it exists.
+     * @private
+     */
+    private noVertexFeature_;
     /**
      * Remove the interaction from its current map and attach it to the new map.
      * Subclasses may set up event handlers to get notified about changes to
@@ -35538,6 +35722,7 @@ declare class Extent extends PointerInteraction {
      *
      * @return {import("../extent.js").Extent} Drawn extent in the view projection.
      * @api
+     * @deprecated Use {@link module:ol/interaction/Extent~Extent#getExtent} instead.
      */
     getExtentInternal(): Extent$1;
     /**
@@ -35852,61 +36037,6 @@ declare class Link$1 extends Interaction {
 }
 
 /**
- * @typedef {Object} SegmentData
- * @property {Array<number>} [depth] Depth.
- * @property {Feature} feature Feature.
- * @property {import("../geom/SimpleGeometry.js").default} geometry Geometry.
- * @property {number} [index] Index.
- * @property {Array<Array<number>>} segment Segment.
- * @property {Array<SegmentData>} [featureSegments] FeatureSegments.
- */
-/**
- * @typedef {[SegmentData, number]} DragSegment
- */
-/**
- * @typedef {Object} Options
- * @property {import("../events/condition.js").Condition} [condition] A function that
- * takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
- * boolean to indicate whether that event will be considered to add or move a
- * vertex to the sketch. Default is
- * {@link module:ol/events/condition.primaryAction}.
- * @property {import("../events/condition.js").Condition} [deleteCondition] A function
- * that takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and returns a
- * boolean to indicate whether that event should be handled. By default,
- * {@link module:ol/events/condition.singleClick} with
- * {@link module:ol/events/condition.altKeyOnly} results in a vertex deletion.
- * @property {import("../events/condition.js").Condition} [insertVertexCondition] A
- * function that takes a {@link module:ol/MapBrowserEvent~MapBrowserEvent} and
- * returns a boolean to indicate whether a new vertex should be added to the sketch
- * features. Default is {@link module:ol/events/condition.always}.
- * @property {number} [pixelTolerance=10] Pixel tolerance for considering the
- * pointer close enough to a segment or vertex for editing.
- * @property {import("../style/Style.js").StyleLike|import("../style/flat.js").FlatStyleLike} [style]
- * Style used for the modification point or vertex. For linestrings and polygons, this will
- * be the affected vertex, for circles a point along the circle, and for points the actual
- * point. If not configured, the default edit style is used (see {@link module:ol/style/Style~Style}).
- * When using a style function, the point feature passed to the function will have an `existing` property -
- * indicating whether there is an existing vertex underneath or not, a `features`
- * property - an array whose entries are the features that are being modified, and a `geometries`
- * property - an array whose entries are the geometries that are being modified. Both arrays are
- * in the same order. The `geometries` are only useful when modifying geometry collections, where
- * the geometry will be the particular geometry from the collection that is being modified.
- * @property {VectorSource} [source] The vector source with
- * features to modify.  If a vector source is not provided, a feature collection
- * must be provided with the `features` option.
- * @property {boolean|import("../layer/BaseVector").default} [hitDetection] When configured, point
- * features will be considered for modification based on their visual appearance, instead of being within
- * the `pixelTolerance` from the pointer location. When a {@link module:ol/layer/BaseVector~BaseVectorLayer} is
- * provided, only the rendered representation of the features on that layer will be considered.
- * @property {Collection<Feature>} [features]
- * The features the interaction works on.  If a feature collection is not
- * provided, a vector source must be provided with the `source` option.
- * @property {boolean} [wrapX=false] Wrap the world horizontally on the sketch
- * overlay.
- * @property {boolean} [snapToPointer=!hitDetection] The vertex, point or segment being modified snaps to the
- * pointer coordinate when clicked within the `pixelTolerance`.
- */
-/**
  * @classdesc
  * Events emitted by {@link module:ol/interaction/Modify~Modify} instances are
  * instances of this type.
@@ -35960,6 +36090,7 @@ type SegmentData = {
      */
     featureSegments?: SegmentData[] | undefined;
 };
+type DragSegment = [SegmentData, number];
 type Options$m = {
     /**
      * A function that
@@ -35975,6 +36106,14 @@ type Options$m = {
      * boolean to indicate whether that event should be handled. By default,
      * {@link module :ol/events/condition.singleClick} with
      * {@link module :ol/events/condition.altKeyOnly} results in a vertex deletion.
+     * This combination is handled by wrapping the two condition checks in a single function:
+     * ```js
+     * import { altKeyOnly, singleClick } from 'ol/events/condition.js';
+     *
+     * function (event) {
+     * return altKeyOnly(event) && singleClick(event)
+     * }
+     * ```
      */
     deleteCondition?: Condition | undefined;
     /**
@@ -36000,7 +36139,7 @@ type Options$m = {
      * in the same order. The `geometries` are only useful when modifying geometry collections, where
      * the geometry will be the particular geometry from the collection that is being modified.
      */
-    style?: StyleLike | FlatStyleLike | undefined;
+    style?: StyleLike | FlatStyleLike$1 | undefined;
     /**
      * The vector source with
      * features to modify.  If a vector source is not provided, a feature collection
@@ -36019,6 +36158,17 @@ type Options$m = {
      * provided, a vector source must be provided with the `source` option.
      */
     features?: Collection<Feature$2<Geometry$1>> | undefined;
+    /**
+     * Trace a portion of another geometry.
+     * Tracing starts when two neighboring vertices are dragged onto a trace target, without any other modification in between..
+     */
+    trace?: boolean | Condition | undefined;
+    /**
+     * Source for features to trace.  If tracing is active and a `traceSource` is
+     * not provided, the interaction's `source` will be used.  Tracing requires that the interaction is configured with
+     * either a `traceSource` or a `source`.
+     */
+    traceSource?: VectorSource<Feature$2<Geometry$1>> | undefined;
     /**
      * Wrap the world horizontally on the sketch
      * overlay.
@@ -36123,10 +36273,10 @@ declare class Modify extends PointerInteraction {
      */
     private vertexSegments_;
     /**
-     * @type {import("../pixel.js").Pixel}
+     * @type {import("../coordinate.js").Coordinate}
      * @private
      */
-    private lastPixel_;
+    private lastCoordinate_;
     /**
      * Tracks if the next `singleclick` event should be ignored to prevent
      * accidental deletion right after vertex creation.
@@ -36185,6 +36335,26 @@ declare class Modify extends PointerInteraction {
      */
     private source_;
     /**
+     * @type {VectorSource|null}
+     * @private
+     */
+    private traceSource_;
+    /**
+     * @type {import("../events/condition.js").Condition}
+     * @private
+     */
+    private traceCondition_;
+    /**
+     * @type {import('./tracing.js').TraceState}
+     * @private
+     */
+    private traceState_;
+    /**
+     * @type {Array<DragSegment>|null}
+     * @private
+     */
+    private traceSegments_;
+    /**
      * @type {boolean|import("../layer/BaseVector").default}
      * @private
      */
@@ -36209,6 +36379,13 @@ declare class Modify extends PointerInteraction {
      * @private
      */
     private snapToPointer_;
+    /**
+     * Toggle tracing mode or set a tracing condition.
+     *
+     * @param {boolean|import("../events/condition.js").Condition} trace A boolean to toggle tracing mode or an event
+     *     condition that will be checked when a feature is clicked to determine if tracing should be active.
+     */
+    setTrace(trace: boolean | Condition): void;
     /**
      * @param {Feature} feature Feature.
      * @private
@@ -36332,7 +36509,53 @@ declare class Modify extends PointerInteraction {
      * @private
      */
     private createOrUpdateVertexFeature_;
-    findInsertVerticesAndUpdateDragSegments_(pixelCoordinate: any): SegmentData[] | undefined;
+    /**
+     * @param {import("../coordinate.js").Coordinate} pixelCoordinate Pixel coordinate.
+     * @return {Array<SegmentData>|undefined} Insert vertices and update drag segments.
+     * @private
+     */
+    private findInsertVerticesAndUpdateDragSegments_;
+    /**
+     * @private
+     */
+    private deactivateTrace_;
+    /**
+     * Update the trace.
+     * @param {import("../MapBrowserEvent.js").default} event Event.
+     * @private
+     */
+    private updateTrace_;
+    getTraceCandidates_(event: any): Feature$2<Geometry$1>[];
+    /**
+     * Activate or deactivate trace state based on a browser event.
+     * @param {import("../MapBrowserEvent.js").default} event Event.
+     * @private
+     */
+    private toggleTraceState_;
+    /**
+     * @param {import('./tracing.js').TraceTarget} target The trace target.
+     * @param {number} endIndex The new end index of the trace.
+     * @private
+     */
+    private addOrRemoveTracedCoordinates_;
+    /**
+     * @param {number} fromIndex The start index.
+     * @param {number} toIndex The end index.
+     * @private
+     */
+    private removeTracedCoordinates_;
+    /**
+     * @param {import('./tracing.js').TraceTarget} target The trace target.
+     * @param {number} fromIndex The start index.
+     * @param {number} toIndex The end index.
+     * @private
+     */
+    private addTracedCoordinates_;
+    /**
+     * @param {import('../coordinate.js').Coordinate} vertex Vertex.
+     * @param {DragSegment} dragSegment Drag segment.
+     */
+    updateGeometry_(vertex: Coordinate, dragSegment: DragSegment): void;
     /**
      * @param {import("../MapBrowserEvent.js").default} evt Event.
      * @private
@@ -36350,7 +36573,12 @@ declare class Modify extends PointerInteraction {
      * @private
      */
     private insertVertex_;
-    updatePointer_(coordinate: any): Coordinate;
+    /**
+     * @param {import("../coordinate.js").Coordinate} coordinate The coordinate.
+     * @return {import("../coordinate.js").Coordinate} The updated pointer coordinate.
+     * @private
+     */
+    private updatePointer_;
     /**
      * Get the current pointer position.
      * @return {import("../coordinate.js").Coordinate | null} The current pointer coordinate.
@@ -36992,6 +37220,12 @@ declare class Select extends Interaction {
      */
     private removeFeature_;
     /**
+     * @param {Feature} feature Feature of which to get the layer
+     * @return {VectorLayer} layer, if one was found.
+     * @private
+     */
+    private findLayerOfFeature_;
+    /**
      * @return {import("../style/Style.js").StyleLike|null} Select style.
      */
     getStyle(): StyleLike | null;
@@ -37010,6 +37244,51 @@ declare class Select extends Interaction {
      * @private
      */
     private removeFeatureLayerAssociation_;
+    /**
+     * @param {import("../Feature.js").FeatureLike} feature The feature to select
+     * @param {import("../layer/Layer.js").default} layer Optional layer containing this feature
+     * @param {Array<Feature>} [selected] optional array to which selected features will be added
+     * @return {Feature|undefined} The feature, if it got selected.
+     * @private
+     */
+    private selectFeatureInternal_;
+    /**
+     * Try to select a feature as if it was clicked and `addCondition` evaluated to True.
+     * Unlike modifying `select.getFeatures()` directly, this respects the `filter` and `layers` options (except `multi`, which is ignored).
+     * The {@link module:ol/interaction/Select~SelectEvent} fired by this won't have a mapBrowserEvent property
+     * @param {Feature} feature The feature to select
+     * @return {boolean} True if the feature was selected
+     */
+    selectFeature(feature: Feature$2): boolean;
+    /**
+     * Deselects a feature if it was previously selected. Also removes layer association.
+     * @param {import("../Feature.js").FeatureLike} feature The feature to deselect
+     * @param {Array<Feature>} [deselected] optional array to which deselected features will be added
+     * @return {Feature|undefined} The feature, if it was previously selected.
+     * @private
+     */
+    private removeFeatureInternal_;
+    /**
+     * Try to deselect a feature as if it was clicked.
+     * Compared to `select.getFeatures().remove(feature)` this causes a SelectEvent.
+     * The {@link module:ol/interaction/Select~SelectEvent} fired by this won't have a mapBrowserEvent property
+     * @param {Feature} feature The feature to deselect
+     * @return {boolean} True if the feature was deselected
+     */
+    deselectFeature(feature: Feature$2): boolean;
+    /**
+     * Try to toggle a feature as if it was clicked and `toggleCondition` was True.
+     * Unlike modifying `select.getFeatures()` directly, this respects the `filter` and `layers` options (except `multi`, which is ignored).
+     * The {@link module:ol/interaction/Select~SelectEvent} fired by this won't have a mapBrowserEvent property
+     * @param {Feature} feature The feature to deselect
+     */
+    toggleFeature(feature: Feature$2): void;
+    /**
+     * Deselect all features as if a user deselected them.
+     * Compared to `select.getFeatures().clear()` this causes a SelectEvent.
+     * The {@link module:ol/interaction/Select~SelectEvent} fired by this won't have a mapBrowserEvent property
+     */
+    clearSelection(): void;
 }
 
 /**
@@ -37757,7 +38036,7 @@ type Options$f = {
     /**
      * Source for this layer.
      */
-    source?: DataTileSource<DataTile | ImageTile> | undefined;
+    source?: DataTileSource<ImageTile | DataTile> | undefined;
     /**
      * Array
      * of sources for this layer. Takes precedence over `source`. Can either be an array of sources, or a function that
@@ -37765,7 +38044,7 @@ type Options$f = {
      * {@link module :ol/source.sourcesFromTileGrid} for a helper function to generate sources that are organized in a
      * pyramid following the same pattern as a tile grid. **Note:** All sources must have the same band count and content.
      */
-    sources?: DataTileSource<DataTile | ImageTile>[] | ((arg0: Extent$1, arg1: number) => Array<SourceType$1>) | undefined;
+    sources?: DataTileSource<ImageTile | DataTile>[] | ((arg0: Extent$1, arg1: number) => Array<SourceType$1>) | undefined;
     /**
      * Sets the layer as overlay on a map. The map will not manage
      * this layer in its layers collection, and the layer will be rendered on top. This is useful for
@@ -37802,7 +38081,7 @@ type Options$f = {
  * @fires import("../render/Event.js").RenderEvent#postrender
  * @api
  */
-declare class WebGLTileLayer extends BaseTileLayer<DataTileSource<DataTile | ImageTile>, WebGLTileLayerRenderer<any>> {
+declare class WebGLTileLayer extends BaseTileLayer<DataTileSource<ImageTile | DataTile>, WebGLTileLayerRenderer<any>> {
     /**
      * @param {Options} [options] Tile layer options.
      */
@@ -39383,7 +39662,7 @@ declare class Heatmap<FeatureType extends FeatureLike = Feature$2<Geometry$1>, V
     private styleVariables_;
     /**
      * @private
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas}
      */
     private gradient_;
     /**
@@ -39692,7 +39971,7 @@ type Options$7<VectorSourceType extends VectorSource<FeatureType> = VectorSource
     /**
      * Layer style.
      */
-    style: FlatStyleLike;
+    style: FlatStyleLike$1;
     /**
      * Style variables. Each variable must hold a literal value (not
      * an expression). These variables can be used as {@link import ("../expr/expression.js").ExpressionValue expressions} in the styles properties
@@ -39801,7 +40080,7 @@ declare class WebGLVectorLayer<VectorSourceType extends VectorSource<FeatureType
      * Set the layer style.
      * @param {import('../style/flat.js').FlatStyleLike} style Layer style.
      */
-    setStyle(style: FlatStyleLike): void;
+    setStyle(style: FlatStyleLike$1): void;
 }
 
 type TileType = VectorRenderTile;
@@ -39814,9 +40093,9 @@ type TileType = VectorRenderTile;
 declare class TileGeometry extends BaseTileRepresentation<VectorRenderTile> {
     /**
      * @param {import("./BaseTileRepresentation.js").TileRepresentationOptions<TileType>} options The tile texture options.
-     * @param {Array<import("../render/webgl/VectorStyleRenderer.js").default>} styleRenderers Array of vector style renderers
+     * @param {import("../render/webgl/VectorStyleRenderer.js").default} styleRenderer Vector style renderer
      */
-    constructor(options: TileRepresentationOptions<TileType>, styleRenderers: Array<VectorStyleRenderer>);
+    constructor(options: TileRepresentationOptions<TileType>, styleRenderer: VectorStyleRenderer);
     /**
      * @private
      */
@@ -39824,11 +40103,11 @@ declare class TileGeometry extends BaseTileRepresentation<VectorRenderTile> {
     /**
      * @private
      */
-    private styleRenderers_;
+    private styleRenderer_;
     /**
-     * @type {Array<import("../render/webgl/VectorStyleRenderer.js").WebGLBuffers>}
+     * @type {import("../render/webgl/VectorStyleRenderer.js").WebGLBuffers}
      */
-    buffers: Array<WebGLBuffers>;
+    buffers: WebGLBuffers;
     /**
      * Each geometry tile also has a mask which consisted of a quad (two triangles); this mask is intended to
      * be rendered to an offscreen buffer, and be used to correctly mask tiles according to their zoom level
@@ -39839,19 +40118,15 @@ declare class TileGeometry extends BaseTileRepresentation<VectorRenderTile> {
      * @private
      */
     private generateMaskBuffer_;
-    /**
-     * Will release a set of Webgl buffers
-     * @param {import('../render/webgl/VectorStyleRenderer.js').WebGLBuffers|null} buffers Buffers
-     */
-    disposeBuffers(buffers: WebGLBuffers | null): void;
 }
 
-type StyleAsShaders$1 = AsShaders;
+type StyleShaders = StyleShaders$2;
+type LayerStyle = FlatStyleLike$1 | Array<StyleShaders> | StyleShaders;
 type Options$6 = {
     /**
      * Flat vector style; also accepts shaders
      */
-    style: FlatStyleLike | Array<StyleAsShaders$1> | StyleAsShaders$1;
+    style: LayerStyle;
     /**
      * Style variables. Each variable must hold a literal value (not
      * an expression). These variables can be used as {@link import ("../../expr/expression.js").ExpressionValue expressions} in the styles properties
@@ -39872,14 +40147,14 @@ type Options$6 = {
 };
 type LayerType = BaseTileLayer<any, any>;
 /**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').AsShaders} StyleAsShaders
+ * @typedef {import('../../render/webgl/VectorStyleRenderer.js').StyleShaders} StyleShaders
  */
 /**
- * @typedef {import('../../render/webgl/VectorStyleRenderer.js').AsRule} StyleAsRule
+ * @typedef {import('../../style/flat.js').FlatStyleLike | Array<StyleShaders> | StyleShaders} LayerStyle
  */
 /**
  * @typedef {Object} Options
- * @property {import('../../style/flat.js').FlatStyleLike | Array<StyleAsShaders> | StyleAsShaders} style Flat vector style; also accepts shaders
+ * @property {LayerStyle} style Flat vector style; also accepts shaders
  * @property {import('../../style/flat.js').StyleVariables} [variables] Style variables. Each variable must hold a literal value (not
  * an expression). These variables can be used as {@link import("../../expr/expression.js").ExpressionValue expressions} in the styles properties
  * using the `['var', 'varName']` operator.
@@ -39907,20 +40182,20 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<Ba
      */
     private hitDetectionEnabled_;
     /**
-     * @type {Array<StyleAsRule | StyleAsShaders>}
+     * @type {LayerStyle}
      * @private
      */
-    private styles_;
+    private style_;
     /**
      * @type {import('../../style/flat.js').StyleVariables}
      * @private
      */
     private styleVariables_;
     /**
-     * @type {Array<VectorStyleRenderer>}
+     * @type {VectorStyleRenderer}
      * @private
      */
-    private styleRenderers_;
+    private styleRenderer_;
     /**
      * This transform is updated on every frame and is the composition of:
      * - invert of the world->screen transform that was used when rebuilding buffers (see `this.renderTransform_`)
@@ -40067,7 +40342,7 @@ type Options$5<VectorTileSourceType extends VectorTile<FeatureType> = VectorTile
     /**
      * Layer style.
      */
-    style: FlatStyleLike;
+    style: FlatStyleLike$1;
     /**
      * Style variables. Each variable must hold a literal value (not
      * an expression). These variables can be used as {@link import ("../expr/expression.js").ExpressionValue expressions} in the styles properties
@@ -40176,7 +40451,7 @@ declare class WebGLVectorTileLayer<VectorTileSourceType extends VectorTile<Featu
      * Set the layer style.
      * @param {import('../style/flat.js').FlatStyleLike} style Layer style.
      */
-    setStyle(style: FlatStyleLike): void;
+    setStyle(style: FlatStyleLike$1): void;
 }
 
 /**
@@ -40481,7 +40756,18 @@ declare function unregister(): void;
  * @param {import("proj4")} proj4 Proj4.
  * @api
  */
-declare function register(proj4: typeof proj4): void;
+declare function register(proj4: typeof proj4_dist_lib_core_js.default & {
+    defaultDatum: string;
+    Proj: typeof proj4_dist_lib_Proj_js.default;
+    WGS84: proj4_dist_lib_Proj_js.default;
+    Point: typeof proj4_dist_lib_Point_js.default;
+    toPoint: typeof proj4_dist_lib_common_toPoint_js.default;
+    defs: typeof proj4_dist_lib_defs_js.default;
+    nadgrid: typeof proj4_dist_lib_nadgrid_js.default;
+    transform: typeof proj4_dist_lib_transform_js.default;
+    mgrs: proj4_dist_lib_index_js.Mgrs;
+    version: string;
+}): void;
 /**
  * Set the lookup function for getting proj4 definitions given an EPSG code.
  * By default, the {@link module:ol/proj/proj4.fromEPSGCode} function uses the
@@ -41172,16 +41458,15 @@ type StyleEvaluator = (arg0: EvaluationContext) => Style$2 | null;
  * Pushes a quad (two triangles) based on a point geometry
  * @param {Float32Array} instructions Array of render instructions for points.
  * @param {number} elementIndex Index from which render instructions will be read.
- * @param {Float32Array} vertexBuffer Buffer in the form of a typed array.
- * @param {Uint32Array} indexBuffer Buffer in the form of a typed array.
+ * @param {Float32Array} instanceAttributesBuffer Buffer in the form of a typed array.
  * @param {number} customAttributesSize Amount of custom attributes for each element.
  * @param {BufferPositions} [bufferPositions] Buffer write positions; if not specified, positions will be set at 0.
  * @return {BufferPositions} New buffer positions where to write next
- * @property {number} vertexPosition New position in the vertex buffer where future writes should start.
- * @property {number} indexPosition New position in the index buffer where future writes should start.
+ * @property {number} vertexAttributesPosition New position in the vertex buffer where future writes should start.
+ * @property {number} indicesPosition New position in the index buffer where future writes should start.
  * @private
  */
-declare function writePointFeatureToBuffers(instructions: Float32Array, elementIndex: number, vertexBuffer: Float32Array, indexBuffer: Uint32Array, customAttributesSize: number, bufferPositions?: BufferPositions): BufferPositions;
+declare function writePointFeatureToBuffers(instructions: Float32Array, elementIndex: number, instanceAttributesBuffer: Float32Array, customAttributesSize: number, bufferPositions?: BufferPositions): BufferPositions;
 /**
  * Pushes a single quad to form a line segment; also includes a computation for the join angles with previous and next
  * segment, in order to be able to offset the vertices correctly in the shader.
@@ -41207,8 +41492,7 @@ declare function writePointFeatureToBuffers(instructions: Float32Array, elementI
  * @param {number} segmentEndIndex Index of the segment end point from which render instructions will be read.
  * @param {number|null} beforeSegmentIndex Index of the point right before the segment (null if none, e.g this is a line start)
  * @param {number|null} afterSegmentIndex Index of the point right after the segment (null if none, e.g this is a line end)
- * @param {Array<number>} vertexArray Array containing vertices.
- * @param {Array<number>} indexArray Array containing indices.
+ * @param {Array<number>} instanceAttributesArray Array containing instance attributes.
  * @param {Array<number>} customAttributes Array of custom attributes value
  * @param {import('../../transform.js').Transform} toWorldTransform Transform matrix used to obtain world coordinates from instructions
  * @param {number} currentLength Cumulated length of segments processed so far
@@ -41216,7 +41500,7 @@ declare function writePointFeatureToBuffers(instructions: Float32Array, elementI
  * @return {{length: number, angle: number}} Cumulated length with the newly processed segment (in world units), new sum of the join angle tangents
  * @private
  */
-declare function writeLineSegmentToBuffers(instructions: Float32Array, segmentStartIndex: number, segmentEndIndex: number, beforeSegmentIndex: number | null, afterSegmentIndex: number | null, vertexArray: Array<number>, indexArray: Array<number>, customAttributes: Array<number>, toWorldTransform: Transform, currentLength: number, currentAngleTangentSum: number): {
+declare function writeLineSegmentToBuffers(instructions: Float32Array, segmentStartIndex: number, segmentEndIndex: number, beforeSegmentIndex: number | null, afterSegmentIndex: number | null, instanceAttributesArray: Array<number>, customAttributes: Array<number>, toWorldTransform: Transform, currentLength: number, currentAngleTangentSum: number): {
     length: number;
     angle: number;
 };
@@ -41239,11 +41523,15 @@ type BufferPositions = {
     /**
      * Position in the vertex buffer
      */
-    vertexPosition: number;
+    vertexAttributesPosition: number;
+    /**
+     * Position in the vertex buffer
+     */
+    instanceAttributesPosition: number;
     /**
      * Position in the index buffer
      */
-    indexPosition: number;
+    indicesPosition: number;
 };
 
 /**
@@ -41261,6 +41549,13 @@ declare function expressionToGlsl(compilationContext: CompilationContext, value:
  * @return {Array<number>} Vec2 array containing the color in compressed form
  */
 declare function packColor(color: Color | string): Array<number>;
+/**
+ * Unpacks a color from a packed color in two-floats array form
+ * NOTE: this is only used for testing purposes
+ * @param {Array<number>} packedColor Packed color generated by the `packColor` function
+ * @return {Array<number>} Resulting unpacked color in array form with components in the range [0, 1]
+ */
+declare function unpackColor(packedColor: Array<number>): Array<number>;
 /**
  * @param {number} type Value type
  * @return {1|2|3|4} The amount of components for this value
@@ -41295,24 +41590,28 @@ declare function generateUniformsFromContext(context: CompilationContext, variab
  * @return {import('./VectorStyleRenderer.js').AttributeDefinitions} Attributes
  */
 declare function generateAttributesFromContext(context: CompilationContext): AttributeDefinitions;
-declare const UNPACK_COLOR_FN: "vec4 unpackColor(vec2 packedColor) {\n  return vec4(\n    fract(floor(packedColor[0] / 256.0) / 256.0),\n    fract(packedColor[0] / 256.0),\n    fract(floor(packedColor[1] / 256.0) / 256.0),\n    fract(packedColor[1] / 256.0)\n  );\n}";
+/**
+ * Equivalent of `unpackColor()` in GLSL
+ * @type {string}
+ */
+declare const UNPACK_COLOR_FN: string;
 
 /**
  * Utilities for encoding/decoding values to be used in shaders
  * @module ol/render/webgl/encodeUtil
  */
 /**
- * Generates a color array based on a numerical id
+ * Generates a color array based on a numerical id, and pack it just like the `packColor` function of 'ol/render/webgl/compileUtil.js'.
  * Note: the range for each component is 0 to 1 with 256 steps
  * @param {number} id Id
  * @param {Array<number>} [array] Reusable array
- * @return {Array<number>} Color array containing the encoded id
+ * @return {Array<number>} Packed color array with two components
  */
-declare function colorEncodeId(id: number, array?: Array<number>): Array<number>;
+declare function colorEncodeIdAndPack(id: number, array?: Array<number>): Array<number>;
 /**
  * Reads an id from a color-encoded array
  * Note: the expected range for each component is 0 to 1 with 256 steps.
- * @param {Array<number>} color Color array containing the encoded id
+ * @param {Array<number>} color Color array containing the encoded id; color components are in the range 0 to 1
  * @return {number} Decoded id
  */
 declare function colorDecodeId(color: Array<number>): number;
@@ -41354,62 +41653,6 @@ declare function generateLineStringRenderInstructions(batch: LineStringGeometryB
 declare function generatePolygonRenderInstructions(batch: PolygonGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
 
 /**
- * see https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
- * @param {Object|string} input The hash input, either an object or string
- * @return {string} Hash (if the object cannot be serialized, it is based on `getUid`)
- */
-declare function computeHash(input: any | string): string;
-/**
- * @typedef {Object} StyleParseResult
- * @property {ShaderBuilder} builder Shader builder pre-configured according to a given style
- * @property {import("./VectorStyleRenderer.js").UniformDefinitions} uniforms Uniform definitions
- * @property {import("./VectorStyleRenderer.js").AttributeDefinitions} attributes Attribute definitions
- */
-/**
- * Parses a {@link import("../../style/flat.js").FlatStyle} object and returns a {@link ShaderBuilder}
- * object that has been configured according to the given style, as well as `attributes` and `uniforms`
- * arrays to be fed to the `WebGLPointsRenderer` class.
- *
- * Also returns `uniforms` and `attributes` properties as expected by the
- * {@link module:ol/renderer/webgl/PointsLayer~WebGLPointsLayerRenderer}.
- *
- * @param {import("../../style/flat.js").FlatStyle} style Flat style.
- * @param {import('../../style/flat.js').StyleVariables} [variables] Style variables.
- * @param {import("../../expr/expression.js").EncodedExpression} [filter] Filter (if any)
- * @return {StyleParseResult} Result containing shader params, attributes and uniforms.
- */
-declare function parseLiteralStyle(style: FlatStyle$1, variables?: StyleVariables, filter?: EncodedExpression): StyleParseResult;
-/**
- * @typedef {import('./VectorStyleRenderer.js').AsShaders} StyleAsShaders
- */
-/**
- * @typedef {import('./VectorStyleRenderer.js').AsRule} StyleAsRule
- */
-/**
- * Takes in either a Flat Style or an array of shaders (used as input for the webgl vector layer classes)
- * and breaks it down into separate styles to be used by the VectorStyleRenderer class.
- * @param {import('../../style/flat.js').FlatStyleLike | Array<StyleAsShaders> | StyleAsShaders} style Flat style or shaders
- * @return {Array<StyleAsShaders | StyleAsRule>} Separate styles as shaders or rules with a single flat style and a filter
- */
-declare function breakDownFlatStyle(style: FlatStyleLike | Array<StyleAsShaders> | StyleAsShaders): Array<StyleAsShaders | StyleAsRule>;
-type StyleParseResult = {
-    /**
-     * Shader builder pre-configured according to a given style
-     */
-    builder: ShaderBuilder;
-    /**
-     * Uniform definitions
-     */
-    uniforms: UniformDefinitions;
-    /**
-     * Attribute definitions
-     */
-    attributes: AttributeDefinitions;
-};
-type StyleAsShaders = AsShaders;
-type StyleAsRule = AsRule;
-
-/**
  * @classdesc
  * Canvas map renderer.
  * @api
@@ -41439,7 +41682,7 @@ declare class CompositeMapRenderer extends MapRenderer {
      * @param {import("../Map.js").FrameState} frameState Frame state.
      * @param {Array<import('../layer/Layer.js').State>} layerStates Layers.
      */
-    declutter(frameState: FrameState, layerStates: Array<State$1>): void;
+    declutter(frameState: FrameState, layerStates: Array<State$2>): void;
 }
 //# sourceMappingURL=Composite.d.ts.map
 
@@ -41685,7 +41928,7 @@ declare class ReprojImage extends ImageWrapper {
     private interpolate_;
     /**
      * @private
-     * @type {HTMLCanvasElement}
+     * @type {HTMLCanvasElement|OffscreenCanvas}
      */
     private canvas_;
     /**
@@ -41694,10 +41937,10 @@ declare class ReprojImage extends ImageWrapper {
      */
     private sourceListenerKey_;
     /**
-     * @return {HTMLCanvasElement} Image.
+     * @return {HTMLCanvasElement|OffscreenCanvas} Image.
      * @override
      */
-    override getImage(): HTMLCanvasElement;
+    override getImage(): HTMLCanvasElement | OffscreenCanvas;
     /**
      * @return {import("../proj/Projection.js").default} Projection.
      */
@@ -41882,13 +42125,13 @@ declare function calculateSourceExtentResolution(sourceProj: Projection, targetP
  * @param {boolean} [interpolate] Use linear interpolation when resampling.
  * @param {boolean} [drawSingle] Draw single source images directly without stitchContext.
  * @param {boolean} [clipExtent] Clip stitchContext to sourceExtent.
- * @return {HTMLCanvasElement} Canvas with reprojected data.
+ * @return {HTMLCanvasElement|OffscreenCanvas} Canvas with reprojected data.
  */
-declare function render$1(width: number, height: number, pixelRatio: number, sourceResolution: number, sourceExtent: Extent$1, targetResolution: number, targetExtent: Extent$1, triangulation: Triangulation, sources: Array<ImageExtent$1>, gutter: number, renderEdges?: boolean, interpolate?: boolean, drawSingle?: boolean, clipExtent?: boolean): HTMLCanvasElement;
+declare function render$1(width: number, height: number, pixelRatio: number, sourceResolution: number, sourceExtent: Extent$1, targetResolution: number, targetExtent: Extent$1, triangulation: Triangulation, sources: Array<ImageExtent$1>, gutter: number, renderEdges?: boolean, interpolate?: boolean, drawSingle?: boolean, clipExtent?: boolean): HTMLCanvasElement | OffscreenCanvas;
 /**
- * @type {Array<HTMLCanvasElement>}
+ * @type {Array<HTMLCanvasElement|OffscreenCanvas>}
  */
-declare const canvasPool: Array<HTMLCanvasElement>;
+declare const canvasPool: Array<HTMLCanvasElement | OffscreenCanvas>;
 type ImageExtent$1 = {
     /**
      * Extent.
@@ -42762,7 +43005,7 @@ declare class RegularShape extends ImageStyle {
     constructor(options: Options$2);
     /**
      * @private
-     * @type {HTMLCanvasElement|null}
+     * @type {HTMLCanvasElement|OffscreenCanvas|null}
      */
     private hitDetectionCanvas_;
     /**
@@ -42840,18 +43083,18 @@ declare class RegularShape extends ImageStyle {
      */
     setFill(fill: Fill | null): void;
     /**
-     * @return {HTMLCanvasElement} Image element.
+     * @return {HTMLCanvasElement|OffscreenCanvas} Image element.
      * @override
      */
-    override getHitDetectionImage(): HTMLCanvasElement;
+    override getHitDetectionImage(): HTMLCanvasElement | OffscreenCanvas;
     /**
      * Get the image icon.
      * @param {number} pixelRatio Pixel ratio.
-     * @return {HTMLCanvasElement} Image or Canvas element.
+     * @return {HTMLCanvasElement|OffscreenCanvas} Image or Canvas element.
      * @api
      * @override
      */
-    override getImage(pixelRatio: number): HTMLCanvasElement;
+    override getImage(pixelRatio: number): HTMLCanvasElement | OffscreenCanvas;
     /**
      * Get the number of points for generating the shape.
      * @return {number} Number of points for stars and regular polygons.
@@ -42903,25 +43146,25 @@ declare class RegularShape extends ImageStyle {
     /**
      * @private
      * @param {RenderOptions} renderOptions Render options.
-     * @param {CanvasRenderingContext2D} context The rendering context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context The rendering context.
      * @param {number} pixelRatio The pixel ratio.
      */
     private draw_;
     /**
      * @private
      * @param {RenderOptions} renderOptions Render options.
-     * @return {HTMLCanvasElement} Canvas containing the icon
+     * @return {HTMLCanvasElement|OffscreenCanvas} Canvas containing the icon
      */
     private createHitDetectionCanvas_;
     /**
      * @private
-     * @param {CanvasRenderingContext2D} context The context to draw in.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context The context to draw in.
      */
     private createPath_;
     /**
      * @private
      * @param {RenderOptions} renderOptions Render options.
-     * @param {CanvasRenderingContext2D} context The context.
+     * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context The context.
      */
     private drawHitDetectionCanvas_;
 }
@@ -43005,21 +43248,21 @@ declare class CircleStyle extends RegularShape {
 
 declare class IconImage extends Target {
     /**
-     * @param {HTMLImageElement|HTMLCanvasElement|ImageBitmap|null} image Image.
+     * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap|null} image Image.
      * @param {string|undefined} src Src.
      * @param {?string} crossOrigin Cross origin.
      * @param {import("../ImageState.js").default|undefined} imageState Image state.
      * @param {import("../color.js").Color|string|null} color Color.
      */
-    constructor(image: HTMLImageElement | HTMLCanvasElement | ImageBitmap | null, src: string | undefined, crossOrigin: string | null, imageState: any | undefined, color: Color | string | null);
+    constructor(image: HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap | null, src: string | undefined, crossOrigin: string | null, imageState: any | undefined, color: Color | string | null);
     /**
      * @private
-     * @type {HTMLImageElement|HTMLCanvasElement|ImageBitmap}
+     * @type {HTMLImageElement|OffscreenCanvas|HTMLCanvasElement|ImageBitmap}
      */
     private hitDetectionImage_;
     /**
      * @private
-     * @type {HTMLImageElement|HTMLCanvasElement|ImageBitmap|null}
+     * @type {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap|null}
      */
     private image_;
     /**
@@ -43029,7 +43272,7 @@ declare class IconImage extends Target {
     private crossOrigin_;
     /**
      * @private
-     * @type {Object<number, HTMLCanvasElement>}
+     * @type {Object<number, HTMLCanvasElement|OffscreenCanvas>}
      */
     private canvas_;
     /**
@@ -43081,9 +43324,9 @@ declare class IconImage extends Target {
     private handleImageLoad_;
     /**
      * @param {number} pixelRatio Pixel ratio.
-     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image or Canvas element or image bitmap.
+     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image or Canvas element or image bitmap.
      */
-    getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
     /**
      * @param {number} pixelRatio Pixel ratio.
      * @return {number} Image or Canvas element.
@@ -43094,9 +43337,9 @@ declare class IconImage extends Target {
      */
     getImageState(): any;
     /**
-     * @return {HTMLImageElement|HTMLCanvasElement|ImageBitmap} Image element.
+     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image element.
      */
-    getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
     /**
      * Get the size of the icon (in pixels).
      * @return {import("../size.js").Size} Image size.
@@ -43694,7 +43937,9 @@ declare class WebGLPostProcessingPass {
     }
     export namespace dom {
         export { createCanvasContext2D as createCanvasContext2D };
+        export { createMockDiv as createMockDiv };
         export { getSharedCanvasContext2D as getSharedCanvasContext2D };
+        export { isCanvas as isCanvas };
         export { outerHeight as outerHeight };
         export { outerWidth as outerWidth };
         export { releaseCanvas as releaseCanvas };
@@ -44309,10 +44554,11 @@ declare class WebGLPostProcessingPass {
                 export { getGlslSizeFromType as getGlslSizeFromType };
                 export { getGlslTypeFromType as getGlslTypeFromType };
                 export { packColor as packColor };
+                export { unpackColor as unpackColor };
             }
             export namespace encodeUtil {
                 export { colorDecodeId as colorDecodeId };
-                export { colorEncodeId as colorEncodeId };
+                export { colorEncodeIdAndPack as colorEncodeIdAndPack };
             }
             export namespace renderinstructions {
                 export { generateLineStringRenderInstructions as generateLineStringRenderInstructions };
@@ -44321,7 +44567,6 @@ declare class WebGLPostProcessingPass {
                 export { getCustomAttributesSize as getCustomAttributesSize };
             }
             export namespace style {
-                export { breakDownFlatStyle as breakDownFlatStyle };
                 export { computeHash as computeHash };
                 export { parseLiteralStyle as parseLiteralStyle };
             }
@@ -44498,6 +44743,7 @@ declare class WebGLPostProcessingPass {
     export namespace tilecoord {
         export { createOrUpdate as createOrUpdate };
         export { fromKey as fromKey };
+        export { getCacheKey as getCacheKey };
         export { getCacheKeyForTileKey as getCacheKeyForTileKey };
         export { getKey as getKey };
         export { getKeyZXY as getKeyZXY };
@@ -44532,6 +44778,7 @@ declare class WebGLPostProcessingPass {
         export { create$1 as create };
         export { determinant as determinant };
         export { equivalent as equivalent };
+        export { fromString$1 as fromString };
         export { invert as invert };
         export { makeInverse as makeInverse };
         export { makeScale as makeScale };
@@ -44618,7 +44865,10 @@ declare class WebGLPostProcessingPass {
         export { registerXMLSerializer as registerXMLSerializer };
         export { serialize as serialize };
     }
-
+    /*import VERSION = util.VERSION;
+    export { VERSION };
+    import getUid = util.getUid;
+    export { getUid };*/
 }
 //# sourceMappingURL=ol.d.ts.map
 declare var map: ol.Map;

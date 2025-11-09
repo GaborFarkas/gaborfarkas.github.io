@@ -2073,6 +2073,7 @@ declare type TinySDFOptions = {
     fontFamily?: string;
     fontWeight?: string;
     fontStyle?: string;
+    lang?: string;
 };
 
 declare class TinySDF {
