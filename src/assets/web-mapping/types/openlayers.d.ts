@@ -44865,10 +44865,10 @@ declare class WebGLPostProcessingPass {
         export { registerXMLSerializer as registerXMLSerializer };
         export { serialize as serialize };
     }
-    /*import VERSION = util.VERSION;
+    import VERSION = util.VERSION;
     export { VERSION };
     import getUid = util.getUid;
-    export { getUid };*/
+    export { getUid };
 }
 //# sourceMappingURL=ol.d.ts.map
 declare var map: ol.Map;

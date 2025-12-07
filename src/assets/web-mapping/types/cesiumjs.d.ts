@@ -835,6 +835,13 @@ export class AxisAlignedBoundingBox {
      */
     static intersectPlane(box: AxisAlignedBoundingBox, plane: Plane): Intersect;
     /**
+     * Determines whether two axis aligned bounding boxes intersect.
+     * @param box - first box
+     * @param other - second box
+     * @returns <code>true</code> if the boxes intersect; otherwise, <code>false</code>.
+     */
+    static intersectAxisAlignedBoundingBox(box: AxisAlignedBoundingBox, other: AxisAlignedBoundingBox): boolean;
+    /**
      * Duplicates this AxisAlignedBoundingBox instance.
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new AxisAlignedBoundingBox instance if one was not provided.
@@ -849,6 +856,12 @@ export class AxisAlignedBoundingBox {
      *                      intersects the plane.
      */
     intersectPlane(plane: Plane): Intersect;
+    /**
+     * Determines whether some other axis aligned bounding box intersects this box.
+     * @param other - The other axis aligned bounding box.
+     * @returns <code>true</code> if the boxes intersect; otherwise, <code>false</code>.
+     */
+    intersectAxisAlignedBoundingBox(other: AxisAlignedBoundingBox): boolean;
     /**
      * Compares this AxisAlignedBoundingBox against the provided AxisAlignedBoundingBox componentwise and returns
      * <code>true</code> if they are equal, <code>false</code> otherwise.
@@ -8852,6 +8865,13 @@ export namespace IntersectionTests {
      */
     function rayEllipsoid(ray: Ray, ellipsoid: Ellipsoid): Interval;
     /**
+     * Computes the intersection points of a ray with an axis-aligned bounding box. (axis-aligned in the same space as the ray)
+     * @param ray - The ray.
+     * @param box - The axis-aligned bounding box.
+     * @param result - The interval containing scalar points along the ray or undefined if there are no intersections.
+     */
+    function rayAxisAlignedBoundingBox(ray: Ray, box: AxisAlignedBoundingBox, result: Interval | undefined): void;
+    /**
      * Provides the point along the ray which is nearest to the ellipsoid.
      * @param ray - The ray.
      * @param ellipsoid - The ellipsoid.
@@ -16743,6 +16763,21 @@ export class TerrainData {
     wasCreatedByUpsampling(): boolean;
 }
 
+/**
+ * Indicates whether the terrain picker needs to be rebuilt due to changes in the underlying terrain mesh's vertices or indices.
+ */
+export var needsRebuild: boolean;
+
+/**
+ * Creates an axis-aligned bounding box for a quadtree node at the given tree-space coordinates and level.
+ * This AABB is in the tree's local space (where the root node of the tree is a unit cube in its own local space).
+ * @param x - The x coordinate of the node.
+ * @param y - The y coordinate of the node.
+ * @param level - The level of the node.
+ * @returns The axis-aligned bounding box for the node.
+ */
+export function createAABBForNode(x: number, y: number, level: number): AxisAlignedBoundingBox;
+
 export namespace TerrainProvider {
     /**
      * A function that is called when an error occurs.
@@ -19085,7 +19120,7 @@ export namespace BillboardGraphics {
      */
     type ConstructorOptions = {
         show?: Property | boolean;
-        image?: Property | string | HTMLCanvasElement;
+        image?: Property | string | HTMLImageElement | HTMLCanvasElement;
         scale?: Property | number;
         pixelOffset?: Property | Cartesian2;
         eyeOffset?: Property | Cartesian3;
@@ -26389,6 +26424,137 @@ export enum Axis {
     Z = 2
 }
 
+export namespace Azure2DImageryProvider {
+    /**
+     * Initialization options for the Azure2DImageryProvider constructor
+     * @property options - Object with the following properties:
+     * @property [options.url = "https://atlas.microsoft.com/"] - The Azure server url.
+     * @property options.tilesetId - The Azure tileset ID. Valid options are {@link microsoft.imagery}, {@link microsoft.base.road}, and {@link microsoft.base.labels.road}
+     * @property options.subscriptionKey - The public subscription key for the imagery.
+     * @property [options.ellipsoid = Ellipsoid.default] - The ellipsoid.  If not specified, the default ellipsoid is used.
+     * @property [options.minimumLevel = 0] - The minimum level-of-detail supported by the imagery provider.  Take care when specifying
+     *                 this that the number of tiles at the minimum level is small, such as four or less.  A larger number is likely
+     *                 to result in rendering problems.
+     * @property [options.maximumLevel = 22] - The maximum level-of-detail supported by the imagery provider.
+     * @property [options.rectangle = Rectangle.MAX_VALUE] - The rectangle, in radians, covered by the image.
+     */
+    type ConstructorOptions = {
+        options: {
+            url?: string;
+            tilesetId: string;
+            subscriptionKey: string;
+            ellipsoid?: Ellipsoid;
+            minimumLevel?: number;
+            maximumLevel?: number;
+            rectangle?: Rectangle;
+        };
+    };
+}
+
+/**
+ * Provides 2D image tiles from Azure.
+ * @example
+ * // Azure 2D imagery provider
+ * const azureImageryProvider = new Cesium.Azure2DImageryProvider({
+ *     subscriptionKey: "subscription-key",
+ *     tilesetId: "microsoft.base.road"
+ * });
+ * @param options - Object describing initialization options
+ */
+export class Azure2DImageryProvider {
+    constructor(options: Azure2DImageryProvider.ConstructorOptions);
+    /**
+     * Gets the URL of the Azure 2D Imagery server.
+     */
+    readonly url: string;
+    /**
+     * Gets the rectangle, in radians, of the imagery provided by the instance.
+     */
+    readonly rectangle: Rectangle;
+    /**
+     * Gets the width of each tile, in pixels.
+     */
+    readonly tileWidth: number;
+    /**
+     * Gets the height of each tile, in pixels.
+     */
+    readonly tileHeight: number;
+    /**
+     * Gets the maximum level-of-detail that can be requested.
+     */
+    readonly maximumLevel: number | undefined;
+    /**
+     * Gets the minimum level-of-detail that can be requested. Generally,
+     * a minimum level should only be used when the rectangle of the imagery is small
+     * enough that the number of tiles at the minimum level is small.  An imagery
+     * provider with more than a few tiles at the minimum level will lead to
+     * rendering problems.
+     */
+    readonly minimumLevel: number;
+    /**
+     * Gets the tiling scheme used by the provider.
+     */
+    readonly tilingScheme: TilingScheme;
+    /**
+     * Gets the tile discard policy.  If not undefined, the discard policy is responsible
+     * for filtering out "missing" tiles via its shouldDiscardImage function.  If this function
+     * returns undefined, no tiles are filtered.
+     */
+    readonly tileDiscardPolicy: TileDiscardPolicy;
+    /**
+     * Gets an event that is raised when the imagery provider encounters an asynchronous error..  By subscribing
+     * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
+     * are passed an instance of {@link TileProviderError}.
+     */
+    readonly errorEvent: Event;
+    /**
+     * Gets the credit to display when this imagery provider is active.  Typically this is used to credit
+     * the source of the imagery.
+     */
+    readonly credit: Credit;
+    /**
+     * Gets the proxy used by this provider.
+     */
+    readonly proxy: Proxy;
+    /**
+     * Gets a value indicating whether or not the images provided by this imagery provider
+     * include an alpha channel.  If this property is false, an alpha channel, if present, will
+     * be ignored.  If this property is true, any images without an alpha channel will be treated
+     * as if their alpha is 1.0 everywhere.  When this property is false, memory usage
+     * and texture upload time are reduced.
+     */
+    readonly hasAlphaChannel: boolean;
+    /**
+     * Gets the credits to be displayed when a given tile is displayed.
+     * @param x - The tile X coordinate.
+     * @param y - The tile Y coordinate.
+     * @param level - The tile level;
+     * @returns The credits to be displayed when the tile is displayed.
+     */
+    getTileCredits(x: number, y: number, level: number): Credit[] | undefined;
+    /**
+     * Requests the image for a given tile.
+     * @param x - The tile X coordinate.
+     * @param y - The tile Y coordinate.
+     * @param level - The tile level.
+     * @param [request] - The request object. Intended for internal use only.
+     * @returns A promise for the image that will resolve when the image is available, or
+     *          undefined if there are too many active requests to the server, and the request should be retried later.
+     */
+    requestImage(x: number, y: number, level: number, request?: Request): Promise<ImageryTypes> | undefined;
+    /**
+     * Picking features is not currently supported by this imagery provider, so this function simply returns
+     * undefined.
+     * @param x - The tile X coordinate.
+     * @param y - The tile Y coordinate.
+     * @param level - The tile level.
+     * @param longitude - The longitude at which to pick features.
+     * @param latitude - The latitude at which to pick features.
+     * @returns Undefined since picking is not supported.
+     */
+    pickFeatures(x: number, y: number, level: number, longitude: number, latitude: number): undefined;
+}
+
 export namespace Billboard {
     /**
      * Initialization options for the first param of Billboard constructor
@@ -26420,7 +26586,7 @@ export namespace Billboard {
         position: Cartesian3;
         id?: any;
         show?: boolean;
-        image?: string | HTMLCanvasElement;
+        image?: string | HTMLImageElement | HTMLCanvasElement;
         scale?: number;
         pixelOffset?: Cartesian2;
         eyeOffset?: Cartesian3;
@@ -26770,6 +26936,11 @@ export class Billboard {
      */
     equals(other?: Billboard): boolean;
 }
+
+/**
+ * Arbitrary limit on allocated SVG size, in pixels. Raster images use image resolution.
+ */
+export const SVG_MAX_SIZE_PX = 512;
 
 /**
  * A renderable collection of billboards.  Billboards are viewport-aligned
@@ -33228,7 +33399,7 @@ export class Google2DImageryProvider {
      * });
      * @example
      * // Google 2D roadmap overlay with custom styles
-     * const googleTileProvider = Cesium.Google2DImageryProvider.fromIonAssetId({
+     * const googleTilesProvider = Cesium.Google2DImageryProvider.fromIonAssetId({
      *     assetId: 3830184,
      *     overlayLayerType: "layerRoadmap",
      *     styles: [
@@ -33284,7 +33455,7 @@ export class Google2DImageryProvider {
      * // Google 2D roadmap overlay with custom styles
      * Cesium.GoogleMaps.defaultApiKey = "your-api-key";
      *
-     * const googleTileProvider = Cesium.Google2DImageryProvider.fromUrl({
+     * const googleTilesProvider = Cesium.Google2DImageryProvider.fromUrl({
      *     overlayLayerType: "layerRoadmap",
      *     styles: [
      *         {
@@ -39957,6 +40128,20 @@ export var metadataProperty: any;
 export function computePickingDrawingBufferRectangle(drawingBufferHeight: number, position: Cartesian2, width: number | undefined, height: number | undefined, result: BoundingRectangle): BoundingRectangle;
 
 /**
+ * Setup needed before picking.
+ * @param windowPosition - Window coordinates to perform picking on.
+ * @param drawingBufferRectangle - The output drawing buffer recangle.
+ * @param [width = 3] - Width of the pick rectangle.
+ * @param [height = 3] - Height of the pick rectangle.
+ */
+export function pickBegin(scene: Scene, windowPosition: Cartesian2, drawingBufferRectangle: BoundingRectangle, width?: number, height?: number): void;
+
+/**
+ * Teardown needed after picking.
+ */
+export function pickEnd(scene: Scene): void;
+
+/**
  * Information about metadata that is supposed to be picked
  * @property schemaId - The optional ID of the metadata schema
  * @property className - The name of the metadata class
@@ -42367,6 +42552,24 @@ export class Scene {
      * @returns Object containing the picked primitive or <code>undefined</code> if nothing is at the location.
      */
     pick(windowPosition: Cartesian2, width?: number, height?: number): any | undefined;
+    /**
+     * Performs the same operation as Scene.pick but asynchonosly without blocking the main render thread.
+     * Requires WebGL2 else using fallback.
+     * @example
+     * // On mouse over, color the feature yellow.
+     * handler.setInputAction(function(movement) {
+     *     const feature = scene.pickAsync(movement.endPosition).then(function(feature) {
+     *        if (feature instanceof Cesium.Cesium3DTileFeature) {
+     *            feature.color = Cesium.Color.YELLOW;
+     *        }
+     *     });
+     * }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+     * @param windowPosition - Window coordinates to perform picking on.
+     * @param [width = 3] - Width of the pick rectangle.
+     * @param [height = 3] - Height of the pick rectangle.
+     * @returns Object containing the picked primitive or <code>undefined</code> if nothing is at the location.
+     */
+    pickAsync(windowPosition: Cartesian2, width?: number, height?: number): Promise<object | undefined>;
     /**
      * Returns a {@link VoxelCell} for the voxel sample rendered at a particular window coordinate,
      * or <code>undefined</code> if no voxel is rendered at that position.
