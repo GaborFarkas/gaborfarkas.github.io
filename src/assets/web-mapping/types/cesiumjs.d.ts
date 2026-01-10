@@ -26427,27 +26427,24 @@ export enum Axis {
 export namespace Azure2DImageryProvider {
     /**
      * Initialization options for the Azure2DImageryProvider constructor
-     * @property options - Object with the following properties:
-     * @property [options.url = "https://atlas.microsoft.com/"] - The Azure server url.
-     * @property options.tilesetId - The Azure tileset ID. Valid options are {@link microsoft.imagery}, {@link microsoft.base.road}, and {@link microsoft.base.labels.road}
-     * @property options.subscriptionKey - The public subscription key for the imagery.
-     * @property [options.ellipsoid = Ellipsoid.default] - The ellipsoid.  If not specified, the default ellipsoid is used.
-     * @property [options.minimumLevel = 0] - The minimum level-of-detail supported by the imagery provider.  Take care when specifying
+     * @property subscriptionKey - The public subscription key for the imagery.
+     * @property [url = "https://atlas.microsoft.com/"] - The Azure server url.
+     * @property [tilesetId = "microsoft.imagery"] - The Azure tileset ID. Valid options are {@link microsoft.imagery}, {@link microsoft.base.road}, and {@link microsoft.base.labels.road}
+     * @property [ellipsoid = Ellipsoid.default] - The ellipsoid.  If not specified, the default ellipsoid is used.
+     * @property [minimumLevel = 0] - The minimum level-of-detail supported by the imagery provider.  Take care when specifying
      *                 this that the number of tiles at the minimum level is small, such as four or less.  A larger number is likely
      *                 to result in rendering problems.
-     * @property [options.maximumLevel = 22] - The maximum level-of-detail supported by the imagery provider.
-     * @property [options.rectangle = Rectangle.MAX_VALUE] - The rectangle, in radians, covered by the image.
+     * @property [maximumLevel = 22] - The maximum level-of-detail supported by the imagery provider.
+     * @property [rectangle = Rectangle.MAX_VALUE] - The rectangle, in radians, covered by the image.
      */
     type ConstructorOptions = {
-        options: {
-            url?: string;
-            tilesetId: string;
-            subscriptionKey: string;
-            ellipsoid?: Ellipsoid;
-            minimumLevel?: number;
-            maximumLevel?: number;
-            rectangle?: Rectangle;
-        };
+        subscriptionKey: string;
+        url?: string;
+        tilesetId?: string;
+        ellipsoid?: Ellipsoid;
+        minimumLevel?: number;
+        maximumLevel?: number;
+        rectangle?: Rectangle;
     };
 }
 
