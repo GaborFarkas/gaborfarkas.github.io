@@ -88,7 +88,7 @@ export class DecoratedColumnComponent implements AfterViewInit, OnDestroy {
             const hexaSize = 3.75 * rem;
 
             this.decorationColumns.set(Math.floor(decorWidth / (hexaSize + 0.5 * rem)));
-            this.decorationRows.set(Math.floor(contentHtmlElem.clientHeight / hexaSize));
+            this.decorationRows.set(Math.ceil(contentHtmlElem.clientHeight / hexaSize));
         }
     }
 
