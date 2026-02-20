@@ -81,7 +81,7 @@ function webglPoints(ol: typeof OpenLayers, map: OpenLayers.Map) {
 
 function blendLayers(ol: typeof OpenLayers, map: OpenLayers.Map) {
     const lyr = new ol.layer.Tile({
-        source: new ol.source.TileImage({
+        source: new ol.source.ImageTile({
             attributions:
                 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer">ArcGIS</a>',
             url:
