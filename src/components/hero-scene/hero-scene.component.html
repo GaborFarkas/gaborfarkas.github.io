@@ -1,62 +1,75 @@
 <div #sceneContainer class="relative w-full h-full overflow-hidden">
-    <div *ngIf="heroScene() === HeroScene().LONGTERM" class="w-full h-full scene-long">
-        <div class="flex flex-col w-full h-full">
-            <div class="wall w-full"></div>
-            <div class="skirt w-full"></div>
-            <div class="floor w-full flex justify-end items-end">
-                <div class="attribution opaque-bg">
-                    <a href="http://www.freepik.com">Adapted from designs by upklyak / macrovector / Freepik</a>
+    @if (heroScene() === HeroScene().LONGTERM) {
+        <div class="w-full h-full scene-long">
+            <div class="flex flex-col w-full h-full">
+                <div class="wall w-full"></div>
+                <div class="skirt w-full"></div>
+                <div class="floor w-full flex justify-end items-end">
+                    <div class="attribution opaque-bg">
+                        <a href="http://www.freepik.com">Adapted from designs by upklyak / macrovector / Freepik</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <img class="absolute top-8 sm:top-0 left-2 sm:left-12 max-w-2/5 md:h-2/4" src="assets/blackboard.png" alt="Blackboard">
-        <div class="absolute bottom-0 left-0 h-2/5 sm:h-3/5">
-            <img class="h-full" src="assets/scientist.png" alt="Scientist">
-            <div class="scientist-text absolute xl:whitespace-pre">
-                <img class="w-2 absolute bottom-12 xl:bottom-6" src="assets/pointing-arrow.png" alt="Arrow pointing to text">
-                <span class="cabin-sketch text-sm sm:text-base text-center">This is me, making sure you're able to do your best</span>
+            <img class="absolute top-8 sm:top-0 left-2 sm:left-12 max-w-2/5 md:h-2/4" src="assets/blackboard.png"
+                alt="Blackboard">
+            <div class="absolute bottom-0 left-0 h-2/5 sm:h-3/5">
+                <img class="h-full" src="assets/scientist.png" alt="Scientist">
+                <div class="scientist-text absolute xl:whitespace-pre">
+                    <img class="w-2 absolute bottom-12 xl:bottom-6" src="assets/pointing-arrow.png"
+                        alt="Arrow pointing to text">
+                    <span class="cabin-sketch text-sm sm:text-base text-center">This is me, making sure you're able to do
+                        your best</span>
+                </div>
             </div>
-        </div>
-
-        <div class="h-3/5 w-2/4 absolute hero-background flex items-center justify-center">
-            <img class="hero max-h-3/5 cursor-pointer" [ngClass]="{'animate-shrink': animating()}" [src]="'assets/' + heroImg() + '.png'"
-                (click)="toggleHero()" (keypress)="toggleHero()" tabindex="0" alt="Hero flying">
-            <div class="hero-text absolute" #heroText>
-                @defer (on viewport(heroText)) {
+            <div class="h-3/5 w-2/4 absolute hero-background flex items-center justify-center">
+                <img class="hero max-h-3/5 cursor-pointer" [ngClass]="{'animate-shrink': animating()}"
+                    [src]="'assets/' + heroImg() + '.png'" (click)="toggleHero()" (keypress)="toggleHero()" tabindex="0"
+                    alt="Hero flying">
+                <div class="hero-text absolute" #heroText>
+                    @defer (on viewport(heroText)) {
                     <img class="w-2 absolute hero-arrow" src="assets/pointing-arrow.png" alt="Arrow pointing to text">
-                    <div class="cabin-sketch typewriter text-sm xl:text-base text-center" [duration]="2000" [textContent]="'This is you, making the world a better place'"></div>
+                    <div class="cabin-sketch typewriter text-sm xl:text-base text-center" [duration]="2000"
+                        [textContent]="'This is you, making the world a better place'"></div>
+                    }
+                </div>
+            </div>
+            <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0 pointer-events-none"></div>
+        </div>
+    }
+
+    @if (heroScene() === HeroScene().COUNSEL) {
+        <div class="w-full h-full relative scene-counsel">
+            <div class="counsel-bg w-full h-full">
+                <div class="attribution opaque-bg absolute right-0 bottom-0">
+                    <a href="http://www.freepik.com">Adapted from designs by upklyak / brgfx / Freepik</a>
+                </div>
+            </div>
+            <img class="absolute bug" src="assets/bug.png" alt="Bug">
+            <img class="absolute bug bug-eye" src="assets/bug-eye.png" alt="Bug's eye">
+            <img class="hero absolute h-4/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating()}"
+                [src]="'assets/' + heroImg() + '-stand.png'" (click)="toggleHero()" (keypress)="toggleHero()"
+                alt="Standing hero" tabindex="0">
+            <img class="hero hero-punch absolute h-5/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating()}"
+                [src]="'assets/' + heroImg() + '-punch.png'" (click)="toggleHero()" (keypress)="toggleHero()"
+                alt="Punching hero" tabindex="0">
+        </div>
+    }
+
+    @if (heroScene() === HeroScene().RESEARCH) {
+        <div class="w-full h-full relative" #researchScene>
+            <canvas #wallOfFame class="absolute top-0 h-full frame-wall"
+                [style]="{'width': wallOfFameWidth() + 'rem', 'right': 'calc(-' + wallOfFameWidth() + 'rem + 100%)'}"></canvas>
+            <div class="research-text absolute w-1/2">
+                @defer (on viewport(researchScene)) {
+                <img class="w-4 absolute bottom-4 sm:bottom-0 left-4 sm:left-0" src="assets/pointing-arrow.png"
+                    alt="Arrow pointing to text">
+                <div class="cabin-sketch typewriter text-xl text-center" [textClass]="'opaque-bg sm:bg-transparent'"
+                    [duration]="2000" [delay]="10000" [textContent]="'The guy with the experience'"></div>
                 }
             </div>
-        </div>
-        <div class="bg-frame absolute h-3/5 w-2/4 top-0 right-0 pointer-events-none"></div>
-    </div>
-
-    <div *ngIf="heroScene() === HeroScene().COUNSEL" class="w-full h-full relative scene-counsel">
-        <div class="counsel-bg w-full h-full">
             <div class="attribution opaque-bg absolute right-0 bottom-0">
-                <a href="http://www.freepik.com">Adapted from designs by upklyak / brgfx / Freepik</a>
+                <a href="http://www.freepik.com">Adapted from designs by Freepik</a>
             </div>
         </div>
-
-        <img class="absolute bug" src="assets/bug.png" alt="Bug">
-        <img class="absolute bug bug-eye" src="assets/bug-eye.png" alt="Bug's eye">
-
-        <img class="hero absolute h-4/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating()}" [src]="'assets/' + heroImg() + '-stand.png'"
-            (click)="toggleHero()" (keypress)="toggleHero()" alt="Standing hero" tabindex="0">
-        <img class="hero hero-punch absolute h-5/6 bottom-0 cursor-pointer" [ngClass]="{'animate-fly': animating()}" [src]="'assets/' + heroImg() + '-punch.png'"
-            (click)="toggleHero()" (keypress)="toggleHero()" alt="Punching hero" tabindex="0">
-    </div>
-
-    <div *ngIf="heroScene() === HeroScene().RESEARCH" class="w-full h-full relative" #researchScene>
-        <canvas #wallOfFame class="absolute top-0 h-full frame-wall" [style]="{'width': wallOfFameWidth() + 'rem', 'right': 'calc(-' + wallOfFameWidth() + 'rem + 100%)'}"></canvas>
-        <div class="research-text absolute w-1/2">
-            @defer (on viewport(researchScene)) {
-                <img class="w-4 absolute bottom-4 sm:bottom-0 left-4 sm:left-0" src="assets/pointing-arrow.png" alt="Arrow pointing to text">
-                <div class="cabin-sketch typewriter text-xl text-center" [textClass]="'opaque-bg sm:bg-transparent'" [duration]="2000" [delay]="10000" [textContent]="'The guy with the experience'"></div>
-            }
-        </div>
-        <div class="attribution opaque-bg absolute right-0 bottom-0">
-            <a href="http://www.freepik.com">Adapted from designs by Freepik</a>
-        </div>
-    </div>
+    }
 </div>

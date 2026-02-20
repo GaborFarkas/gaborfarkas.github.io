@@ -1,12 +1,10 @@
 import { Component, OnDestroy, OnInit, SimpleChanges, OnChanges, input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 /**
  * Typewriter component for creating animated texts, outputting them character by character.
  */
 @Component({
     selector: 'div.typewriter',
-    imports: [CommonModule],
     templateUrl: './typewriter.component.html'
 })
 export class TypewriterComponent implements OnInit, OnDestroy, OnChanges {

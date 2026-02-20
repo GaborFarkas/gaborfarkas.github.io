@@ -10,22 +10,22 @@
 
 <ng-template #decorationItems let-side="side">
     @for(_ of decorationRows() | range; track $index; let rowIdx = $index) {
-    <div class="relative flex" [style]="{'--index': rowIdx}">
-        <ng-container *ngFor="let _ of decorationColumns() | range; index as elemIdx">
-            <p *ngIf="elemIdx === decorationColumns() - 1 && (side === 'left' ? leftColRefs() : rightColRefs())[rowIdx]; else hexagon"
-                class="reference w-fit h-fit" [url]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].url"
-                [flyoutText]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].text"
-                [flyoutOrientation]="side === 'left' ? Orientation().RIGHT : Orientation().LEFT"
-                [flyoutFlip]="side === 'right'">
-                <fa-icon *ngIf="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].icon" size="xl"
-                    class="text-primary" [icon]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].icon!"
-                    referenceIcon></fa-icon>
-            </p>
-        </ng-container>
-    </div>
+        <div class="relative flex" [style]="{'--index': rowIdx}">
+            @for (_ of decorationColumns() | range; track _; let elemIdx = $index) {
+                @if (elemIdx === decorationColumns() - 1 && (side === 'left' ? leftColRefs() : rightColRefs())[rowIdx]) {
+                <p class="reference w-fit h-fit" [url]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].url"
+                    [flyoutText]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].text"
+                    [flyoutOrientation]="side === 'left' ? Orientation().RIGHT : Orientation().LEFT"
+                    [flyoutFlip]="side === 'right'">
+                    @if ((side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].icon) {
+                    <fa-icon size="xl" class="text-primary"
+                        [icon]="(side === 'left' ? leftColRefs() : rightColRefs())[rowIdx].icon!" referenceIcon></fa-icon>
+                    }
+                </p>
+                } @else {
+                <span class="text-6xl text-primary-accent select-none">&#x2B22;</span>
+                }
+            }
+        </div>
     }
-</ng-template>
-
-<ng-template #hexagon>
-    <span class="text-6xl text-primary-accent select-none">&#x2B22;</span>
 </ng-template>

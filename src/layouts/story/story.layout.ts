@@ -3,7 +3,6 @@ import { Router, RouterOutlet } from '@angular/router';
 import { StoryModel, StoryType } from '@/models/story.model';
 import { PageUrlMapping } from '@/models/page-url-mapping.model';
 import { StoryService } from '@/services/story.service';
-import { CommonModule } from '@angular/common';
 import { FileService } from '@/services/file.service';
 
 /**
@@ -11,7 +10,7 @@ import { FileService } from '@/services/file.service';
  */
 @Component({
     selector: 'story-layout',
-    imports: [CommonModule, RouterOutlet],
+    imports: [RouterOutlet],
     providers: [StoryService, FileService],
     templateUrl: './story.layout.html',
     styleUrl: './story.layout.css'

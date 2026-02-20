@@ -1,4 +1,5 @@
-<div class="relative w-full h-full flex flex-row pb-4 sm:pb-0 md:remove-bg overflow-hidden" [ngClass]="{'flip': flip()}">
+<div class="relative w-full h-full flex flex-row pb-4 sm:pb-0 md:remove-bg overflow-hidden"
+    [ngClass]="{'flip': flip()}">
     <div class="mobile-bg absolute w-full h-full top-0 left-0 md:hidden"
         [style]="{'background-image': 'url(' + background() + ')'}"></div>
     <div class="mobile-text-container absolute md:hidden opaque-bg"></div>
@@ -10,17 +11,30 @@
     </div>
     <div class="absolute top-0 h-full hidden md:block slant" [ngClass]="{'flip': flip()}">
         <div class="absolute decoration w-fit h-fit flex select-none">
-            <p class="reference w-full h-full" [flyoutText]="references()[flip() ? 0 : 2]?.text" [url]="references()[flip() ? 0 : 2]?.url" [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT" [flyoutFlip]="flip()">
-                <fa-icon *ngIf="references()[flip() ? 0 : 2]?.icon" size="xl" class="text-primary" [icon]="references()[flip() ? 0 : 2]!.icon!"
-                    referenceIcon></fa-icon>
+            <p class="reference w-full h-full" [flyoutText]="references()[flip() ? 0 : 2]?.text"
+                [url]="references()[flip() ? 0 : 2]?.url"
+                [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT"
+                [flyoutFlip]="flip()">
+                @if (references()[flip() ? 0 : 2]?.icon) {
+                    <fa-icon size="xl" class="text-primary" [icon]="references()[flip() ? 0 : 2]!.icon!"
+                        referenceIcon></fa-icon>
+                }
             </p>
-            <p class="reference w-full h-full" [flyoutText]="references()[1]?.text" [url]="references()[1]?.url" [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT" [flyoutFlip]="flip()">
-                <fa-icon *ngIf="references()[1]?.icon" size="xl" class="text-primary" [icon]="references()[1]!.icon!"
-                    referenceIcon></fa-icon>
+            <p class="reference w-full h-full" [flyoutText]="references()[1]?.text" [url]="references()[1]?.url"
+                [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT"
+                [flyoutFlip]="flip()">
+                @if (references()[1]?.icon) {
+                    <fa-icon size="xl" class="text-primary" [icon]="references()[1]!.icon!" referenceIcon></fa-icon>
+                }
             </p>
-            <p class="reference w-full h-full" [flyoutText]="references()[flip() ? 2 : 0]?.text" [url]="references()[flip() ? 2 : 0]?.url" [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT" [flyoutFlip]="flip()">
-                <fa-icon *ngIf="references()[flip() ? 2 : 0]?.icon" size="xl" class="text-primary" [icon]="references()[flip() ? 2 : 0]!.icon!"
-                    referenceIcon></fa-icon>
+            <p class="reference w-full h-full" [flyoutText]="references()[flip() ? 2 : 0]?.text"
+                [url]="references()[flip() ? 2 : 0]?.url"
+                [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT"
+                [flyoutFlip]="flip()">
+                @if (references()[flip() ? 2 : 0]?.icon) {
+                    <fa-icon size="xl" class="text-primary" [icon]="references()[flip() ? 2 : 0]!.icon!"
+                        referenceIcon></fa-icon>
+                }
             </p>
         </div>
     </div>

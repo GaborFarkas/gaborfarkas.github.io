@@ -4,7 +4,6 @@ import { MaplibreMapComponent } from "@/components/web-mapping/maplibre-map/mapl
 import { OpenLayersMapComponent } from "@/components/web-mapping/openlayers-map/openlayers-map.component";
 import { MapPageQueryParams } from "@/models/page-url-mapping.model";
 import { WebMappingLibrary } from "@/models/web-mapping/web-mapping-library";
-import { CommonModule } from "@angular/common";
 import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 
@@ -14,7 +13,7 @@ import { ActivatedRoute } from "@angular/router";
 @Component({
     selector: 'map-page',
     templateUrl: './map.page.html',
-    imports: [CommonModule, CesiumMapComponent, LeafletMapComponent, MaplibreMapComponent, OpenLayersMapComponent]
+    imports: [CesiumMapComponent, LeafletMapComponent, MaplibreMapComponent, OpenLayersMapComponent]
 })
 export class MapPage implements OnInit {
     /**

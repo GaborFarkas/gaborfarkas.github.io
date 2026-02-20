@@ -125,65 +125,71 @@
         <h1>Feature support matrix</h1>
 
         @if(featureSupportItems()) {
-        <div class="max-md:overflow-x-auto max-w-full">
-            <table class="w-full relative">
-                <thead class="sticky top-0 bg-primary z-10">
-                    <tr>
-                        <th></th>
-                        <th>{{WebMappingLibrary().LEAFLET}}</th>
-                        <th>{{WebMappingLibrary().OPENLAYERS}}</th>
-                        <th>{{WebMappingLibrary().MAPLIBRE}}</th>
-                        <th>{{WebMappingLibrary().CESIUM}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for(item of featureSupportItems(); track item) {
-                    <tr [ngClass]="{'border-t border-slate-600': !item.support}">
-                        @if (item.support) {
-
-                        <td>
-                            {{item.name}}
-                            <fa-icon [icon]="faQuestionCircle()" [title]="item.description"
-                                class="hidden lg:inline text-primary-accent pl-2"></fa-icon>
-                        </td>
-                        <td>
-                            <div [supportRectangle]="item.support[WebMappingLibrary().LEAFLET]"
-                                (click)="playExample(item, WebMappingLibrary().LEAFLET)" (keypress)="playExample(item, WebMappingLibrary().LEAFLET)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary().LEAFLET].line !== undefined}" tabindex="0"></div>
-                        </td>
-                        <td>
-                            <div [supportRectangle]="item.support[WebMappingLibrary().OPENLAYERS]"
-                                (click)="playExample(item, WebMappingLibrary().OPENLAYERS)" (keypress)="playExample(item, WebMappingLibrary().OPENLAYERS)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary().OPENLAYERS].line !== undefined}" tabindex="0">
-                            </div>
-                        </td>
-                        <td>
-                            <div [supportRectangle]="item.support[WebMappingLibrary().MAPLIBRE]"
-                                (click)="playExample(item, WebMappingLibrary().MAPLIBRE)" (keypress)="playExample(item, WebMappingLibrary().MAPLIBRE)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary().MAPLIBRE].line !== undefined}" tabindex="0">
-                            </div>
-                        </td>
-                        <td>
-                            <div [supportRectangle]="item.support[WebMappingLibrary().CESIUM]"
-                                (click)="playExample(item, WebMappingLibrary().CESIUM)" (keypress)="playExample(item, WebMappingLibrary().CESIUM)"
-                                [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary().CESIUM].line !== undefined}" tabindex="0">
-                            </div>
-                        </td>
-
-                        } @else {
-                        <td>{{item.name}}</td>
-                        <td colspan="4" class="text-slate-800">{{item.description}}</td>
+            <div class="max-md:overflow-x-auto max-w-full">
+                <table class="w-full relative">
+                    <thead class="sticky top-0 bg-primary z-10">
+                        <tr>
+                            <th></th>
+                            <th>{{WebMappingLibrary().LEAFLET}}</th>
+                            <th>{{WebMappingLibrary().OPENLAYERS}}</th>
+                            <th>{{WebMappingLibrary().MAPLIBRE}}</th>
+                            <th>{{WebMappingLibrary().CESIUM}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for(item of featureSupportItems(); track item) {
+                            <tr [ngClass]="{'border-t border-slate-600': !item.support}">
+                                @if (item.support) {
+                                    <td>
+                                        {{item.name}}
+                                        <fa-icon [icon]="faQuestionCircle()" [title]="item.description"
+                                            class="hidden lg:inline text-primary-accent pl-2"></fa-icon>
+                                    </td>
+                                    <td>
+                                        <div [supportRectangle]="item.support[WebMappingLibrary().LEAFLET]"
+                                            (click)="playExample(item, WebMappingLibrary().LEAFLET)"
+                                            (keypress)="playExample(item, WebMappingLibrary().LEAFLET)"
+                                            [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary().LEAFLET].line !== undefined}"
+                                            tabindex="0"></div>
+                                    </td>
+                                    <td>
+                                        <div [supportRectangle]="item.support[WebMappingLibrary().OPENLAYERS]"
+                                            (click)="playExample(item, WebMappingLibrary().OPENLAYERS)"
+                                            (keypress)="playExample(item, WebMappingLibrary().OPENLAYERS)"
+                                            [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary().OPENLAYERS].line !== undefined}"
+                                            tabindex="0">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div [supportRectangle]="item.support[WebMappingLibrary().MAPLIBRE]"
+                                            (click)="playExample(item, WebMappingLibrary().MAPLIBRE)"
+                                            (keypress)="playExample(item, WebMappingLibrary().MAPLIBRE)"
+                                            [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary().MAPLIBRE].line !== undefined}"
+                                            tabindex="0">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div [supportRectangle]="item.support[WebMappingLibrary().CESIUM]"
+                                            (click)="playExample(item, WebMappingLibrary().CESIUM)"
+                                            (keypress)="playExample(item, WebMappingLibrary().CESIUM)"
+                                            [ngClass]="{'cursor-pointer': item.support[WebMappingLibrary().CESIUM].line !== undefined}"
+                                            tabindex="0">
+                                        </div>
+                                    </td>
+                                } @else {
+                                    <td>{{item.name}}</td>
+                                    <td colspan="4" class="text-slate-800">{{item.description}}</td>
+                                }
+                            </tr>
+                            @if (item.addendum) {
+                                <tr>
+                                    <td colspan="5" class="text-slate-800">{{item.addendum}}</td>
+                                </tr>
+                            }
                         }
-                    </tr>
-                    @if (item.addendum) {
-                    <tr>
-                        <td colspan="5" class="text-slate-800">{{item.addendum}}</td>
-                    </tr>
-                    }
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
         }
     </section>
 
@@ -193,33 +199,45 @@
     </p>
 </div>
 
-<dialog class="modal" [windowTitle]="playingItem()?.name + ' in ' + playingLibrary()"
-    [gitHubUrl]="playingExampleUrl()" (closed)="clearExample()">
-    <div #leafletContainer *ngIf="playingLibrary() === WebMappingLibrary().LEAFLET" class="h-full w-full">
-        @defer (on viewport(leafletContainer)) {
-        <div class="map leaflet h-full w-full"
-            [example]="playingItem()!.support![playingLibrary()!].line !== undefined ? playingItem()!.name : undefined"></div>
-        }
-    </div>
+<dialog class="modal" [windowTitle]="playingItem()?.name + ' in ' + playingLibrary()" [gitHubUrl]="playingExampleUrl()"
+    (closed)="clearExample()">
+    @if (playingLibrary() === WebMappingLibrary().LEAFLET) {
+        <div #leafletContainer class="h-full w-full">
+            @defer (on viewport(leafletContainer)) {
+                <div class="map leaflet h-full w-full"
+                    [example]="playingItem()!.support![playingLibrary()!].line !== undefined ? playingItem()!.name : undefined">
+                </div>
+            }
+        </div>
+    }
 
-    <div #openlayersContainer *ngIf="playingLibrary() === WebMappingLibrary().OPENLAYERS" class="h-full w-full">
-        @defer (on viewport(openlayersContainer)) {
-        <div class="map openlayers h-full w-full"
-            [example]="playingItem()!.support![playingLibrary()!].line !== undefined ? playingItem()!.name : undefined"></div>
-        }
-    </div>
+    @if (playingLibrary() === WebMappingLibrary().OPENLAYERS) {
+        <div #openlayersContainer class="h-full w-full">
+            @defer (on viewport(openlayersContainer)) {
+                <div class="map openlayers h-full w-full"
+                    [example]="playingItem()!.support![playingLibrary()!].line !== undefined ? playingItem()!.name : undefined">
+                </div>
+            }
+        </div>
+    }
 
-    <div #maplibreContainer *ngIf="playingLibrary() === WebMappingLibrary().MAPLIBRE" class="h-full w-full">
-        @defer (on viewport(maplibreContainer)) {
-        <div class="map maplibre h-full w-full"
-            [example]="playingItem()!.support![playingLibrary()!].line !== undefined ? playingItem()!.name : undefined"></div>
-        }
-    </div>
+    @if (playingLibrary() === WebMappingLibrary().MAPLIBRE) {
+        <div #maplibreContainer class="h-full w-full">
+            @defer (on viewport(maplibreContainer)) {
+                <div class="map maplibre h-full w-full"
+                    [example]="playingItem()!.support![playingLibrary()!].line !== undefined ? playingItem()!.name : undefined">
+                </div>
+            }
+        </div>
+    }
 
-    <div #cesiumContainer *ngIf="playingLibrary() === WebMappingLibrary().CESIUM" class="h-full w-full">
-        @defer (on viewport(cesiumContainer)) {
-        <div class="map cesium h-full w-full"
-            [example]="playingItem()!.support![playingLibrary()!].line !== undefined ? playingItem()!.name : undefined"></div>
-        }
-    </div>
+    @if (playingLibrary() === WebMappingLibrary().CESIUM) {
+        <div #cesiumContainer class="h-full w-full">
+            @defer (on viewport(cesiumContainer)) {
+                <div class="map cesium h-full w-full"
+                    [example]="playingItem()!.support![playingLibrary()!].line !== undefined ? playingItem()!.name : undefined">
+                </div>
+            }
+        </div>
+    }
 </dialog>
