@@ -8801,7 +8801,7 @@ export namespace IntersectionTests {
     /**
      * Computes the intersection of a ray and a triangle as a parametric distance along the input ray. The result is negative when the triangle is behind the ray.
      *
-     * Implements {@link https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf|
+     * Implements {@link https://cadxfem.org/inf/Fast MinimumStorage RayTriangle Intersection.pdf|
      * Fast Minimum Storage Ray/Triangle Intersection} by Tomas Moller and Ben Trumbore.
      * @param ray - The ray.
      * @param p0 - The first vertex of the triangle.
@@ -8815,7 +8815,7 @@ export namespace IntersectionTests {
     /**
      * Computes the intersection of a ray and a triangle as a Cartesian3 coordinate.
      *
-     * Implements {@link https://cadxfem.org/inf/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf|
+     * Implements {@link https://cadxfem.org/inf/Fast MinimumStorage RayTriangle Intersection.pdf|
      * Fast Minimum Storage Ray/Triangle Intersection} by Tomas Moller and Ben Trumbore.
      * @param ray - The ray.
      * @param p0 - The first vertex of the triangle.
@@ -19064,6 +19064,15 @@ export function srgbToLinear(value: number): number;
  * @param numberOfArrays - The number of arrays to divide the provided array into.
  */
 export function subdivideArray(array: any[], numberOfArrays: number): void;
+
+/**
+ * Computes dimensions for text, based on current canvas state.
+ *
+ * Rounds metrics, excluding width, to whole pixels. This is purely to minimize
+ * rendering differences with migration to in-browser measureText(), and may be
+ * revised in the future. See: github.com/CesiumGS/cesium/pull/13081
+ */
+export function measureText(): void;
 
 /**
  * Writes the given text into a new canvas.  The canvas will be sized to fit the text.
@@ -32282,7 +32291,7 @@ export namespace DynamicEnvironmentMapManager {
     /**
      * Options for the DynamicEnvironmentMapManager constructor
      * @property [enabled = true] - If true, the environment map and related properties will continue to update.
-     * @property [mipmapLevels = 7] - The number of mipmap levels to generate for specular maps. More mipmap levels will produce a higher resolution specular reflection.
+     * @property [mipmapLevels = 7] - The maximum desired number of mipmap levels to generate for specular maps. More mipmap levels will produce a higher resolution specular reflection. The actual number of mipmaps used will be bounded by the cubemap texture size supported on the client machine. The number of mipmaps must be at least one for the environment map to be generated.
      * @property [maximumSecondsDifference = 3600] - The maximum amount of elapsed seconds before a new environment map is created.
      * @property [maximumPositionEpsilon = 1000] - The maximum difference in position before a new environment map is created, in meters. Small differences in position will not visibly affect results.
      * @property [atmosphereScatteringIntensity = 2.0] - The intensity of the scattered light emitted from the atmosphere. This should be adjusted relative to the value of {@link Scene.light} intensity.
@@ -37314,6 +37323,11 @@ export namespace MaterialAppearance {
 }
 
 /**
+ * Gets or sets the nearest sampling flag.
+ */
+export var nearestSampling: boolean;
+
+/**
  * A metadata class.
  *
  * <p>
@@ -41206,7 +41220,7 @@ export class PostProcessStageCollection {
     readonly length: number;
     /**
      * Specifies the tonemapping algorithm used when rendering with high dynamic range.
-     * {@link https://sandcastle.cesium.com/?src=High%20Dynamic%20Range.html|Sandcastle Demo}
+     * {@link https://sandcastle.cesium.com/?id=high-dynamic-range|Sandcastle Demo}
      * @example
      * viewer.scene.postProcessStages.tonemapper = Cesium.Tonemapper.ACES;
      */
