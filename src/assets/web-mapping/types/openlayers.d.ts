@@ -84,7 +84,6 @@ declare class Disposable {
      */
     protected disposeInternal(): void;
 }
-//# sourceMappingURL=Disposable.d.ts.map
 
 type EventTargetLike = EventTarget | Target;
 /**
@@ -2503,7 +2502,6 @@ declare class Circle extends SimpleGeometry {
      */
     setRadius(radius: number): void;
 }
-//# sourceMappingURL=Circle.d.ts.map
 
 /**
  * An array of numbers representing an `xy`, `xyz` or `xyzm` coordinate.
@@ -3543,7 +3541,6 @@ declare class GeometryCollection$1 extends Geometry$1 {
      */
     setGeometriesArray(geometries: Array<Geometry$1>): void;
 }
-//# sourceMappingURL=GeometryCollection.d.ts.map
 
 /**
  * @classdesc
@@ -3605,7 +3602,6 @@ declare class LinearRing extends SimpleGeometry {
      */
     override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout): void;
 }
-//# sourceMappingURL=LinearRing.d.ts.map
 
 /**
  * @classdesc
@@ -3724,7 +3720,6 @@ declare class LineString$1 extends SimpleGeometry {
      */
     override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout): void;
 }
-//# sourceMappingURL=LineString.d.ts.map
 
 /**
  * @classdesc
@@ -3842,7 +3837,6 @@ declare class MultiLineString$1 extends SimpleGeometry {
      */
     override setCoordinates(coordinates: Array<Array<Coordinate>>, layout?: GeometryLayout): void;
 }
-//# sourceMappingURL=MultiLineString.d.ts.map
 
 /**
  * @classdesc
@@ -3871,7 +3865,6 @@ declare class Point$2 extends SimpleGeometry {
      */
     override getCoordinates(): Coordinate;
 }
-//# sourceMappingURL=Point.d.ts.map
 
 /**
  * @classdesc
@@ -3928,7 +3921,6 @@ declare class MultiPoint$1 extends SimpleGeometry {
      */
     override setCoordinates(coordinates: Array<Coordinate>, layout?: GeometryLayout): void;
 }
-//# sourceMappingURL=MultiPoint.d.ts.map
 
 /**
  * @classdesc
@@ -4210,7 +4202,6 @@ declare class MultiPolygon$1 extends SimpleGeometry {
      */
     override setCoordinates(coordinates: Array<Array<Array<Coordinate>>>, layout?: GeometryLayout): void;
 }
-//# sourceMappingURL=MultiPolygon.d.ts.map
 
 /**
  * Return the color as an rgba string.
@@ -7608,7 +7599,6 @@ declare class VectorContext {
      */
     setTextStyle(textStyle: Text$1, declutterImageWithText?: DeclutterImageWithText): void;
 }
-//# sourceMappingURL=VectorContext.d.ts.map
 
 declare class BuilderGroup {
     /**
@@ -7656,7 +7646,6 @@ declare class BuilderGroup {
      */
     getBuilder(zIndex: number | undefined, builderType: BuilderType): VectorContext;
 }
-//# sourceMappingURL=BuilderGroup.d.ts.map
 
 /**
  * @param {import("../Feature.js").FeatureLike} feature1 Feature 1.
@@ -7824,7 +7813,6 @@ declare class MapEvent extends BaseEvent {
      */
     frameState: FrameState | null;
 }
-//# sourceMappingURL=MapEvent.d.ts.map
 
 /**
  * @classdesc
@@ -7889,7 +7877,6 @@ declare class MapBrowserEvent<EVENT extends PointerEvent | KeyboardEvent | Wheel
      */
     get coordinate(): Coordinate;
 }
-//# sourceMappingURL=MapBrowserEvent.d.ts.map
 
 /**
  * *
@@ -9037,7 +9024,6 @@ declare class ImageTile extends Tile$1 {
      */
     private unlistenImage_;
 }
-//# sourceMappingURL=ImageTile.d.ts.map
 
 type Options$1F = {
     /**
@@ -11737,75 +11723,887 @@ declare class DataTileSource<TileType extends Tile$1 = DataTile> extends TileSou
 }
 
 /**
- * @typedef Slice
+ * @typedef {Object} Slice
  * @property {number} offset
  * @property {number} length
  */
+/** @typedef {Slice & {data: ArrayBufferLike}} SliceWithData */
 declare class BaseSource {
     /**
      * @param {Array<Slice>} slices
      * @param {AbortSignal} [signal]
-     * @returns {Promise<*[]>}
+     * @returns {Promise<ArrayBufferLike[]>}
      */
-    fetch(slices: Array<Slice>, signal?: AbortSignal): Promise<any[]>;
+    fetch(slices: Array<Slice>, signal?: AbortSignal): Promise<ArrayBufferLike[]>;
     /**
      * @param {Slice} slice
      * @param {AbortSignal} [_signal]
-     * @returns {Promise<*>}
+     * @returns {Promise<SliceWithData>}
      */
-    fetchSlice(slice: Slice, _signal?: AbortSignal): Promise<any>;
+    fetchSlice(slice: Slice, _signal?: AbortSignal): Promise<SliceWithData>;
     /**
      * Returns the filesize if already determined and null otherwise
+     * @returns {number|null}
      */
-    get fileSize(): null;
+    get fileSize(): number | null;
     close(): Promise<void>;
 }
 type Slice = {
     offset: number;
     length: number;
 };
+type SliceWithData = Slice & {
+    data: ArrayBufferLike;
+};
 
+declare namespace fieldTypes {
+    let BYTE: 1;
+    let ASCII: 2;
+    let SHORT: 3;
+    let LONG: 4;
+    let RATIONAL: 5;
+    let SBYTE: 6;
+    let UNDEFINED: 7;
+    let SSHORT: 8;
+    let SLONG: 9;
+    let SRATIONAL: 10;
+    let FLOAT: 11;
+    let DOUBLE: 12;
+    let IFD: 13;
+    let LONG8: 16;
+    let SLONG8: 17;
+    let IFD8: 18;
+}
+declare namespace tagDictionary {
+    namespace NewSubfileType {
+        export let tag: 254;
+        import type = fieldTypes.LONG;
+        export { type };
+        export let eager: true;
+    }
+    namespace SubfileType {
+        let tag_1: 255;
+        export { tag_1 as tag };
+        import type_1 = fieldTypes.SHORT;
+        export { type_1 as type };
+        let eager_1: true;
+        export { eager_1 as eager };
+    }
+    namespace ImageWidth {
+        let tag_2: 256;
+        export { tag_2 as tag };
+        import type_2 = fieldTypes.SHORT;
+        export { type_2 as type };
+        let eager_2: true;
+        export { eager_2 as eager };
+    }
+    namespace ImageLength {
+        let tag_3: 257;
+        export { tag_3 as tag };
+        import type_3 = fieldTypes.SHORT;
+        export { type_3 as type };
+        let eager_3: true;
+        export { eager_3 as eager };
+    }
+    namespace BitsPerSample {
+        let tag_4: 258;
+        export { tag_4 as tag };
+        import type_4 = fieldTypes.SHORT;
+        export { type_4 as type };
+        export let isArray: true;
+        let eager_4: true;
+        export { eager_4 as eager };
+    }
+    namespace Compression {
+        let tag_5: 259;
+        export { tag_5 as tag };
+        import type_5 = fieldTypes.SHORT;
+        export { type_5 as type };
+        let eager_5: true;
+        export { eager_5 as eager };
+    }
+    namespace PhotometricInterpretation {
+        let tag_6: 262;
+        export { tag_6 as tag };
+        import type_6 = fieldTypes.SHORT;
+        export { type_6 as type };
+        let eager_6: true;
+        export { eager_6 as eager };
+    }
+    namespace Threshholding {
+        let tag_7: 263;
+        export { tag_7 as tag };
+        import type_7 = fieldTypes.SHORT;
+        export { type_7 as type };
+    }
+    namespace CellWidth {
+        let tag_8: 264;
+        export { tag_8 as tag };
+        import type_8 = fieldTypes.SHORT;
+        export { type_8 as type };
+    }
+    namespace CellLength {
+        let tag_9: 265;
+        export { tag_9 as tag };
+        import type_9 = fieldTypes.SHORT;
+        export { type_9 as type };
+    }
+    namespace FillOrder {
+        let tag_10: 266;
+        export { tag_10 as tag };
+        import type_10 = fieldTypes.SHORT;
+        export { type_10 as type };
+    }
+    namespace DocumentName {
+        let tag_11: 269;
+        export { tag_11 as tag };
+        import type_11 = fieldTypes.ASCII;
+        export { type_11 as type };
+    }
+    namespace ImageDescription {
+        let tag_12: 270;
+        export { tag_12 as tag };
+        import type_12 = fieldTypes.ASCII;
+        export { type_12 as type };
+    }
+    namespace Make {
+        let tag_13: 271;
+        export { tag_13 as tag };
+        import type_13 = fieldTypes.ASCII;
+        export { type_13 as type };
+    }
+    namespace Model {
+        let tag_14: 272;
+        export { tag_14 as tag };
+        import type_14 = fieldTypes.ASCII;
+        export { type_14 as type };
+    }
+    namespace StripOffsets {
+        let tag_15: 273;
+        export { tag_15 as tag };
+        import type_15 = fieldTypes.SHORT;
+        export { type_15 as type };
+        let isArray_1: true;
+        export { isArray_1 as isArray };
+    }
+    namespace Orientation {
+        let tag_16: 274;
+        export { tag_16 as tag };
+        import type_16 = fieldTypes.SHORT;
+        export { type_16 as type };
+    }
+    namespace SamplesPerPixel {
+        let tag_17: 277;
+        export { tag_17 as tag };
+        import type_17 = fieldTypes.SHORT;
+        export { type_17 as type };
+        let eager_7: true;
+        export { eager_7 as eager };
+    }
+    namespace RowsPerStrip {
+        let tag_18: 278;
+        export { tag_18 as tag };
+        import type_18 = fieldTypes.SHORT;
+        export { type_18 as type };
+        let eager_8: true;
+        export { eager_8 as eager };
+    }
+    namespace StripByteCounts {
+        let tag_19: 279;
+        export { tag_19 as tag };
+        import type_19 = fieldTypes.LONG;
+        export { type_19 as type };
+        let isArray_2: true;
+        export { isArray_2 as isArray };
+    }
+    namespace MinSampleValue {
+        let tag_20: 280;
+        export { tag_20 as tag };
+        import type_20 = fieldTypes.SHORT;
+        export { type_20 as type };
+        let isArray_3: true;
+        export { isArray_3 as isArray };
+    }
+    namespace MaxSampleValue {
+        let tag_21: 281;
+        export { tag_21 as tag };
+        import type_21 = fieldTypes.SHORT;
+        export { type_21 as type };
+        let isArray_4: true;
+        export { isArray_4 as isArray };
+    }
+    namespace XResolution {
+        let tag_22: 282;
+        export { tag_22 as tag };
+        import type_22 = fieldTypes.RATIONAL;
+        export { type_22 as type };
+    }
+    namespace YResolution {
+        let tag_23: 283;
+        export { tag_23 as tag };
+        import type_23 = fieldTypes.RATIONAL;
+        export { type_23 as type };
+    }
+    namespace PlanarConfiguration {
+        let tag_24: 284;
+        export { tag_24 as tag };
+        import type_24 = fieldTypes.SHORT;
+        export { type_24 as type };
+        let eager_9: true;
+        export { eager_9 as eager };
+    }
+    namespace PageName {
+        let tag_25: 285;
+        export { tag_25 as tag };
+        import type_25 = fieldTypes.ASCII;
+        export { type_25 as type };
+    }
+    namespace XPosition {
+        let tag_26: 286;
+        export { tag_26 as tag };
+        import type_26 = fieldTypes.RATIONAL;
+        export { type_26 as type };
+    }
+    namespace YPosition {
+        let tag_27: 287;
+        export { tag_27 as tag };
+        import type_27 = fieldTypes.RATIONAL;
+        export { type_27 as type };
+    }
+    namespace FreeOffsets {
+        let tag_28: 288;
+        export { tag_28 as tag };
+        import type_28 = fieldTypes.LONG;
+        export { type_28 as type };
+    }
+    namespace FreeByteCounts {
+        let tag_29: 289;
+        export { tag_29 as tag };
+        import type_29 = fieldTypes.LONG;
+        export { type_29 as type };
+    }
+    namespace GrayResponseUnit {
+        let tag_30: 290;
+        export { tag_30 as tag };
+        import type_30 = fieldTypes.SHORT;
+        export { type_30 as type };
+    }
+    namespace GrayResponseCurve {
+        let tag_31: 291;
+        export { tag_31 as tag };
+        import type_31 = fieldTypes.SHORT;
+        export { type_31 as type };
+        let isArray_5: true;
+        export { isArray_5 as isArray };
+    }
+    namespace T4Options {
+        let tag_32: 292;
+        export { tag_32 as tag };
+        import type_32 = fieldTypes.LONG;
+        export { type_32 as type };
+    }
+    namespace T6Options {
+        let tag_33: 293;
+        export { tag_33 as tag };
+        import type_33 = fieldTypes.LONG;
+        export { type_33 as type };
+    }
+    namespace ResolutionUnit {
+        let tag_34: 296;
+        export { tag_34 as tag };
+        import type_34 = fieldTypes.SHORT;
+        export { type_34 as type };
+    }
+    namespace PageNumber {
+        let tag_35: 297;
+        export { tag_35 as tag };
+        import type_35 = fieldTypes.SHORT;
+        export { type_35 as type };
+        let isArray_6: true;
+        export { isArray_6 as isArray };
+    }
+    namespace TransferFunction {
+        let tag_36: 301;
+        export { tag_36 as tag };
+        import type_36 = fieldTypes.SHORT;
+        export { type_36 as type };
+        let isArray_7: true;
+        export { isArray_7 as isArray };
+    }
+    namespace Software {
+        let tag_37: 305;
+        export { tag_37 as tag };
+        import type_37 = fieldTypes.ASCII;
+        export { type_37 as type };
+    }
+    namespace DateTime {
+        let tag_38: 306;
+        export { tag_38 as tag };
+        import type_38 = fieldTypes.ASCII;
+        export { type_38 as type };
+    }
+    namespace Artist {
+        let tag_39: 315;
+        export { tag_39 as tag };
+        import type_39 = fieldTypes.ASCII;
+        export { type_39 as type };
+    }
+    namespace HostComputer {
+        let tag_40: 316;
+        export { tag_40 as tag };
+        import type_40 = fieldTypes.ASCII;
+        export { type_40 as type };
+    }
+    namespace Predictor {
+        let tag_41: 317;
+        export { tag_41 as tag };
+        import type_41 = fieldTypes.SHORT;
+        export { type_41 as type };
+    }
+    namespace WhitePoint {
+        let tag_42: 318;
+        export { tag_42 as tag };
+        import type_42 = fieldTypes.RATIONAL;
+        export { type_42 as type };
+        let isArray_8: true;
+        export { isArray_8 as isArray };
+    }
+    namespace PrimaryChromaticities {
+        let tag_43: 319;
+        export { tag_43 as tag };
+        import type_43 = fieldTypes.RATIONAL;
+        export { type_43 as type };
+        let isArray_9: true;
+        export { isArray_9 as isArray };
+    }
+    namespace ColorMap {
+        let tag_44: 320;
+        export { tag_44 as tag };
+        import type_44 = fieldTypes.SHORT;
+        export { type_44 as type };
+        let isArray_10: true;
+        export { isArray_10 as isArray };
+    }
+    namespace HalftoneHints {
+        let tag_45: 321;
+        export { tag_45 as tag };
+        import type_45 = fieldTypes.SHORT;
+        export { type_45 as type };
+        let isArray_11: true;
+        export { isArray_11 as isArray };
+    }
+    namespace TileWidth {
+        let tag_46: 322;
+        export { tag_46 as tag };
+        import type_46 = fieldTypes.SHORT;
+        export { type_46 as type };
+        let eager_10: true;
+        export { eager_10 as eager };
+    }
+    namespace TileLength {
+        let tag_47: 323;
+        export { tag_47 as tag };
+        import type_47 = fieldTypes.SHORT;
+        export { type_47 as type };
+        let eager_11: true;
+        export { eager_11 as eager };
+    }
+    namespace TileOffsets {
+        let tag_48: 324;
+        export { tag_48 as tag };
+        import type_48 = fieldTypes.LONG;
+        export { type_48 as type };
+        let isArray_12: true;
+        export { isArray_12 as isArray };
+    }
+    namespace TileByteCounts {
+        let tag_49: 325;
+        export { tag_49 as tag };
+        import type_49 = fieldTypes.SHORT;
+        export { type_49 as type };
+        let isArray_13: true;
+        export { isArray_13 as isArray };
+    }
+    namespace InkSet {
+        let tag_50: 332;
+        export { tag_50 as tag };
+        import type_50 = fieldTypes.SHORT;
+        export { type_50 as type };
+    }
+    namespace InkNames {
+        let tag_51: 333;
+        export { tag_51 as tag };
+        import type_51 = fieldTypes.ASCII;
+        export { type_51 as type };
+    }
+    namespace NumberOfInks {
+        let tag_52: 334;
+        export { tag_52 as tag };
+        import type_52 = fieldTypes.SHORT;
+        export { type_52 as type };
+    }
+    namespace DotRange {
+        let tag_53: 336;
+        export { tag_53 as tag };
+        import type_53 = fieldTypes.BYTE;
+        export { type_53 as type };
+        let isArray_14: true;
+        export { isArray_14 as isArray };
+    }
+    namespace TargetPrinter {
+        let tag_54: 337;
+        export { tag_54 as tag };
+        import type_54 = fieldTypes.ASCII;
+        export { type_54 as type };
+    }
+    namespace ExtraSamples {
+        let tag_55: 338;
+        export { tag_55 as tag };
+        import type_55 = fieldTypes.BYTE;
+        export { type_55 as type };
+        let isArray_15: true;
+        export { isArray_15 as isArray };
+        let eager_12: true;
+        export { eager_12 as eager };
+    }
+    namespace SampleFormat {
+        let tag_56: 339;
+        export { tag_56 as tag };
+        import type_56 = fieldTypes.SHORT;
+        export { type_56 as type };
+        let isArray_16: true;
+        export { isArray_16 as isArray };
+        let eager_13: true;
+        export { eager_13 as eager };
+    }
+    namespace SMinSampleValue {
+        let tag_57: 340;
+        export { tag_57 as tag };
+        let isArray_17: true;
+        export { isArray_17 as isArray };
+    }
+    namespace SMaxSampleValue {
+        let tag_58: 341;
+        export { tag_58 as tag };
+        let isArray_18: true;
+        export { isArray_18 as isArray };
+    }
+    namespace TransferRange {
+        let tag_59: 342;
+        export { tag_59 as tag };
+        import type_57 = fieldTypes.SHORT;
+        export { type_57 as type };
+        let isArray_19: true;
+        export { isArray_19 as isArray };
+    }
+    namespace JPEGProc {
+        let tag_60: 512;
+        export { tag_60 as tag };
+        import type_58 = fieldTypes.SHORT;
+        export { type_58 as type };
+    }
+    namespace JPEGInterchangeFormat {
+        let tag_61: 513;
+        export { tag_61 as tag };
+        import type_59 = fieldTypes.LONG;
+        export { type_59 as type };
+    }
+    namespace JPEGInterchangeFormatLngth {
+        let tag_62: 514;
+        export { tag_62 as tag };
+        import type_60 = fieldTypes.LONG;
+        export { type_60 as type };
+    }
+    namespace JPEGRestartInterval {
+        let tag_63: 515;
+        export { tag_63 as tag };
+        import type_61 = fieldTypes.SHORT;
+        export { type_61 as type };
+    }
+    namespace JPEGLosslessPredictors {
+        let tag_64: 517;
+        export { tag_64 as tag };
+        import type_62 = fieldTypes.SHORT;
+        export { type_62 as type };
+        let isArray_20: true;
+        export { isArray_20 as isArray };
+    }
+    namespace JPEGPointTransforms {
+        let tag_65: 518;
+        export { tag_65 as tag };
+        import type_63 = fieldTypes.SHORT;
+        export { type_63 as type };
+        let isArray_21: true;
+        export { isArray_21 as isArray };
+    }
+    namespace JPEGQTables {
+        let tag_66: 519;
+        export { tag_66 as tag };
+        import type_64 = fieldTypes.LONG;
+        export { type_64 as type };
+        let isArray_22: true;
+        export { isArray_22 as isArray };
+    }
+    namespace JPEGDCTables {
+        let tag_67: 520;
+        export { tag_67 as tag };
+        import type_65 = fieldTypes.LONG;
+        export { type_65 as type };
+        let isArray_23: true;
+        export { isArray_23 as isArray };
+    }
+    namespace JPEGACTables {
+        let tag_68: 521;
+        export { tag_68 as tag };
+        import type_66 = fieldTypes.LONG;
+        export { type_66 as type };
+        let isArray_24: true;
+        export { isArray_24 as isArray };
+    }
+    namespace YCbCrCoefficients {
+        let tag_69: 529;
+        export { tag_69 as tag };
+        import type_67 = fieldTypes.RATIONAL;
+        export { type_67 as type };
+        let isArray_25: true;
+        export { isArray_25 as isArray };
+    }
+    namespace YCbCrSubSampling {
+        let tag_70: 530;
+        export { tag_70 as tag };
+        import type_68 = fieldTypes.SHORT;
+        export { type_68 as type };
+        let isArray_26: true;
+        export { isArray_26 as isArray };
+    }
+    namespace YCbCrPositioning {
+        let tag_71: 531;
+        export { tag_71 as tag };
+        import type_69 = fieldTypes.SHORT;
+        export { type_69 as type };
+    }
+    namespace ReferenceBlackWhite {
+        let tag_72: 532;
+        export { tag_72 as tag };
+        import type_70 = fieldTypes.LONG;
+        export { type_70 as type };
+        let isArray_27: true;
+        export { isArray_27 as isArray };
+    }
+    namespace Copyright {
+        let tag_73: 33432;
+        export { tag_73 as tag };
+        import type_71 = fieldTypes.ASCII;
+        export { type_71 as type };
+    }
+    namespace BadFaxLines {
+        let tag_74: 326;
+        export { tag_74 as tag };
+    }
+    namespace CleanFaxData {
+        let tag_75: 327;
+        export { tag_75 as tag };
+    }
+    namespace ClipPath {
+        let tag_76: 343;
+        export { tag_76 as tag };
+    }
+    namespace ConsecutiveBadFaxLines {
+        let tag_77: 328;
+        export { tag_77 as tag };
+    }
+    namespace Decode {
+        let tag_78: 433;
+        export { tag_78 as tag };
+    }
+    namespace DefaultImageColor {
+        let tag_79: 434;
+        export { tag_79 as tag };
+    }
+    namespace Indexed {
+        let tag_80: 346;
+        export { tag_80 as tag };
+    }
+    namespace JPEGTables {
+        let tag_81: 347;
+        export { tag_81 as tag };
+        let isArray_28: true;
+        export { isArray_28 as isArray };
+        let eager_14: true;
+        export { eager_14 as eager };
+    }
+    namespace StripRowCounts {
+        let tag_82: 559;
+        export { tag_82 as tag };
+        let isArray_29: true;
+        export { isArray_29 as isArray };
+    }
+    namespace SubIFDs {
+        let tag_83: 330;
+        export { tag_83 as tag };
+        let isArray_30: true;
+        export { isArray_30 as isArray };
+    }
+    namespace XClipPathUnits {
+        let tag_84: 344;
+        export { tag_84 as tag };
+    }
+    namespace YClipPathUnits {
+        let tag_85: 345;
+        export { tag_85 as tag };
+    }
+    namespace ApertureValue {
+        let tag_86: 37378;
+        export { tag_86 as tag };
+    }
+    namespace ColorSpace {
+        let tag_87: 40961;
+        export { tag_87 as tag };
+    }
+    namespace DateTimeDigitized {
+        let tag_88: 36868;
+        export { tag_88 as tag };
+    }
+    namespace DateTimeOriginal {
+        let tag_89: 36867;
+        export { tag_89 as tag };
+    }
+    namespace ExifIFD {
+        let tag_90: 34665;
+        export { tag_90 as tag };
+        export let name: "Exif IFD";
+        import type_72 = fieldTypes.LONG;
+        export { type_72 as type };
+    }
+    namespace ExifVersion {
+        let tag_91: 36864;
+        export { tag_91 as tag };
+    }
+    namespace ExposureTime {
+        let tag_92: 33434;
+        export { tag_92 as tag };
+    }
+    namespace FileSource {
+        let tag_93: 41728;
+        export { tag_93 as tag };
+    }
+    namespace Flash {
+        let tag_94: 37385;
+        export { tag_94 as tag };
+    }
+    namespace FlashpixVersion {
+        let tag_95: 40960;
+        export { tag_95 as tag };
+    }
+    namespace FNumber {
+        let tag_96: 33437;
+        export { tag_96 as tag };
+    }
+    namespace ImageUniqueID {
+        let tag_97: 42016;
+        export { tag_97 as tag };
+    }
+    namespace LightSource {
+        let tag_98: 37384;
+        export { tag_98 as tag };
+    }
+    namespace MakerNote {
+        let tag_99: 37500;
+        export { tag_99 as tag };
+    }
+    namespace ShutterSpeedValue {
+        let tag_100: 37377;
+        export { tag_100 as tag };
+    }
+    namespace UserComment {
+        let tag_101: 37510;
+        export { tag_101 as tag };
+    }
+    namespace IPTC {
+        let tag_102: 33723;
+        export { tag_102 as tag };
+    }
+    namespace CZ_LSMINFO {
+        let tag_103: 34412;
+        export { tag_103 as tag };
+    }
+    namespace ICCProfile {
+        let tag_104: 34675;
+        export { tag_104 as tag };
+        let name_1: "ICC Profile";
+        export { name_1 as name };
+    }
+    namespace XMP {
+        let tag_105: 700;
+        export { tag_105 as tag };
+    }
+    namespace GDAL_METADATA {
+        let tag_106: 42112;
+        export { tag_106 as tag };
+    }
+    namespace GDAL_NODATA {
+        let tag_107: 42113;
+        export { tag_107 as tag };
+        import type_73 = fieldTypes.ASCII;
+        export { type_73 as type };
+        let eager_15: true;
+        export { eager_15 as eager };
+    }
+    namespace Photoshop {
+        let tag_108: 34377;
+        export { tag_108 as tag };
+    }
+    namespace ModelPixelScale {
+        let tag_109: 33550;
+        export { tag_109 as tag };
+        import type_74 = fieldTypes.DOUBLE;
+        export { type_74 as type };
+        let isArray_31: true;
+        export { isArray_31 as isArray };
+        let eager_16: true;
+        export { eager_16 as eager };
+    }
+    namespace ModelTiepoint {
+        let tag_110: 33922;
+        export { tag_110 as tag };
+        import type_75 = fieldTypes.DOUBLE;
+        export { type_75 as type };
+        let isArray_32: true;
+        export { isArray_32 as isArray };
+        let eager_17: true;
+        export { eager_17 as eager };
+    }
+    namespace ModelTransformation {
+        let tag_111: 34264;
+        export { tag_111 as tag };
+        import type_76 = fieldTypes.DOUBLE;
+        export { type_76 as type };
+        let isArray_33: true;
+        export { isArray_33 as isArray };
+        let eager_18: true;
+        export { eager_18 as eager };
+    }
+    namespace GeoKeyDirectory {
+        let tag_112: 34735;
+        export { tag_112 as tag };
+        import type_77 = fieldTypes.SHORT;
+        export { type_77 as type };
+        let isArray_34: true;
+        export { isArray_34 as isArray };
+        let eager_19: true;
+        export { eager_19 as eager };
+    }
+    namespace GeoDoubleParams {
+        let tag_113: 34736;
+        export { tag_113 as tag };
+        import type_78 = fieldTypes.DOUBLE;
+        export { type_78 as type };
+        let isArray_35: true;
+        export { isArray_35 as isArray };
+        let eager_20: true;
+        export { eager_20 as eager };
+    }
+    namespace GeoAsciiParams {
+        let tag_114: 34737;
+        export { tag_114 as tag };
+        import type_79 = fieldTypes.ASCII;
+        export { type_79 as type };
+        let eager_21: true;
+        export { eager_21 as eager };
+    }
+    namespace LercParameters {
+        let tag_115: 50674;
+        export { tag_115 as tag };
+        let eager_22: true;
+        export { eager_22 as eager };
+    }
+}
+type FieldType = 4 | 2 | 7 | 8 | 1 | 3 | 5 | 6 | 9 | 10 | 11 | 12 | 13 | 16 | 17 | 18;
+type TagName = keyof typeof tagDictionary;
+type Tag = (typeof tagDictionary)[keyof typeof tagDictionary]["tag"];
+type EagerTagName = Extract<keyof typeof tagDictionary, { [K in keyof typeof tagDictionary]: (typeof tagDictionary)[K] extends {
+    eager: true;
+} ? K : never; }[keyof typeof tagDictionary]>;
+type EagerTag = Extract<Tag, { [K in keyof typeof tagDictionary]: (typeof tagDictionary)[K] extends {
+    eager: true;
+} ? (typeof tagDictionary)[K]["tag"] : never; }[keyof typeof tagDictionary]>;
+type TagDef<T extends TagName> = (typeof tagDictionary)[T];
+type FieldTypeMap = {
+    1: number;
+    2: string;
+    3: number;
+    4: number;
+    5: number;
+    6: number;
+    7: ArrayBuffer;
+    8: number;
+    9: number;
+    10: number;
+    11: number;
+    12: number;
+    16: number;
+    17: number;
+    18: number;
+};
+type TagValue<T extends TagName> = TagDef<T> extends {
+    isArray: true;
+} ? (TagDef<T> extends {
+    type: typeof fieldTypes.DOUBLE;
+} ? number[] : TagDef<T> extends {
+    type: typeof fieldTypes.ASCII;
+} ? string[] : TagDef<T> extends {
+    type: typeof fieldTypes.BYTE | typeof fieldTypes.SBYTE | typeof fieldTypes.UNDEFINED;
+} ? Uint8Array | Int8Array : (number[] | TypedArray)) : (TagDef<T> extends {
+    type: keyof FieldTypeMap;
+} ? FieldTypeMap[TagDef<T>["type"]] : any);
 type GeoKeyName = "GTModelTypeGeoKey" | "GTRasterTypeGeoKey" | "GTCitationGeoKey" | "GeographicTypeGeoKey" | "GeogCitationGeoKey" | "GeogGeodeticDatumGeoKey" | "GeogPrimeMeridianGeoKey" | "GeogLinearUnitsGeoKey" | "GeogLinearUnitSizeGeoKey" | "GeogAngularUnitsGeoKey" | "GeogAngularUnitSizeGeoKey" | "GeogEllipsoidGeoKey" | "GeogSemiMajorAxisGeoKey" | "GeogSemiMinorAxisGeoKey" | "GeogInvFlatteningGeoKey" | "GeogAzimuthUnitsGeoKey" | "GeogPrimeMeridianLongGeoKey" | "GeogTOWGS84GeoKey" | "ProjectedCSTypeGeoKey" | "PCSCitationGeoKey" | "ProjectionGeoKey" | "ProjCoordTransGeoKey" | "ProjLinearUnitsGeoKey" | "ProjLinearUnitSizeGeoKey" | "ProjStdParallel1GeoKey" | "ProjStdParallel2GeoKey" | "ProjNatOriginLongGeoKey" | "ProjNatOriginLatGeoKey" | "ProjFalseEastingGeoKey" | "ProjFalseNorthingGeoKey" | "ProjFalseOriginLongGeoKey" | "ProjFalseOriginLatGeoKey" | "ProjFalseOriginEastingGeoKey" | "ProjFalseOriginNorthingGeoKey" | "ProjCenterLongGeoKey" | "ProjCenterLatGeoKey" | "ProjCenterEastingGeoKey" | "ProjCenterNorthingGeoKey" | "ProjScaleAtNatOriginGeoKey" | "ProjScaleAtCenterGeoKey" | "ProjAzimuthAngleGeoKey" | "ProjStraightVertPoleLongGeoKey" | "ProjRectifiedGridAngleGeoKey" | "VerticalCSTypeGeoKey" | "VerticalCitationGeoKey" | "VerticalDatumGeoKey" | "VerticalUnitsGeoKey";
 
 declare class ImageFileDirectory {
     /**
      * Create an ImageFileDirectory.
-     * @param {Map} actualizedFields the file directory, mapping tag names to values
-     * @param {Map} deferredFields the deferred fields, mapping tag names to async functions
-     * @param {Map} deferredArrays the deferred arrays, mapping tag names to DeferredArray objects
+     * @param {Map<string|number, number|string|Array<number|string>>} actualizedFields the file directory,
+     * mapping tag names to values
+     * @param {Map<string|number, Function>} deferredFields the deferred fields, mapping tag names to async functions
+     * @param {Map<string|number, DeferredArray>} deferredArrays the deferred arrays, mapping tag names to
+     * DeferredArray objects
      * @param {number} nextIFDByteOffset the byte offset to the next IFD
      */
-    constructor(actualizedFields: Map<any, any>, deferredFields: Map<any, any>, deferredArrays: Map<any, any>, nextIFDByteOffset: number);
-    actualizedFields: Map<any, any>;
-    deferredFields: Map<any, any>;
+    constructor(actualizedFields: Map<string | number, number | string | Array<number | string>>, deferredFields: Map<string | number, Function>, deferredArrays: Map<string | number, DeferredArray>, nextIFDByteOffset: number);
+    actualizedFields: Map<string | number, string | number | (string | number)[]>;
+    deferredFields: Map<string | number, Function>;
     deferredFieldsBeingResolved: Map<any, any>;
-    deferredArrays: Map<any, any>;
+    deferredArrays: Map<string | number, DeferredArray>;
     nextIFDByteOffset: number;
     /**
-     * @param {number|string} tagIdentifier The field tag ID or name
+     * @param {import('./globals.js').TagName|number} tagIdentifier The field tag ID or name
      * @returns {boolean} whether the field exists (actualized or deferred)
      */
-    hasTag(tagIdentifier: number | string): boolean;
+    hasTag(tagIdentifier: TagName | number): boolean;
     /**
      * Synchronously retrieves the value for a given tag. If it is deferred, an error is thrown.
-     * @param {number|string} tagIdentifier The field tag ID or name
-     * @returns the field value, or undefined if it does not exist
+     * @template {import('./globals.js').EagerTagName | import('./globals.js').EagerTag} [T=any]
+     * @param {T} tagIdentifier The field tag ID or name
+     * @returns {T extends import('./globals.js').TagName ? (import('./globals.js').TagValue<T> | undefined) : any}
+     * the field value,
+     * or undefined if it does not exist
      * @throws {Error} If the tag is deferred and requires asynchronous loading
      */
-    getValue(tagIdentifier: number | string): any;
+    getValue<T extends EagerTagName | EagerTag = any>(tagIdentifier: T): T extends TagName ? (TagValue<T> | undefined) : any;
     /**
      * Retrieves the value for a given tag. If it is deferred, it will be loaded first.
-     * @param {number|string} tagIdentifier The field tag ID or name
-     * @returns the field value, or undefined if it does not exist
+     * @template {import('./globals.js').TagName} [T=any]
+     * @param {T|number} tagIdentifier The field tag ID or name
+     * @returns {Promise<T extends import('./globals.js').TagName ? (import('./globals.js').TagValue<T> | undefined) : any>}
+     *   the field value, or undefined if it does not exist
      */
-    loadValue(tagIdentifier: number | string): Promise<any>;
+    loadValue<T extends TagName = any>(tagIdentifier: T | number): Promise<T extends TagName ? (TagValue<T> | undefined) : any>;
     /**
      * Retrieves the value at a given index for a tag that is an array. If it is deferred, it will be loaded first.
      * @param {number|string} tagIdentifier The field tag ID or name
      * @param {number} index The index within the array
-     * @returns the field value at the given index, or undefined if it does not exist
+     * @returns {Promise<number|string|bigint|undefined>} the field value at the given index, or undefined if it does not exist
      */
-    loadValueIndexed(tagIdentifier: number | string, index: number): Promise<any>;
+    loadValueIndexed(tagIdentifier: number | string, index: number): Promise<number | string | bigint | undefined>;
     /**
      * Parses the GeoTIFF GeoKeyDirectory tag into a structured object.
      * The GeoKeyDirectory is a special TIFF tag that contains geographic metadata
@@ -11815,18 +12613,85 @@ declare class ImageFileDirectory {
      * @throws {Error} If a referenced geo key value cannot be retrieved
      */
     parseGeoKeyDirectory(): Partial<Record<GeoKeyName, any>> | null;
-    toObject(): {};
+    toObject(): Record<string, unknown>;
+}
+/**
+ * Lazily-loaded array for large TIFF field values that are fetched on-demand.
+ * Supports loading individual indices or the entire array. Uses a bitmap to track
+ * which values have been loaded to avoid redundant fetches.
+ */
+declare class DeferredArray {
+    /**
+     * Creates a DeferredArray for lazy-loading of large TIFF field arrays.
+     * @param {import("./source/basesource.js").BaseSource} source - Data source for fetching
+     * @param {number} arrayOffset - Byte offset where the array data starts
+     * @param {boolean} littleEndian - Endianness of the data
+     * @param {import('./globals.js').FieldType} fieldType - TIFF field type constant
+     * @param {number} length - Number of elements in the array
+     */
+    constructor(source: BaseSource, arrayOffset: number, littleEndian: boolean, fieldType: FieldType, length: number);
+    source: BaseSource;
+    arrayOffset: number;
+    littleEndian: boolean;
+    fieldType: FieldType;
+    length: number;
+    data: TypedArray | number[];
+    itemSize: number;
+    maskBitmap: Uint8Array<ArrayBuffer>;
+    fetchIndexPromises: Map<any, any>;
+    fullFetchPromise: Promise<Uint8Array<ArrayBufferLike> | Int8Array<ArrayBufferLike> | Uint16Array<ArrayBufferLike> | Int16Array<ArrayBufferLike> | Uint32Array<ArrayBufferLike> | Int32Array<ArrayBufferLike> | Float32Array<ArrayBufferLike> | Float64Array<ArrayBufferLike> | number[]> | null;
+    /**
+     * Loads all values in the deferred array at once.
+     * Subsequent calls return the same promise to avoid redundant fetches.
+     * @returns {Promise<import('./geotiff.js').TypedArray|Array<number>>} Promise resolving to the fully loaded array
+     */
+    loadAll(): Promise<TypedArray | Array<number>>;
+    /**
+     * Loads and returns a single value at the specified index.
+     * If the value is already loaded, returns it immediately. Otherwise, fetches it
+     * from the source. Multiple calls for the same index reuse the same promise.
+     * @param {number} index - Zero-based index of the value to load
+     * @returns {Promise<number|bigint>} Promise resolving to the value at the given index
+     * @throws {RangeError} If index is out of bounds
+     */
+    get(index: number): Promise<number | bigint>;
 }
 
+/**
+ * @typedef {Object} BaseDecoderParameters
+ * @property {number} tileWidth
+ * @property {number} tileHeight
+ * @property {number} predictor
+ * @property {number|number[]|import('../geotiff.js').TypedArray} bitsPerSample
+ * @property {number} planarConfiguration
+ * @property {number} [samplesPerPixel]
+ */
 declare class BaseDecoder {
-    constructor(parameters: any);
-    parameters: any;
+    /**
+     * @param {BaseDecoderParameters} parameters
+     */
+    constructor(parameters: BaseDecoderParameters);
+    parameters: BaseDecoderParameters;
     /**
      * @abstract
+     * @param {ArrayBufferLike} _buffer
+     * @returns {Promise<ArrayBufferLike>|ArrayBufferLike}
      */
-    decodeBlock(_buffer: any): void;
-    decode(buffer: any): Promise<any>;
+    decodeBlock(_buffer: ArrayBufferLike): Promise<ArrayBufferLike> | ArrayBufferLike;
+    /**
+     * @param {ArrayBufferLike} buffer
+     * @returns {Promise<ArrayBufferLike>}
+     */
+    decode(buffer: ArrayBufferLike): Promise<ArrayBufferLike>;
 }
+type BaseDecoderParameters = {
+    tileWidth: number;
+    tileHeight: number;
+    predictor: number;
+    bitsPerSample: number | number[] | TypedArray;
+    planarConfiguration: number;
+    samplesPerPixel?: number | undefined;
+};
 
 /**
  * Pool for workers to decode chunks of the images.
@@ -11863,9 +12728,12 @@ declare class Pool {
      */
     constructor(size?: number, createWorker?: () => Worker);
     workerWrappers: Promise<WorkerWrapper[]> | null;
-    bindParameters(compression: any, decoderParameters: any): {
-        decode: (buffer: any) => Promise<any>;
-    };
+    /**
+     * @param {number} compression
+     * @param {import('./compression/basedecoder.js').BaseDecoderParameters} decoderParameters
+     * @returns {import('./geotiff.js').DecoderWorker}
+     */
+    bindParameters(compression: number, decoderParameters: BaseDecoderParameters): DecoderWorker;
     destroy(): Promise<void>;
 }
 /**
@@ -11879,6 +12747,7 @@ declare class WorkerWrapper {
      * @param {Worker} worker the worker to wrap
      */
     constructor(worker: Worker);
+    /** @type {Worker} */
     worker: Worker;
     jobIdCounter: number;
     jobs: Map<any, any>;
@@ -11892,17 +12761,20 @@ declare class WorkerWrapper {
      * @returns {Number} the number of jobs currently running
      */
     getJobCount(): number;
-    _onWorkerMessage(e: any): void;
+    /** @param {MessageEvent} e */
+    _onWorkerMessage(e: MessageEvent): void;
     /**
      * Submit a job to the worker
-     * @param {Object} message the message to send to the worker. A "jobId" property will be added to this object.
-     * @param {Object[]} [transferables] an optional array of transferable objects to transfer to the worker.
-     * @returns {Promise} a promise that gets resolved/rejected when a message with the same jobId is received from the worker.
+     * @param {Record<string, unknown>} message the message to send to the worker. A "jobId" property will be added to this object.
+     * @param {Array<Transferable>} [transferables] an optional array of transferable objects to transfer to the worker.
+     * @returns {Promise<{decoded: ArrayBuffer}>} a promise that gets resolved/rejected when a message with the same jobId is
+     * received from the worker.
      */
-    submitJob(message: Object, transferables?: Object[]): Promise<any>;
+    submitJob(message: Record<string, unknown>, transferables?: Array<Transferable>): Promise<{
+        decoded: ArrayBuffer;
+    }>;
     terminate(): void;
 }
-//# sourceMappingURL=pool.d.ts.map
 
 /**
  * GeoTIFF sub-file image.
@@ -11910,7 +12782,7 @@ declare class WorkerWrapper {
 declare class GeoTIFFImage$1 {
     /**
      * @constructor
-     * @param {import("./imagefiledirectory").ImageFileDirectory} fileDirectory The parsed file directory
+     * @param {import("./imagefiledirectory.js").ImageFileDirectory} fileDirectory The parsed file directory
      * @param {Boolean} littleEndian Whether the file is encoded in little or big endian
      * @param {Boolean} cache Whether or not decoded tiles shall be cached
      * @param {import('./source/basesource.js').BaseSource} source The datasource to read from
@@ -11918,14 +12790,15 @@ declare class GeoTIFFImage$1 {
     constructor(fileDirectory: ImageFileDirectory, littleEndian: boolean, cache: boolean, source: BaseSource);
     fileDirectory: ImageFileDirectory;
     littleEndian: boolean;
-    tiles: {} | null;
+    /** @type {Array<Promise<ArrayBufferLike>>|null} */
+    tiles: Array<Promise<ArrayBufferLike>> | null;
     isTiled: boolean;
     /** @type {1 | 2} */
     planarConfiguration: 1 | 2;
     source: BaseSource;
     /**
      * Returns the associated parsed file directory.
-     * @returns {import("./imagefiledirectory").ImageFileDirectory} the parsed file directory
+     * @returns {import("./imagefiledirectory.js").ImageFileDirectory} the parsed file directory
      */
     getFileDirectory(): ImageFileDirectory;
     /**
@@ -11945,56 +12818,73 @@ declare class GeoTIFFImage$1 {
     getHeight(): number;
     /**
      * Returns the number of samples per pixel.
-     * @returns {Number} the number of samples per pixel
+     * @returns {number} the number of samples per pixel
      */
     getSamplesPerPixel(): number;
     /**
      * Returns the width of each tile.
-     * @returns {Number} the width of each tile
+     * @returns {number} the width of each tile
      */
     getTileWidth(): number;
     /**
      * Returns the height of each tile.
-     * @returns {Number} the height of each tile
+     * @returns {number} the height of each tile
      */
     getTileHeight(): number;
     getBlockWidth(): number;
-    getBlockHeight(y: any): number;
+    /**
+     * @param {number} y
+     * @returns {number}
+     */
+    getBlockHeight(y: number): number;
     /**
      * Calculates the number of bytes for each pixel across all samples. Only full
      * bytes are supported, an exception is thrown when this is not the case.
      * @returns {Number} the bytes per pixel
      */
     getBytesPerPixel(): number;
-    getSampleByteSize(i: any): number;
-    getReaderForSample(sampleIndex: any): (byteOffset: number, littleEndian?: boolean) => number;
-    getSampleFormat(sampleIndex?: number): any;
-    getBitsPerSample(sampleIndex?: number): any;
-    getArrayForSample(sampleIndex: any, size: any): Uint8Array<any> | Uint16Array<any> | Uint32Array<any> | Int8Array<any> | Int16Array<any> | Int32Array<any> | Float32Array<any> | Float64Array<any>;
+    /**
+     * @param {number} i
+     * @returns {number}
+     */
+    getSampleByteSize(i: number): number;
+    /**
+     * @param {number} sampleIndex
+     * @returns {(this: DataView, byteOffset: number, littleEndian: boolean) => number}
+     */
+    getReaderForSample(sampleIndex: number): (this: DataView, byteOffset: number, littleEndian: boolean) => number;
+    getSampleFormat(sampleIndex?: number): number;
+    getBitsPerSample(sampleIndex?: number): number;
+    /**
+     * @param {number} sampleIndex
+     * @param {number|ArrayBufferLike} sizeOrData
+     * @returns {TypedArray}
+     */
+    getArrayForSample(sampleIndex: number, sizeOrData: number | ArrayBufferLike): TypedArray;
     /**
      * Returns the decoded strip or tile.
      * @param {Number} x the strip or tile x-offset
      * @param {Number} y the tile y-offset (0 for stripped images)
      * @param {Number} sample the sample to get for separated samples
-     * @param {DecoderWorker|import("./geotiff").BaseDecoder} poolOrDecoder the decoder or decoder pool
+     * @param {DecoderWorker|import("./geotiff.js").BaseDecoder} poolOrDecoder the decoder or decoder pool
      * @param {AbortSignal} [signal] An AbortSignal that may be signalled if the request is
      *                               to be aborted
-     * @returns {Promise.<{x: number, y: number, sample: number, data: ArrayBuffer}>} the decoded strip or tile
+     * @returns {Promise.<{x: number, y: number, sample: number, data: ArrayBufferLike}>} the decoded strip or tile
      */
     getTileOrStrip(x: number, y: number, sample: number, poolOrDecoder: DecoderWorker | BaseDecoder, signal?: AbortSignal): Promise<{
         x: number;
         y: number;
         sample: number;
-        data: ArrayBuffer;
+        data: ArrayBufferLike;
     }>;
     /**
      * Internal read function.
      * @private
-     * @param {Array} imageWindow The image window in pixel coordinates
-     * @param {Array} samples The selected samples (0-based indices)
+     * @param {Array<number>} imageWindow The image window in pixel coordinates
+     * @param {Array<number>} samples The selected samples (0-based indices)
      * @param {TypedArray|TypedArray[]} valueArrays The array(s) to write into
      * @param {boolean|undefined} interleave Whether or not to write in an interleaved manner
-     * @param {DecoderWorker|import("./geotiff").BaseDecoder} poolOrDecoder the decoder or decoder pool
+     * @param {DecoderWorker|import("./geotiff.js").BaseDecoder} poolOrDecoder the decoder or decoder pool
      * @param {number} [width] the width of window to be read into
      * @param {number} [height] the height of window to be read into
      * @param {string} [resampleMethod] the resampling method to be used when interpolating
@@ -12006,7 +12896,7 @@ declare class GeoTIFFImage$1 {
     /**
      * @overload
      * @param {ReadRastersOptions & {interleave: true}} options optional parameters
-     * @returns {Promise<import("./geotiff").TypedArrayWithDimensions>} the decoded arrays as a promise
+     * @returns {Promise<import("./geotiff.js").TypedArrayWithDimensions>} the decoded arrays as a promise
      */
     readRasters(options: ReadRastersOptions & {
         interleave: true;
@@ -12014,7 +12904,7 @@ declare class GeoTIFFImage$1 {
     /**
      * @overload
      * @param {ReadRastersOptions & {interleave: false}} options optional parameters
-     * @returns {Promise<import("./geotiff").TypedArrayArrayWithDimensions>} the decoded arrays as a promise
+     * @returns {Promise<import("./geotiff.js").TypedArrayArrayWithDimensions>} the decoded arrays as a promise
      */
     readRasters(options: ReadRastersOptions & {
         interleave: false;
@@ -12030,13 +12920,13 @@ declare class GeoTIFFImage$1 {
     /**
      * @overload
      * @param {ReadRastersOptions} [options={}] optional parameters
-     * @returns {Promise<import("./geotiff").TypedArrayArrayWithDimensions>} the decoded arrays as a promise
+     * @returns {Promise<import("./geotiff.js").TypedArrayArrayWithDimensions>} the decoded arrays as a promise
      */
     readRasters(options?: ReadRastersOptions | undefined): Promise<TypedArrayArrayWithDimensions>;
     /**
      * @overload
      * @param {ReadRGBOptions & {interleave: true}} options optional parameters
-     * @returns {Promise<import("./geotiff").TypedArrayWithDimensions>} the RGB array as a Promise
+     * @returns {Promise<import("./geotiff.js").TypedArrayWithDimensions>} the RGB array as a Promise
      */
     readRGB(options: ReadRGBOptions & {
         interleave: true;
@@ -12044,7 +12934,7 @@ declare class GeoTIFFImage$1 {
     /**
      * @overload
      * @param {ReadRGBOptions & {interleave: false}} options optional parameters
-     * @returns {Promise<import("./geotiff").TypedArrayArrayWithDimensions>} the RGB array as a Promise
+     * @returns {Promise<import("./geotiff.js").TypedArrayArrayWithDimensions>} the RGB array as a Promise
      */
     readRGB(options: ReadRGBOptions & {
         interleave: false;
@@ -12060,14 +12950,21 @@ declare class GeoTIFFImage$1 {
     /**
      * @overload
      * @param {ReadRGBOptions} [options={}] optional parameters
-     * @returns {Promise<import("./geotiff").TypedArrayArrayWithDimensions>} the RGB array as a Promise
+     * @returns {Promise<import("./geotiff.js").TypedArrayArrayWithDimensions>} the RGB array as a Promise
      */
     readRGB(options?: ReadRGBOptions | undefined): Promise<TypedArrayArrayWithDimensions>;
     /**
      * Returns an array of tiepoints.
-     * @returns {Promise<Object[]>}
+     * @returns {Promise<Array<{i: number, j: number, k: number, x: number, y: number, z: number}>>} the tiepoints
      */
-    getTiePoints(): Promise<Object[]>;
+    getTiePoints(): Promise<Array<{
+        i: number;
+        j: number;
+        k: number;
+        x: number;
+        y: number;
+        z: number;
+    }>>;
     /**
      * Returns the parsed GDAL metadata items.
      *
@@ -12075,9 +12972,9 @@ declare class GeoTIFFImage$1 {
      * Otherwise only metadata specific to the provided sample will be returned.
      *
      * @param {number|null} [sample=null] The sample index.
-     * @returns {Promise<Object>}
+     * @returns {Promise<Record<string, unknown>|null>} The GDAL metadata items
      */
-    getGDALMetadata(sample?: number | null): Promise<Object>;
+    getGDALMetadata(sample?: number | null): Promise<Record<string, unknown> | null>;
     /**
      * Returns the GDAL nodata value
      * @returns {number|null}
@@ -12113,7 +13010,6 @@ declare class GeoTIFFImage$1 {
      */
     getBoundingBox(tilegrid?: boolean): Array<number>;
 }
-//# sourceMappingURL=geotiffimage.d.ts.map
 
 type TypedArray = Uint8Array | Int8Array | Uint16Array | Int16Array | Uint32Array | Int32Array | Float32Array | Float64Array;
 type Dimensions = {
@@ -12146,7 +13042,7 @@ type DecoderWorker = {
     /**
      *   A function that takes a compressed buffer and returns a promise resolving to the decoded buffer.
      */
-    decode: (buffer: ArrayBuffer) => Promise<ArrayBuffer>;
+    decode: (buffer: ArrayBufferLike) => Promise<ArrayBufferLike>;
 };
 type ReadRastersOptions = {
     /**
@@ -14633,7 +15529,6 @@ declare class VectorTile$1<FeatureType extends FeatureLike> extends Tile$1 {
      */
     setLoader(loader: FeatureLoader<FeatureType>): void;
 }
-//# sourceMappingURL=VectorTile.d.ts.map
 
 declare class ExecutorGroup {
     /**
@@ -18007,7 +18902,6 @@ declare class Kinetic {
      */
     getAngle(): number;
 }
-//# sourceMappingURL=Kinetic.d.ts.map
 
 type Options$17 = {
     /**
@@ -19473,7 +20367,6 @@ declare class WebGLRenderTarget {
      */
     private updateSize_;
 }
-//# sourceMappingURL=RenderTarget.d.ts.map
 
 /**
  * @param {HTMLCanvasElement} canvas Canvas.
@@ -20292,7 +21185,6 @@ declare class LayerRenderer<LayerType extends Layer> extends Observable {
      */
     renderDeferred(frameState: FrameState): void;
 }
-//# sourceMappingURL=Layer.d.ts.map
 
 type PostProcessesOptions = {
     /**
@@ -23069,7 +23961,6 @@ declare class ImageLayer<ImageSourceType extends ImageSource> extends BaseImageL
      */
     constructor(options?: Options$X<ImageSourceType>);
 }
-//# sourceMappingURL=Image.d.ts.map
 
 /**
  * *
@@ -23728,7 +24619,6 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
      */
     private renderTileImage_;
 }
-//# sourceMappingURL=VectorTileLayer.d.ts.map
 
 /**
  * *
@@ -24063,7 +24953,6 @@ declare class TileLayer<TileSourceType extends TileSource = TileSource<Tile$1>> 
      */
     override createRenderer(): CanvasTileLayerRenderer<this>;
 }
-//# sourceMappingURL=Tile.d.ts.map
 
 type Options$T<VectorSourceType extends VectorSource<FeatureLike>> = {
     /**
@@ -24269,7 +25158,6 @@ declare class PaletteTexture {
      */
     delete(gl: WebGLRenderingContext): void;
 }
-//# sourceMappingURL=PaletteTexture.d.ts.map
 
 type LayerType$1 = FlowLayer;
 type Options$S = {
@@ -25516,7 +26404,6 @@ declare class CanvasImageLayerRenderer extends CanvasLayerRenderer<any> {
      */
     override renderFrame(frameState: FrameState, target: HTMLElement): HTMLElement;
 }
-//# sourceMappingURL=ImageLayer.d.ts.map
 
 /**
  * @classdesc
@@ -25567,7 +26454,6 @@ declare class CanvasVectorImageLayerRenderer extends CanvasImageLayerRenderer {
      */
     renderDeclutter(): void;
 }
-//# sourceMappingURL=VectorImageLayer.d.ts.map
 
 /**
  * @classdesc
@@ -25729,7 +26615,6 @@ declare class CanvasVectorLayerRenderer extends CanvasLayerRenderer<any> {
      */
     renderFeature(feature: Feature$1, squaredTolerance: number, styles: Style | Array<Style>, builderGroup: BuilderGroup, transform?: TransformFunction, declutter?: boolean, index?: number): boolean;
 }
-//# sourceMappingURL=VectorLayer.d.ts.map
 
 /**
  * *
@@ -31928,7 +32813,6 @@ declare class RenderEvent extends BaseEvent {
      */
     context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | WebGLRenderingContext | undefined;
 }
-//# sourceMappingURL=Event.d.ts.map
 
 /**
  * @classdesc
@@ -32283,7 +33167,6 @@ declare class CanvasImmediateRenderer extends VectorContext {
      */
     override setTextStyle(textStyle: Text$1): void;
 }
-//# sourceMappingURL=Immediate.d.ts.map
 
 /**
  * @typedef {Object} State
@@ -35659,7 +36542,6 @@ declare class MapBrowserEventHandler extends Target {
      */
     private isMoving_;
 }
-//# sourceMappingURL=MapBrowserEventHandler.d.ts.map
 
 /**
  * @module ol/asserts
@@ -36166,7 +37048,6 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$1<Geometry$1
      */
     writeGeometryObject(geometry: Geometry$1, options?: WriteOptions): any;
 }
-//# sourceMappingURL=JSONFeature.d.ts.map
 
 type EsriJSONFeatureSet = arcgis_rest_api.FeatureSet;
 type EsriJSONGeometry = arcgis_rest_api.Geometry;
@@ -36668,7 +37549,6 @@ declare class XMLFeature extends FeatureFormat<Feature$1<Geometry$1, {
      */
     writeGeometryNode(geometry: Geometry$1, options?: WriteOptions): Node;
 }
-//# sourceMappingURL=XMLFeature.d.ts.map
 
 type Options$i = {
     /**
@@ -37424,7 +38304,6 @@ declare class GML3 extends GMLBase {
         };
     };
 }
-//# sourceMappingURL=GML3.d.ts.map
 
 /**
  * Feature format for reading and writing data in the GML format
@@ -37437,7 +38316,6 @@ declare class GML3 extends GMLBase {
  * @api
  */
 declare const GML: typeof GML3;
-//# sourceMappingURL=GML.d.ts.map
 
 /**
  * @classdesc
@@ -37674,7 +38552,6 @@ declare class GML2 extends GMLBase {
         };
     };
 }
-//# sourceMappingURL=GML2.d.ts.map
 
 /**
  * @classdesc Feature format for reading and writing data in the GML format
@@ -37683,7 +38560,6 @@ declare class GML2 extends GMLBase {
  */
 declare class GML32 extends GML3 {
 }
-//# sourceMappingURL=GML32.d.ts.map
 
 type GPXLink = {
     /**
@@ -38262,7 +39138,6 @@ declare class TextFeature extends FeatureFormat<Feature$1<Geometry$1, {
      */
     protected writeGeometryText(geometry: Geometry$1, options?: WriteOptions): string;
 }
-//# sourceMappingURL=TextFeature.d.ts.map
 
 /**
  * IGC altitude/z. One of 'barometric', 'gps', 'none'.
@@ -38896,7 +39771,6 @@ declare class MVT<FeatureType extends FeatureLike = RenderFeature> extends Featu
  */
 declare class OSMXML extends XMLFeature {
 }
-//# sourceMappingURL=OSMXML.d.ts.map
 
 /**
  * @classdesc
@@ -38925,11 +39799,9 @@ declare class XML {
      */
     readFromNode(node: Element): any | null;
 }
-//# sourceMappingURL=XML.d.ts.map
 
 declare class OWS extends XML {
 }
-//# sourceMappingURL=OWS.d.ts.map
 
 type Options$c = {
     /**
@@ -39119,7 +39991,6 @@ declare class Filter {
      */
     getTagName(): string;
 }
-//# sourceMappingURL=Filter.d.ts.map
 
 type Options$a = {
     /**
@@ -39654,7 +40525,6 @@ declare class WMTSCapabilities extends XML {
      */
     private owsParser_;
 }
-//# sourceMappingURL=WMTSCapabilities.d.ts.map
 
 /**
  * @classdesc
@@ -39674,7 +40544,6 @@ declare class LogicalNary extends Filter {
      */
     conditions: Array<Filter>;
 }
-//# sourceMappingURL=LogicalNary.d.ts.map
 
 /**
  * @classdesc
@@ -39688,7 +40557,6 @@ declare class And extends LogicalNary {
      */
     constructor(...args: Filter[]);
 }
-//# sourceMappingURL=And.d.ts.map
 
 /**
  * @classdesc
@@ -39718,7 +40586,6 @@ declare class Bbox extends Filter {
      */
     srsName: string | undefined;
 }
-//# sourceMappingURL=Bbox.d.ts.map
 
 /**
  * @classdesc
@@ -39738,7 +40605,6 @@ declare class Comparison extends Filter {
      */
     propertyName: string;
 }
-//# sourceMappingURL=Comparison.d.ts.map
 
 /**
  * @classdesc
@@ -39764,7 +40630,6 @@ declare class ComparisonBinary extends Comparison {
      */
     matchCase: boolean | undefined;
 }
-//# sourceMappingURL=ComparisonBinary.d.ts.map
 
 /**
  * @classdesc
@@ -39796,7 +40661,6 @@ declare class Spatial extends Filter {
      */
     srsName: string | undefined;
 }
-//# sourceMappingURL=Spatial.d.ts.map
 
 /**
  * @classdesc
@@ -39813,7 +40677,6 @@ declare class Contains extends Spatial {
      */
     constructor(geometryName: string, geometry: Geometry$1, srsName?: string);
 }
-//# sourceMappingURL=Contains.d.ts.map
 
 /**
  * @classdesc
@@ -39842,7 +40705,6 @@ declare class DWithin extends Spatial {
      */
     public unit: string;
 }
-//# sourceMappingURL=DWithin.d.ts.map
 
 /**
  * @classdesc
@@ -39859,7 +40721,6 @@ declare class Disjoint extends Spatial {
      */
     constructor(geometryName: string, geometry: Geometry$1, srsName?: string);
 }
-//# sourceMappingURL=Disjoint.d.ts.map
 
 /**
  * @classdesc
@@ -39882,7 +40743,6 @@ declare class During extends Comparison {
      */
     end: string;
 }
-//# sourceMappingURL=During.d.ts.map
 
 /**
  * @classdesc
@@ -39897,7 +40757,6 @@ declare class EqualTo extends ComparisonBinary {
      */
     constructor(propertyName: string, expression: (string | number), matchCase?: boolean);
 }
-//# sourceMappingURL=EqualTo.d.ts.map
 
 /**
  * @classdesc
@@ -39911,7 +40770,6 @@ declare class GreaterThan extends ComparisonBinary {
      */
     constructor(propertyName: string, expression: number);
 }
-//# sourceMappingURL=GreaterThan.d.ts.map
 
 /**
  * @classdesc
@@ -39925,7 +40783,6 @@ declare class GreaterThanOrEqualTo extends ComparisonBinary {
      */
     constructor(propertyName: string, expression: number);
 }
-//# sourceMappingURL=GreaterThanOrEqualTo.d.ts.map
 
 /**
  * @classdesc
@@ -39942,7 +40799,6 @@ declare class Intersects extends Spatial {
      */
     constructor(geometryName: string, geometry: Geometry$1, srsName?: string);
 }
-//# sourceMappingURL=Intersects.d.ts.map
 
 /**
  * @classdesc
@@ -39965,7 +40821,6 @@ declare class IsBetween extends Comparison {
      */
     upperBoundary: number;
 }
-//# sourceMappingURL=IsBetween.d.ts.map
 
 /**
  * @classdesc
@@ -40007,7 +40862,6 @@ declare class IsLike extends Comparison {
      */
     matchCase: boolean | undefined;
 }
-//# sourceMappingURL=IsLike.d.ts.map
 
 /**
  * @classdesc
@@ -40020,7 +40874,6 @@ declare class IsNull extends Comparison {
      */
     constructor(propertyName: string);
 }
-//# sourceMappingURL=IsNull.d.ts.map
 
 /**
  * @classdesc
@@ -40034,7 +40887,6 @@ declare class LessThan extends ComparisonBinary {
      */
     constructor(propertyName: string, expression: number);
 }
-//# sourceMappingURL=LessThan.d.ts.map
 
 /**
  * @classdesc
@@ -40048,7 +40900,6 @@ declare class LessThanOrEqualTo extends ComparisonBinary {
      */
     constructor(propertyName: string, expression: number);
 }
-//# sourceMappingURL=LessThanOrEqualTo.d.ts.map
 
 /**
  * @classdesc
@@ -40065,7 +40916,6 @@ declare class Not extends Filter {
      */
     condition: Filter;
 }
-//# sourceMappingURL=Not.d.ts.map
 
 /**
  * @classdesc
@@ -40080,7 +40930,6 @@ declare class NotEqualTo extends ComparisonBinary {
      */
     constructor(propertyName: string, expression: (string | number), matchCase?: boolean);
 }
-//# sourceMappingURL=NotEqualTo.d.ts.map
 
 /**
  * @classdesc
@@ -40093,7 +40942,6 @@ declare class Or extends LogicalNary {
      */
     constructor(...args: Filter[]);
 }
-//# sourceMappingURL=Or.d.ts.map
 
 /**
  * @classdesc
@@ -40106,7 +40954,6 @@ declare class ResourceId extends Filter {
      */
     rid: string;
 }
-//# sourceMappingURL=ResourceId.d.ts.map
 
 /**
  * @classdesc
@@ -40123,7 +40970,6 @@ declare class Within extends Spatial {
      */
     constructor(geometryName: string, geometry: Geometry$1, srsName?: string);
 }
-//# sourceMappingURL=Within.d.ts.map
 
 /**
  * Create a logical `<And>` operator between two or more filter conditions.
@@ -42063,7 +42909,6 @@ declare class RenderBox extends Disposable {
      */
     getGeometry(): Polygon$1;
 }
-//# sourceMappingURL=Box.d.ts.map
 
 declare class CanvasBuilder extends VectorContext {
     /**
@@ -42237,7 +43082,6 @@ declare class CanvasBuilder extends VectorContext {
      */
     protected getBufferedMaxExtent(): Extent$1;
 }
-//# sourceMappingURL=Builder.d.ts.map
 
 declare class CanvasImageBuilder extends CanvasBuilder {
     /**
@@ -42323,7 +43167,6 @@ declare class CanvasImageBuilder extends CanvasBuilder {
      */
     override setImageStyle(imageStyle: ImageStyle, sharedData?: any): void;
 }
-//# sourceMappingURL=ImageBuilder.d.ts.map
 
 /**
  * @type {Array<Instruction>}
@@ -42371,7 +43214,6 @@ declare class CanvasLineStringBuilder extends CanvasBuilder {
      */
     private drawFlatCoordinates_;
 }
-//# sourceMappingURL=LineStringBuilder.d.ts.map
 
 declare class CanvasPolygonBuilder extends CanvasBuilder {
     /**
@@ -42390,7 +43232,6 @@ declare class CanvasPolygonBuilder extends CanvasBuilder {
     private setFillStrokeStyles_;
     handleStrokeOffset_(drawGeometryCallback: any): boolean;
 }
-//# sourceMappingURL=PolygonBuilder.d.ts.map
 
 declare class CanvasTextBuilder extends CanvasBuilder {
     /**
@@ -42813,7 +43654,6 @@ declare class CompositeMapRenderer extends MapRenderer {
      */
     declutter(frameState: FrameState, layerStates: Array<State$2>): void;
 }
-//# sourceMappingURL=Composite.d.ts.map
 
 type TileGetter = (arg0: number, arg1: number, arg2: number, arg3: number) => DataTile;
 type Options$4 = {
@@ -46038,5 +46878,4 @@ declare class WebGLPostProcessingPass {
     import getUid = util.getUid;
     export { getUid };
 }
-//# sourceMappingURL=ol.d.ts.map
 declare var map: ol.Map;

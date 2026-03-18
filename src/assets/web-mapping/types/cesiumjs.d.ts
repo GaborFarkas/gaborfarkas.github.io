@@ -1522,33 +1522,13 @@ export class Cartesian2 {
      */
     static clone(cartesian: Cartesian2, result?: Cartesian2): Cartesian2;
     /**
-     * Creates a Cartesian2 instance from an existing Cartesian3.  This simply takes the
-     * x and y properties of the Cartesian3 and drops z.
-     * @param cartesian - The Cartesian3 instance to create a Cartesian2 instance from.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
-     */
-    static fromCartesian3(cartesian: Cartesian3, result?: Cartesian2): Cartesian2;
-    /**
-     * Creates a Cartesian2 instance from an existing Cartesian4.  This simply takes the
-     * x and y properties of the Cartesian4 and drops z and w.
-     * @param cartesian - The Cartesian4 instance to create a Cartesian2 instance from.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
-     */
-    static fromCartesian4(cartesian: Cartesian4, result?: Cartesian2): Cartesian2;
-    /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
-    /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
      * @param array - The array to pack into.
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian2, array: number[], startingIndex?: number): number[];
+    static pack(value: Cartesian2, array: number[] | TypedArray, startingIndex?: number): number[] | TypedArray;
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1556,14 +1536,14 @@ export class Cartesian2 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Cartesian2): Cartesian2;
+    static unpack(array: number[] | TypedArray, startingIndex?: number, result?: Cartesian2): Cartesian2;
     /**
      * Flattens an array of Cartesian2s into an array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 2 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 2) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian2[], result?: number[]): number[];
+    static packArray(array: Cartesian2[], result?: number[] | TypedArray): number[] | TypedArray;
     /**
      * Unpacks an array of cartesian components into an array of Cartesian2s.
      * @param array - The array of components to unpack.
@@ -1571,22 +1551,6 @@ export class Cartesian2 {
      * @returns The unpacked array.
      */
     static unpackArray(array: number[], result?: Cartesian2[]): Cartesian2[];
-    /**
-     * Creates a Cartesian2 from two consecutive elements in an array.
-     * @example
-     * // Create a Cartesian2 with (1.0, 2.0)
-     * const v = [1.0, 2.0];
-     * const p = Cesium.Cartesian2.fromArray(v);
-     *
-     * // Create a Cartesian2 with (1.0, 2.0) using an offset into an array
-     * const v2 = [0.0, 0.0, 1.0, 2.0];
-     * const p2 = Cesium.Cartesian2.fromArray(v2, 2);
-     * @param array - The array whose two consecutive elements correspond to the x and y components, respectively.
-     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to the x component.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
-     */
-    static fromArray(array: number[], startingIndex?: number, result?: Cartesian2): Cartesian2;
     /**
      * Computes the value of the maximum component for the supplied Cartesian.
      * @param cartesian - The cartesian to use.
@@ -1783,22 +1747,6 @@ export class Cartesian2 {
      */
     static equalsEpsilon(left?: Cartesian2, right?: Cartesian2, relativeEpsilon?: number, absoluteEpsilon?: number): boolean;
     /**
-     * An immutable Cartesian2 instance initialized to (0.0, 0.0).
-     */
-    static readonly ZERO: Cartesian2;
-    /**
-     * An immutable Cartesian2 instance initialized to (1.0, 1.0).
-     */
-    static readonly ONE: Cartesian2;
-    /**
-     * An immutable Cartesian2 instance initialized to (1.0, 0.0).
-     */
-    static readonly UNIT_X: Cartesian2;
-    /**
-     * An immutable Cartesian2 instance initialized to (0.0, 1.0).
-     */
-    static readonly UNIT_Y: Cartesian2;
-    /**
      * Duplicates this Cartesian2 instance.
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
@@ -1826,6 +1774,58 @@ export class Cartesian2 {
      * @returns A string representing the provided Cartesian in the format '(x, y)'.
      */
     toString(): string;
+    /**
+     * Creates a Cartesian2 instance from an existing Cartesian3.  This simply takes the
+     * x and y properties of the Cartesian3 and drops z.
+     * @param cartesian - The Cartesian3 instance to create a Cartesian2 instance from.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
+     */
+    static fromCartesian3(cartesian: Cartesian3, result?: Cartesian2): Cartesian2;
+    /**
+     * Creates a Cartesian2 instance from an existing Cartesian4.  This simply takes the
+     * x and y properties of the Cartesian4 and drops z and w.
+     * @param cartesian - The Cartesian4 instance to create a Cartesian2 instance from.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
+     */
+    static fromCartesian4(cartesian: Cartesian4, result?: Cartesian2): Cartesian2;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
+    /**
+     * Creates a Cartesian2 from two consecutive elements in an array.
+     * @example
+     * // Create a Cartesian2 with (1.0, 2.0)
+     * const v = [1.0, 2.0];
+     * const p = Cesium.Cartesian2.fromArray(v);
+     *
+     * // Create a Cartesian2 with (1.0, 2.0) using an offset into an array
+     * const v2 = [0.0, 0.0, 1.0, 2.0];
+     * const p2 = Cesium.Cartesian2.fromArray(v2, 2);
+     * @param array - The array whose two consecutive elements correspond to the x and y components, respectively.
+     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to the x component.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
+     */
+    static fromArray(array: number[], startingIndex?: number, result?: Cartesian2): Cartesian2;
+    /**
+     * An immutable Cartesian2 instance initialized to (0.0, 0.0).
+     */
+    static readonly ZERO: Cartesian2;
+    /**
+     * An immutable Cartesian2 instance initialized to (1.0, 1.0).
+     */
+    static readonly ONE: Cartesian2;
+    /**
+     * An immutable Cartesian2 instance initialized to (1.0, 0.0).
+     */
+    static readonly UNIT_X: Cartesian2;
+    /**
+     * An immutable Cartesian2 instance initialized to (0.0, 1.0).
+     */
+    static readonly UNIT_Y: Cartesian2;
 }
 
 /**
@@ -1872,25 +1872,13 @@ export class Cartesian3 {
      */
     static clone(cartesian: Cartesian3, result?: Cartesian3): Cartesian3;
     /**
-     * Creates a Cartesian3 instance from an existing Cartesian4.  This simply takes the
-     * x, y, and z properties of the Cartesian4 and drops w.
-     * @param cartesian - The Cartesian4 instance to create a Cartesian3 instance from.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
-     */
-    static fromCartesian4(cartesian: Cartesian4, result?: Cartesian3): Cartesian3;
-    /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
-    /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
      * @param array - The array to pack into.
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian3, array: number[], startingIndex?: number): number[];
+    static pack(value: Cartesian3, array: number[] | TypedArray, startingIndex?: number): number[] | TypedArray;
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1898,37 +1886,21 @@ export class Cartesian3 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Cartesian3): Cartesian3;
+    static unpack(array: number[] | TypedArray, startingIndex?: number, result?: Cartesian3): Cartesian3;
     /**
      * Flattens an array of Cartesian3s into an array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 3 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 3) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian3[], result?: number[]): number[];
+    static packArray(array: Cartesian3[], result?: number[] | TypedArray): number[] | TypedArray;
     /**
      * Unpacks an array of cartesian components into an array of Cartesian3s.
      * @param array - The array of components to unpack.
      * @param [result] - The array onto which to store the result.
      * @returns The unpacked array.
      */
-    static unpackArray(array: number[], result?: Cartesian3[]): Cartesian3[];
-    /**
-     * Creates a Cartesian3 from three consecutive elements in an array.
-     * @example
-     * // Create a Cartesian3 with (1.0, 2.0, 3.0)
-     * const v = [1.0, 2.0, 3.0];
-     * const p = Cesium.Cartesian3.fromArray(v);
-     *
-     * // Create a Cartesian3 with (1.0, 2.0, 3.0) using an offset into an array
-     * const v2 = [0.0, 0.0, 1.0, 2.0, 3.0];
-     * const p2 = Cesium.Cartesian3.fromArray(v2, 2);
-     * @param array - The array whose three consecutive elements correspond to the x, y, and z components, respectively.
-     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to the x component.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
-     */
-    static fromArray(array: number[], startingIndex?: number, result?: Cartesian3): Cartesian3;
+    static unpackArray(array: number[] | TypedArray, result?: Cartesian3[]): Cartesian3[];
     /**
      * Computes the value of the maximum component for the supplied Cartesian.
      * @param cartesian - The cartesian to use.
@@ -1959,13 +1931,13 @@ export class Cartesian3 {
     static maximumByComponent(first: Cartesian3, second: Cartesian3, result: Cartesian3): Cartesian3;
     /**
      * Constrain a value to lie between two values.
-     * @param cartesian - The value to clamp.
+     * @param value - The value to clamp.
      * @param min - The minimum bound.
      * @param max - The maximum bound.
      * @param result - The object into which to store the result.
      * @returns The clamped value such that min <= value <= max.
      */
-    static clamp(cartesian: Cartesian3, min: Cartesian3, max: Cartesian3, result: Cartesian3): Cartesian3;
+    static clamp(value: Cartesian3, min: Cartesian3, max: Cartesian3, result: Cartesian3): Cartesian3;
     /**
      * Computes the provided Cartesian's squared magnitude.
      * @param cartesian - The Cartesian instance whose squared magnitude is to be computed.
@@ -2206,26 +2178,6 @@ export class Cartesian3 {
      */
     static fromRadiansArrayHeights(coordinates: number[], ellipsoid?: Ellipsoid, result?: Cartesian3[]): Cartesian3[];
     /**
-     * An immutable Cartesian3 instance initialized to (0.0, 0.0, 0.0).
-     */
-    static readonly ZERO: Cartesian3;
-    /**
-     * An immutable Cartesian3 instance initialized to (1.0, 1.0, 1.0).
-     */
-    static readonly ONE: Cartesian3;
-    /**
-     * An immutable Cartesian3 instance initialized to (1.0, 0.0, 0.0).
-     */
-    static readonly UNIT_X: Cartesian3;
-    /**
-     * An immutable Cartesian3 instance initialized to (0.0, 1.0, 0.0).
-     */
-    static readonly UNIT_Y: Cartesian3;
-    /**
-     * An immutable Cartesian3 instance initialized to (0.0, 0.0, 1.0).
-     */
-    static readonly UNIT_Z: Cartesian3;
-    /**
      * Duplicates this Cartesian3 instance.
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
@@ -2253,6 +2205,54 @@ export class Cartesian3 {
      * @returns A string representing this Cartesian in the format '(x, y, z)'.
      */
     toString(): string;
+    /**
+     * Creates a Cartesian3 instance from an existing Cartesian4.  This simply takes the
+     * x, y, and z properties of the Cartesian4 and drops w.
+     * @param cartesian - The Cartesian4 instance to create a Cartesian3 instance from.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
+     */
+    static fromCartesian4(cartesian: Cartesian4, result?: Cartesian3): Cartesian3;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
+    /**
+     * Creates a Cartesian3 from three consecutive elements in an array.
+     * @example
+     * // Create a Cartesian3 with (1.0, 2.0, 3.0)
+     * const v = [1.0, 2.0, 3.0];
+     * const p = Cesium.Cartesian3.fromArray(v);
+     *
+     * // Create a Cartesian3 with (1.0, 2.0, 3.0) using an offset into an array
+     * const v2 = [0.0, 0.0, 1.0, 2.0, 3.0];
+     * const p2 = Cesium.Cartesian3.fromArray(v2, 2);
+     * @param array - The array whose three consecutive elements correspond to the x, y, and z components, respectively.
+     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to the x component.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
+     */
+    static fromArray(array: number[], startingIndex?: number, result?: Cartesian3): Cartesian3;
+    /**
+     * An immutable Cartesian3 instance initialized to (0.0, 0.0, 0.0).
+     */
+    static readonly ZERO: Cartesian3;
+    /**
+     * An immutable Cartesian3 instance initialized to (1.0, 1.0, 1.0).
+     */
+    static readonly ONE: Cartesian3;
+    /**
+     * An immutable Cartesian3 instance initialized to (1.0, 0.0, 0.0).
+     */
+    static readonly UNIT_X: Cartesian3;
+    /**
+     * An immutable Cartesian3 instance initialized to (0.0, 1.0, 0.0).
+     */
+    static readonly UNIT_Y: Cartesian3;
+    /**
+     * An immutable Cartesian3 instance initialized to (0.0, 0.0, 1.0).
+     */
+    static readonly UNIT_Z: Cartesian3;
 }
 
 /**
@@ -2306,17 +2306,13 @@ export class Cartesian4 {
      */
     static clone(cartesian: Cartesian4, result?: Cartesian4): Cartesian4;
     /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
-    /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
      * @param array - The array to pack into.
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian4, array: number[], startingIndex?: number): number[];
+    static pack(value: Cartesian4, array: number[] | TypedArray, startingIndex?: number): number[] | TypedArray;
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -2324,37 +2320,21 @@ export class Cartesian4 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian4 instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Cartesian4): Cartesian4;
+    static unpack(array: number[] | TypedArray, startingIndex?: number, result?: Cartesian4): Cartesian4;
     /**
      * Flattens an array of Cartesian4s into an array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 4 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 4) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian4[], result?: number[]): number[];
+    static packArray(array: Cartesian4[], result?: number[] | TypedArray): number[] | TypedArray;
     /**
      * Unpacks an array of cartesian components into an array of Cartesian4s.
      * @param array - The array of components to unpack.
      * @param [result] - The array onto which to store the result.
      * @returns The unpacked array.
      */
-    static unpackArray(array: number[], result?: Cartesian4[]): Cartesian4[];
-    /**
-     * Creates a Cartesian4 from four consecutive elements in an array.
-     * @example
-     * // Create a Cartesian4 with (1.0, 2.0, 3.0, 4.0)
-     * const v = [1.0, 2.0, 3.0, 4.0];
-     * const p = Cesium.Cartesian4.fromArray(v);
-     *
-     * // Create a Cartesian4 with (1.0, 2.0, 3.0, 4.0) using an offset into an array
-     * const v2 = [0.0, 0.0, 1.0, 2.0, 3.0, 4.0];
-     * const p2 = Cesium.Cartesian4.fromArray(v2, 2);
-     * @param array - The array whose four consecutive elements correspond to the x, y, z, and w components, respectively.
-     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to the x component.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Cartesian4 instance if one was not provided.
-     */
-    static fromArray(array: number[], startingIndex?: number, result?: Cartesian4): Cartesian4;
+    static unpackArray(array: number[] | TypedArray, result?: Cartesian4[]): Cartesian4[];
     /**
      * Computes the value of the maximum component for the supplied Cartesian.
      * @param cartesian - The cartesian to use.
@@ -2541,30 +2521,6 @@ export class Cartesian4 {
      */
     static equalsEpsilon(left?: Cartesian4, right?: Cartesian4, relativeEpsilon?: number, absoluteEpsilon?: number): boolean;
     /**
-     * An immutable Cartesian4 instance initialized to (0.0, 0.0, 0.0, 0.0).
-     */
-    static readonly ZERO: Cartesian4;
-    /**
-     * An immutable Cartesian4 instance initialized to (1.0, 1.0, 1.0, 1.0).
-     */
-    static readonly ONE: Cartesian4;
-    /**
-     * An immutable Cartesian4 instance initialized to (1.0, 0.0, 0.0, 0.0).
-     */
-    static readonly UNIT_X: Cartesian4;
-    /**
-     * An immutable Cartesian4 instance initialized to (0.0, 1.0, 0.0, 0.0).
-     */
-    static readonly UNIT_Y: Cartesian4;
-    /**
-     * An immutable Cartesian4 instance initialized to (0.0, 0.0, 1.0, 0.0).
-     */
-    static readonly UNIT_Z: Cartesian4;
-    /**
-     * An immutable Cartesian4 instance initialized to (0.0, 0.0, 0.0, 1.0).
-     */
-    static readonly UNIT_W: Cartesian4;
-    /**
      * Duplicates this Cartesian4 instance.
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Cartesian4 instance if one was not provided.
@@ -2599,6 +2555,50 @@ export class Cartesian4 {
      * @returns A Cartesian4 representing the float packed to values in x, y, z, and w.
      */
     static packFloat(value: number, result?: Cartesian4): Cartesian4;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
+    /**
+     * Creates a Cartesian4 from four consecutive elements in an array.
+     * @example
+     * // Create a Cartesian4 with (1.0, 2.0, 3.0, 4.0)
+     * const v = [1.0, 2.0, 3.0, 4.0];
+     * const p = Cesium.Cartesian4.fromArray(v);
+     *
+     * // Create a Cartesian4 with (1.0, 2.0, 3.0, 4.0) using an offset into an array
+     * const v2 = [0.0, 0.0, 1.0, 2.0, 3.0, 4.0];
+     * const p2 = Cesium.Cartesian4.fromArray(v2, 2);
+     * @param array - The array whose four consecutive elements correspond to the x, y, z, and w components, respectively.
+     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to the x component.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Cartesian4 instance if one was not provided.
+     */
+    static fromArray(array: number[], startingIndex?: number, result?: Cartesian4): Cartesian4;
+    /**
+     * An immutable Cartesian4 instance initialized to (0.0, 0.0, 0.0, 0.0).
+     */
+    static readonly ZERO: Cartesian4;
+    /**
+     * An immutable Cartesian4 instance initialized to (1.0, 1.0, 1.0, 1.0).
+     */
+    static readonly ONE: Cartesian4;
+    /**
+     * An immutable Cartesian4 instance initialized to (1.0, 0.0, 0.0, 0.0).
+     */
+    static readonly UNIT_X: Cartesian4;
+    /**
+     * An immutable Cartesian4 instance initialized to (0.0, 1.0, 0.0, 0.0).
+     */
+    static readonly UNIT_Y: Cartesian4;
+    /**
+     * An immutable Cartesian4 instance initialized to (0.0, 0.0, 1.0, 0.0).
+     */
+    static readonly UNIT_Z: Cartesian4;
+    /**
+     * An immutable Cartesian4 instance initialized to (0.0, 0.0, 0.0, 1.0).
+     */
+    static readonly UNIT_W: Cartesian4;
 }
 
 /**
@@ -8020,7 +8020,11 @@ export class GoogleGeocoderService {
  * Default settings for accessing the Google Maps API.
  * <br/>
  * An API key is only required if you are directly using any Google Maps APIs, such as through {@link createGooglePhotorealistic3DTileset}.
- * Follow instructions for managing API keys for the Google Maps Platform at {@link https://developers.google.com/maps/documentation/embed/get-api-key}
+ * Follow instructions for managing API keys for the Google Maps Platform at {@link https://developers.google.com/maps/documentation/embed/get-api-key}.
+ * <br/>
+ * You can enable multiple Google Maps Platform APIs on a single API key.
+ * However, a separate {@link GoogleMaps.defaultStreetViewStaticApiKey}
+ * is available if you prefer to use a dedicated key for the Street View Static API.
  */
 export namespace GoogleMaps {
     /**
@@ -8031,6 +8035,14 @@ export namespace GoogleMaps {
      * Gets or sets the default Google Map Tiles API endpoint.
      */
     var mapTilesApiEndpoint: string | Resource;
+    /**
+     * Gets or sets the default Google Maps Street View Static API key.
+     */
+    var defaultStreetViewStaticApiKey: undefined | string;
+    /**
+     * Gets or sets the default Google Street View Static API endpoint.
+     */
+    var streetViewStaticApiEndpoint: string | Resource;
 }
 
 /**
@@ -18897,6 +18909,16 @@ export function getImagePixels(image: HTMLImageElement | ImageBitmap, width: num
 export function getTimestamp(): number;
 
 /**
+ * Union of all numeric typed array types.
+ */
+export type TypedArray = Float64Array | Float32Array | Uint32Array | Uint16Array | Uint8Array | Int32Array | Int16Array | Int8Array;
+
+/**
+ * Union of all numeric typed array constructor types.
+ */
+export type TypedArrayConstructor = Float64ArrayConstructor | Float32ArrayConstructor | Uint32ArrayConstructor | Uint16ArrayConstructor | Uint8ArrayConstructor | Int32ArrayConstructor | Int16ArrayConstructor | Int8ArrayConstructor;
+
+/**
  * Determines if a given date is a leap year.
  * @example
  * const leapYear = Cesium.isLeapYear(2000); // true
@@ -26585,7 +26607,7 @@ export namespace Billboard {
      * @property [pixelOffsetScaleByDistance] - A {@link NearFarScalar} Specifying near and far pixel offset scaling properties of a Billboard based on the billboard's distance from the camera.
      * @property [imageSubRegion] - A {@link BoundingRectangle} Specifying the sub-region of the image to use for the billboard, rather than the entire image.
      * @property [distanceDisplayCondition] - A {@link DistanceDisplayCondition} Specifying the distance from the camera at which this billboard will be displayed.
-     * @property [disableDepthTestDistance] - A number specifying the distance from the camera at which to disable the depth test to, for example, prevent clipping against terrain.
+     * @property [disableDepthTestDistance] - The distance from the camera, beyond which, depth testing is disabled—to, for example, prevent clipping against terrain.
      * @property [splitDirection] - A {@link SplitDirection} Specifying the split property of the billboard.
      */
     type ConstructorOptions = {
@@ -26847,10 +26869,12 @@ export class Billboard {
      */
     distanceDisplayCondition: DistanceDisplayCondition;
     /**
-     * Gets or sets the distance from the camera at which to disable the depth test to, for example, prevent clipping against terrain.
-     * When set to zero, the depth test is always applied. When set to Number.POSITIVE_INFINITY, the depth test is never applied.
+     * Gets or sets the distance from the camera, beyond which, depth testing is disbaled—to,
+     * for example, prevent clipping against terrain. When set to <code>undefined</code> or
+     * <code>0</code>, the depth test is always applied. When set to
+     * <code>Number.POSITIVE_INFINITY</code>, the depth test is never applied.
      */
-    disableDepthTestDistance: number;
+    disableDepthTestDistance: number | undefined;
     /**
      * Gets or sets the user-defined object returned when the billboard is picked.
      */
@@ -26979,6 +27003,8 @@ export const SVG_MAX_SIZE_PX = 512;
  * is used for rendering both opaque and translucent billboards. However, if either all of the billboards are completely opaque or all are completely translucent,
  * setting the technique to BlendOption.OPAQUE or BlendOption.TRANSLUCENT can improve performance by up to 2x.
  * @param [options.show = true] - Determines if the billboards in the collection will be shown.
+ * @param [options.coarseDepthTestDistance] - The distance from the camera, beyond which, billboards are depth-tested against an approximation of the globe ellipsoid rather than against the full globe depth buffer. If unspecified, the default value is determined relative to the value of {@link Ellipsoid.default}.
+ * @param [options.threePointDepthTestDistance] - The distance from the camera, within which, billboards with a {@link Billboard#heightReference} value of {@link HeightReference.CLAMP_TO_GROUND} or {@link HeightReference.CLAMP_TO_TERRAIN} are depth tested against three key points. This ensures that if any key point of the billboard is visible, the whole billboard will be visible. If unspecified, the default value is determined relative to the value of {@link Ellipsoid.default}.
  */
 export class BillboardCollection {
     constructor(options?: {
@@ -26987,6 +27013,8 @@ export class BillboardCollection {
         scene?: Scene;
         blendOption?: BlendOption;
         show?: boolean;
+        coarseDepthTestDistance?: number;
+        threePointDepthTestDistance?: number;
     });
     /**
      * Determines if billboards in this collection will be shown.
@@ -27045,6 +27073,29 @@ export class BillboardCollection {
      * in the collection.
      */
     readonly length: number;
+    /**
+     * The distance from the camera, beyond which, billboards are depth-tested against an approximation of
+     * the globe ellipsoid rather than against the full globe depth buffer. When set to <code>0</code>, the
+     * approximate depth test is always applied. When set to <code>Number.POSITIVE_INFINITY</code>, the
+     * approximate depth test is never applied.
+     * <br/><br/>
+     * This setting only applies when a billboard's {@link Billboard#disableDepthTestDistance} value would
+     * otherwise allow depth testing—i.e., distance from the camera to the billboard is less than a
+     * billboard's {@link Billboard#disableDepthTestDistance} value.
+     */
+    coarseDepthTestDistance: number;
+    /**
+     * The distance from the camera, within which, billboards with a {@link Billboard#heightReference} value
+     * of {@link HeightReference.CLAMP_TO_GROUND} or {@link HeightReference.CLAMP_TO_TERRAIN} are depth tested
+     * against three key points. This ensures that if any key point of the billboard is visible, the whole
+     * billboard will be visible. When set to <code>0</code>, this feature is disabled and portions of a
+     * billboards behind terrain be clipped.
+     * <br/><br/>
+     * This setting only applies when a billboard's {@link Billboard#disableDepthTestDistance} value would
+     * otherwise allow depth testing—i.e., distance from the camera to the billboard is less than a
+     * billboard's {@link Billboard#disableDepthTestDistance} value.
+     */
+    threePointDepthTestDistance: number;
     /**
      * Creates and adds a billboard with the specified initial properties to the collection.
      * The added billboard is returned so it can be modified or removed from the collection later.
@@ -31718,6 +31769,97 @@ export class CreditDisplay {
     static cesiumCredit: Credit;
 }
 
+export namespace CubeMapPanorama {
+    /**
+     * Initialization options for the CubeMapPanorama constructor
+     * @property [options.sources] - The source URL or <code>Image</code> object for each of the six cube map faces.  See the example below.
+     * @property [options.transform] - A 4x4 transformation matrix that defines the panorama’s position and orientation
+     * @property [options.show = true] - Determines if this primitive will be shown.
+     * @property [options.credit] - A credit for the panorama, which is displayed on the canvas.
+     */
+    type ConstructorOptions = {};
+}
+
+/**
+ * A {@link Panorama} that displays imagery in cube map format in a scene.
+ * <p>
+ * This is only supported in 3D.  The cube map panorama is faded out when morphing to 2D or Columbus view.  The size of
+ * the cube map panorama must not exceed {@link Scene#maximumSkyBoxSize}.
+ * </p>
+ * @example
+ * const modelMatrix = Cesium.Matrix4.getMatrix3(
+ *   Cesium.Transforms.localFrameToFixedFrameGenerator("north", "down")(
+ *     Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
+ *     Cesium.Ellipsoid.default
+ *   ),
+ *   new Cesium.Matrix3()
+ * );
+ *
+ *
+ * scene.primitives.add(new Cesium.CubeMapPanorama({
+ *   sources : {
+ *     positiveX : 'cubemap_px.png',
+ *     negativeX : 'cubemap_nx.png',
+ *     positiveY : 'cubemap_py.png',
+ *     negativeY : 'cubemap_ny.png',
+ *     positiveZ : 'cubemap_pz.png',
+ *     negativeZ : 'cubemap_nz.png'
+ *   }
+ *   transform: modelMatrix,
+ * }));
+ * @param options - Object describing initialization options
+ */
+export class CubeMapPanorama {
+    constructor(options: CubeMapPanorama.ConstructorOptions);
+    /**
+     * The sources used to create the cube map faces: an object
+     * with <code>positiveX</code>, <code>negativeX</code>, <code>positiveY</code>,
+     * <code>negativeY</code>, <code>positiveZ</code>, and <code>negativeZ</code> properties.
+     * These can be either URLs or <code>Image</code> objects.
+     */
+    sources: any;
+    /**
+     * Determines if the cube map panorama will be shown.
+     */
+    show: boolean;
+    /**
+     * Gets the transform of the panorama.
+     */
+    readonly transform: Matrix4;
+    /**
+     * Gets the credits of the panorama.
+     */
+    readonly credit: Credit;
+    /**
+     * Called when {@link Viewer} or {@link CesiumWidget} render the scene to
+     * get the draw commands needed to render this primitive.
+     * <p>
+     * Do not call this function directly.  This is documented just to
+     * list the exceptions that may be propagated when the scene is rendered:
+     * </p>
+     */
+    update(): void;
+    /**
+     * Returns true if this object was destroyed; otherwise, false.
+     * <br /><br />
+     * If this object was destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
+     * @returns <code>true</code> if this object was destroyed; otherwise, <code>false</code>.
+     */
+    isDestroyed(): boolean;
+    /**
+     * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
+     * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
+     * <br /><br />
+     * Once an object is destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
+     * assign the return value (<code>undefined</code>) to the object as done in the example.
+     * @example
+     * cubeMapPanorama = cubeMapPanorama && cubeMapPanorama.destroy();
+     */
+    destroy(): void;
+}
+
 /**
  * Determines which triangles, if any, are culled.
  */
@@ -32134,16 +32276,6 @@ export enum DepthFunction {
 }
 
 /**
- * Returns the type that the given class property has in a GLSL shader.
- *
- * It returns the same string as `PropertyTextureProperty.prototype.getGlslType`
- * for a property texture property with the given class property
- * @param classProperty - The class property
- * @returns The GLSL shader type string for the property
- */
-export function getGlslType(classProperty: MetadataClassProperty): string;
-
-/**
  * Returns a shader statement that applies the inverse of the
  * value transform to the given value, based on the given offset
  * and scale.
@@ -32540,6 +32672,104 @@ export class EllipsoidSurfaceAppearance {
      * @returns The render state.
      */
     getRenderState(): any;
+}
+
+export namespace EquirectangularPanorama {
+    /**
+     * Initialization options for the EquirectangularPanorama constructor
+     * @property options.transform - A 4x4 transformation matrix that defines the panorama’s position and orientation
+     * (for example, derived from a position and heading-pitch-roll).
+     * @property options.image - A URL to an image resource, or a preloaded image object.
+     * @property [options.radius = 100000.0] - The radius of the panorama in meters.
+     * @property [options.repeatHorizontal = 1.0] - The number of times to repeat the texture horizontally.
+     * @property [options.repeatVertical = 1.0] - The number of times to repeat the texture vertically.
+     * @property [options.credit] - A credit for the panorama, which is displayed on the canvas.
+     */
+    type ConstructorOptions = {};
+}
+
+/**
+ * A {@link Panorama} that displays imagery in equirectangular format in a scene.
+ * @example
+ * const position = Cesium.Cartesian3.fromDegrees(
+ *   -75.1699,  // longitude
+ *   39.9522,   // latitude
+ *   100.0      // height in meters
+ * );
+ *
+ * const heading = Cesium.Math.toRadians(45.0); // rotation about up axis
+ * const pitch = Cesium.Math.toRadians(-30.0);   // pitch (negative looks down)
+ * const roll = Cesium.Math.toRadians(10.0);    // roll about forward axis
+ *
+ * const hpr = new Cesium.HeadingPitchRoll(
+ *   heading,
+ *   pitch,
+ *   roll
+ * );
+ *
+ * const modelMatrix = Cesium.Transforms.headingPitchRollToFixedFrame(
+ *   position,
+ *   hpr,
+ *   Cesium.Ellipsoid.WGS84,
+ *   Cesium.Transforms.eastNorthUpToFixedFrame
+ * );
+ *
+ * scene.primitives.add(new Cesium.EquirectangularPanorama({
+ *   transform: modelMatrix,
+ *   image: 'path/to/image',
+ * }));
+ * @param options - Object describing initialization options
+ */
+export class EquirectangularPanorama {
+    constructor(options: EquirectangularPanorama.ConstructorOptions);
+    /**
+     * Gets the radius of the panorama.
+     */
+    readonly radius: number;
+    /**
+     * Gets the source image of the panorama.
+     */
+    readonly image: string | HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+    /**
+     * Gets the transform of the panorama.
+     */
+    readonly transform: Matrix4;
+    /**
+     * Gets the credits of the panorama.
+     */
+    readonly credit: Credit;
+    /**
+     * Determines if the equirectangular panorama will be shown.
+     */
+    show: boolean;
+    /**
+     * Called when {@link Viewer} or {@link CesiumWidget} render the scene to
+     * get the draw commands needed to render this primitive.
+     * <p>
+     * Do not call this function directly.  This is documented just to
+     * list the exceptions that may be propagated when the scene is rendered:
+     * </p>
+     */
+    update(): void;
+    /**
+     * Destroys the WebGL resources held by this object.  Destroying an object allows for deterministic
+     * release of WebGL resources, instead of relying on the garbage collector to destroy this object.
+     * <br /><br />
+     * Once an object is destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
+     * assign the return value (<code>undefined</code>) to the object as done in the example.
+     * @example
+     * equirectangularPanorama = equirectangularPanorama && equirectangularPanorama.destroy();
+     */
+    destroy(): void;
+    /**
+     * Returns true if this object was destroyed; otherwise, false.
+     * <br /><br />
+     * If this object was destroyed, it should not be used; calling any function other than
+     * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.
+     * @returns <code>true</code> if this object was destroyed; otherwise, <code>false</code>.
+     */
+    isDestroyed(): boolean;
 }
 
 /**
@@ -33840,6 +34070,87 @@ export class GoogleEarthEnterpriseMapsProvider {
      * Gets or sets the URL to the Google Earth logo for display in the credit.
      */
     static logoUrl: string;
+}
+
+/**
+ * <div class="notice">
+ * This object is normally not instantiated directly, use {@link GoogleStreetViewCubeMapPanoramaProvider.fromUrl}.
+ * </div>
+ *
+ *
+ * Creates a {@link PanoramaProvider} which provides imagery from {@link https://developers.google.com/maps/documentation/streetview|Google Street View Static API} to be displayed in a panorama.
+ */
+export class GoogleStreetViewCubeMapPanoramaProvider {
+    constructor();
+    /**
+     * Gets the panorama primitive for a requested position and orientation.
+     * @example
+     * const provider = await Cesium.GoogleStreetViewCubeMapPanoramaProvider.fromUrl({
+     *   key: 'your Google Streetview Static api key'
+     * })
+     *
+     * const panoIdObject = provider.getNearestPanoId(position);
+     * const position = Cartographic.fromDegrees(panoIdObject.location.lng, panoIdObject.location.lat, 0);
+     *
+     * const primitive = await provider.loadPanorama({
+     *   cartographic: position,
+     *   panoId: panoIdObject.panoId
+     * });
+     * viewer.scene.primitive.add(primitive);
+     * @param options - Object with the following properties:
+     * @param options.cartographic - The position to place the panorama in the scene.
+     * @param [options.panoId] - The panoramaId identifier for the image in the Google API. If not provided this will be looked up for the provided cartographic location.
+     * @param [options.tileSize] - Optional tile size override (square).
+     * @param [options.signature] - Optional signature for signed URLs. See {@link https://developers.google.com/maps/documentation/streetview/digital-signature} for more information.
+     * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
+     * @returns The panorama primitive textured with imagery.
+     */
+    loadPanorama(options: {
+        cartographic: Cartographic;
+        panoId?: string;
+        tileSize?: number;
+        signature?: string;
+        credit?: Credit | string;
+    }): CubeMapPanorama;
+    /**
+     * Gets the panoIds for the given cartographic location. See {@link https://developers.google.com/maps/documentation/tile/streetview#panoid-search}.
+     * @example
+     * const provider = await Cesium.GoogleStreetViewCubeMapPanoramaProvider.fromUrl({
+     *   key: 'your Google Streetview Static api key'
+     * })
+     * const panoIds = provider.getNearestPanoId(position);
+     * @param position - The position to search for the nearest panoId.
+     * @param [radius = 50] - The radius in meters to search for the nearest panoId.
+     * @returns an object containing a panoId, latitude, and longitude of the closest panorama
+     */
+    getNearestPanoId(position: Cartographic, radius?: number): any;
+    /**
+     * Gets metadata for panoId. See {@link https://developers.google.com/maps/documentation/tile/streetview#metadata_response} for response object.
+     * @example
+     * const panoIdObject = provider.getNearestPanoId(position);
+     * const panoIdMetadata = provider.getPanoIdMetadata(panoIdObject.panoId);
+     * @returns object containing metadata for the panoId.
+     */
+    getPanoIdMetadata(panoId: string): any;
+    /**
+     * Creates a {@link PanoramaProvider} which provides cube face images from the {@link https://developers.google.com/maps/documentation/streetview|Google Street View Static API}.
+     * @example
+     * const provider = await Cesium.GoogleStreetViewCubeMapPanoramaProvider.fromUrl({
+     *   key: 'your Google Streetview Static api key'
+     * })
+     * @param options - Object with the following properties:
+     * @param [options.key = GoogleMaps.defaultStreetViewStaticApiKey] - Your API key to access Google Street View Static API. See {@link https://developers.google.com/maps/documentation/javascript/get-api-key} for instructions on how to create your own key. If undefined, defaults to {@link GoogleMaps.defaultStreetViewStaticApiKey}. If that value is unavailable, falls back to {@link GoogleMaps.defaultApiKey}.
+     * @param [options.url = GoogleMaps.streetViewStaticApiEndpoint] - The URL to access Google Street View Static API. See {@link https://developers.google.com/maps/documentation/streetview/overview} for more information.
+     * @param [options.tileSize = 600] - Default width and height (in pixels) of each square tile.
+     * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
+     * @returns A promise that resolves to the created GoogleStreetViewCubeMapPanoramaProvider.'
+     */
+    static fromUrl(options: {
+        key?: string;
+        url?: string | Resource;
+        tileSize?: number;
+        credit?: Credit | string;
+    }): Promise<GoogleStreetViewCubeMapPanoramaProvider>;
 }
 
 export namespace GridImageryProvider {
@@ -35943,7 +36254,7 @@ export namespace Label {
      * @property [pixelOffsetScaleByDistance] - A {@link NearFarScalar} specifying near and far pixel offset scaling properties of the label based on the label's distance from the camera.
      * @property [scaleByDistance] - A {@link NearFarScalar} specifying near and far scaling properties of the label based on the label's distance from the camera.
      * @property [distanceDisplayCondition] - A {@link DistanceDisplayCondition} specifying at what distance from the camera that this label will be displayed.
-     * @property [disableDepthTestDistance] - A number specifying the distance from the camera at which to disable the depth test to, for example, prevent clipping against terrain.
+     * @property [disableDepthTestDistance] - The distance from the camera, beyond which, depth testing is disabled—to, for example, prevent clipping against terrain.
      */
     type ConstructorOptions = {
         position: Cartesian3;
@@ -36177,10 +36488,11 @@ export class Label {
      */
     distanceDisplayCondition: DistanceDisplayCondition;
     /**
-     * Gets or sets the distance from the camera at which to disable the depth test to, for example, prevent clipping against terrain.
-     * When set to zero, the depth test is always applied. When set to Number.POSITIVE_INFINITY, the depth test is never applied.
+     * Gets or sets the distance from the camera, beyond which, depth testing is disabled—to, for example, prevent clipping against terrain.
+     * When set to <code>undefined</code> or
+     * <code>0</code>, the depth test is always applied. When set to Number.<code>POSITIVE_INFINITY</code>, the depth test is never applied.
      */
-    disableDepthTestDistance: number;
+    disableDepthTestDistance: number | undefined;
     /**
      * Gets or sets the user-defined value returned when the label is picked.
      */
@@ -36268,6 +36580,8 @@ export class Label {
  * is used for rendering both opaque and translucent labels. However, if either all of the labels are completely opaque or all are completely translucent,
  * setting the technique to BlendOption.OPAQUE or BlendOption.TRANSLUCENT can improve performance by up to 2x.
  * @param [options.show = true] - Determines if the labels in the collection will be shown.
+ * @param [options.coarseDepthTestDistance] - The distance from the camera, beyond which, labels are depth-tested against an approximation of the globe ellipsoid rather than against the full globe depth buffer. If unspecified, the default value is determined relative to the value of {@link Ellipsoid.default}.
+ * @param [options.threePointDepthTestDistance] - The distance from the camera, within which, lables with a {@link Label#heightReference} value of {@link HeightReference.CLAMP_TO_GROUND} or {@link HeightReference.CLAMP_TO_TERRAIN} are depth tested against three key points. This ensures that if any key point of the label is visible, the whole label will be visible. If unspecified, the default value is determined relative to the value of {@link Ellipsoid.default}.
  */
 export class LabelCollection {
     constructor(options?: {
@@ -36276,6 +36590,8 @@ export class LabelCollection {
         scene?: Scene;
         blendOption?: BlendOption;
         show?: boolean;
+        coarseDepthTestDistance?: number;
+        threePointDepthTestDistance?: number;
     });
     /**
      * Determines if labels in this collection will be shown.
@@ -36327,6 +36643,29 @@ export class LabelCollection {
      * in the collection.
      */
     readonly length: number;
+    /**
+     * The distance from the camera, beyond which, labels are depth-tested against an approximation of
+     * the globe ellipsoid rather than against the full globe depth buffer. When set to <code>0</code>, the
+     * approximate depth test is always applied. When set to <code>Number.POSITIVE_INFINITY</code>, the
+     * approximate depth test is never applied.
+     * <br/><br/>
+     * This setting only applies when a label's {@link Label#disableDepthTestDistance} value would
+     * otherwise allow depth testing—i.e., distance from the camera to the label is less than the
+     * label's {@link Label#disableDepthTestDistance} value.
+     */
+    coarseDepthTestDistance: number;
+    /**
+     * The distance from the camera, within which, labels with a {@link Label#heightReference} value
+     * of {@link HeightReference.CLAMP_TO_GROUND} or {@link HeightReference.CLAMP_TO_TERRAIN} are depth tested
+     * against three key points. This ensures that if any key point of the label is visible, the whole
+     * label will be visible. When set to <code>0</code>, this feature is disabled and portions of a
+     * label behind terrain be clipped.
+     * <br/><br/>
+     * This setting only applies when a labels's {@link Label#disableDepthTestDistance} value would
+     * otherwise allow depth testing—i.e., distance from the camera to the label is less than the
+     * labels's {@link Label#disableDepthTestDistance} value.
+     */
+    threePointDepthTestDistance: number;
     /**
      * Creates and adds a label with the specified initial properties to the collection.
      * The added label is returned so it can be modified or removed from the collection later.
@@ -37421,8 +37760,8 @@ export class MetadataClassProperty {
         max?: number | number[] | number[][];
         offset?: number | number[] | number[][];
         scale?: number | number[] | number[][];
-        noData?: boolean | number | string | any[];
-        default?: boolean | number | string | any[];
+        noData?: number | string | any[];
+        default?: number | string | any[];
         required?: boolean;
         name?: string;
         description?: string;
@@ -37484,11 +37823,11 @@ export class MetadataClassProperty {
     /**
      * The no-data sentinel value that represents null values
      */
-    readonly noData: boolean | number | string | any[];
+    readonly noData: number | string | any[];
     /**
      * A default value to use when an entity's property value is not defined.
      */
-    readonly default: boolean | number | string | any[];
+    readonly default: number | string | any[];
     /**
      * Whether the property is required.
      */
@@ -37552,11 +37891,11 @@ export enum MetadataComponentType {
      */
     UINT32 = "UINT32",
     /**
-     * A 64-bit signed integer. This type requires BigInt support.
+     * A 64-bit signed integer.
      */
     INT64 = "INT64",
     /**
-     * A 64-bit signed integer. This type requires BigInt support
+     * A 64-bit signed integer.
      */
     UINT64 = "UINT64",
     /**
@@ -39622,6 +39961,45 @@ export namespace OpenStreetMapImageryProvider {
  */
 export class OpenStreetMapImageryProvider extends UrlTemplateImageryProvider {
     constructor(options: OpenStreetMapImageryProvider.ConstructorOptions);
+}
+
+/**
+ * Displays panorama imagery in a scene. This type describes an interface and is not intended to be instantiated directly.
+ */
+export class Panorama {
+    constructor();
+    /**
+     * Determines if the panorama will be shown.
+     */
+    show: boolean;
+    /**
+     * Gets the transform of the panorama.
+     */
+    readonly transform: Matrix4;
+    /**
+     * Gets the credits of the panorama.
+     */
+    readonly credit: Credit;
+}
+
+/**
+ * Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
+ * interface and is not intended to be instantiated directly.
+ */
+export class PanoramaProvider {
+    constructor();
+    /**
+     * Returns a panorama provider.
+     * @param options - Input options to create the panorama provider.
+     * @returns The panorama provider for loading panoramas into a scene.
+     */
+    static fromUrl(options: any): PanoramaProvider;
+    /**
+     * Returns a panorama primitive.
+     * @param options - Input options to create the panorama primitive.
+     * @returns The panorama primitive for displaying panoramas in a scene.
+     */
+    loadPanorama(options: any): Panorama;
 }
 
 /**
@@ -43384,16 +43762,13 @@ export class SkyBox {
         show?: boolean;
     });
     /**
-     * The sources used to create the cube map faces: an object
-     * with <code>positiveX</code>, <code>negativeX</code>, <code>positiveY</code>,
-     * <code>negativeY</code>, <code>positiveZ</code>, and <code>negativeZ</code> properties.
-     * These can be either URLs or <code>Image</code> objects.
-     */
-    sources: any;
-    /**
      * Determines if the sky box will be shown.
      */
     show: boolean;
+    /**
+     * Gets or sets the the primitive object.
+     */
+    sources: any;
     /**
      * Called when {@link Viewer} or {@link CesiumWidget} render the scene to
      * get the draw commands needed to render this primitive.
