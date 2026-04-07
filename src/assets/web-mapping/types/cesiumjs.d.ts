@@ -1102,7 +1102,7 @@ export class BoundingSphere {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new BoundingSphere instance if one was not provided.
      */
-    static fromVertices(positions?: number[], center?: Cartesian3, stride?: number, result?: BoundingSphere): BoundingSphere;
+    static fromVertices(positions?: number[] | TypedArray, center?: Cartesian3, stride?: number, result?: BoundingSphere): BoundingSphere;
     /**
      * Computes a tight-fitting bounding sphere enclosing a list of EncodedCartesian3s, where the points are
      * stored in parallel flat arrays in X, Y, Z, order.  The bounding sphere is computed by running two
@@ -1528,7 +1528,7 @@ export class Cartesian2 {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian2, array: number[] | TypedArray, startingIndex?: number): number[] | TypedArray;
+    static pack(value: Cartesian2, array: number[], startingIndex?: number): number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1536,14 +1536,14 @@ export class Cartesian2 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian2 instance if one was not provided.
      */
-    static unpack(array: number[] | TypedArray, startingIndex?: number, result?: Cartesian2): Cartesian2;
+    static unpack(array: number[], startingIndex?: number, result?: Cartesian2): Cartesian2;
     /**
      * Flattens an array of Cartesian2s into an array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 2 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 2) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian2[], result?: number[] | TypedArray): number[] | TypedArray;
+    static packArray(array: Cartesian2[], result?: number[]): number[];
     /**
      * Unpacks an array of cartesian components into an array of Cartesian2s.
      * @param array - The array of components to unpack.
@@ -1878,7 +1878,7 @@ export class Cartesian3 {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian3, array: number[] | TypedArray, startingIndex?: number): number[] | TypedArray;
+    static pack(value: Cartesian3, array: number[], startingIndex?: number): number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -1886,21 +1886,21 @@ export class Cartesian3 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian3 instance if one was not provided.
      */
-    static unpack(array: number[] | TypedArray, startingIndex?: number, result?: Cartesian3): Cartesian3;
+    static unpack(array: number[], startingIndex?: number, result?: Cartesian3): Cartesian3;
     /**
      * Flattens an array of Cartesian3s into an array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 3 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 3) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian3[], result?: number[] | TypedArray): number[] | TypedArray;
+    static packArray(array: Cartesian3[], result?: number[]): number[];
     /**
      * Unpacks an array of cartesian components into an array of Cartesian3s.
      * @param array - The array of components to unpack.
      * @param [result] - The array onto which to store the result.
      * @returns The unpacked array.
      */
-    static unpackArray(array: number[] | TypedArray, result?: Cartesian3[]): Cartesian3[];
+    static unpackArray(array: number[], result?: Cartesian3[]): Cartesian3[];
     /**
      * Computes the value of the maximum component for the supplied Cartesian.
      * @param cartesian - The cartesian to use.
@@ -2312,7 +2312,7 @@ export class Cartesian4 {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Cartesian4, array: number[] | TypedArray, startingIndex?: number): number[] | TypedArray;
+    static pack(value: Cartesian4, array: number[], startingIndex?: number): number[];
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -2320,21 +2320,21 @@ export class Cartesian4 {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Cartesian4 instance if one was not provided.
      */
-    static unpack(array: number[] | TypedArray, startingIndex?: number, result?: Cartesian4): Cartesian4;
+    static unpack(array: number[], startingIndex?: number, result?: Cartesian4): Cartesian4;
     /**
      * Flattens an array of Cartesian4s into an array of components.
      * @param array - The array of cartesians to pack.
      * @param [result] - The array onto which to store the result. If this is a typed array, it must have array.length * 4 components, else a {@link DeveloperError} will be thrown. If it is a regular array, it will be resized to have (array.length * 4) elements.
      * @returns The packed array.
      */
-    static packArray(array: Cartesian4[], result?: number[] | TypedArray): number[] | TypedArray;
+    static packArray(array: Cartesian4[], result?: number[]): number[];
     /**
      * Unpacks an array of cartesian components into an array of Cartesian4s.
      * @param array - The array of components to unpack.
      * @param [result] - The array onto which to store the result.
      * @returns The unpacked array.
      */
-    static unpackArray(array: number[] | TypedArray, result?: Cartesian4[]): Cartesian4[];
+    static unpackArray(array: number[], result?: Cartesian4[]): Cartesian4[];
     /**
      * Computes the value of the maximum component for the supplied Cartesian.
      * @param cartesian - The cartesian to use.
@@ -3617,6 +3617,8 @@ export enum ClockStep {
     SYSTEM_CLOCK = 2
 }
 
+export function hue2rgb(): void;
+
 /**
  * A color, specified using red, green, blue, and alpha values,
  * which range from <code>0</code> (no intensity) to <code>1.0</code> (full intensity).
@@ -3765,7 +3767,7 @@ export class Color {
      * @param [startingIndex = 0] - The index into the array at which to start packing the elements.
      * @returns The array that was packed into
      */
-    static pack(value: Color, array: number[], startingIndex?: number): number[];
+    static pack(value: Color, array: number[] | TypedArray, startingIndex?: number): number[] | TypedArray;
     /**
      * Retrieves an instance from a packed array.
      * @param array - The packed array.
@@ -3773,7 +3775,7 @@ export class Color {
      * @param [result] - The object into which to store the result.
      * @returns The modified result parameter or a new Color instance if one was not provided.
      */
-    static unpack(array: number[], startingIndex?: number, result?: Color): Color;
+    static unpack(array: number[] | TypedArray, startingIndex?: number, result?: Color): Color;
     /**
      * Converts a 'byte' color component in the range of 0 to 255 into
      * a 'float' color component in the range of 0 to 1.0.
@@ -16776,11 +16778,6 @@ export class TerrainData {
 }
 
 /**
- * Indicates whether the terrain picker needs to be rebuilt due to changes in the underlying terrain mesh's vertices or indices.
- */
-export var needsRebuild: boolean;
-
-/**
  * Creates an axis-aligned bounding box for a quadtree node at the given tree-space coordinates and level.
  * This AABB is in the tree's local space (where the root node of the tree is a unit cube in its own local space).
  * @param x - The x coordinate of the node.
@@ -18917,6 +18914,8 @@ export type TypedArray = Float64Array | Float32Array | Uint32Array | Uint16Array
  * Union of all numeric typed array constructor types.
  */
 export type TypedArrayConstructor = Float64ArrayConstructor | Float32ArrayConstructor | Uint32ArrayConstructor | Uint16ArrayConstructor | Uint8ArrayConstructor | Int32ArrayConstructor | Int16ArrayConstructor | Int8ArrayConstructor;
+
+export type Destroyable = any;
 
 /**
  * Determines if a given date is a leap year.
@@ -23369,6 +23368,7 @@ export namespace PathGraphics {
      * @property [resolution = 60] - A numeric Property specifying the maximum number of seconds to step when sampling the position.
      * @property [material = Color.WHITE] - A Property specifying the material used to draw the path.
      * @property [distanceDisplayCondition] - A Property specifying at what distance from the camera that this path will be displayed.
+     * @property [relativeTo] - A Property specifying the frame in which to visualize the path. Use another entity's id to visualize the path relative to that entity, or use the string values "FIXED" or "INERTIAL" to visualize the path in those reference frames.
      */
     type ConstructorOptions = {
         show?: Property | boolean;
@@ -23378,6 +23378,7 @@ export namespace PathGraphics {
         resolution?: Property | number;
         material?: MaterialProperty | Color;
         distanceDisplayCondition?: Property | DistanceDisplayCondition;
+        relativeTo?: Property | string;
     };
 }
 
@@ -23420,6 +23421,10 @@ export class PathGraphics {
      */
     distanceDisplayCondition: Property | undefined;
     /**
+     * Gets or sets the frame in which to visualize the path. Use another entity's id to visualize the path relative to that entity, or use the string values "FIXED" or "INERTIAL" to visualize the path in those reference frames.
+     */
+    relativeTo: Property | undefined;
+    /**
      * Duplicates this instance.
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new instance if one was not provided.
@@ -23432,6 +23437,32 @@ export class PathGraphics {
      */
     merge(source: PathGraphics): void;
 }
+
+/**
+ * Transforms a path entity's position into the local frame of the reference entity.
+ * If the reference entity has an orientation, uses that orientation to define the local frame.
+ * Otherwise, falls back to a VVLH (Vehicle Velocity Local Horizontal) frame derived from the reference entity's velocity.
+ * @param time - The time at which to evaluate the orientation or VVLH frame.
+ * @param pathEntityPos - The position of the path entity in the FIXED reference frame.
+ * @param refEntityPos - The position of the reference entity in the FIXED reference frame.
+ * @param refEntity - The reference entity whose frame to transform into.
+ * @param result - The object onto which to store the result.
+ * @returns The transformed position in the reference entity's local frame, or undefined if either input position is undefined.
+ */
+export function transformToEntityFrame(time: JulianDate, pathEntityPos: Cartesian3, refEntityPos: Cartesian3, refEntity: Entity, result: Cartesian3): Cartesian3 | undefined;
+
+/**
+ * Compute the vehicle velocity, local horizontal (VVLH) transform for a position property at a given time.
+ * The VVLH axes is defined based on the motion of the provided position point as follows:
+ * - The X axis is directed toward the point's velocity vector, in the direction of motion.
+ * - The Y axis is along the angular momentum vector.
+ * - The Z axis is along the position vector.
+ * @param time - The time at which to compute the VVLH transform.
+ * @param positionProperty - The position to compute the VVLH frame for.
+ * @param result - The object onto which to store the result.
+ * @returns The VVLH transform.
+ */
+export function computeVvlhTransform(time: JulianDate, positionProperty: PositionProperty, result: Matrix4): Matrix4;
 
 /**
  * A {@link Visualizer} which maps {@link Entity#path} to a {@link Polyline}.
@@ -25939,8 +25970,6 @@ export type WebGLOptions = {
     failIfMajorPerformanceCaveat?: boolean;
 };
 
-export function PickId(pickObjects: Map<number, object>, key: number, color: Color): void;
-
 /**
  * The data type of a pixel.
  */
@@ -26017,6 +26046,8 @@ export enum TextureMinificationFilter {
      */
     LINEAR_MIPMAP_LINEAR = WebGLConstants.LINEAR_MIPMAP_LINEAR
 }
+
+export function addAttribute(): void;
 
 /**
  * An appearance defines the full GLSL vertex and fragment shaders and the
@@ -27583,6 +27614,780 @@ export class BoxEmitter {
      * The width, height and depth dimensions of the box in meters.
      */
     dimensions: Cartesian3;
+}
+
+/**
+ * View bound to the underlying buffer data of a {@link BufferPointCollection}.
+ *
+ * <p>BufferPoint instances are {@link https://en.wikipedia.org/wiki/Flyweight_pattern|flyweights}:
+ * a single BufferPoint instance can be temporarily bound to any conceptual
+ * "point" in a BufferPointCollection, allowing very large collections to be
+ * iterated and updated with a minimal memory footprint.</p>
+ *
+ * Represented as one (1) position.
+ */
+export class BufferPoint extends BufferPrimitive {
+    /**
+     * Copies data from source point to result.
+     */
+    static clone(point: BufferPoint, result: BufferPoint): BufferPoint;
+    /**
+     * Count of positions (vertices) in this primitive. Always 1.
+     */
+    readonly vertexCount: number;
+    /**
+     * Gets the position of this point.
+     */
+    getPosition(result?: Cartesian3): Cartesian3;
+    /**
+     * Sets the position of this point.
+     */
+    setPosition(position: Cartesian3): void;
+    /**
+     * Returns a JSON-serializable object representing the point. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @returns JSON-serializable object.
+     */
+    toJSON(): any;
+}
+
+/**
+ * @property [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ */
+export type BufferPointOptions = {
+    show?: boolean;
+    material?: BufferPointMaterial;
+    position?: Cartesian3;
+};
+
+/**
+ * Collection of points held in ArrayBuffer storage for performance and memory optimization.
+ *
+ * <p>Default buffer memory allocation is arbitrary, and collections cannot be resized,
+ * so specific per-buffer capacities should be provided in the collection
+ * constructor when available.</p>
+ * @example
+ * const collection = new BufferPointCollection({primitiveCountMax: 1024});
+ *
+ * const point = new BufferPoint();
+ * const material = new BufferPointMaterial({color: Color.WHITE});
+ *
+ * // Create a new point, temporarily bound to 'point' local variable.
+ * collection.add({
+ *   position: new Cartesian3(0.0, 0.0, 0.0),
+ *   material
+ * }, point);
+ *
+ * // Iterate over all points in collection, temporarily binding 'point'
+ * // local variable to each, and updating point material.
+ * for (let i = 0; i < collection.primitiveCount; i++) {
+ *   collection.get(i, point);
+ *   point.setMaterial(material);
+ * }
+ */
+export class BufferPointCollection extends BufferPrimitiveCollection<BufferPoint> {
+    constructor(options: {
+        primitiveCountMax?: number;
+        show?: boolean;
+        debugShowBoundingVolume?: boolean;
+    });
+    /**
+     * Adds a new point to the collection, with the specified options. A
+     * {@link BufferPoint} instance is linked to the new point, using
+     * the 'result' argument if given, or a new instance if not. For repeated
+     * calls, prefer to reuse a single BufferPoint instance rather than
+     * allocating a new instance on each call.
+     */
+    add(options: BufferPointOptions, result: BufferPoint): BufferPoint;
+}
+
+/**
+ * @property [color = Color.WHITE] - Color of fill.
+ * @property [outlineColor = Color.WHITE] - Color of outline.
+ * @property [outlineWidth = 0.0] - Width of outline, 0-255px.
+ * @property [size = 1.0] - Size of point, 0-255px.
+ */
+export type BufferPointMaterialOptions = {
+    color?: Color;
+    outlineColor?: Color;
+    outlineWidth?: number;
+    size?: number;
+};
+
+/**
+ * Material description for a {@link BufferPoint}.
+ *
+ * <p>BufferPointMaterial objects are {@link Packable|packable}, stored
+ * when calling {@link BufferPoint#setMaterial}. Subsequent changes to the
+ * material will not affect the point until setMaterial() is called again.</p>
+ */
+export class BufferPointMaterial extends BufferPrimitiveMaterial {
+    constructor(options?: BufferPointMaterialOptions);
+    /**
+     * Size of point, 0-255px.
+     */
+    size: number;
+    static pack(material: BufferPointMaterial, view: DataView, byteOffset: number): void;
+    static unpack(view: DataView, byteOffset: number, result: BufferPointMaterial): BufferPointMaterial;
+    /**
+     * Returns a JSON-serializable object representing the material. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @returns JSON-serializable object.
+     */
+    toJSON(): any;
+    /**
+     * Color of fill.
+     */
+    color: Color;
+    /**
+     * Color of outline.
+     */
+    outlineColor: Color;
+    /**
+     * Width of outline, 0-255px.
+     */
+    outlineWidth: number;
+}
+
+/**
+ * View bound to the underlying buffer data of a {@link BufferPolygonCollection}.
+ *
+ * <p>BufferPolygon instances are {@link https://en.wikipedia.org/wiki/Flyweight_pattern|flyweights}:
+ * a single BufferPolygon instance can be temporarily bound to any conceptual
+ * "polygon" in a BufferPolygonCollection, allowing very large collections to be
+ * iterated and updated with a minimal memory footprint.</p>
+ *
+ * <p>Represented as one (1) external linear ring of three (3) or more positions.
+ * May optionally define one or more internal linear rings ("holes") within the
+ * polygon. Each hole is represented as a single index into the positions array,
+ * where the vertex at that index is the start of an internal linear ring that
+ * continues along the following vertices until reaching either the vertex
+ * index of the next hole, or the end of the vertex list. Stores a precomputed
+ * triangulation, represented as three vertex indices per triangle.</p>
+ */
+export class BufferPolygon extends BufferPrimitive {
+    /**
+     * Copies data from source polygon to result. If the result polygon is not
+     * new (the last polygon in the collection) then source and result polygons
+     * must have the same vertex counts, hole counts, and triangle counts.
+     */
+    static clone(polygon: BufferPolygon, result: BufferPolygon): BufferPolygon;
+    /**
+     * Count of positions (vertices) in this polygon, including both outer ring and
+     * internal rings (holes), number of VEC3 elements.
+     */
+    readonly vertexCount: number;
+    /**
+     * Returns an array view of this polygon's vertex positions. If 'result'
+     * argument is given, vertex positions are written to that array and returned.
+     * Otherwise, returns an ArrayView on collection memory — changes to this array
+     * will not trigger render updates, which requires `.setPositions()`.
+     * @param [result] - return {TypedArray}
+     */
+    getPositions(result?: TypedArray): void;
+    setPositions(positions: TypedArray): void;
+    /**
+     * Offset in collection position array to first vertex in polygon's outer
+     * linear ring, number of VEC3 elements.
+     */
+    readonly outerVertexOffset: number;
+    /**
+     * Count of positions (vertices) in this polygon's outer linear ring, number
+     * of VEC3 elements.
+     */
+    readonly outerVertexCount: number;
+    /**
+     * Returns an array view of this polygon's outer linear ring vertex positions.
+     * If 'result' argument is given, vertex positions are written to that array
+     * and returned. Otherwise, returns an ArrayView on collection memory —
+     * changes to this array will not trigger render updates, which requires
+     * `.setPositions()`.
+     */
+    getOuterPositions(result?: TypedArray): TypedArray;
+    /**
+     * Count of holes (indices) in this polygon.
+     */
+    readonly holeCount: number;
+    /**
+     * Gets this polygon's hole indices, with each hole represented as a single
+     * offset into this polygon's positions array. Each hole implicitly
+     * continues along an internal linear ring from that vertex offset until
+     * reaching either the end of the positions array, or the next hole offset.
+     *
+     * If 'result' argument is given, hole indices are written to that array and
+     * returned. Otherwise, returns an ArrayView on collection memory — changes
+     * to this array will not trigger render updates, which requires `.setHoles()`.
+     */
+    getHoles(result?: TypedArray): TypedArray;
+    /**
+     * Sets this polygon's hole indices, with holes represented as a single
+     * offset into this polygon's positions array. Each hole implicitly
+     * continues along an internal linear ring from that vertex offset until
+     * reaching either the end of the positions array, or the next hole offset.
+     */
+    setHoles(holes: TypedArray): void;
+    /**
+     * Returns the number of (VEC3) vertices in the specified hole.
+     */
+    getHoleVertexCount(holeIndex: number): number;
+    /**
+     * Returns an array view of the inner linear ring vertex positions for the
+     * specified hole. If 'result' argument is given, vertex positions are written
+     * to that array and returned. Otherwise, returns an ArrayView on collection
+     * memory — changes to this array will not trigger render updates, which
+     * requires `.setPositions()`.
+     * @param [result] - return {TypedArray}
+     */
+    getHolePositions(holeIndex: number, result?: TypedArray): void;
+    /**
+     * Count of triangles in this polygon, number of VEC3 elements.
+     */
+    readonly triangleCount: number;
+    /**
+     * Returns an array view of this polygon's triangle indices, represented as
+     * three vertex indices per triangle.
+     *
+     * If 'result' argument is given, triangle indices are written to that array
+     * and returned. Otherwise, returns an ArrayView on collection memory —
+     * changes to this array will not trigger render updates, which requires
+     * `.setTriangles()`.
+     */
+    getTriangles(result?: TypedArray): TypedArray;
+    /**
+     * Sets this polygon's triangle indices, represented as three vertex indices
+     * per triangle.
+     */
+    setTriangles(indices: TypedArray): void;
+    /**
+     * Returns a JSON-serializable object representing the polygon. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @returns JSON-serializable object.
+     */
+    toJSON(): any;
+}
+
+/**
+ * @property [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ */
+export type BufferPolygonOptions = {
+    show?: boolean;
+    material?: BufferPolygonMaterial;
+    positions?: TypedArray;
+    holes?: TypedArray;
+    triangles?: TypedArray;
+};
+
+/**
+ * Collection of polygons held in ArrayBuffer storage for performance and memory optimization.
+ *
+ * <p>Default buffer memory allocation is arbitrary, and collections cannot be resized,
+ * so specific per-buffer capacities should be provided in the collection
+ * constructor when available.</p>
+ * @example
+ * import earcut from "earcut";
+ *
+ * const collection = new BufferPolygonCollection({
+ *   primitiveCountMax: 1024,
+ *   vertexCountMax: 4096,
+ *   holeCountMax: 1024,
+ *   triangleCountMax: 2048,
+ * });
+ *
+ * const polygon = new BufferPolygon();
+ * const positions = [ ... ];
+ * const holes = [ ... ];
+ * const material = new BufferPolygonMaterial({color: Color.WHITE});
+ *
+ * // Create a new polygon, temporarily bound to 'polygon' local variable.
+ * collection.add({
+ *   positions: new Float64Array(positions),
+ *   holes: new Uint32Array(holes),
+ *   triangles: new Uint32Array(earcut(positions, holes, 3)),
+ *   material
+ * }, polygon);
+ *
+ * // Iterate over all polygons in collection, temporarily binding 'polygon'
+ * // local variable to each, and updating polygon material.
+ * for (let i = 0; i < collection.primitiveCount; i++) {
+ *   collection.get(i, polygon);
+ *   polygon.setMaterial(material);
+ * }
+ * @param [options.allowPicking = true] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
+ */
+export class BufferPolygonCollection extends BufferPrimitiveCollection<BufferPolygon> {
+    constructor(options: {
+        primitiveCountMax?: number;
+        vertexCountMax?: number;
+        holeCountMax?: number;
+        triangleCountMax?: number;
+        positionDatatype?: ComponentDatatype;
+        show?: boolean;
+        allowPicking?: boolean;
+        debugShowBoundingVolume?: boolean;
+    });
+    /**
+     * Duplicates the contents of this collection into the result collection.
+     * Result collection is not resized, and must contain enough space for all
+     * primitives in the source collection. Existing polygons in the result
+     * collection will be overwritten.
+     *
+     * <p>Useful when allocating more space for a collection that has reached its
+     * capacity, and efficiently transferring polygons to the new collection.</p>
+     * @example
+     * const result = new BufferPolygonCollection({ ... }); // allocate larger 'result' collection
+     * BufferPolygonCollection.clone(collection, result);   // copy polygons from 'collection' into 'result'
+     */
+    static clone(collection: BufferPolygonCollection, result: BufferPolygonCollection): BufferPolygonCollection;
+    /**
+     * Adds a new polygon to the collection, with the specified options. A
+     * {@link BufferPolygon} instance is linked to the new polygon, using
+     * the 'result' argument if given, or a new instance if not. For repeated
+     * calls, prefer to reuse a single BufferPolygon instance rather than
+     * allocating a new instance on each call.
+     */
+    add(options: BufferPolygonOptions, result: BufferPolygon): BufferPolygon;
+    /**
+     * Total byte length of buffers owned by this collection. Includes any unused
+     * space allocated by {@link primitiveCountMax}, even if no polygons have
+     * yet been added in that space.
+     */
+    readonly byteLength: number;
+    /**
+     * Number of holes in collection. Must be <= {@link holeCountMax}.
+     */
+    readonly holeCount: number;
+    /**
+     * Maximum number of holes in collection. Must be >= {@link holeCount}.
+     */
+    readonly holeCountMax: number;
+    /**
+     * Number of triangles in collection. Must be <= {@link triangleCountMax}.
+     */
+    readonly triangleCount: number;
+    /**
+     * Maximum number of triangles in collection. Must be >= {@link triangleCount}.
+     */
+    readonly triangleCountMax: number;
+}
+
+/**
+ * @property [color = Color.WHITE] - Color of fill.
+ * @property [outlineColor = Color.WHITE] - Color of outline.
+ * @property [outlineWidth = 0.0] - Width of outline, 0-255px.
+ */
+export type BufferPolygonMaterialOptions = {
+    color?: Color;
+    outlineColor?: Color;
+    outlineWidth?: number;
+};
+
+/**
+ * Material description for a {@link BufferPolygon}.
+ *
+ * <p>BufferPolygonMaterial objects are {@link Packable|packable}, stored
+ * when calling {@link BufferPolygon#setMaterial}. Subsequent changes to the
+ * material will not affect the polygon until setMaterial() is called again.</p>
+ */
+export class BufferPolygonMaterial extends BufferPrimitiveMaterial {
+    constructor(options?: BufferPolygonMaterialOptions);
+    /**
+     * Color of fill.
+     */
+    color: Color;
+    /**
+     * Color of outline.
+     */
+    outlineColor: Color;
+    /**
+     * Width of outline, 0-255px.
+     */
+    outlineWidth: number;
+    /**
+     * Returns a JSON-serializable object representing the material. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @returns JSON-serializable object.
+     */
+    toJSON(): any;
+}
+
+/**
+ * View bound to the underlying buffer data of a {@link BufferPolylineCollection}.
+ *
+ * <p>BufferPolyline instances are {@link https://en.wikipedia.org/wiki/Flyweight_pattern|flyweights}:
+ * a single BufferPolyline instance can be temporarily bound to any conceptual
+ * "polyline" in a BufferPolylineCollection, allowing very large collections to be
+ * iterated and updated with a minimal memory footprint.</p>
+ *
+ * Represented as two (2) or more positions.
+ */
+export class BufferPolyline extends BufferPrimitive {
+    /**
+     * Copies data from source polyline to result. If the result polyline is not
+     * new (the last polyline in the collection) then source and result polylines
+     * must have the same vertex counts.
+     */
+    static clone(polyline: BufferPolyline, result: BufferPolyline): BufferPolyline;
+    /**
+     * Count of positions (vertices) in this polyline, number of VEC3 elements.
+     */
+    readonly vertexCount: number;
+    /**
+     * Returns an array view of this polyline's vertex positions. If 'result'
+     * argument is given, vertex positions are written to that array and returned.
+     * Otherwise, returns an ArrayView on collection memory — changes to this array
+     * will not trigger render updates, which requires `.setPositions()`.
+     * @param [result] - return {TypedArray}
+     */
+    getPositions(result?: TypedArray): void;
+    setPositions(positions: TypedArray): void;
+    /**
+     * Returns a JSON-serializable object representing the polyline. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @returns JSON-serializable object.
+     */
+    toJSON(): any;
+}
+
+/**
+ * @property [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ */
+export type BufferPolylineOptions = {
+    show?: boolean;
+    material?: BufferPolylineMaterial;
+    positions?: TypedArray;
+};
+
+/**
+ * Collection of polylines held in ArrayBuffer storage for performance and memory optimization.
+ *
+ * <p>Default buffer memory allocation is arbitrary, and collections cannot be resized,
+ * so specific per-buffer capacities should be provided in the collection
+ * constructor when available.</p>
+ * @example
+ * const collection = new BufferPolylineCollection({
+ *   primitiveCountMax: 1024,
+ *   vertexCountMax: 4096,
+ * });
+ *
+ * const polyline = new BufferPolyline();
+ * const material = new BufferPolylineMaterial({color: Color.WHITE});
+ *
+ * // Create a new polyline, temporarily bound to 'polyline' local variable.
+ * collection.add({
+ *   positions: new Float64Array([ ... ]),
+ *   material,
+ * }, polyline);
+ *
+ * // Iterate over all polylines in collection, temporarily binding 'polyline'
+ * // local variable to each, and updating polyline material.
+ * for (let i = 0; i < collection.primitiveCount; i++) {
+ *   collection.get(i, polyline);
+ *   polyline.setMaterial(material);
+ * }
+ */
+export class BufferPolylineCollection extends BufferPrimitiveCollection<BufferPolyline> {
+    /**
+     * Adds a new polyline to the collection, with the specified options. A
+     * {@link BufferPolyline} instance is linked to the new polyline, using
+     * the 'result' argument if given, or a new instance if not. For repeated
+     * calls, prefer to reuse a single BufferPolyline instance rather than
+     * allocating a new instance on each call.
+     */
+    add(options: BufferPolylineOptions, result: BufferPolyline): BufferPolyline;
+}
+
+/**
+ * @property [color = Color.WHITE] - Color of fill.
+ * @property [outlineColor = Color.WHITE] - Color of outline.
+ * @property [outlineWidth = 0.0] - Width of outline, 0-255px.
+ * @property [width = 1.0] - Width of line, 0-255px.
+ */
+export type BufferPolylineMaterialOptions = {
+    color?: Color;
+    outlineColor?: Color;
+    outlineWidth?: number;
+    width?: number;
+};
+
+/**
+ * Material description for a {@link BufferPolyline}.
+ *
+ * <p>BufferPolylineMaterial objects are {@link Packable|packable}, stored
+ * when calling {@link BufferPolyline#setMaterial}. Subsequent changes to the
+ * material will not affect the polyline until setMaterial() is called again.</p>
+ */
+export class BufferPolylineMaterial extends BufferPrimitiveMaterial {
+    constructor(options?: BufferPolylineMaterialOptions);
+    /**
+     * Width of polyline, 0–255px.
+     */
+    width: number;
+    static pack(material: BufferPolylineMaterial, view: DataView, byteOffset: number): void;
+    static unpack(view: DataView, byteOffset: number, result: BufferPolylineMaterial): BufferPolylineMaterial;
+    /**
+     * Returns a JSON-serializable object representing the material. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @returns JSON-serializable object.
+     */
+    toJSON(): any;
+    /**
+     * Color of fill.
+     */
+    color: Color;
+    /**
+     * Color of outline.
+     */
+    outlineColor: Color;
+    /**
+     * Width of outline, 0-255px.
+     */
+    outlineWidth: number;
+}
+
+/**
+ * View bound to the underlying buffer data of a {@link BufferPrimitiveCollection}. Abstract.
+ *
+ * <p>BufferPrimitive instances are intended to be reused when iterating over large collections,
+ * and temporarily bound to a primitive index while performing read/write operations on that primitive,
+ * before being rebound to the next primitive, using the
+ * {@link https://en.wikipedia.org/wiki/Flyweight_pattern|flyweight pattern}.</p>
+ */
+export class BufferPrimitive {
+    /**
+     * Copies data from source primitive to result. If the result primitive is not
+     * new (the last primitive in the collection) then source and result primitives
+     * must have the same vertex counts.
+     */
+    static clone(primitive: BufferPrimitive, result: BufferPrimitive): BufferPrimitive;
+    /**
+     * Feature ID associated with the primitive; not required to be unique.
+     */
+    featureId: number;
+    /**
+     * Whether primitive is shown.
+     */
+    show: boolean;
+    getMaterial(result: BufferPrimitiveMaterial): BufferPrimitiveMaterial;
+    setMaterial(material: BufferPrimitiveMaterial): void;
+    /**
+     * Returns a JSON-serializable object representing the primitive. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @returns JSON-serializable object.
+     */
+    toJSON(): any;
+}
+
+export type BufferPrimitiveOptions = {
+    show?: boolean;
+    material?: BufferPrimitiveMaterial;
+};
+
+/**
+ * Collection of primitives held in ArrayBuffer storage for performance and memory optimization.
+ *
+ * <p>To get the full performance benefit of using a BufferPrimitiveCollection containing "N" primitives,
+ * be careful to avoid allocating "N" instances of any related JavaScript object. {@link BufferPrimitive},
+ * {@link Color}, {@link Cartesian3}, and other objects can all be reused when working with large collections,
+ * using the {@link https://en.wikipedia.org/wiki/Flyweight_pattern|flyweight pattern}.</p>
+ * @param [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ * @param [options.allowPicking = false] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
+ */
+export class BufferPrimitiveCollection<T extends BufferPrimitive> {
+    constructor(options: {
+        modelMatrix?: Matrix4;
+        primitiveCountMax?: number;
+        vertexCountMax?: number;
+        show?: boolean;
+        positionDatatype?: ComponentDatatype;
+        allowPicking?: boolean;
+        debugShowBoundingVolume?: boolean;
+    });
+    /**
+     * Default capacity of buffers on new collections. A quantity of elements:
+     * number of vertices in the vertex buffer, primitives in the primitive
+     * buffer, etc. This value is arbitrary, and collections cannot be resized,
+     * so specific per-buffer capacities should be provided in the collection
+     * constructor when available.
+     */
+    readonly DEFAULT_CAPACITY: number;
+    /**
+     * Determines if primitives in this collection will be shown.
+     */
+    show: boolean;
+    /**
+     * Transforms geometry from model to world coordinates.
+     */
+    modelMatrix: Matrix4;
+    /**
+     * Local bounding volume for all primitives in the collection, including both
+     * shown and hidden primitives.
+     */
+    boundingVolume: BoundingSphere;
+    /**
+     * World bounding volume for all primitives in the collection, including both
+     * shown and hidden primitives.
+     */
+    boundingVolumeWC: BoundingSphere;
+    /**
+     * This property is for debugging only; it is not for production use nor is it optimized.
+     * <p>
+     * Draws the bounding sphere for each draw command in the primitive.
+     * </p>
+     */
+    debugShowBoundingVolume: boolean;
+    /**
+     * Returns true if this object was destroyed; otherwise, false.
+     * @returns True if this object was destroyed; otherwise, false.
+     */
+    isDestroyed(): boolean;
+    /**
+     * Destroys collection and its GPU resources.
+     */
+    destroy(): void;
+    /**
+     * Sorts primitives of the collection.
+     *
+     * Because sorting changes the indices (but not the feature IDs) of primitives
+     * in the collection, the function also returns an array mapping from previous
+     * index to new index. When sorting repeatedly, the array can be reused and
+     * passed as the 'result' argument for each call.
+     * @returns Mapping from previous index to new index.
+     */
+    sort(sortFn: (...params: any[]) => any, result: Uint32Array): Uint32Array;
+    /**
+     * Duplicates the contents of this collection into the result collection.
+     * Result collection is not resized, and must contain enough space for all
+     * primitives in the source collection. Existing primitives in the result
+     * collection will be overwritten.
+     *
+     * <p>Useful when allocating more space for a collection that has reached its
+     * capacity, and efficiently transferring features to the new collection.</p>
+     * @example
+     * const result = new BufferPrimitiveCollection({ ... }); // allocate larger 'result' collection
+     * BufferPrimitiveCollection.clone(collection, result);   // copy primitives from 'collection' into 'result'
+     */
+    static clone<T extends BufferPrimitive>(collection: BufferPrimitiveCollection<T>, result: BufferPrimitiveCollection<T>): void;
+    /**
+     * Makes the given {@link BufferPrimitive} a view onto this collection's
+     * primitive at the given index, for use when reading/writing primitive
+     * properties. When iterating over a large collection, prefer to reuse
+     * the same BufferPrimitive instance throughout the loop — rebinding
+     * an existing instance to a different primitive is cheap, and avoids
+     * allocating in-memory objects for every object.
+     * @example
+     * const primitive = new BufferPrimitive();
+     * for (let i = 0; i < collection.primitiveCount; i++) {
+     *   collection.get(i, primitive);
+     *   primitive.setColor(Color.RED);
+     * }
+     * @returns The BufferPrimitive instance passed as the
+     * 'result' argument, now bound to the specified primitive index.
+     */
+    get(index: number, result: BufferPrimitive): BufferPrimitive;
+    /**
+     * Adds a new primitive to the collection, with the specified options. A
+     * {@link BufferPrimitive} instance is linked to the new primitive, using
+     * the 'result' argument if given, or a new instance if not. For repeated
+     * calls, prefer to reuse a single BufferPrimitive instance rather than
+     * allocating a new instance on each call.
+     */
+    add(options: BufferPrimitiveOptions, result: BufferPrimitive): BufferPrimitive;
+    update(frameState: any): void;
+    /**
+     * Number of primitives in collection. Must be <= {@link primitiveCountMax}.
+     */
+    readonly primitiveCount: number;
+    /**
+     * Maximum number of primitives this collection can contain. Must be >=
+     * {@link primitiveCount}.
+     */
+    readonly primitiveCountMax: number;
+    /**
+     * Total byte length of buffers owned by this collection. Includes any unused
+     * space allocated by {@link primitiveCountMax}, even if no primitives have
+     * yet been added in that space.
+     */
+    readonly byteLength: number;
+    /**
+     * Number of vertices in collection. Must be <= {@link vertexCountMax}.
+     */
+    readonly vertexCount: number;
+    /**
+     * Maximum number of vertices this collection can contain. Must be >=
+     * {@link vertexCount}.
+     */
+    readonly vertexCountMax: number;
+    /**
+     * Returns a JSON-serializable array representing the collection. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @example
+     * console.table(collection.toJSON());
+     * @returns List of JSON-serializable objects, one for each
+     * primitive in the collection.
+     */
+    toJSON(): object[];
+}
+
+/**
+ * @property [color = Color.WHITE] - Color of fill.
+ * @property [outlineColor = Color.WHITE] - Color of outline.
+ * @property [outlineWidth = 0.0] - Width of outline, 0-255px.
+ */
+export type BufferPrimitiveMaterialOptions = {
+    color?: Color;
+    outlineColor?: Color;
+    outlineWidth?: number;
+};
+
+/**
+ * Material description for a {@link BufferPrimitive}. Abstract.
+ *
+ * <p>BufferPrimitiveMaterial objects are {@link Packable|packable}, stored
+ * when calling {@link BufferPrimitive#setMaterial}. Subsequent changes to the
+ * material will not affect the primitive until setMaterial() is called again.</p>
+ */
+export class BufferPrimitiveMaterial {
+    constructor(options?: BufferPrimitiveMaterialOptions);
+    /**
+     * Color of fill.
+     */
+    color: Color;
+    /**
+     * Color of outline.
+     */
+    outlineColor: Color;
+    /**
+     * Width of outline, 0-255px.
+     */
+    outlineWidth: number;
+    static packedLength: number;
+    /**
+     * Stores the provided material into the provided array.
+     */
+    static pack(material: BufferPrimitiveMaterial, view: DataView, byteOffset: number): void;
+    /**
+     * Retrieves a material from a packed array.
+     * @param view - The packed array.
+     * @param byteOffset - Starting index of the element to be unpacked.
+     * @param result - Material into which results are unpacked.
+     * @returns Modified result material, with results unpacked.
+     */
+    static unpack(view: DataView, byteOffset: number, result: BufferPrimitiveMaterial): BufferPrimitiveMaterial;
+    /**
+     * Returns a JSON-serializable object representing the material. This encoding
+     * is not memory-efficient, and should generally be used for debugging and
+     * testing.
+     * @returns JSON-serializable object.
+     */
+    toJSON(): any;
 }
 
 /**
@@ -31311,12 +32116,14 @@ export function equalsArrayCartesian3(a: Cartesian3[] | undefined, b: Cartesian3
  * @param [options.polygons = []] - An array of {@link ClippingPolygon} objects used to selectively disable rendering on the inside of each polygon.
  * @param [options.enabled = true] - Determines whether the clipping polygons are active.
  * @param [options.inverse = false] - If true, a region will be clipped if it is outside of every polygon in the collection. Otherwise, a region will only be clipped if it is on the inside of any polygon.
+ * @param [options.quality = 1.0] - A scalar that controls the resolution of the signed distance texture used for clipping. Values greater than 1.0 increase quality, values less than 1.0 decrease it. Must be greater than 0.0.
  */
 export class ClippingPolygonCollection {
     constructor(options?: {
         polygons?: ClippingPolygon[];
         enabled?: boolean;
         inverse?: boolean;
+        quality?: number;
     });
     /**
      * If true, clipping will be enabled.
@@ -31328,6 +32135,11 @@ export class ClippingPolygonCollection {
      * inside of any polygon.
      */
     inverse: boolean;
+    /**
+     * A scalar that controls the resolution of the signed distance texture used for clipping.
+     * Values greater than 1.0 increase quality, values less than 1.0 decrease it. Must be greater than 0.0.
+     */
+    quality: number;
     /**
      * An event triggered when a new clipping polygon is added to the collection.  Event handlers
      * are passed the new polygon and the index at which it was added.
@@ -31773,7 +32585,7 @@ export namespace CubeMapPanorama {
     /**
      * Initialization options for the CubeMapPanorama constructor
      * @property [options.sources] - The source URL or <code>Image</code> object for each of the six cube map faces.  See the example below.
-     * @property [options.transform] - A 4x4 transformation matrix that defines the panorama’s position and orientation
+     * @property [options.transform] - A 3x3 transformation matrix that defines the panorama’s orientation. If not specified, the default orientation is defined using the True Equator Mean Equinox (TEME) axes.
      * @property [options.show = true] - Determines if this primitive will be shown.
      * @property [options.credit] - A credit for the panorama, which is displayed on the canvas.
      */
@@ -31823,9 +32635,9 @@ export class CubeMapPanorama {
      */
     show: boolean;
     /**
-     * Gets the transform of the panorama.
+     * Gets the transform of the panorama. If undefined, the default orientation uses the True Equator Mean Equinox (TEME) axes.
      */
-    readonly transform: Matrix4;
+    readonly transform: Matrix3;
     /**
      * Gets the credits of the panorama.
      */
@@ -33100,13 +33912,13 @@ export class GaussianSplat3DTileContent {
 }
 
 /**
- * Describes the format in which to request GetFeatureInfo from a Web Map Service (WMS) server.
+ * Describes the format in which to request GetFeatureInfo from a Web Map Service (WMS) or Web Map Tile Service (WMTS) server.
  * @param type - The type of response to expect from a GetFeatureInfo request.  Valid
  *        values are 'json', 'xml', 'html', or 'text'.
- * @param [format] - The info format to request from the WMS server.  This is usually a
+ * @param [format] - The info format to request from the server.  This is usually a
  *        MIME type such as 'application/json' or text/xml'.  If this parameter is not specified, the provider will request 'json'
  *        using 'application/json', 'xml' using 'text/xml', 'html' using 'text/html', and 'text' using 'text/plain'.
- * @param [callback] - A function to invoke with the GetFeatureInfo response from the WMS server
+ * @param [callback] - A function to invoke with the GetFeatureInfo response from the server
  *        in order to produce an array of picked {@link ImageryLayerFeatureInfo} instances.  If this parameter is not specified,
  *        a default function for the type of response is used.
  */
@@ -37333,6 +38145,14 @@ export class Material {
      */
     translucent: boolean | ((...params: any[]) => any);
     /**
+     * The {@link TextureMinificationFilter} to apply to this material's textures.
+     */
+    minificationFilter: TextureMinificationFilter;
+    /**
+     * The {@link TextureMagnificationFilter} to apply to this material's textures.
+     */
+    magnificationFilter: TextureMagnificationFilter;
+    /**
      * Creates a new material using an existing material type.
      * <br /><br />
      * Shorthand for: new Material({fabric : {type : type}});
@@ -37490,16 +38310,6 @@ export class Material {
      */
     static readonly WaterMaskType: string;
 }
-
-/**
- * The {@link TextureMinificationFilter} to apply to this material's textures.
- */
-export var minificationFilter: TextureMinificationFilter;
-
-/**
- * The {@link TextureMagnificationFilter} to apply to this material's textures.
- */
-export var magnificationFilter: TextureMagnificationFilter;
 
 /**
  * Loads the images for a cubemap uniform, if it has changed since the last time this was called.
@@ -37660,11 +38470,6 @@ export namespace MaterialAppearance {
         const ALL: MaterialAppearance.MaterialSupportType;
     }
 }
-
-/**
- * Gets or sets the nearest sampling flag.
- */
-export var nearestSampling: boolean;
 
 /**
  * A metadata class.
@@ -37860,6 +38665,13 @@ export class MetadataClassProperty {
      * An object containing extensions.
      */
     readonly extensions: any;
+    /**
+     * Determines the byte size of a single property element, stored on the GPU.
+     * This differs from the CPU byte size if the element type is a 64-bit type that can be
+     * downcast to a 32-bit type for texture packing (only relevant for textures created from property tables).
+     * @returns The byte size of a single property element on the GPU.
+     */
+    gpuBytesPerElement(): number;
 }
 
 /**
@@ -38325,6 +39137,15 @@ export enum CustomShaderTranslucencyMode {
      */
     TRANSLUCENT = 2
 }
+
+/**
+ * @property colors - The packed per-vertex colors.
+ * @property count - The number of vertices.
+ */
+export type VertexColorInfo = {
+    colors: Float32Array;
+    count: number;
+};
 
 export namespace AnchorPointDirect {
     /**
@@ -40472,35 +41293,6 @@ export class PerInstanceColorAppearance {
      */
     getRenderState(): any;
 }
-
-/**
- * The optional ID of the metadata schema
- */
-export var schemaId: string | undefined;
-
-/**
- * The name of the metadata class
- */
-export var className: string;
-
-/**
- * The name of the metadata property
- */
-export var propertyName: string;
-
-/**
- * The the `MetadataClassProperty` that is described by this
- * structure, as obtained from the `MetadataSchema`
- */
-export var classProperty: MetadataClassProperty;
-
-/**
- * The `PropertyTextureProperty` or `PropertyAttributeProperty` that
- * is described by this structure, as obtained from the property texture
- * or property attribute of the `StructuralMetadata` that matches the
- * class name and property name.
- */
-export var metadataProperty: any;
 
 /**
  * Compute the rectangle that describes the part of the drawing buffer
@@ -43762,10 +44554,6 @@ export class SkyBox {
         show?: boolean;
     });
     /**
-     * Determines if the sky box will be shown.
-     */
-    show: boolean;
-    /**
      * Gets or sets the the primitive object.
      */
     sources: any;
@@ -43805,6 +44593,11 @@ export class SkyBox {
      */
     static createEarthSkyBox(): SkyBox;
 }
+
+/**
+ * Determines if the sky box will be shown.
+ */
+export var show: boolean;
 
 /**
  * A ParticleEmitter that emits particles within a sphere.
@@ -45429,13 +46222,14 @@ export namespace WebMapServiceImageryProvider {
      * @property url - The URL of the WMS service. The URL supports the same keywords as the {@link UrlTemplateImageryProvider}.
      * @property layers - The layers to include, separated by commas.
      * @property [parameters = WebMapServiceImageryProvider.DefaultParameters] - Additional parameters to pass to the WMS server in the GetMap URL.
-     * @property [getFeatureInfoParameters = WebMapServiceImageryProvider.GetFeatureInfoDefaultParameters] - Additional parameters to pass to the WMS server in the GetFeatureInfo URL.
      * @property [enablePickFeatures = true] - If true, {@link WebMapServiceImageryProvider#pickFeatures} will invoke
      *        the GetFeatureInfo operation on the WMS server and return the features included in the response.  If false,
      *        {@link WebMapServiceImageryProvider#pickFeatures} will immediately return undefined (indicating no pickable features)
      *        without communicating with the server.  Set this property to false if you know your WMS server does not support
      *        GetFeatureInfo or if you don't want this provider's features to be pickable. Note that this can be dynamically
      *        overridden by modifying the WebMapServiceImageryProvider#enablePickFeatures property.
+     * @property [getFeatureInfoParameters = WebMapServiceImageryProvider.GetFeatureInfoDefaultParameters] - Additional parameters to pass to the WMS server in the GetFeatureInfo URL.
+     * @property [getFeatureInfoUrl] - The getFeatureInfo URL of the WMS service. If the property is not defined then we use the property value of url.
      * @property [getFeatureInfoFormats = WebMapServiceImageryProvider.DefaultGetFeatureInfoFormats] - The formats
      *        in which to try WMS GetFeatureInfo requests.
      * @property [rectangle = Rectangle.MAX_VALUE] - The rectangle of the layer.
@@ -45458,14 +46252,14 @@ export namespace WebMapServiceImageryProvider {
      *                          an array, each element in the array is a subdomain.
      * @property [clock] - A Clock instance that is used when determining the value for the time dimension. Required when `times` is specified.
      * @property [times] - TimeIntervalCollection with its data property being an object containing time dynamic dimension and their values.
-     * @property [getFeatureInfoUrl] - The getFeatureInfo URL of the WMS service. If the property is not defined then we use the property value of url.
      */
     type ConstructorOptions = {
         url: Resource | string;
         layers: string;
         parameters?: any;
-        getFeatureInfoParameters?: any;
         enablePickFeatures?: boolean;
+        getFeatureInfoParameters?: any;
+        getFeatureInfoUrl?: Resource | string;
         getFeatureInfoFormats?: GetFeatureInfoFormat[];
         rectangle?: Rectangle;
         tilingScheme?: TilingScheme;
@@ -45480,7 +46274,6 @@ export namespace WebMapServiceImageryProvider {
         subdomains?: string | string[];
         clock?: Clock;
         times?: TimeIntervalCollection;
-        getFeatureInfoUrl?: Resource | string;
     };
 }
 
@@ -45639,21 +46432,32 @@ export namespace WebMapTileServiceImageryProvider {
      * @property layer - The layer name for WMTS requests.
      * @property style - The style name for WMTS requests.
      * @property tileMatrixSetID - The identifier of the TileMatrixSet to use for WMTS requests.
-     * @property [tileMatrixLabels] - A list of identifiers in the TileMatrix to use for WMTS requests, one per TileMatrix level.
-     * @property [clock] - A Clock instance that is used when determining the value for the time dimension. Required when `times` is specified.
-     * @property [times] - TimeIntervalCollection with its <code>data</code> property being an object containing time dynamic dimension and their values.
-     * @property [dimensions] - A object containing static dimensions and their values.
+     * @property [enablePickFeatures] - If true, {@link WebMapTileServiceImageryProvider#pickFeatures} will invoke
+     *                          the GetFeatureInfo operation on the WMTS server and return the features included in the response.  If false,
+     *                          {@link WebMapTileServiceImageryProvider#pickFeatures} will immediately return undefined (indicating no pickable features)
+     *                          without communicating with the server.  Set this property to false if you know your WMTS server does not support
+     *                          GetFeatureInfo or if you don't want this provider's features to be pickable.
+     *                          Defaults to true for KVP encoding. For RESTful encoding, defaults to true only when
+     *                          {@link WebMapTileServiceImageryProvider.ConstructorOptions#getFeatureInfoUrl} is specified, and false otherwise.
+     * @property [getFeatureInfoParameters] - Additional parameters to include in GetFeatureInfo requests. Keys are lowercased internally.
+     * @property [getFeatureInfoUrl] - The GetFeatureInfo URL of the WMTS service. If not specified, the value of <code>url</code> is used.
+     * @property [getFeatureInfoFormats = WebMapTileServiceImageryProvider.DefaultGetFeatureInfoFormats] - The formats
+     *                          in which to try WMTS GetFeatureInfo requests.
+     * @property [rectangle = Rectangle.MAX_VALUE] - The rectangle covered by the layer.
+     * @property [tilingScheme] - The tiling scheme corresponding to the organization of the tiles in the TileMatrixSet.
+     * @property [ellipsoid] - The ellipsoid.  If not specified, the WGS84 ellipsoid is used.
      * @property [tileWidth = 256] - The tile width in pixels.
      * @property [tileHeight = 256] - The tile height in pixels.
-     * @property [tilingScheme] - The tiling scheme corresponding to the organization of the tiles in the TileMatrixSet.
-     * @property [rectangle = Rectangle.MAX_VALUE] - The rectangle covered by the layer.
      * @property [minimumLevel = 0] - The minimum level-of-detail supported by the imagery provider.
      * @property [maximumLevel] - The maximum level-of-detail supported by the imagery provider, or undefined if there is no limit.
-     * @property [ellipsoid] - The ellipsoid.  If not specified, the WGS84 ellipsoid is used.
+     * @property [tileMatrixLabels] - A list of identifiers in the TileMatrix to use for WMTS requests, one per TileMatrix level.
      * @property [credit] - A credit for the data source, which is displayed on the canvas.
      * @property [subdomains = 'abc'] - The subdomains to use for the <code>{s}</code> placeholder in the URL template.
      *                          If this parameter is a single string, each character in the string is a subdomain.  If it is
      *                          an array, each element in the array is a subdomain.
+     * @property [clock] - A Clock instance that is used when determining the value for the time dimension. Required when `times` is specified.
+     * @property [times] - TimeIntervalCollection with its <code>data</code> property being an object containing time dynamic dimension and their values.
+     * @property [dimensions] - A object containing static dimensions and their values.
      */
     type ConstructorOptions = {
         url: Resource | string;
@@ -45661,19 +46465,23 @@ export namespace WebMapTileServiceImageryProvider {
         layer: string;
         style: string;
         tileMatrixSetID: string;
+        enablePickFeatures?: boolean;
+        getFeatureInfoParameters?: any;
+        getFeatureInfoUrl?: Resource | string;
+        getFeatureInfoFormats?: GetFeatureInfoFormat[];
+        rectangle?: Rectangle;
+        tilingScheme?: TilingScheme;
+        ellipsoid?: Ellipsoid;
+        tileWidth?: number;
+        tileHeight?: number;
+        minimumLevel?: number;
+        maximumLevel?: number;
         tileMatrixLabels?: any[];
+        credit?: Credit | string;
+        subdomains?: string | string[];
         clock?: Clock;
         times?: TimeIntervalCollection;
         dimensions?: any;
-        tileWidth?: number;
-        tileHeight?: number;
-        tilingScheme?: TilingScheme;
-        rectangle?: Rectangle;
-        minimumLevel?: number;
-        maximumLevel?: number;
-        ellipsoid?: Ellipsoid;
-        credit?: Credit | string;
-        subdomains?: string | string[];
     };
 }
 
@@ -45706,27 +46514,85 @@ export namespace WebMapTileServiceImageryProvider {
  * });
  * viewer.imageryLayers.addImageryProvider(shadedRelief2);
  * @example
- * // Example 3. NASA time dynamic weather data (RESTful)
+ * // Example 3: NASA time dynamic snowpack data (RESTful)
+ * // Define time intervals for the layer based on the capabilities XML
  * const times = Cesium.TimeIntervalCollection.fromIso8601({
- *     iso8601: '2015-07-30/2017-06-16/P1D',
- *     dataCallback: function dataCallback(interval, index) {
- *         return {
- *             Time: Cesium.JulianDate.toIso8601(interval.start)
- *         };
- *     }
+ *     iso8601: '2025-01-01/2025-09-01/P5D', // Use the valid interval(s) from the Dimension section
+ *     dataCallback: function(interval, index) {
+ *       // Return an object with the Time variable used in the URL template
+ *       return {
+ *           Time: Cesium.JulianDate.toIso8601(interval.start, 0)
+ *       };
+ *   }
  * });
+ * // Get the internal clock,  set desired start, stop, and multiplier
+ * const clock = viewer.clock;
+ * clock.startTime = Cesium.JulianDate.fromIso8601('2025-01-01');
+ * clock.currentTime = Cesium.JulianDate.fromIso8601('2025-01-01');
+ * clock.stopTime = Cesium.JulianDate.fromIso8601('2025-09-01');
+ * clock.clockRange = Cesium.ClockRange.LOOP_STOP;
+ * clock.multiplier = 1; // 1 day per second
+ * clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER;
+ *
+ * viewer.timeline.zoomTo(clock.startTime, clock.stopTime);
+ *
  * const weather = new Cesium.WebMapTileServiceImageryProvider({
- *     url : 'https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/AMSR2_Snow_Water_Equivalent/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png',
- *     layer : 'AMSR2_Snow_Water_Equivalent',
- *     style : 'default',
- *     tileMatrixSetID : '2km',
- *     maximumLevel : 5,
- *     format : 'image/png',
+ *     url: 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/AMSRU2_Snow_Water_Equivalent_5Day/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png',
+ *     layer: 'AMSRU2_Snow_Water_Equivalent_5Day',
+ *     style: 'default',
+ *     tileMatrixSetID: 'GoogleMapsCompatible_Level6',
+ *     format: 'image/png',
  *     clock: clock,
  *     times: times,
- *     credit : new Cesium.Credit('NASA Global Imagery Browse Services for EOSDIS')
+ *     credit: new Cesium.Credit('NASA Global Imagery Browse Services for EOSDIS')
  * });
  * viewer.imageryLayers.addImageryProvider(weather);
+ * @example
+ * // Example 4. Digital Earth AfricA waterbodies with GetFeatureInfo support (RESTful)
+ * const waterbodies = new Cesium.WebMapTileServiceImageryProvider({
+ *    url: "https://geoserver.digitalearth.africa/geoserver/gwc/service/wmts/rest/{layer}/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}?format={format}",
+ *    layer: "waterbodies:DEAfrica_Waterbodies",
+ *    style: "waterbodies:waterbodies_v0_0_4",
+ *    tileMatrixSetID: "EPSG:3857",
+ *    tileMatrixLabels: [
+ *      "EPSG:3857:0",
+ *      "EPSG:3857:1",
+ *      "EPSG:3857:2",
+ *      "EPSG:3857:3",
+ *      "EPSG:3857:4",
+ *      "EPSG:3857:5",
+ *      "EPSG:3857:6",
+ *      "EPSG:3857:7",
+ *      "EPSG:3857:8",
+ *      "EPSG:3857:9",
+ *      "EPSG:3857:10",
+ *      "EPSG:3857:11",
+ *      "EPSG:3857:12",
+ *      "EPSG:3857:13",
+ *      "EPSG:3857:14",
+ *      "EPSG:3857:15",
+ *      "EPSG:3857:16",
+ *      "EPSG:3857:17",
+ *      "EPSG:3857:18",
+ *      "EPSG:3857:19",
+ *      "EPSG:3857:20",
+ *      "EPSG:3857:21",
+ *      "EPSG:3857:22",
+ *      "EPSG:3857:23",
+ *      "EPSG:3857:24",
+ *      "EPSG:3857:25",
+ *      "EPSG:3857:26",
+ *      "EPSG:3857:27",
+ *      "EPSG:3857:28",
+ *      "EPSG:3857:29",
+ *      "EPSG:3857:30",
+ *    ],
+ *    format: "image/png",
+ *    enablePickFeatures: true,
+ *    getFeatureInfoUrl: "https://geoserver.digitalearth.africa/geoserver/gwc/service/wmts/rest/{layer}/{style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}/{j}/{i}?format={format}",
+ * });
+ *
+ * viewer.imageryLayers.addImageryProvider(waterbodies);
  * @param options - Object describing initialization options
  */
 export class WebMapTileServiceImageryProvider {
@@ -45793,6 +46659,16 @@ export class WebMapTileServiceImageryProvider {
      */
     readonly hasAlphaChannel: boolean;
     /**
+     * Gets or sets a value indicating whether feature picking is enabled.  If true, {@link WebMapTileServiceImageryProvider#pickFeatures} will
+     * invoke the <code>GetFeatureInfo</code> service on the WMTS server and attempt to interpret the features included in the response.  If false,
+     * {@link WebMapTileServiceImageryProvider#pickFeatures} will immediately return undefined (indicating no pickable
+     * features) without communicating with the server.  Set this property to false if you know your data
+     * source does not support picking features or if you don't want this provider's features to be pickable.
+     * Defaults to true for KVP encoding. For RESTful encoding, defaults to true only when
+     * {@link WebMapTileServiceImageryProvider.ConstructorOptions#getFeatureInfoUrl} is specified, and false otherwise.
+     */
+    enablePickFeatures: boolean;
+    /**
      * Gets or sets a clock that is used to get keep the time used for time dynamic parameters.
      */
     clock: Clock;
@@ -45806,6 +46682,10 @@ export class WebMapTileServiceImageryProvider {
      * Gets or sets an object that contains static dimensions and their values.
      */
     dimensions: any;
+    /**
+     * Gets the getFeatureInfo URL of the WMTS server.
+     */
+    readonly getFeatureInfoUrl: Resource | string;
     /**
      * Gets the credits to be displayed when a given tile is displayed.
      * @param x - The tile X coordinate.
@@ -45825,16 +46705,32 @@ export class WebMapTileServiceImageryProvider {
      */
     requestImage(x: number, y: number, level: number, request?: Request): Promise<ImageryTypes> | undefined;
     /**
-     * Picking features is not currently supported by this imagery provider, so this function simply returns
-     * undefined.
+     * Asynchronously determines what features, if any, are located at a given longitude and latitude within
+     * a tile.
      * @param x - The tile X coordinate.
      * @param y - The tile Y coordinate.
      * @param level - The tile level.
      * @param longitude - The longitude at which to pick features.
      * @param latitude - The latitude at which to pick features.
-     * @returns Undefined since picking is not supported.
+     * @returns A promise for the picked features that will resolve when the asynchronous
+     *                   picking completes.  The resolved value is an array of {@link ImageryLayerFeatureInfo}
+     *                   instances.  The array may be empty if no features are found at the given location.
      */
-    pickFeatures(x: number, y: number, level: number, longitude: number, latitude: number): undefined;
+    pickFeatures(x: number, y: number, level: number, longitude: number, latitude: number): Promise<ImageryLayerFeatureInfo[]> | undefined;
+    /**
+     * The default parameters to include in the WMTS URL to obtain images.  The values are as follows:
+     *    service=WMTS
+     *    version=1.0.0
+     *    request=GetTile
+     */
+    static readonly DefaultParameters: any;
+    /**
+     * The default parameters to include in the WMTS URL to get feature information.  The values are as follows:
+     *     service=WMTS
+     *     version=1.0.0
+     *     request=GetFeatureInfo
+     */
+    static readonly GetFeatureInfoDefaultParameters: any;
 }
 
 /**
