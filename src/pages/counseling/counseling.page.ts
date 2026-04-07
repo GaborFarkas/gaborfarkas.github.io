@@ -51,9 +51,9 @@ export class CounselingPage implements OnInit {
                 text: 'The website you are currently browsing is also a reference'
             },
             {
-                url: 'https://cadify.no/',
+                url: 'https://sylinderakutten.ovalas.no/sylinderkonfigurator-250-bar-p70-6',
                 icon: faCartShopping,
-                text: 'A nopCommerce site with a CAD-based general product configurator (WIP)'
+                text: 'A nopCommerce site with a CAD-based general product configurator (staging site)'
             }
         ],
         [Section.UIUX]: [
