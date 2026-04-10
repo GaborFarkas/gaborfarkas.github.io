@@ -22,14 +22,32 @@ const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: ty
 } as Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void>;
 
 function loadKml(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Format > Vector > KML
+     *
+     * Displays a KML data source (layer) on the Cesium scene.
+     */
+
     map.dataSources.add(Cesium.KmlDataSource.load('/assets/web-mapping/sample-data/simple-kml.kml'));
 }
 
 function loadGeojson(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Format > Vector > GeoJSON
+     *
+     * Displays a GeoJSON data source (layer) on the Cesium scene.
+     */
+
     map.dataSources.add(Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/hungary_settlements.geojson'));
 }
 
 function readWms(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Format > Image > WMS
+     *
+     * Displays a WMS imagery provider (layer) on the Cesium scene.
+     */
+
     map.imageryLayers.addImageryProvider(new Cesium.WebMapServiceImageryProvider({
         url: 'https://img.nj.gov/imagerywms/Natural2015',
         layers: 'Natural2015',
@@ -39,12 +57,19 @@ function readWms(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
         }
     }));
 
-    map.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(-74.88, 40.16, 150000)
+    map.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(-74.88, 40.16, 150000),
+        duration: 0
     });
 }
 
 function readWmts(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Format > Tile service > WMTS
+     *
+     * Displays a WMTS imagery provider (layer) on the Cesium scene.
+     */
+
     map.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
         url: 'https://mrdata.usgs.gov/mapcache/wmts',
         layer: 'sgmc2',
@@ -54,12 +79,19 @@ function readWmts(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
         credit: new Cesium.Credit('Tiles © <a href="https://mrdata.usgs.gov/geology/state/" target="_blank">USGS</a>')
     }));
 
-    map.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(-99, 40, 4000000)
+    map.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(-99, 40, 4000000),
+        duration: 0
     });
 }
 
 function readSlippy(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Format > Tile service > Slippy map
+     *
+     * Displays a slippy map (XYZ or OSM) imagery provider (layer) on the Cesium scene.
+     */
+
     map.imageryLayers.addImageryProvider(new Cesium.OpenStreetMapImageryProvider({
         url: 'http://a.basemaps.cartocdn.com/light_all',
         credit: new Cesium.Credit('Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL')
@@ -67,29 +99,63 @@ function readSlippy(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
 }
 
 async function readGoogle(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Format > Tile service > Google Maps
+     *
+     * Displays a Google Maps photorealistic tileset (layer) on the Cesium scene.
+     */
+
     const tileset = await Cesium.createGooglePhotorealistic3DTileset();
     map.scene.primitives.add(tileset);
+
+    // Need to turn the globe surface off, as Google uses a spherical datum while Cesium uses
+    // an ellipsoid. The two surfaces differ and can intersect causing visual artifacts.
+    map.scene.globe.show = false;
 
     map.camera.zoomIn(3999000);
 }
 
 async function readArcgis(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Format > Tile service > ArcGIS REST API
+     *
+     * Displays an ArcGIS REST imagery provider (layer) on the Cesium scene.
+     */
+
     map.imageryLayers.addImageryProvider(await Cesium.ArcGisMapServerImageryProvider.fromUrl(
         'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer'
     ));
 }
 
 function readAttribs(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Data > Pre-process > Read attribute data
+     *
+     * Demonstrates how Cesium handles vector attributes.
+     *
+     * Usage: click on the vector elements to get the associated attributes.
+     */
+
     map.dataSources.add(Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/australia-rivers-zm.geojson'));
-    map.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000)
+    map.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000),
+        duration: 0
     });
 }
 
 function zCoords(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Data > Pre-process > Z coordinates
+     *
+     * Demonstrates how Cesium handles vector Z coordinates.
+     *
+     * Usage: move the pointer over a feature to see its average elevation.
+     */
+
     map.dataSources.add(Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/australia-rivers-zm.geojson'));
-    map.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000)
+    map.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000),
+        duration: 0
     });
 
     map.entities.add({
@@ -119,6 +185,14 @@ function zCoords(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
 }
 
 async function updateAttribs(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Data > Manipulation > Update attribute data
+     *
+     * Demonstrates how Cesium handles attribute updates.
+     *
+     * Usage: click on a feature to change its color.
+     */
+
     const dataSource = await Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/hungary_settlements.geojson');
     for (const entity of dataSource.entities.values) {
         entity.billboard = undefined;
@@ -142,6 +216,14 @@ async function updateAttribs(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
 }
 
 async function updateGeom(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Data > Manipulation > Update gemetry
+     *
+     * Demonstrates how Cesium handles geometry updates.
+     *
+     * Usage: click on the globe to add a random point to a linestring.
+     */
+
     const geojson = {
         type: "FeatureCollection",
         features: [{
@@ -167,10 +249,19 @@ async function updateGeom(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
 }
 
 async function addRmLayer(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Data > Manipulation > Add/remove layer
+     *
+     * Demonstrates how Cesium handles layer management.
+     *
+     * Usage: click to toggle the vector layer.
+     */
+
     const dataSource = await Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/australia-rivers-zm.geojson');
     map.dataSources.add(dataSource);
-    map.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000)
+    map.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(131.4, -25.8, 4000000),
+        duration: 0
     });
     let added = true;
 
@@ -187,6 +278,12 @@ async function addRmLayer(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
 }
 
 function textBox(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
+    /**
+     * Representation > Text box
+     *
+     * Displays a text box on the Cesium scene.
+     */
+
     map.entities.add({
         position: Cesium.Cartesian3.fromRadians(map.camera.positionCartographic.longitude, map.camera.positionCartographic.latitude),
         label: {
