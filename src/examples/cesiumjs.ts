@@ -25,7 +25,7 @@ function loadKml(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     /**
      * Format > Vector > KML
      *
-     * Displays a KML data source (layer) on the Cesium scene.
+     * Displays a KML data source (layer) in the Cesium scene.
      */
 
     map.dataSources.add(Cesium.KmlDataSource.load('/assets/web-mapping/sample-data/simple-kml.kml'));
@@ -35,7 +35,7 @@ function loadGeojson(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     /**
      * Format > Vector > GeoJSON
      *
-     * Displays a GeoJSON data source (layer) on the Cesium scene.
+     * Displays a GeoJSON data source (layer) in the Cesium scene.
      */
 
     map.dataSources.add(Cesium.GeoJsonDataSource.load('/assets/web-mapping/sample-data/hungary_settlements.geojson'));
@@ -45,7 +45,7 @@ function readWms(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     /**
      * Format > Image > WMS
      *
-     * Displays a WMS imagery provider (layer) on the Cesium scene.
+     * Displays a WMS imagery provider (layer) in the Cesium scene.
      */
 
     map.imageryLayers.addImageryProvider(new Cesium.WebMapServiceImageryProvider({
@@ -67,7 +67,7 @@ function readWmts(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     /**
      * Format > Tile service > WMTS
      *
-     * Displays a WMTS imagery provider (layer) on the Cesium scene.
+     * Displays a WMTS imagery provider (layer) in the Cesium scene.
      */
 
     map.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
@@ -89,7 +89,7 @@ function readSlippy(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     /**
      * Format > Tile service > Slippy map
      *
-     * Displays a slippy map (XYZ or OSM) imagery provider (layer) on the Cesium scene.
+     * Displays a slippy map (XYZ or OSM) imagery provider (layer) in the Cesium scene.
      */
 
     map.imageryLayers.addImageryProvider(new Cesium.OpenStreetMapImageryProvider({
@@ -102,7 +102,7 @@ async function readGoogle(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     /**
      * Format > Tile service > Google Maps
      *
-     * Displays a Google Maps photorealistic tileset (layer) on the Cesium scene.
+     * Displays a Google Maps photorealistic tileset (layer) in the Cesium scene.
      */
 
     const tileset = await Cesium.createGooglePhotorealistic3DTileset();
@@ -119,7 +119,7 @@ async function readArcgis(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     /**
      * Format > Tile service > ArcGIS REST API
      *
-     * Displays an ArcGIS REST imagery provider (layer) on the Cesium scene.
+     * Displays an ArcGIS REST imagery provider (layer) in the Cesium scene.
      */
 
     map.imageryLayers.addImageryProvider(await Cesium.ArcGisMapServerImageryProvider.fromUrl(
@@ -281,7 +281,7 @@ function textBox(Cesium: typeof CesiumLib, map: CesiumLib.Viewer) {
     /**
      * Representation > Text box
      *
-     * Displays a text box on the Cesium scene.
+     * Displays a text box in the Cesium scene.
      */
 
     map.entities.add({
