@@ -724,8 +724,7 @@ export enum ArcType {
  * A collection of key-value pairs that is stored as a hash for easy
  * lookup but also provides an array for fast iteration.
  */
-export class AssociativeArray {
-    constructor();
+export class AssociativeArray<T = unknown> {
     /**
      * Gets the number of items in the collection.
      */
@@ -735,7 +734,7 @@ export class AssociativeArray {
      * This is a live array that will automatically reflect the values in the collection,
      * it should not be modified directly.
      */
-    values: any[];
+    values: T[];
     /**
      * Determines if the provided key is in the array.
      * @param key - The key to check.
@@ -748,13 +747,13 @@ export class AssociativeArray {
      * @param key - A unique identifier.
      * @param value - The value to associate with the provided key.
      */
-    set(key: string | number, value: any): void;
+    set(key: string | number, value: T): void;
     /**
      * Retrieves the value associated with the provided key.
      * @param key - The key whose value is to be retrieved.
      * @returns The associated value, or undefined if the key does not exist in the collection.
      */
-    get(key: string | number): any;
+    get(key: string | number): T;
     /**
      * Removes a key-value pair from the collection.
      * @param key - The key to be removed.
@@ -1052,7 +1051,7 @@ export class BoundingSphere {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new BoundingSphere instance if none was provided.
      */
-    static fromRectangle2D(rectangle?: Rectangle, projection?: any, result?: BoundingSphere): BoundingSphere;
+    static fromRectangle2D(rectangle?: Rectangle, projection?: MapProjection, result?: BoundingSphere): BoundingSphere;
     /**
      * Computes a bounding sphere from a rectangle projected in 2D.  The bounding sphere accounts for the
      * object's minimum and maximum heights over the rectangle.
@@ -1063,7 +1062,7 @@ export class BoundingSphere {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new BoundingSphere instance if none was provided.
      */
-    static fromRectangleWithHeights2D(rectangle?: Rectangle, projection?: any, minimumHeight?: number, maximumHeight?: number, result?: BoundingSphere): BoundingSphere;
+    static fromRectangleWithHeights2D(rectangle?: Rectangle, projection?: MapProjection, minimumHeight?: number, maximumHeight?: number, result?: BoundingSphere): BoundingSphere;
     /**
      * Computes a bounding sphere from a rectangle in 3D. The bounding sphere is created using a subsample of points
      * on the ellipsoid and contained in the rectangle. It may not be accurate for all rectangles on all types of ellipsoids.
@@ -1166,10 +1165,6 @@ export class BoundingSphere {
      */
     static clone(sphere: BoundingSphere, result?: BoundingSphere): BoundingSphere;
     /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
-    /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
      * @param array - The array to pack into.
@@ -1265,7 +1260,7 @@ export class BoundingSphere {
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new BoundingSphere instance if none was provided.
      */
-    static projectTo2D(sphere: BoundingSphere, projection?: any, result?: BoundingSphere): BoundingSphere;
+    static projectTo2D(sphere: BoundingSphere, projection?: MapProjection, result?: BoundingSphere): BoundingSphere;
     /**
      * Determines whether or not a sphere is hidden from view by the occluder.
      * @param sphere - The bounding sphere surrounding the occluded object.
@@ -1337,6 +1332,10 @@ export class BoundingSphere {
      * @returns The radius of the BoundingSphere.
      */
     volume(): number;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
 }
 
 /**
@@ -2686,10 +2685,6 @@ export class Cartographic {
      */
     static equalsEpsilon(left?: Cartographic, right?: Cartographic, epsilon?: number): boolean;
     /**
-     * An immutable Cartographic instance initialized to (0.0, 0.0, 0.0).
-     */
-    static readonly ZERO: Cartographic;
-    /**
      * Duplicates this instance.
      * @param [result] - The object onto which to store the result.
      * @returns The modified result parameter or a new Cartographic instance if one was not provided.
@@ -2716,6 +2711,10 @@ export class Cartographic {
      * @returns A string representing the provided cartographic in the format '(longitude, latitude, height)'.
      */
     toString(): string;
+    /**
+     * An immutable Cartographic instance initialized to (0.0, 0.0, 0.0).
+     */
+    static readonly ZERO: Cartographic;
 }
 
 /**
@@ -3757,10 +3756,6 @@ export class Color {
      */
     static fromCssColorString(color: string, result?: Color): Color;
     /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
-    /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
      * @param array - The array to pack into.
@@ -3952,6 +3947,10 @@ export class Color {
      * @returns The modified result parameter.
      */
     static divideByScalar(color: Color, scalar: number, result: Color): Color;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
     /**
      * An immutable Color instance initialized to CSS color #F0F8FF
      * <span class="colorSwath" style="background: #F0F8FF;"></span>
@@ -6041,23 +6040,6 @@ export class Ellipsoid {
      */
     static fromCartesian3(cartesian?: Cartesian3, result?: Ellipsoid): Ellipsoid;
     /**
-     * An Ellipsoid instance initialized to the WGS84 standard.
-     */
-    static readonly WGS84: Ellipsoid;
-    /**
-     * An Ellipsoid instance initialized to radii of (1.0, 1.0, 1.0).
-     */
-    static readonly UNIT_SPHERE: Ellipsoid;
-    /**
-     * An Ellipsoid instance initialized to a sphere with the lunar radius.
-     */
-    static readonly MOON: Ellipsoid;
-    /**
-     * An Ellipsoid instance initialized to a sphere with the mean radii of Mars.
-     * Source: https://epsg.io/104905
-     */
-    static readonly MARS: Ellipsoid;
-    /**
      * The default ellipsoid used when not otherwise specified.
      * @example
      * Cesium.Ellipsoid.default = Cesium.Ellipsoid.MOON;
@@ -6077,10 +6059,6 @@ export class Ellipsoid {
      */
     clone(result?: Ellipsoid): Ellipsoid;
     /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
-    /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
      * @param array - The array to pack into.
@@ -6096,13 +6074,6 @@ export class Ellipsoid {
      * @returns The modified result parameter or a new Ellipsoid instance if one was not provided.
      */
     static unpack(array: number[], startingIndex?: number, result?: Ellipsoid): Ellipsoid;
-    /**
-     * Computes the unit vector directed from the center of this ellipsoid toward the provided Cartesian position.
-     * @param cartesian - The Cartesian for which to to determine the geocentric normal.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Cartesian3 instance if none was provided.
-     */
-    geocentricSurfaceNormal(cartesian: Cartesian3, result?: Cartesian3): Cartesian3;
     /**
      * Computes the normal of the plane tangent to the surface of the ellipsoid at the provided position.
      * @param cartographic - The cartographic position for which to to determine the geodetic normal.
@@ -6241,6 +6212,34 @@ export class Ellipsoid {
      * @returns The approximate area of the rectangle on the surface of this ellipsoid.
      */
     surfaceArea(rectangle: Rectangle): number;
+    /**
+     * An Ellipsoid instance initialized to the WGS84 standard.
+     */
+    static readonly WGS84: Ellipsoid;
+    /**
+     * An Ellipsoid instance initialized to radii of (1.0, 1.0, 1.0).
+     */
+    static readonly UNIT_SPHERE: Ellipsoid;
+    /**
+     * An Ellipsoid instance initialized to a sphere with the lunar radius.
+     */
+    static readonly MOON: Ellipsoid;
+    /**
+     * An Ellipsoid instance initialized to a sphere with the mean radii of Mars.
+     * Source: https://epsg.io/104905
+     */
+    static readonly MARS: Ellipsoid;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
+    /**
+     * Computes the unit vector directed from the center of this ellipsoid toward the provided Cartesian position.
+     * @param cartesian - The Cartesian for which to to determine the geocentric normal.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Cartesian3 instance if none was provided.
+     */
+    geocentricSurfaceNormal(cartesian: Cartesian3, result?: Cartesian3): Cartesian3;
 }
 
 /**
@@ -7034,6 +7033,9 @@ export class GeocoderService {
     geocode(query: string, type?: GeocodeType): Promise<GeocoderService.Result[]>;
 }
 
+export interface GeographicProjection extends MapProjection {
+}
+
 /**
  * A simple map projection where longitude and latitude are linearly mapped to X and Y by multiplying
  * them by the {@link Ellipsoid#maximumRadius}.  This projection
@@ -7041,7 +7043,7 @@ export class GeocoderService {
  * is also known as EPSG:4326.
  * @param [ellipsoid = Ellipsoid.default] - The ellipsoid.
  */
-export class GeographicProjection {
+export class GeographicProjection implements MapProjection {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * Gets the {@link Ellipsoid}.
@@ -7073,6 +7075,9 @@ export class GeographicProjection {
     unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
 }
 
+export interface GeographicTilingScheme extends TilingScheme {
+}
+
 /**
  * A tiling scheme for geometry referenced to a simple {@link GeographicProjection} where
  * longitude and latitude are directly mapped to X and Y.  This projection is commonly
@@ -7086,7 +7091,7 @@ export class GeographicProjection {
  * @param [options.numberOfLevelZeroTilesY = 1] - The number of tiles in the Y direction at level zero of
  * the tile tree.
  */
-export class GeographicTilingScheme {
+export class GeographicTilingScheme implements TilingScheme {
     constructor(options?: {
         ellipsoid?: Ellipsoid;
         rectangle?: Rectangle;
@@ -7138,7 +7143,7 @@ export class GeographicTilingScheme {
      * @returns The specified 'result', or a new object containing the rectangle
      *          if 'result' is undefined.
      */
-    tileXYToNativeRectangle(x: number, y: number, level: number, result?: any): Rectangle;
+    tileXYToNativeRectangle(x: number, y: number, level: number, result?: Rectangle): Rectangle;
     /**
      * Converts tile x, y coordinates and level to a cartographic rectangle in radians.
      * @param x - The integer x coordinate of the tile.
@@ -7149,7 +7154,7 @@ export class GeographicTilingScheme {
      * @returns The specified 'result', or a new object containing the rectangle
      *          if 'result' is undefined.
      */
-    tileXYToRectangle(x: number, y: number, level: number, result?: any): Rectangle;
+    tileXYToRectangle(x: number, y: number, level: number, result?: Rectangle): Rectangle;
     /**
      * Calculates the tile x, y coordinates of the tile containing
      * a given cartographic position.
@@ -9562,12 +9567,11 @@ export class LinearSpline {
  * Defines how geodetic ellipsoid coordinates ({@link Cartographic}) project to a
  * flat map like Cesium's 2D and Columbus View modes.
  */
-export class MapProjection {
-    constructor();
+export interface MapProjection {
     /**
      * Gets the {@link Ellipsoid}.
      */
-    readonly ellipsoid: Ellipsoid;
+    ellipsoid: Ellipsoid;
     /**
      * Projects {@link Cartographic} coordinates, in radians, to projection-specific map coordinates, in meters.
      * @param cartographic - The coordinates to project.
@@ -10102,10 +10106,6 @@ export interface Matrix2 extends ArrayLike<number> {
 export class Matrix2 implements ArrayLike<number> {
     constructor(column0Row0?: number, column1Row0?: number, column0Row1?: number, column1Row1?: number);
     /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
-    /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
      * @param array - The array to pack into.
@@ -10143,25 +10143,6 @@ export class Matrix2 implements ArrayLike<number> {
      * @returns The modified result parameter or a new Matrix2 instance if one was not provided. (Returns undefined if matrix is undefined)
      */
     static clone(matrix: Matrix2, result?: Matrix2): Matrix2;
-    /**
-     * Creates a Matrix2 from 4 consecutive elements in an array.
-     * @example
-     * // Create the Matrix2:
-     * // [1.0, 2.0]
-     * // [1.0, 2.0]
-     *
-     * const v = [1.0, 1.0, 2.0, 2.0];
-     * const m = Cesium.Matrix2.fromArray(v);
-     *
-     * // Create same Matrix2 with using an offset into an array
-     * const v2 = [0.0, 0.0, 1.0, 1.0, 2.0, 2.0];
-     * const m2 = Cesium.Matrix2.fromArray(v2, 2);
-     * @param array - The array whose 4 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
-     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to first column first row position in the matrix.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Matrix2 instance if one was not provided.
-     */
-    static fromArray(array: number[], startingIndex?: number, result?: Matrix2): Matrix2;
     /**
      * Creates a Matrix2 instance from a column-major order array.
      * @param values - The column-major order array.
@@ -10249,7 +10230,7 @@ export class Matrix2 implements ArrayLike<number> {
      * @param result - The object onto which to store the result.
      * @returns The modified result parameter.
      */
-    static setColumn(matrix: Matrix2, index: number, cartesian: Cartesian2, result: Cartesian2): Matrix2;
+    static setColumn(matrix: Matrix2, index: number, cartesian: Cartesian2, result: Matrix2): Matrix2;
     /**
      * Retrieves a copy of the matrix row at the provided index as a Cartesian2 instance.
      * @param matrix - The matrix to use.
@@ -10416,6 +10397,61 @@ export class Matrix2 implements ArrayLike<number> {
      */
     static equalsEpsilon(left?: Matrix2, right?: Matrix2, epsilon?: number): boolean;
     /**
+     * Gets the number of items in the collection.
+     */
+    length: number;
+    /**
+     * Duplicates the provided Matrix2 instance.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Matrix2 instance if one was not provided.
+     */
+    clone(result?: Matrix2): Matrix2;
+    /**
+     * Compares this matrix to the provided matrix componentwise and returns
+     * <code>true</code> if they are equal, <code>false</code> otherwise.
+     * @param [right] - The right hand side matrix.
+     * @returns <code>true</code> if they are equal, <code>false</code> otherwise.
+     */
+    equals(right?: Matrix2): boolean;
+    /**
+     * Compares this matrix to the provided matrix componentwise and returns
+     * <code>true</code> if they are within the provided epsilon,
+     * <code>false</code> otherwise.
+     * @param [right] - The right hand side matrix.
+     * @param [epsilon = 0] - The epsilon to use for equality testing.
+     * @returns <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
+     */
+    equalsEpsilon(right?: Matrix2, epsilon?: number): boolean;
+    /**
+     * Creates a string representing this Matrix with each row being
+     * on a separate line and in the format '(column0, column1)'.
+     * @returns A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1)'.
+     */
+    toString(): string;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
+    /**
+     * Creates a Matrix2 from 4 consecutive elements in an array.
+     * @example
+     * // Create the Matrix2:
+     * // [1.0, 2.0]
+     * // [1.0, 2.0]
+     *
+     * const v = [1.0, 1.0, 2.0, 2.0];
+     * const m = Cesium.Matrix2.fromArray(v);
+     *
+     * // Create same Matrix2 with using an offset into an array
+     * const v2 = [0.0, 0.0, 1.0, 1.0, 2.0, 2.0];
+     * const m2 = Cesium.Matrix2.fromArray(v2, 2);
+     * @param array - The array whose 4 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
+     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to first column first row position in the matrix.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Matrix2 instance if one was not provided.
+     */
+    static fromArray(array: number[], startingIndex?: number, result?: Matrix2): Matrix2;
+    /**
      * An immutable Matrix2 instance initialized to the identity matrix.
      */
     static readonly IDENTITY: Matrix2;
@@ -10451,39 +10487,12 @@ export class Matrix2 implements ArrayLike<number> {
      * matrix[Cesium.Matrix2.COLUMN1ROW1] = 5.0; // set column 1, row 1 to 5.0
      */
     static readonly COLUMN1ROW1: number;
-    /**
-     * Gets the number of items in the collection.
-     */
-    length: number;
-    /**
-     * Duplicates the provided Matrix2 instance.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Matrix2 instance if one was not provided.
-     */
-    clone(result?: Matrix2): Matrix2;
-    /**
-     * Compares this matrix to the provided matrix componentwise and returns
-     * <code>true</code> if they are equal, <code>false</code> otherwise.
-     * @param [right] - The right hand side matrix.
-     * @returns <code>true</code> if they are equal, <code>false</code> otherwise.
-     */
-    equals(right?: Matrix2): boolean;
-    /**
-     * Compares this matrix to the provided matrix componentwise and returns
-     * <code>true</code> if they are within the provided epsilon,
-     * <code>false</code> otherwise.
-     * @param [right] - The right hand side matrix.
-     * @param [epsilon = 0] - The epsilon to use for equality testing.
-     * @returns <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
-     */
-    equalsEpsilon(right?: Matrix2, epsilon?: number): boolean;
-    /**
-     * Creates a string representing this Matrix with each row being
-     * on a separate line and in the format '(column0, column1)'.
-     * @returns A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1)'.
-     */
-    toString(): string;
 }
+
+export type EigenDecompositionResult = {
+    unitary?: Matrix3;
+    diagonal?: Matrix3;
+};
 
 export interface Matrix3 extends ArrayLike<number> {
 }
@@ -10503,10 +10512,6 @@ export interface Matrix3 extends ArrayLike<number> {
  */
 export class Matrix3 implements ArrayLike<number> {
     constructor(column0Row0?: number, column1Row0?: number, column2Row0?: number, column0Row1?: number, column1Row1?: number, column2Row1?: number, column0Row2?: number, column1Row2?: number, column2Row2?: number);
-    /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
     /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
@@ -10545,26 +10550,6 @@ export class Matrix3 implements ArrayLike<number> {
      * @returns The modified result parameter or a new Matrix3 instance if one was not provided. (Returns undefined if matrix is undefined)
      */
     static clone(matrix: Matrix3, result?: Matrix3): Matrix3;
-    /**
-     * Creates a Matrix3 from 9 consecutive elements in an array.
-     * @example
-     * // Create the Matrix3:
-     * // [1.0, 2.0, 3.0]
-     * // [1.0, 2.0, 3.0]
-     * // [1.0, 2.0, 3.0]
-     *
-     * const v = [1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
-     * const m = Cesium.Matrix3.fromArray(v);
-     *
-     * // Create same Matrix3 with using an offset into an array
-     * const v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
-     * const m2 = Cesium.Matrix3.fromArray(v2, 2);
-     * @param array - The array whose 9 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
-     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to first column first row position in the matrix.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Matrix3 instance if one was not provided.
-     */
-    static fromArray(array: number[], startingIndex?: number, result?: Matrix3): Matrix3;
     /**
      * Creates a Matrix3 instance from a column-major order array.
      * @param values - The column-major order array.
@@ -10875,7 +10860,7 @@ export class Matrix3 implements ArrayLike<number> {
      * @param [result] - An object with unitary and diagonal properties which are matrices onto which to store the result.
      * @returns An object with unitary and diagonal properties which are the unitary and diagonal matrices, respectively.
      */
-    static computeEigenDecomposition(matrix: Matrix3, result?: any): any;
+    static computeEigenDecomposition(matrix: Matrix3, result?: EigenDecompositionResult): EigenDecompositionResult;
     /**
      * Computes a matrix, which contains the absolute (unsigned) values of the provided matrix's elements.
      * @param matrix - The matrix with signed elements.
@@ -10922,6 +10907,62 @@ export class Matrix3 implements ArrayLike<number> {
      */
     static equalsEpsilon(left?: Matrix3, right?: Matrix3, epsilon?: number): boolean;
     /**
+     * Gets the number of items in the collection.
+     */
+    length: number;
+    /**
+     * Duplicates the provided Matrix3 instance.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Matrix3 instance if one was not provided.
+     */
+    clone(result?: Matrix3): Matrix3;
+    /**
+     * Compares this matrix to the provided matrix componentwise and returns
+     * <code>true</code> if they are equal, <code>false</code> otherwise.
+     * @param [right] - The right hand side matrix.
+     * @returns <code>true</code> if they are equal, <code>false</code> otherwise.
+     */
+    equals(right?: Matrix3): boolean;
+    /**
+     * Compares this matrix to the provided matrix componentwise and returns
+     * <code>true</code> if they are within the provided epsilon,
+     * <code>false</code> otherwise.
+     * @param [right] - The right hand side matrix.
+     * @param [epsilon = 0] - The epsilon to use for equality testing.
+     * @returns <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
+     */
+    equalsEpsilon(right?: Matrix3, epsilon?: number): boolean;
+    /**
+     * Creates a string representing this Matrix with each row being
+     * on a separate line and in the format '(column0, column1, column2)'.
+     * @returns A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1, column2)'.
+     */
+    toString(): string;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
+    /**
+     * Creates a Matrix3 from 9 consecutive elements in an array.
+     * @example
+     * // Create the Matrix3:
+     * // [1.0, 2.0, 3.0]
+     * // [1.0, 2.0, 3.0]
+     * // [1.0, 2.0, 3.0]
+     *
+     * const v = [1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
+     * const m = Cesium.Matrix3.fromArray(v);
+     *
+     * // Create same Matrix3 with using an offset into an array
+     * const v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0];
+     * const m2 = Cesium.Matrix3.fromArray(v2, 2);
+     * @param array - The array whose 9 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
+     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to first column first row position in the matrix.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Matrix3 instance if one was not provided.
+     */
+    static fromArray(array: number[], startingIndex?: number, result?: Matrix3): Matrix3;
+    /**
      * An immutable Matrix3 instance initialized to the identity matrix.
      */
     static readonly IDENTITY: Matrix3;
@@ -10965,39 +11006,14 @@ export class Matrix3 implements ArrayLike<number> {
      * The index into Matrix3 for column 2, row 2.
      */
     static readonly COLUMN2ROW2: number;
-    /**
-     * Gets the number of items in the collection.
-     */
-    length: number;
-    /**
-     * Duplicates the provided Matrix3 instance.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Matrix3 instance if one was not provided.
-     */
-    clone(result?: Matrix3): Matrix3;
-    /**
-     * Compares this matrix to the provided matrix componentwise and returns
-     * <code>true</code> if they are equal, <code>false</code> otherwise.
-     * @param [right] - The right hand side matrix.
-     * @returns <code>true</code> if they are equal, <code>false</code> otherwise.
-     */
-    equals(right?: Matrix3): boolean;
-    /**
-     * Compares this matrix to the provided matrix componentwise and returns
-     * <code>true</code> if they are within the provided epsilon,
-     * <code>false</code> otherwise.
-     * @param [right] - The right hand side matrix.
-     * @param [epsilon = 0] - The epsilon to use for equality testing.
-     * @returns <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
-     */
-    equalsEpsilon(right?: Matrix3, epsilon?: number): boolean;
-    /**
-     * Creates a string representing this Matrix with each row being
-     * on a separate line and in the format '(column0, column1, column2)'.
-     * @returns A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1, column2)'.
-     */
-    toString(): string;
 }
+
+export type Viewport = {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+};
 
 export interface Matrix4 extends ArrayLike<number> {
 }
@@ -11024,10 +11040,6 @@ export interface Matrix4 extends ArrayLike<number> {
  */
 export class Matrix4 implements ArrayLike<number> {
     constructor(column0Row0?: number, column1Row0?: number, column2Row0?: number, column3Row0?: number, column0Row1?: number, column1Row1?: number, column2Row1?: number, column3Row1?: number, column0Row2?: number, column1Row2?: number, column2Row2?: number, column3Row2?: number, column0Row3?: number, column1Row3?: number, column2Row3?: number, column3Row3?: number);
-    /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
     /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
@@ -11066,27 +11078,6 @@ export class Matrix4 implements ArrayLike<number> {
      * @returns The modified result parameter or a new Matrix4 instance if one was not provided. (Returns undefined if matrix is undefined)
      */
     static clone(matrix: Matrix4, result?: Matrix4): Matrix4;
-    /**
-     * Creates a Matrix4 from 16 consecutive elements in an array.
-     * @example
-     * // Create the Matrix4:
-     * // [1.0, 2.0, 3.0, 4.0]
-     * // [1.0, 2.0, 3.0, 4.0]
-     * // [1.0, 2.0, 3.0, 4.0]
-     * // [1.0, 2.0, 3.0, 4.0]
-     *
-     * const v = [1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0];
-     * const m = Cesium.Matrix4.fromArray(v);
-     *
-     * // Create same Matrix4 with using an offset into an array
-     * const v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0];
-     * const m2 = Cesium.Matrix4.fromArray(v2, 2);
-     * @param array - The array whose 16 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
-     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to first column first row position in the matrix.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Matrix4 instance if one was not provided.
-     */
-    static fromArray(array: number[], startingIndex?: number, result?: Matrix4): Matrix4;
     /**
      * Computes a Matrix4 instance from a column-major order array.
      * @param values - The column-major order array.
@@ -11244,7 +11235,7 @@ export class Matrix4 implements ArrayLike<number> {
      * @param [result] - The object in which the result will be stored.
      * @returns The modified result parameter.
      */
-    static computeViewportTransformation(viewport?: any, nearDepthRange?: number, farDepthRange?: number, result?: Matrix4): Matrix4;
+    static computeViewportTransformation(viewport?: Viewport, nearDepthRange?: number, farDepthRange?: number, result?: Matrix4): Matrix4;
     /**
      * Computes a Matrix4 instance that transforms from world space to view space.
      * @param position - The position of the camera.
@@ -11751,6 +11742,63 @@ export class Matrix4 implements ArrayLike<number> {
      */
     static inverseTranspose(matrix: Matrix4, result: Matrix4): Matrix4;
     /**
+     * Gets the number of items in the collection.
+     */
+    length: number;
+    /**
+     * Duplicates the provided Matrix4 instance.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Matrix4 instance if one was not provided.
+     */
+    clone(result?: Matrix4): Matrix4;
+    /**
+     * Compares this matrix to the provided matrix componentwise and returns
+     * <code>true</code> if they are equal, <code>false</code> otherwise.
+     * @param [right] - The right hand side matrix.
+     * @returns <code>true</code> if they are equal, <code>false</code> otherwise.
+     */
+    equals(right?: Matrix4): boolean;
+    /**
+     * Compares this matrix to the provided matrix componentwise and returns
+     * <code>true</code> if they are within the provided epsilon,
+     * <code>false</code> otherwise.
+     * @param [right] - The right hand side matrix.
+     * @param [epsilon = 0] - The epsilon to use for equality testing.
+     * @returns <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
+     */
+    equalsEpsilon(right?: Matrix4, epsilon?: number): boolean;
+    /**
+     * Computes a string representing this Matrix with each row being
+     * on a separate line and in the format '(column0, column1, column2, column3)'.
+     * @returns A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1, column2, column3)'.
+     */
+    toString(): string;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
+    /**
+     * Creates a Matrix4 from 16 consecutive elements in an array.
+     * @example
+     * // Create the Matrix4:
+     * // [1.0, 2.0, 3.0, 4.0]
+     * // [1.0, 2.0, 3.0, 4.0]
+     * // [1.0, 2.0, 3.0, 4.0]
+     * // [1.0, 2.0, 3.0, 4.0]
+     *
+     * const v = [1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0];
+     * const m = Cesium.Matrix4.fromArray(v);
+     *
+     * // Create same Matrix4 with using an offset into an array
+     * const v2 = [0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 4.0];
+     * const m2 = Cesium.Matrix4.fromArray(v2, 2);
+     * @param array - The array whose 16 consecutive elements correspond to the positions of the matrix.  Assumes column-major order.
+     * @param [startingIndex = 0] - The offset into the array of the first element, which corresponds to first column first row position in the matrix.
+     * @param [result] - The object onto which to store the result.
+     * @returns The modified result parameter or a new Matrix4 instance if one was not provided.
+     */
+    static fromArray(array: number[], startingIndex?: number, result?: Matrix4): Matrix4;
+    /**
      * An immutable Matrix4 instance initialized to the identity matrix.
      */
     static readonly IDENTITY: Matrix4;
@@ -11822,38 +11870,6 @@ export class Matrix4 implements ArrayLike<number> {
      * The index into Matrix4 for column 3, row 3.
      */
     static readonly COLUMN3ROW3: number;
-    /**
-     * Gets the number of items in the collection.
-     */
-    length: number;
-    /**
-     * Duplicates the provided Matrix4 instance.
-     * @param [result] - The object onto which to store the result.
-     * @returns The modified result parameter or a new Matrix4 instance if one was not provided.
-     */
-    clone(result?: Matrix4): Matrix4;
-    /**
-     * Compares this matrix to the provided matrix componentwise and returns
-     * <code>true</code> if they are equal, <code>false</code> otherwise.
-     * @param [right] - The right hand side matrix.
-     * @returns <code>true</code> if they are equal, <code>false</code> otherwise.
-     */
-    equals(right?: Matrix4): boolean;
-    /**
-     * Compares this matrix to the provided matrix componentwise and returns
-     * <code>true</code> if they are within the provided epsilon,
-     * <code>false</code> otherwise.
-     * @param [right] - The right hand side matrix.
-     * @param [epsilon = 0] - The epsilon to use for equality testing.
-     * @returns <code>true</code> if they are within the provided epsilon, <code>false</code> otherwise.
-     */
-    equalsEpsilon(right?: Matrix4, epsilon?: number): boolean;
-    /**
-     * Computes a string representing this Matrix with each row being
-     * on a separate line and in the format '(column0, column1, column2, column3)'.
-     * @returns A string representing the provided Matrix with each row being on a separate line and in the format '(column0, column1, column2, column3)'.
-     */
-    toString(): string;
 }
 
 /**
@@ -14559,10 +14575,6 @@ export class Rectangle {
      */
     readonly height: number;
     /**
-     * The number of elements used to pack the object into an array.
-     */
-    static packedLength: number;
-    /**
      * Stores the provided instance into the provided array.
      * @param value - The value to pack.
      * @param array - The array to pack into.
@@ -14787,6 +14799,10 @@ export class Rectangle {
      * @returns The modified result parameter or a new Rectangle instance if none was provided.
      */
     static subsection(rectangle: Rectangle, westLerp: number, southLerp: number, eastLerp: number, northLerp: number, result?: Rectangle): Rectangle;
+    /**
+     * The number of elements used to pack the object into an array.
+     */
+    static packedLength: number;
     /**
      * The largest possible rectangle.
      */
@@ -17054,8 +17070,7 @@ export namespace TileProviderError {
  * At level of detail two, each of the level one tiles has four children, two in each direction.
  * This continues for as many levels as are present in the geometry or imagery source.
  */
-export class TilingScheme {
-    constructor();
+export interface TilingScheme {
     /**
      * Gets the ellipsoid that is tiled by the tiling scheme.
      */
@@ -17101,7 +17116,7 @@ export class TilingScheme {
      * @returns The specified 'result', or a new object containing the rectangle
      *          if 'result' is undefined.
      */
-    tileXYToNativeRectangle(x: number, y: number, level: number, result?: any): Rectangle;
+    tileXYToNativeRectangle(x: number, y: number, level: number, result?: Rectangle): Rectangle;
     /**
      * Converts tile x, y coordinates and level to a cartographic rectangle in radians.
      * @param x - The integer x coordinate of the tile.
@@ -17112,7 +17127,7 @@ export class TilingScheme {
      * @returns The specified 'result', or a new object containing the rectangle
      *          if 'result' is undefined.
      */
-    tileXYToRectangle(x: number, y: number, level: number, result?: any): Rectangle;
+    tileXYToRectangle(x: number, y: number, level: number, result?: Rectangle): Rectangle;
     /**
      * Calculates the tile x, y coordinates of the tile containing
      * a given cartographic position.
@@ -18455,13 +18470,16 @@ export class WallOutlineGeometry {
     static createGeometry(wallGeometry: WallOutlineGeometry): Geometry | undefined;
 }
 
+export interface WebMercatorProjection extends MapProjection {
+}
+
 /**
  * The map projection used by Google Maps, Bing Maps, and most of ArcGIS Online, EPSG:3857.  This
  * projection use longitude and latitude expressed with the WGS84 and transforms them to Mercator using
  * the spherical (rather than ellipsoidal) equations.
  * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid.
  */
-export class WebMercatorProjection {
+export class WebMercatorProjection implements MapProjection {
     constructor(ellipsoid?: Ellipsoid);
     /**
      * Gets the {@link Ellipsoid}.
@@ -18482,19 +18500,6 @@ export class WebMercatorProjection {
      */
     static geodeticLatitudeToMercatorAngle(latitude: number): number;
     /**
-     * The maximum latitude (both North and South) supported by a Web Mercator
-     * (EPSG:3857) projection.  Technically, the Mercator projection is defined
-     * for any latitude up to (but not including) 90 degrees, but it makes sense
-     * to cut it off sooner because it grows exponentially with increasing latitude.
-     * The logic behind this particular cutoff value, which is the one used by
-     * Google Maps, Bing Maps, and Esri, is that it makes the projection
-     * square.  That is, the rectangle is equal in the X and Y directions.
-     *
-     * The constant value is computed by calling:
-     *    WebMercatorProjection.mercatorAngleToGeodeticLatitude(Math.PI)
-     */
-    static MaximumLatitude: number;
-    /**
      * Converts geodetic ellipsoid coordinates, in radians, to the equivalent Web Mercator
      * X, Y, Z coordinates expressed in meters and returned in a {@link Cartesian3}.  The height
      * is copied unmodified to the Z coordinate.
@@ -18514,6 +18519,24 @@ export class WebMercatorProjection {
      * @returns The equivalent cartographic coordinates.
      */
     unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
+    /**
+     * The maximum latitude (both North and South) supported by a Web Mercator
+     * (EPSG:3857) projection.  Technically, the Mercator projection is defined
+     * for any latitude up to (but not including) 90 degrees, but it makes sense
+     * to cut it off sooner because it grows exponentially with increasing latitude.
+     * The logic behind this particular cutoff value, which is the one used by
+     * Google Maps, Bing Maps, and Esri, is that it makes the projection
+     * square.  That is, the rectangle is equal in the X and Y directions.
+     *
+     * The constant value is computed by calling:
+     *    WebMercatorProjection.mercatorAngleToGeodeticLatitude(Math.PI)
+     */
+    static MaximumLatitude: number;
+}
+
+export const southwestScratch: any;
+
+export interface WebMercatorTilingScheme extends TilingScheme {
 }
 
 /**
@@ -18535,7 +18558,7 @@ export class WebMercatorProjection {
  *        globe is covered in the longitude direction and an equal distance is covered in the latitude
  *        direction, resulting in a square projection.
  */
-export class WebMercatorTilingScheme {
+export class WebMercatorTilingScheme implements TilingScheme {
     constructor(options?: {
         ellipsoid?: Ellipsoid;
         numberOfLevelZeroTilesX?: number;
@@ -18588,7 +18611,7 @@ export class WebMercatorTilingScheme {
      * @returns The specified 'result', or a new object containing the rectangle
      *          if 'result' is undefined.
      */
-    tileXYToNativeRectangle(x: number, y: number, level: number, result?: any): Rectangle;
+    tileXYToNativeRectangle(x: number, y: number, level: number, result?: Rectangle): Rectangle;
     /**
      * Converts tile x, y coordinates and level to a cartographic rectangle in radians.
      * @param x - The integer x coordinate of the tile.
@@ -18599,7 +18622,7 @@ export class WebMercatorTilingScheme {
      * @returns The specified 'result', or a new object containing the rectangle
      *          if 'result' is undefined.
      */
-    tileXYToRectangle(x: number, y: number, level: number, result?: any): Rectangle;
+    tileXYToRectangle(x: number, y: number, level: number, result?: Rectangle): Rectangle;
     /**
      * Calculates the tile x, y coordinates of the tile containing
      * a given cartographic position.
@@ -27653,11 +27676,14 @@ export class BufferPoint extends BufferPrimitive {
 }
 
 /**
- * @property [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ * @property [modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
  */
 export type BufferPointOptions = {
+    modelMatrix?: Matrix4;
     show?: boolean;
     material?: BufferPointMaterial;
+    featureId?: number;
+    pickObject?: any;
     position?: Cartesian3;
 };
 
@@ -27691,6 +27717,7 @@ export class BufferPointCollection extends BufferPrimitiveCollection<BufferPoint
         primitiveCountMax?: number;
         show?: boolean;
         debugShowBoundingVolume?: boolean;
+        allowPicking?: boolean;
     });
     /**
      * Adds a new point to the collection, with the specified options. A
@@ -27870,11 +27897,14 @@ export class BufferPolygon extends BufferPrimitive {
 }
 
 /**
- * @property [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ * @property [modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
  */
 export type BufferPolygonOptions = {
+    modelMatrix?: Matrix4;
     show?: boolean;
     material?: BufferPolygonMaterial;
+    featureId?: number;
+    pickObject?: any;
     positions?: TypedArray;
     holes?: TypedArray;
     triangles?: TypedArray;
@@ -28054,11 +28084,14 @@ export class BufferPolyline extends BufferPrimitive {
 }
 
 /**
- * @property [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ * @property [modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
  */
 export type BufferPolylineOptions = {
+    modelMatrix?: Matrix4;
     show?: boolean;
     material?: BufferPolylineMaterial;
+    featureId?: number;
+    pickObject?: any;
     positions?: TypedArray;
 };
 
@@ -28184,9 +28217,15 @@ export class BufferPrimitive {
     toJSON(): any;
 }
 
+/**
+ * @property [modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ */
 export type BufferPrimitiveOptions = {
+    modelMatrix?: Matrix4;
     show?: boolean;
     material?: BufferPrimitiveMaterial;
+    featureId?: number;
+    pickObject?: any;
 };
 
 /**
@@ -28210,31 +28249,12 @@ export class BufferPrimitiveCollection<T extends BufferPrimitive> {
         debugShowBoundingVolume?: boolean;
     });
     /**
-     * Default capacity of buffers on new collections. A quantity of elements:
-     * number of vertices in the vertex buffer, primitives in the primitive
-     * buffer, etc. This value is arbitrary, and collections cannot be resized,
-     * so specific per-buffer capacities should be provided in the collection
-     * constructor when available.
-     */
-    readonly DEFAULT_CAPACITY: number;
-    /**
      * Determines if primitives in this collection will be shown.
      */
     show: boolean;
-    /**
-     * Transforms geometry from model to world coordinates.
-     */
-    modelMatrix: Matrix4;
-    /**
-     * Local bounding volume for all primitives in the collection, including both
-     * shown and hidden primitives.
-     */
-    boundingVolume: BoundingSphere;
-    /**
-     * World bounding volume for all primitives in the collection, including both
-     * shown and hidden primitives.
-     */
-    boundingVolumeWC: BoundingSphere;
+    protected readonly _modelMatrix: Matrix4;
+    protected readonly _boundingVolume: BoundingSphere;
+    protected readonly _boundingVolumeWC: BoundingSphere;
     /**
      * This property is for debugging only; it is not for production use nor is it optimized.
      * <p>
@@ -28325,6 +28345,20 @@ export class BufferPrimitiveCollection<T extends BufferPrimitive> {
      */
     readonly vertexCountMax: number;
     /**
+     * Transforms geometry from model to world coordinates.
+     */
+    readonly modelMatrix: Matrix4;
+    /**
+     * Local bounding volume for all primitives in the collection, including both
+     * shown and hidden primitives.
+     */
+    readonly boundingVolume: BoundingSphere;
+    /**
+     * World bounding volume for all primitives in the collection, including both
+     * shown and hidden primitives.
+     */
+    readonly boundingVolumeWC: BoundingSphere;
+    /**
      * Returns a JSON-serializable array representing the collection. This encoding
      * is not memory-efficient, and should generally be used for debugging and
      * testing.
@@ -28334,6 +28368,14 @@ export class BufferPrimitiveCollection<T extends BufferPrimitive> {
      * primitive in the collection.
      */
     toJSON(): object[];
+    /**
+     * Default capacity of buffers on new collections. A quantity of elements:
+     * number of vertices in the vertex buffer, primitives in the primitive
+     * buffer, etc. This value is arbitrary, and collections cannot be resized,
+     * so specific per-buffer capacities should be provided in the collection
+     * constructor when available.
+     */
+    static readonly DEFAULT_CAPACITY: number;
 }
 
 /**
@@ -29383,7 +29425,7 @@ export class Cesium3DTileContent {
  * }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
  */
 export class Cesium3DTileFeature {
-    constructor();
+    constructor(content: Cesium3DTileContent, batchId: number);
     /**
      * Gets or sets if the feature will be shown. This is set for all features
      * when a style's show is evaluated.
@@ -29531,7 +29573,7 @@ export class Cesium3DTileFeature {
  * }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
  */
 export class Cesium3DTilePointFeature {
-    constructor();
+    constructor(content: Cesium3DTileContent, batchId: number, billboard: Billboard, label: Label, polyline: Polyline);
     /**
      * Gets or sets if the feature will be shown. This is set for all features
      * when a style's show is evaluated.
@@ -30422,6 +30464,8 @@ export class Cesium3DTileStyle {
      */
     meta: StyleExpression;
 }
+
+export const point: any;
 
 export namespace Cesium3DTilesVoxelProvider {
     /**
@@ -31416,6 +31460,10 @@ export class Cesium3DTileset {
      */
     readonly heightReference: HeightReference | undefined;
     /**
+     * The {@link CesiumWidget#scene} that the tileset will be rendered in, required for tilesets that specify a {@link heightReference} value for clamping 3D Tiles vector data content- like points, lines, and labels- to terrain or 3D tiles.
+     */
+    readonly scene: Scene | undefined;
+    /**
      * Gets an ellipsoid describing the shape of the globe.
      */
     readonly ellipsoid: Ellipsoid;
@@ -31602,11 +31650,6 @@ export class Cesium3DTileset {
      */
     getHeight(cartographic: Cartographic, scene: Scene): number | undefined;
 }
-
-/**
- * The {@link CesiumWidget#scene} that the tileset will be rendered in, required for tilesets that specify a {@link heightReference} value for clamping 3D Tiles vector data content- like points, lines, and labels- to terrain or 3D tiles.
- */
-export const of = "undefined";
 
 /**
  * A ParticleEmitter that emits particles from a circle.
@@ -36787,7 +36830,7 @@ export class ImageryLayerFeatureInfo {
  *
  * See the documentation for each ImageryProvider class for more information about how they return images.
  */
-export type ImageryTypes = HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+export type ImageryTypes = HTMLImageElement | HTMLCanvasElement | ImageBitmap | OffscreenCanvas;
 
 /**
  * Provides imagery to be displayed on the surface of an ellipsoid.  This type describes an
@@ -43174,12 +43217,6 @@ export class PrimitiveCollection {
 }
 
 /**
- * A simple Least Recently Used (LRU) cache implementation.
- */
-export class LRUCache {
-}
-
-/**
  * Creates a spatial hash key for the given longitude, latitude, and tile level.
  * The precision is adjusted based on the tile level and extent to achieve finer precision at higher levels.
  *
@@ -44558,6 +44595,10 @@ export class SkyBox {
      */
     sources: any;
     /**
+     * Determines if the sky box will be shown.
+     */
+    show: boolean;
+    /**
      * Called when {@link Viewer} or {@link CesiumWidget} render the scene to
      * get the draw commands needed to render this primitive.
      * <p>
@@ -44593,11 +44634,6 @@ export class SkyBox {
      */
     static createEarthSkyBox(): SkyBox;
 }
-
-/**
- * Determines if the sky box will be shown.
- */
-export var show: boolean;
 
 /**
  * A ParticleEmitter that emits particles within a sphere.
@@ -45848,19 +45884,18 @@ export class VoxelCell {
 export class VoxelContent {
     constructor();
     /**
+     * The metadata for this voxel content.
+     * The metadata is an array of typed arrays, one for each field.
+     * The data for one field is a flattened 3D array ordered by X, then Y, then Z.
+     */
+    readonly metadata: Int8Array[] | Uint8Array[] | Int16Array[] | Uint16Array[] | Int32Array[] | Uint32Array[] | Float32Array[] | Float64Array[];
+    /**
      * Constructs a VoxelContent from an array of metadata.
      * @param metadata - The metadata to use for this voxel content.
      * @returns A VoxelContent containing the specified metadata.
      */
     static fromMetadataArray(metadata: Int8Array[] | Uint8Array[] | Int16Array[] | Uint16Array[] | Int32Array[] | Uint32Array[] | Float32Array[] | Float64Array[]): VoxelContent;
 }
-
-/**
- * The metadata for this voxel content.
- * The metadata is an array of typed arrays, one for each field.
- * The data for one field is a flattened 3D array ordered by X, then Y, then Z.
- */
-export const metadata: Int8Array[] | Uint8Array[] | Int16Array[] | Uint16Array[] | Int32Array[] | Uint32Array[] | Float32Array[] | Float64Array[];
 
 /**
  * A primitive that renders voxel data from a {@link VoxelProvider}.
@@ -46167,6 +46202,10 @@ export class VoxelProvider {
      */
     readonly maximumTileCount: number | undefined;
     /**
+     * The number of levels of detail containing available tiles in the tileset.
+     */
+    readonly availableLevels: number | undefined;
+    /**
      * Requests the data for a given tile.
      * @param [options] - Object with the following properties:
      * @param [options.tileLevel = 0] - The tile's level.
@@ -46182,11 +46221,6 @@ export class VoxelProvider {
         tileZ?: number;
     }): Promise<VoxelContent> | undefined;
 }
-
-/**
- * The number of levels of detail containing available tiles in the tileset.
- */
-export const availableLevels: number | undefined;
 
 /**
  * An enum of voxel shapes. The shape controls how the voxel grid is mapped to 3D space.
@@ -47195,7 +47229,7 @@ export class CesiumWidget {
      * @param [offset] - The offset from the center of the entity in the local east-north-up reference frame.
      * @returns A Promise that resolves to true if the zoom was successful or false if the target is not currently visualized in the scene or the zoom was cancelled.
      */
-    zoomTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive>, offset?: HeadingPitchRange): Promise<boolean>;
+    zoomTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive | BufferPrimitiveCollection<BufferPrimitive>>, offset?: HeadingPitchRange): Promise<boolean>;
     /**
      * Flies the camera to the provided entity, entities, or data source.
      * If the data source is still in the process of loading or the visualization is otherwise still loading,
@@ -47217,7 +47251,7 @@ export class CesiumWidget {
      * @param [options.offset] - The offset from the target in the local east-north-up reference frame centered at the target.
      * @returns A Promise that resolves to true if the flight was successful or false if the target is not currently visualized in the scene or the flight was cancelled. //TODO: Cleanup entity mentions
      */
-    flyTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive>, options?: {
+    flyTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive | BufferPrimitiveCollection<BufferPrimitive>>, options?: {
         duration?: number;
         maximumHeight?: number;
         offset?: HeadingPitchRange;
@@ -49611,7 +49645,7 @@ export class Viewer {
      * @param [offset] - The offset from the center of the entity in the local east-north-up reference frame.
      * @returns A Promise that resolves to true if the zoom was successful or false if the target is not currently visualized in the scene or the zoom was cancelled.
      */
-    zoomTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive>, offset?: HeadingPitchRange): Promise<boolean>;
+    zoomTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive | BufferPrimitiveCollection<BufferPrimitive>>, offset?: HeadingPitchRange): Promise<boolean>;
     /**
      * Flies the camera to the provided entity, entities, or data source.
      * If the data source is still in the process of loading or the visualization is otherwise still loading,
@@ -49633,7 +49667,7 @@ export class Viewer {
      * @param [options.offset] - The offset from the target in the local east-north-up reference frame centered at the target.
      * @returns A Promise that resolves to true if the flight was successful or false if the target is not currently visualized in the scene or the flight was cancelled. //TODO: Cleanup entity mentions
      */
-    flyTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive>, options?: {
+    flyTo(target: Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | Promise<Entity | Entity[] | EntityCollection | DataSource | ImageryLayer | Cesium3DTileset | TimeDynamicPointCloud | VoxelPrimitive | BufferPrimitiveCollection<BufferPrimitive>>, options?: {
         duration?: number;
         maximumHeight?: number;
         offset?: HeadingPitchRange;
