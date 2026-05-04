@@ -1,4 +1,4 @@
-import { ElementWithData } from "@/models/element-with-data.model";
+import { ElementWithData } from "@/web-mapping/sandbox/data-property/element-with-data.model";
 import { Directive, Input, ViewContainerRef } from "@angular/core";
 
 /**

@@ -1,4 +1,4 @@
-import { TokensProviderCache } from "@/monaco-vscode-textmate";
+import { TokensProviderCache } from "@/web-mapping/sandbox/code-editor/monaco-vscode-textmate";
 import { MonacoLoaderService } from "@/web-mapping/sandbox/code-editor/monaco-loader.service";
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, viewChild } from "@angular/core";
 import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";

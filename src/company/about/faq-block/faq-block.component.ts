@@ -1,6 +1,6 @@
 import { Component, input, signal, viewChildren } from '@angular/core';
 import { FaqSectionComponent } from '@/company/about/faq-block/faq-section/faq-section.component';
-import { FaqSectionModel } from '@/models/faq.model';
+import { FaqSectionModel } from '@/company/about/faq-block/faq.model';
 import { CommonModule } from '@angular/common';
 
 /**

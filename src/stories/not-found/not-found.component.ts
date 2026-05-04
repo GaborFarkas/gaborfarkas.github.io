@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { randomizer } from '@/utils/array';
-import { AttributedPicture } from '@/models/attributed-picture.model';
+import { AttributedPicture } from '@/stories/not-found/attributed-picture.model';
 import { CommonModule } from '@angular/common';
 
 /**

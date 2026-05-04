@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
 import * as L from 'leaflet';
-import { WebMap } from '@/models/web-mapping/web-map.model';
-import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
+import { WebMap } from '@/web-mapping/shared/web-map.model';
+import { FeatureSupportFeature } from '@/web-mapping/shared/feature-support-feature.model';
 
 type LeafletExampleFunc = (this: L.Map, lib: typeof L, map: L.Map) => void;
 

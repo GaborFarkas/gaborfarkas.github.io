@@ -4,9 +4,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCartShopping, faCompassDrafting, faDisplay, faFileContract, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoneyBill1Wave, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { randomizer } from '@/utils/array';
 import { DecoratedColumnComponent } from '@/company/counseling/decorated-column/decorated-column.component';
-import { ReferenceDescriptor } from '@/models/reference.model';
+import { ReferenceDescriptor } from '@/company/shared/reference.model';
 import { faAngular, faLinux } from '@fortawesome/free-brands-svg-icons';
-import { PageUrlMapping, StoryUrlMapping } from '@/models/page-url-mapping.model';
+import { PageUrlMapping, StoryUrlMapping } from '@/app/page-url-mapping.model';
 
 /**
  * Main content of the counseling page.

@@ -9,7 +9,7 @@ const baseDir = dirname(fileURLToPath(import.meta.url));
 const srcDir = path.join(baseDir, '..', 'src', 'stories', 'story');
 const configPath = path.join(baseDir, '..', 'public', 'config', 'stories.json');
 const routesPath = path.join(baseDir, '..', 'src', 'app', 'app.routes.ts');
-const urlMappingPath = path.join(baseDir, '..', 'src', 'models', 'page-url-mapping.model.ts');
+const urlMappingPath = path.join(baseDir, '..', 'src', 'app', 'page-url-mapping.model.ts');
 
 const routesFileContent = fs.readFileSync(routesPath, 'utf-8');
 const storyMappings = fs.readFileSync(urlMappingPath, 'utf-8').match(/(?<=StoryUrlMapping).*$/s)[0];

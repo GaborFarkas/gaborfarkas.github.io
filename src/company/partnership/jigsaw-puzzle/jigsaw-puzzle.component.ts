@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, computed, ElementRef, input, OnInit, output, signal, viewChild } from '@angular/core';
-import { PuzzlePiece, generatePuzzle } from '@/models/puzzle.model';
+import { PuzzlePiece, generatePuzzle } from '@/company/partnership/jigsaw-puzzle/puzzle.model';
 import { CommonModule } from '@angular/common';
 
 /**

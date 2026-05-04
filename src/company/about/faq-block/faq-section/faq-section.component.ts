@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { FaqSectionModel } from '@/models/faq.model';
+import { FaqSectionModel } from '@/company/about/faq-block/faq.model';
 import { CommonModule } from '@angular/common';
 
 /**

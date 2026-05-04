@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, input, viewChild } from '@angular/core';
 import * as Maplibre from 'maplibre-gl';
-import { WebMap } from '@/models/web-mapping/web-map.model';
-import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
+import { WebMap } from '@/web-mapping/shared/web-map.model';
+import { FeatureSupportFeature } from '@/web-mapping/shared/feature-support-feature.model';
 
 type MaplibreExampleFunc = (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void;
 

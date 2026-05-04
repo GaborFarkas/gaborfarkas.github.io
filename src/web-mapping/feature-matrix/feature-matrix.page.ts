@@ -5,9 +5,9 @@ import { MaplibreMapComponent } from '@/web-mapping/shared/maplibre-map/maplibre
 import { OpenLayersMapComponent } from '@/web-mapping/shared/openlayers-map/openlayers-map.component';
 import { FeatureSupportScoreDirective } from '@/web-mapping/feature-matrix/feature-support-score.directive';
 import { environment } from '@/environments/environment';
-import { FeatureSupportItem } from '@/models/web-mapping/feature-support-item.model';
-import { FeatureSupportScore } from '@/models/web-mapping/feature-support-score.model';
-import { WebMappingLibrary } from '@/models/web-mapping/web-mapping-library';
+import { FeatureSupportItem } from '@/web-mapping/shared/feature-support-item.model';
+import { FeatureSupportScore } from '@/web-mapping/shared/feature-support-score.model';
+import { WebMappingLibrary } from '@/web-mapping/shared/web-mapping-library';
 import { FileService } from '@/shared/file.service';
 import { CommonModule } from '@angular/common';
 import { Component, computed, OnInit, signal, viewChild } from '@angular/core';

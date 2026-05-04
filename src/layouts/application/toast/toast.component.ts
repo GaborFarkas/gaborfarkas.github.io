@@ -1,4 +1,4 @@
-import { NotificationLevel, NotificationModel } from "@/models/notification.model";
+import { NotificationLevel, NotificationModel } from "@/shared/notification.model";
 import { NotificationService } from "@/shared/notification.service";
 import { Component, computed, input, signal } from "@angular/core";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";

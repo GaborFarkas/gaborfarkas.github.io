@@ -1,5 +1,5 @@
 import { Component, input, signal } from '@angular/core';
-import { NavDropdownItem } from '@/models/nav-dropdown.model';
+import { NavDropdownItem } from '@/layouts/framed/navigation/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
 
 /**

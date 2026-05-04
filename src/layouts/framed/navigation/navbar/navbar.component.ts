@@ -1,10 +1,10 @@
 import { Component, computed, signal } from '@angular/core';
-import { NavDropdownComponent } from '@/layout/framed/navigation/nav-dropdown/nav-dropdown.component';
+import { NavDropdownComponent } from '@/layouts/framed/navigation/nav-dropdown/nav-dropdown.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { NavDropdownGroup } from '@/models/nav-dropdown.model';
+import { NavDropdownGroup } from '@/layouts/framed/navigation/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
-import { PageUrlMapping } from '@/models/page-url-mapping.model';
+import { PageUrlMapping } from '@/app/page-url-mapping.model';
 
 /**
  * Navbar component.

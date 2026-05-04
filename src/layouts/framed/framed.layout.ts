@@ -1,5 +1,5 @@
 import { FooterComponent } from "@/shared/footer/footer.component";
-import { NavbarComponent } from "@/layout/framed/navigation/navbar/navbar.component";
+import { NavbarComponent } from "@/layouts/framed/navigation/navbar/navbar.component";
 import { Component } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { LayoutWithAnalytics } from "../layout-with-analytics";

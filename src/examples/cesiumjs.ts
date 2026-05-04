@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
-import { FeatureSupportFeature } from '@/models/web-mapping/feature-support-feature.model';
+import { FeatureSupportFeature } from '@/web-mapping/shared/feature-support-feature.model';
 import * as CesiumLib from 'cesium';
 
 const exports: Record<FeatureSupportFeature, (this: CesiumLib.Viewer, Cesium: typeof CesiumLib, map: CesiumLib.Viewer) => void> = {

@@ -1,4 +1,4 @@
-import { NotificationLevel, NotificationModel } from "@/models/notification.model";
+import { NotificationLevel, NotificationModel } from "@/shared/notification.model";
 import { Injectable } from "@angular/core";
 import { Observable, ReplaySubject } from "rxjs";
 

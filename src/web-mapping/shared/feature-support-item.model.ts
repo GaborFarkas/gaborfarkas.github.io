@@ -1,5 +1,5 @@
-import { FeatureSupportScore } from "./feature-support-score.model";
-import { WebMappingLibrary } from "./web-mapping-library";
+import { FeatureSupportScore } from "@/web-mapping/shared/feature-support-score.model";
+import { WebMappingLibrary } from "@/web-mapping/shared/web-mapping-library";
 
 /**
  * Represents a single cell or category in the feature support matrix.

@@ -1,4 +1,4 @@
-import { analytics } from "@/layout/analytics";
+import { analytics } from "@/layouts/analytics";
 import { Directive, isDevMode } from "@angular/core";
 import { NavigationEnd, Router } from "@angular/router";
 import { filter } from "rxjs";

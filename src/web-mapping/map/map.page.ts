@@ -2,8 +2,8 @@ import { CesiumMapComponent } from "@/web-mapping/shared/cesium-map/cesium-map.c
 import { LeafletMapComponent } from "@/web-mapping/shared/leaflet-map/leaflet-map.component";
 import { MaplibreMapComponent } from "@/web-mapping/shared/maplibre-map/maplibre-map.component";
 import { OpenLayersMapComponent } from "@/web-mapping/shared/openlayers-map/openlayers-map.component";
-import { MapPageQueryParams } from "@/models/page-url-mapping.model";
-import { WebMappingLibrary } from "@/models/web-mapping/web-mapping-library";
+import { MapPageQueryParams } from "@/app/page-url-mapping.model";
+import { WebMappingLibrary } from "@/web-mapping/shared/web-mapping-library";
 import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 

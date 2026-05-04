@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, input, Input, OnDestroy, output, 
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
-import { CarouselChangeEvent } from '@/models/carousel-change-event.model';
+import { CarouselChangeEvent } from '@/company/landing/carousel/carousel-change-event.model';
 
 /**
  * Generic carousel component.

@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { StoryModel, StoryType } from '@/models/story.model';
-import { PageUrlMapping } from '@/models/page-url-mapping.model';
+import { StoryModel, StoryType } from '@/stories/story.model';
+import { PageUrlMapping } from '@/app/page-url-mapping.model';
 import { StoryService } from '@/stories/story.service';
 import { FileService } from '@/shared/file.service';
 import { CardComponent } from '@/shared/card/card.component';

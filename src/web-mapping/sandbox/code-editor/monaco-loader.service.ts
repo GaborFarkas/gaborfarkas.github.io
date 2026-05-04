@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AsyncSubject } from "rxjs";
-import { convertTheme } from "@/monaco-vscode-textmate";
+import { convertTheme } from "@/web-mapping/sandbox/code-editor/monaco-vscode-textmate";
 import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";
 
 /**

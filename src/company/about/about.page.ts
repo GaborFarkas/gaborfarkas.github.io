@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { FaqBlockComponent } from '@/company/about/faq-block/faq-block.component';
-import { FaqGroupModel } from '@/models/faq.model';
+import { FaqGroupModel } from '@/company/about/faq-block/faq.model';
 
 /**
  * Main content of the about page.

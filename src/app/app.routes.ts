@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { PageUrlMapping, StoryUrlMapping } from '@/models/page-url-mapping.model';
+import { PageUrlMapping, StoryUrlMapping } from '@/app/page-url-mapping.model';
 
 export const routes: Routes = [
     {
@@ -8,14 +8,14 @@ export const routes: Routes = [
     },
     {
         path: PageUrlMapping.SANDBOX,
-        loadComponent: () => import('@/web-mapping/sandbox/layout/application.layout').then(m => m.ApplicationLayout),
+        loadComponent: () => import('@/layouts/application/application.layout').then(m => m.ApplicationLayout),
         children: [
             { path: '', loadComponent: () => import('@/web-mapping/sandbox/sandbox.page').then(m => m.SandboxPage) }
         ]
     },
     {
         path: '',
-        loadComponent: () => import('@/layout/framed/framed.layout').then(m => m.FramedLayout),
+        loadComponent: () => import('@/layouts/framed/framed.layout').then(m => m.FramedLayout),
         children: [
             { path: PageUrlMapping.HOME, loadComponent: () => import('@/company/landing/landing.page').then(m => m.LandingPage) },
             { path: PageUrlMapping.ABOUT, loadComponent: () => import('@/company/about/about.page').then(m => m.AboutPage) },
