@@ -1,4 +1,4 @@
-import { FooterComponent } from "@/shared/footer/footer.component";
+import { FooterComponent } from "@/layouts/footer/footer.component";
 import { NavbarComponent } from "@/layouts/framed/navigation/navbar/navbar.component";
 import { Component } from "@angular/core";
 import { RouterOutlet } from "@angular/router";

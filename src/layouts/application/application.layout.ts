@@ -1,4 +1,4 @@
-import { FooterComponent } from "@/shared/footer/footer.component";
+import { FooterComponent } from "@/layouts/footer/footer.component";
 import { ToastComponent } from "@/layouts/application/toast/toast.component";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Router, RouterOutlet } from "@angular/router";
