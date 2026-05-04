@@ -5,8 +5,8 @@
     "thumbUrl": "/assets/stories/thumbs/web-programming-2.png",
     "category": "insight",
     "slug": "web-programming-2",
-    "created": "2024-04-27T14:51:52.000Z",
-    "lastModified": "2025-01-09T18:18:01.000Z"
+    "created": "2024-05-01T21:41:55.000Z",
+    "lastModified": "2025-06-03T09:28:13.000Z"
   },
   {
     "title": "Software Development Technologies",
@@ -14,8 +14,8 @@
     "thumbUrl": "/assets/stories/thumbs/software-development-technologies.png",
     "category": "insight",
     "slug": "software-development-technologies",
-    "created": "2024-06-08T11:17:29.000Z",
-    "lastModified": "2025-01-09T18:18:01.000Z"
+    "created": "2024-06-07T17:26:22.000Z",
+    "lastModified": "2025-01-09T18:50:09.000Z"
   },
   {
     "title": "How To GDPR",
@@ -23,8 +23,8 @@
     "thumbUrl": "/assets/stories/thumbs/how-to-gdpr.png",
     "category": "insight",
     "slug": "how-to-gdpr",
-    "created": "2025-06-03T09:47:34.000Z",
-    "lastModified": "2025-06-07T09:46:57.000Z"
+    "created": "2025-06-03T09:53:45.000Z",
+    "lastModified": "2025-07-23T13:44:29.000Z"
   },
   {
     "title": "Linux as a programming language",
@@ -33,6 +33,6 @@
     "created": "2025-01-08T17:37:38.000Z",
     "category": "casestudy",
     "slug": "linux-as-programming-language",
-    "lastModified": "2025-01-09T19:24:51.000Z"
+    "lastModified": "2026-05-04T15:02:04.000Z"
   }
 ]
