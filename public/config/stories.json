@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Web Programming II.",
+    "description": "Take a look into a Web Programming II. class with sample codes and some fascinating per-lesson insights from the professor's perspective.",
+    "thumbUrl": "/assets/stories/thumbs/web-programming-2.png",
+    "category": "insight",
+    "slug": "web-programming-2",
+    "created": "2024-04-27T14:51:52.000Z",
+    "lastModified": "2025-01-09T18:18:01.000Z"
+  },
+  {
+    "title": "Software Development Technologies",
+    "description": "Understand the main reasons behind my software architecture heavy teaching style on the example of a typical Software Development Technologies class setup.",
+    "thumbUrl": "/assets/stories/thumbs/software-development-technologies.png",
+    "category": "insight",
+    "slug": "software-development-technologies",
+    "created": "2024-06-08T11:17:29.000Z",
+    "lastModified": "2025-01-09T18:18:01.000Z"
+  },
+  {
+    "title": "How To GDPR",
+    "description": "Navigating through the toughest digital privacy and security legal framework in the world sounds harder than it is.",
+    "thumbUrl": "/assets/stories/thumbs/how-to-gdpr.png",
+    "category": "insight",
+    "slug": "how-to-gdpr",
+    "created": "2025-06-03T09:47:34.000Z",
+    "lastModified": "2025-06-07T09:46:57.000Z"
+  },
+  {
+    "title": "Linux as a programming language",
+    "description": "A short story about a project started in bash becoming a full-fledged software... in bash.",
+    "thumbUrl": "/assets/stories/thumbs/linux-as-programming-language.png",
+    "created": "2025-01-08T17:37:38.000Z",
+    "category": "casestudy",
+    "slug": "linux-as-programming-language",
+    "lastModified": "2025-01-09T19:24:51.000Z"
+  }
+]

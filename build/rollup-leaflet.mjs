@@ -3,7 +3,7 @@ import dts from 'rollup-plugin-dts';
 const config = [
     {
         input: 'node_modules/@types/leaflet/index.d.ts',
-        output: [{ file: 'src/assets/web-mapping/types/leaflet.d.ts', format: 'es' }],
+        output: [{ file: 'public/web-mapping/types/leaflet.d.ts', format: 'es' }],
         plugins: [dts({respectExternal: true})]
     }
 ];

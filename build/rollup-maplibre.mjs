@@ -2,8 +2,8 @@
 import dts from 'rollup-plugin-dts';
 const config = [
     {
-        input: 'src/assets/web-mapping/types/maplibregljs.d.ts',
-        output: [{ file: 'src/assets/web-mapping/types/maplibregljs.d.ts', format: 'es' }],
+        input: 'public/web-mapping/types/maplibregljs.d.ts',
+        output: [{ file: 'public/web-mapping/types/maplibregljs.d.ts', format: 'es' }],
         plugins: [dts({respectExternal: true})]
     }
 ];

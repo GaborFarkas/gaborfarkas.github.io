@@ -1,0 +1,1679 @@
+[
+  {
+    "name": "Rendering",
+    "description": "Raw data visualization features required for quality map composition"
+  },
+  {
+    "name": "Hardware acceleration",
+    "parent": "Rendering",
+    "description": "The library can utilize the GPU for faster rendering",
+    "addendum": "OpenLayers’ support is partial, lines and polygons need additional setup. In Cesium and Maplibre, everything is hardware-accelerated. For Leaflet, you can try Leaflet.glify.",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 2,
+        "line": 43
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Render geometry",
+    "parent": "Rendering",
+    "description": "The library can render vector geometries",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Render raster",
+    "parent": "Rendering",
+    "description": "The library can render raster layers",
+    "addendum": "Leaflet can render GeoTIFFs easily with the leaflet-geotiff plugin.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Render image",
+    "parent": "Rendering",
+    "description": "The library can render image files",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Blend layers",
+    "parent": "Rendering",
+    "description": "The library can overlay different layers using different blending modes",
+    "addendum": "Support in OpenLayers only applies to layers displayed with the canvas renderer.",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 2,
+        "line": 83
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 0
+      }
+    }
+  },
+  {
+    "name": "Format",
+    "description": "Data exchange format support used in GIS software"
+  },
+  {
+    "name": "Vector",
+    "parent": "Format",
+    "description": "Vector data exchange format support"
+  },
+  {
+    "name": "ESRI Shapefile",
+    "parent": "Vector",
+    "description": "The library can read Shapefiles",
+    "addendum": "There are third-party JavaScript libraries for interpreting Shapefiles (e.g. shapefile-js, shapefile).",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "KML",
+    "parent": "Vector",
+    "description": "The library can read KMLs",
+    "addendum": "Possible with plugins in Leaflet and Maplibre GL JS.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 119
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 31
+      }
+    }
+  },
+  {
+    "name": "GeoJSON",
+    "parent": "Vector",
+    "description": "The library can read GeoJSONs",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 28
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 128
+      },
+      "Maplibre GL JS": {
+        "score": 1,
+        "line": 22
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 41
+      }
+    }
+  },
+  {
+    "name": "WFS",
+    "parent": "Vector",
+    "description": "The library can read vector data through a WFS connection",
+    "addendum": "Easy to manually implement as long as the map can tell its exact view bounds and the WFS server can speak GeoJSON.",
+    "support": {
+      "Leaflet": {
+        "score": 2,
+        "line": 53
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 139
+      },
+      "Maplibre GL JS": {
+        "score": 2,
+        "line": 41
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Write transaction",
+    "parent": "Vector",
+    "description": "The library can write vector data through a WFS-T connection",
+    "addendum": "Leaflet and OpenLayers can make implementing this easier with plugins and built-in support classes.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 2
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Mapbox vector tile",
+    "parent": "Vector",
+    "description": "The library can read Mapbox vector tiles",
+    "addendum": "OpenLayers does not support Mapbox style JSONs out of the box. Leaflet and Cesium JS need plugins for this. Cesium’s built-in MapboxStyleImageryProvider only works with old (v11) tiles hosted by Mapbox.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 151
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Raster",
+    "parent": "Format",
+    "description": "Raster data exchange format support"
+  },
+  {
+    "name": "GeoTiff",
+    "parent": "Raster",
+    "description": "The library can read GeoTIFF rasters",
+    "addendum": "Needs geotiff.js in every case. In OpenLayers it is bundled with the library.",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 102
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Arc/Info ASCII GRID",
+    "parent": "Raster",
+    "description": "The library can read ASCII rasters",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 4
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "WCS",
+    "parent": "Raster",
+    "description": "The library can read raster data through a WCS connection",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 4
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Image",
+    "parent": "Format",
+    "description": "Image data exchange format support"
+  },
+  {
+    "name": "JPEG",
+    "parent": "Image",
+    "description": "The library can read JPEG images",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "PNG",
+    "parent": "Image",
+    "description": "The library can read PNG images",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "WMS",
+    "parent": "Image",
+    "description": "The library can read images through a WMS connection",
+    "addendum": "Maplibre GL JS and Cesium JS both use image data rather than images, therefore requested images are subjects to CORS limitations. Either configure a header or use a proxy.",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 76
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 168
+      },
+      "Maplibre GL JS": {
+        "score": 1,
+        "line": 80
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 51
+      }
+    }
+  },
+  {
+    "name": "Tile service",
+    "parent": "Format",
+    "description": "Tiled image data exchange format support"
+  },
+  {
+    "name": "WMTS",
+    "parent": "Tile service",
+    "description": "The library can read tiles through a WMTS connection",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 93
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 185
+      },
+      "Maplibre GL JS": {
+        "score": 1,
+        "line": 101
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 73
+      }
+    }
+  },
+  {
+    "name": "TMS",
+    "parent": "Tile service",
+    "description": "The library can read tiles through a TMS connection",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Slippy map",
+    "parent": "Tile service",
+    "description": "The library can read tiles served in an OpenStreetMap Slippy map format",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 108
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 217
+      },
+      "Maplibre GL JS": {
+        "score": 1,
+        "line": 123
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 95
+      }
+    }
+  },
+  {
+    "name": "Google Maps",
+    "parent": "Tile service",
+    "description": "The library can read Google Maps layers",
+    "addendum": "Cesium’s support focuses on photorealistic 3D tiles with 3D objects. Leaflet and Maplibre GL JS need plugins. Every library needs an API key.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 226
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 108
+      }
+    }
+  },
+  {
+    "name": "ArcGIS REST API",
+    "parent": "Tile service",
+    "description": "The library can read ArcGIS Online layers",
+    "addendum": "Cesium’s support is limited to WKIDs (ArcGIS projection codes) 102100, 102113, and 4326. Leaflet and Maplibre GL JS need plugins.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 239
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 125
+      }
+    }
+  },
+  {
+    "name": "Bing Maps",
+    "parent": "Tile service",
+    "description": "The library can read Bing Maps layers",
+    "addendum": "Cesium’s default view uses Bing layers. Leaflet and Maplibre GL JS need plugins. Except Cesium, every library needs an API key.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 250
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Database",
+    "description": "The ability to communicate with spatial databases"
+  },
+  {
+    "name": "Connection",
+    "parent": "Database",
+    "description": "Connecting to spatial databases"
+  },
+  {
+    "name": "PostGIS",
+    "parent": "Connection",
+    "description": "The library can connect to PostGIS databases",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 4
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "SpatiaLite",
+    "parent": "Connection",
+    "description": "The library can connect to SpatiaLite databases",
+    "addendum": "There is a GeoPackage JavaScript library for this called geopackage-js.",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "MySQL",
+    "parent": "Connection",
+    "description": "The library can connect to MySQL databases",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 4
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Functionality",
+    "parent": "Database",
+    "description": "Basic database functionality"
+  },
+  {
+    "name": "Using DBMS",
+    "parent": "Functionality",
+    "description": "The library can use any DBMS for vector data",
+    "addendum": "Possible with a custom IndexedDB vector type.",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Query/filter",
+    "parent": "Functionality",
+    "description": "The library is capable of querying and filtering vector data",
+    "addendum": "Pretty trivial if you have a DBMS-powered vector layer (e.g. in CARTO).",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 2
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Query language",
+    "parent": "Functionality",
+    "description": "The library can use a query language to query and filter vector data",
+    "addendum": "Possible with a custom IndexedDB vector type.",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Data",
+    "description": "Data operations"
+  },
+  {
+    "name": "Pre-process",
+    "parent": "Data",
+    "description": "Processing capabilities for organizing and manipulating data before display"
+  },
+  {
+    "name": "On the fly transformation",
+    "parent": "Pre-process",
+    "description": "The library is capable to project vector data on the fly",
+    "addendum": "OpenLayers and Leaflet must transform vector features to the map projection in order to display. Maplibre GL JS only supports Web Mercator as display projection. Cesium’s projection support is also limited.",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 4
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 41
+      }
+    }
+  },
+  {
+    "name": "Read attribute data",
+    "parent": "Pre-process",
+    "description": "The library can use vector attributes",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 123
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 259
+      },
+      "Maplibre GL JS": {
+        "score": 1,
+        "line": 142
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 139
+      }
+    }
+  },
+  {
+    "name": "Z coordinates",
+    "parent": "Pre-process",
+    "description": "The library preserves Z coordinates in vectors",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 142
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 293
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 155
+      }
+    }
+  },
+  {
+    "name": "M coordinates",
+    "parent": "Pre-process",
+    "description": "The library preserves M coordinates in vectors",
+    "addendum": "Measurement coordinates are not supported and discouraged to use by modern Web vector formats, like GeoJSON. Libraries supporting M coordinates do not distinguish between XYZ  and XYM.",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 162
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 327
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Geometry types",
+    "parent": "Pre-process",
+    "description": "The library can interpret the basic geometry types of points, lines, polygons, and their multipart counterparts",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Spatial indexing",
+    "parent": "Pre-process",
+    "description": "The library is capable to apply a spatial index on its internal vector layers to speed up processing and display",
+    "addendum": "Leaflet can use the Leaflet.LayerIndex plugin for this.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Geometry validation",
+    "parent": "Pre-process",
+    "description": "The library can validate vector geometries and identify invalid ones",
+    "addendum": "There are geoprocessing libraries for this purpose (e.g. Turf, JSTS).",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Geometry simplification",
+    "parent": "Pre-process",
+    "description": "The library is capable of generalizing vector geometries on the fly",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Attribute table",
+    "parent": "Pre-process",
+    "description": "The library is capable of organizing vector attributes into an attribute table",
+    "addendum": "The organizing part is quite trivial to do manually, but for the tabular display and data manipulation an external library is recommended.",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Conversion",
+    "parent": "Data",
+    "description": "Data type conversion support"
+  },
+  {
+    "name": "Interpolate",
+    "parent": "Conversion",
+    "description": "The library can interpolate vector data into a raster layer",
+    "addendum": "If we consider heatmap visualization as a form of interpolation.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 362
+      },
+      "Maplibre GL JS": {
+        "score": 1,
+        "line": 173
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Raster to vector",
+    "parent": "Conversion",
+    "description": "The library can vectorize raster data",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 4
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Vector to raster",
+    "parent": "Conversion",
+    "description": "The library can rasterize vector data",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 4
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Manipulation",
+    "parent": "Data",
+    "description": "Capabilities for raw vector data and layer management"
+  },
+  {
+    "name": "Update attribute data",
+    "parent": "Manipulation",
+    "description": "The library can write attribute data of vector layers on the fly",
+    "addendum": "In Maplibre GL JS, you have to manually keep track of the GeoJSON data and set it again after any change on the source.",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 182
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 376
+      },
+      "Maplibre GL JS": {
+        "score": 2,
+        "line": 199
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 196
+      }
+    }
+  },
+  {
+    "name": "Update geometry",
+    "parent": "Manipulation",
+    "description": "The library can update geometries of vector layers on the fly",
+    "addendum": "Leaflet can use the official Leaflet.Editable plugin for this. In Maplibre GL JS you have to reset the GeoJSON data source after each edit.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 409
+      },
+      "Maplibre GL JS": {
+        "score": 2,
+        "line": 228
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 238
+      }
+    }
+  },
+  {
+    "name": "Field calculator",
+    "parent": "Manipulation",
+    "description": "The library has an abstract mechanism for calculating attributes",
+    "addendum": "Maplibre GL JS and OpenLayers have data-driven styling.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Add/remove layer",
+    "parent": "Manipulation",
+    "description": "The library can add and remove layers",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 220
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 427
+      },
+      "Maplibre GL JS": {
+        "score": 1,
+        "line": 266
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 260
+      }
+    }
+  },
+  {
+    "name": "Change layer order",
+    "parent": "Manipulation",
+    "description": "The library is capable of changing the visual order of layers",
+    "addendum": "Leaflet and Cesium cannot render vectors below image layers, although they can order layers of those two types relative to other layers in the same type. In Maplibre GL JS, the base map usually consists of many layers.",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 453
+      },
+      "Maplibre GL JS": {
+        "score": 1,
+        "line": 301
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Typed layers",
+    "parent": "Manipulation",
+    "description": "The library has a type system for its layers",
+    "addendum": "Maplibre GL JS uses enums, the other libraries use classes and inheritance. Cesium calls its vector layers data sources.",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Analysis",
+    "parent": "Data",
+    "description": "Complex data manipulation capabilities"
+  },
+  {
+    "name": "Basic geoprocessing",
+    "parent": "Analysis",
+    "description": "The library can do basic vector operations (clip, dissolve, buffer, union, difference)",
+    "addendum": "There are geoprocessing libraries for this purpose (e.g. Turf, JSTS).",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Topological analysis",
+    "parent": "Analysis",
+    "description": "The library can do vector operations based on topology (intersect, touch, within, cross)",
+    "addendum": "There are geoprocessing libraries for this purpose (e.g. Turf, JSTS).",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Modify image",
+    "parent": "Analysis",
+    "description": "The library is capable to transform image data",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 2,
+        "line": 510
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Modify raster",
+    "parent": "Analysis",
+    "description": "The library is capable to transform raster data",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 4
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Raster algebra",
+    "parent": "Analysis",
+    "description": "The library is capable of executing matrix operations between multiple raster layers",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 527
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Classification",
+    "parent": "Analysis",
+    "description": "The library can reclassify raster layers",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 562
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Convolution",
+    "parent": "Analysis",
+    "description": "The library can transform rasters with a convolution matrix (moving window)",
+    "addendum": "It is quite hard to formulate even 3x3 kernel operations with style expressions in OpenLayers.",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 602
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Write WPS request",
+    "parent": "Analysis",
+    "description": "The library is capable of requesting spatial operations through a WPS connection",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Projection",
+    "description": "Projection handling"
+  },
+  {
+    "name": "Transform vector",
+    "parent": "Projection",
+    "description": "The library can transform geometries between known projections",
+    "addendum": "Maplibre GL JS can convert between WGS84 and Web Mercator internally, but does not expose related functionality and does not support other projections. Cesium only supports WGS84 for vectors.",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 252
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 646
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Warp raster",
+    "parent": "Projection",
+    "description": "The library can transform raster and image layers between known projections",
+    "addendum": "OpenLayers cannot yet warp GeoTIFF rasters, but it can warp any image layer. Cesium’s support only covers Web Mercator image tiles.",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 660
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 95
+      }
+    }
+  },
+  {
+    "name": "Well-known projections",
+    "parent": "Projection",
+    "description": "The library can use WGS84 (EPSG:4326) and Web Mercator (EPSG:3857) projections",
+    "addendum": "Maplibre GL JS can currently only use Web Mercator, but supporting multiple projections is under consideration by the development team.",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Custom projections",
+    "parent": "Projection",
+    "description": "The library can use well-defined custom projections",
+    "addendum": "The Proj4JS library is required in every case.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 2
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Interaction",
+    "description": "GUI capabilities"
+  },
+  {
+    "name": "Draw features",
+    "parent": "Interaction",
+    "description": "Users can digitize vector features in this library",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Modify features",
+    "parent": "Interaction",
+    "description": "Users can modify features with a mouse-based tool in this library",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Snap points",
+    "parent": "Interaction",
+    "description": "The library is capable of snapping vertices",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Modify view",
+    "parent": "Interaction",
+    "description": "The library is capable to change its view settings (e.g. projection) on the fly",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Select features",
+    "parent": "Interaction",
+    "description": "Users can select features with a mouse-based tool in this library",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Query features",
+    "parent": "Interaction",
+    "description": "Users can query features using the GUI in this library",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Query raster",
+    "parent": "Interaction",
+    "description": "Users can query raster values with a mouse-based tool in this library",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Measure",
+    "parent": "Interaction",
+    "description": "Users can measure lengths and areas with a mouse-based tool in this library",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Change time",
+    "parent": "Interaction",
+    "description": "The library offers temporal controls to users",
+    "addendum": "MapLibre GL JS can use plugin maplibre-gl-temporal-control for this.",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Mouse coordinates",
+    "parent": "Interaction",
+    "description": "The library can display mouse coordinates",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Representation",
+    "description": "Thematic data visualization capabilities"
+  },
+  {
+    "name": "Styling",
+    "parent": "Representation",
+    "description": "Features required for creating thematic map content"
+  },
+  {
+    "name": "Style vector",
+    "parent": "Styling",
+    "description": "The library is capable of applying different styles to vector elements",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Style raster",
+    "parent": "Styling",
+    "description": "The library is capable of applying different styles to raster layers",
+    "support": {
+      "Leaflet": {
+        "score": 4
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 4
+      },
+      "Cesium JS": {
+        "score": 4
+      }
+    }
+  },
+  {
+    "name": "Thematic maps",
+    "parent": "Styling",
+    "description": "The library can change its applied styles dynamically",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 1
+      }
+    }
+  },
+  {
+    "name": "Cartographic elements",
+    "parent": "Representation",
+    "description": "Features required for creating a map"
+  },
+  {
+    "name": "Scale bar",
+    "parent": "Cartographic elements",
+    "description": "The library can display a scale bar",
+    "support": {
+      "Leaflet": {
+        "score": 1
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 1
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "North arrow",
+    "parent": "Cartographic elements",
+    "description": "The library can display a North arrow",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 668
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Legend",
+    "parent": "Cartographic elements",
+    "description": "The library can display a legend for its layers",
+    "addendum": "Some libraries have layer switcher plugins, but creating a full-fledged legend with styles, categories and labels is always a challenge.",
+    "support": {
+      "Leaflet": {
+        "score": 3
+      },
+      "OpenLayers": {
+        "score": 3
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  },
+  {
+    "name": "Graticule",
+    "parent": "Cartographic elements",
+    "description": "The library can display a graticule over the map",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1
+      },
+      "Maplibre GL JS": {
+        "score": 2
+      },
+      "Cesium JS": {
+        "score": 2
+      }
+    }
+  },
+  {
+    "name": "Text box",
+    "parent": "Cartographic elements",
+    "description": "The library can display overlays",
+    "support": {
+      "Leaflet": {
+        "score": 1,
+        "line": 265
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 673
+      },
+      "Maplibre GL JS": {
+        "score": 2,
+        "line": 365
+      },
+      "Cesium JS": {
+        "score": 1,
+        "line": 287
+      }
+    }
+  },
+  {
+    "name": "Overview map",
+    "parent": "Cartographic elements",
+    "description": "The library can display an inset map for making orientation and navigation easier",
+    "addendum": "You can always create and synchronize a second map instance, if everything else fails.",
+    "support": {
+      "Leaflet": {
+        "score": 2
+      },
+      "OpenLayers": {
+        "score": 1,
+        "line": 683
+      },
+      "Maplibre GL JS": {
+        "score": 3
+      },
+      "Cesium JS": {
+        "score": 3
+      }
+    }
+  }
+]

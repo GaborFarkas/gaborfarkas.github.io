@@ -6,7 +6,7 @@ import { parse } from 'node-html-parser';
 
 const baseDir = dirname(fileURLToPath(import.meta.url));
 const buildDir = path.join(baseDir, '..', 'dist', 'project-w', 'browser');
-const configPath = path.join(baseDir, '..', 'src', 'assets', 'config', 'stories.json');
+const configPath = path.join(baseDir, '..', 'public', 'config', 'stories.json');
 const indexPath = path.join(buildDir, 'index.html');
 
 if (!fs.existsSync(buildDir)) {

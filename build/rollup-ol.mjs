@@ -3,7 +3,7 @@ import dts from 'rollup-plugin-dts';
 const config = [
     {
         input: 'node_modules/ol/dist/ol.d.ts',
-        output: [{ file: 'src/assets/web-mapping/types/openlayers.d.ts', format: 'es' }],
+        output: [{ file: 'public/web-mapping/types/openlayers.d.ts', format: 'es' }],
         plugins: [dts({respectExternal: true})]
     }
 ];

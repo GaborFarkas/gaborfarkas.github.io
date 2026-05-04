@@ -7,7 +7,7 @@ import gitDateExtractor from 'git-date-extractor';
 
 const baseDir = dirname(fileURLToPath(import.meta.url));
 const srcDir = path.join(baseDir, '..', 'src', 'components', 'story');
-const configPath = path.join(baseDir, '..', 'src', 'assets', 'config', 'stories.json');
+const configPath = path.join(baseDir, '..', 'public', 'config', 'stories.json');
 const routesPath = path.join(baseDir, '..', 'src', 'app', 'app.routes.ts');
 const urlMappingPath = path.join(baseDir, '..', 'src', 'models', 'page-url-mapping.model.ts');
 

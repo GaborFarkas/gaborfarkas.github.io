@@ -12,8 +12,8 @@ import MaplibreExamples from '../src/examples/maplibregljs';
 import CesiumExamples from '../src/examples/cesiumjs';
 
 const baseDir = dirname(fileURLToPath(import.meta.url));
-const configPath = path.join(baseDir, '..', 'src', 'assets', 'config', 'feature-support.json');
-const csvPath = path.join(baseDir, '..', 'src', 'assets', 'web-mapping', 'support-matrix.csv');
+const configPath = path.join(baseDir, '..', 'public', 'config', 'feature-support.json');
+const csvPath = path.join(baseDir, '..', 'public', 'web-mapping', 'support-matrix.csv');
 
 const supportMatrix: FeatureSupportItem[] = [];
 const pairedRows: Record<string, string | number | undefined>[] = [];
