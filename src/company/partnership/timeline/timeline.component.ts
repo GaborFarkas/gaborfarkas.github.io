@@ -1,6 +1,6 @@
 import { AfterContentInit, Component, contentChildren, input, signal } from '@angular/core';
 import { TimelineItemComponent } from '@/company/partnership/timeline/timeline-item/timeline-item.component';
-import { randomizer } from '@/utils/array';
+import { randomizer } from '@/array';
 
 /**
  * A general timeline component with a hard-coded design and extendable items.

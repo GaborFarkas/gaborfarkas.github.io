@@ -2,7 +2,7 @@
 //@ts-nocheck
 import { environment } from '@/environments/environment';
 import { FeatureSupportFeature } from '@/web-mapping/shared/feature-support-feature.model';
-import { OpenLayers } from '@/utils/openlayers';
+import { OpenLayers } from '@/web-mapping/shared/openlayers-map/openlayers';
 
 const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void> = {
     [FeatureSupportFeature.HWACCEL]: webglPoints,

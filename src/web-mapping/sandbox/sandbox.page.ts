@@ -10,7 +10,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { VERSION as OpenLayersVersion } from "ol";
 import { version as LeafletVersion } from "leaflet";
 import { getVersion as getMaplibreVersion } from "maplibre-gl";
-import { VERSION as CesiumVersion } from "@/utils/cesium";
+import { VERSION as CesiumVersion } from "@/web-mapping/sandbox/cesium-version";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { faFloppyDisk, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FileService } from "@/shared/file.service";

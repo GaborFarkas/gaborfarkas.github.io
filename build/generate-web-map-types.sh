@@ -11,7 +11,7 @@ echo "declare var map: Cesium.Viewer;" >> $DTSPATH
 
 # Although as its version is only added to the minified JS, we are extracting it from its package.json here as well.
 CESIUMVERSION=$(grep '"version"' node_modules/cesium/package.json | cut -d '"' -f4)
-sed -i "s/\(^export[[:space:]]const[[:space:]]VERSION.*$\)/export const VERSION = \"$CESIUMVERSION\";"/ src/utils/cesium.ts
+sed -i "s/\(^export[[:space:]]const[[:space:]]VERSION.*$\)/export const VERSION = \"$CESIUMVERSION\";"/ src/web-mapping/sandbox/cesium-version.ts
 
 # Maplibre GL JS has a great default d.ts, but it imports some externals which need to be skipped or rolled up.
 DTSPATH=public/web-mapping/types/maplibregljs.d.ts
