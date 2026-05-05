@@ -16,8 +16,8 @@ export class AboutPage {
             prefix: 'Why',
             sections: [
                 {
-                    question: ' are you doing this?',
-                    answer: 'Simply put, I\'m not compatible with big companies. Not a fan of modern bureaucracy (there is a rule for everything, yet nothing really works), neither of their money making game. I\'m more about creating value in efficient and sustainable ways. I could force myself into a 9 to 5 desk job, but why should I?'
+                    question: ' are you working like this?',
+                    answer: 'Simply put, I\'m not compatible with big companies. Not a fan of modern bureaucracy (there is a rule for everything, yet nothing really works), neither of their money making game. I\'m more about creating value in efficient and sustainable ways. Also, I found myself to thrive in chaos. I can effieciently turn chaos into order, but I don\'t feel useful once everything is in order.'
                 },
                 {
                     question: ' did you create this website?',
@@ -29,7 +29,7 @@ export class AboutPage {
                 },
                 {
                     question: ' is happiness so important to you?',
-                    answer: 'If you came from the partnership page and read the paragraph about my philosophy, you must have noted that ideology has an important role in my professional life. The world is changing, and I believe we are in the midst of some sort of neo-Renaissance transformation, where we need to refound ourselves as a species. That will take several generations and tons of paradigm shifts. I also realize that in this new world, central governance has lost its power; individualism will be key for a stable society. I have no idea what kind of system we will end up with, so I picked the most common requirement for humans on all scales: happiness. I decided to put most of my work time into maximizing happiness the best I can, aiding our journey into a new era.'
+                    answer: 'If you came from the partnership page and read the paragraph about my philosophy, you must have noted that ideology has an important role in my professional life. The world is changing, and I believe we are in the midst of some sort of neo-Renaissance transformation, where we need to refound ourselves as a species. That will take several generations and tons of paradigm shifts. I also realize that in this new world, individualism will be key for a stable society. I have no idea what kind of system we will end up with, so I picked the most common requirement for humans on all scales: happiness. I decided to put most of my work time into maximizing happiness the best I can, aiding our journey into a new era.'
                 }
             ]
         },
