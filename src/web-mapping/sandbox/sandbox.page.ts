@@ -1,5 +1,5 @@
 import { CodeEditorComponent } from "@/web-mapping/sandbox/code-editor/code-editor.component";
-import { NavLogoComponent } from "@/shared/nav-logo/nav-logo.component";
+import { BrandedNavComponent } from "@/layout/navigation/branded-nav/branded-nav.component";
 import { NoPhoneComponent } from "@/web-mapping/sandbox/no-phone/no-phone.component";
 import { PageUrlMapping } from "@/app/page-url-mapping.model";
 import { WebMappingLibrary } from "@/web-mapping/shared/web-mapping-library";
@@ -29,7 +29,7 @@ import { ModalComponent } from "@/web-mapping/shared/modal/modal.component";
  */
 @Component({
     selector: 'sandbox-page',
-    imports: [CommonModule, FormsModule, NavLogoComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective, ModalComponent],
+    imports: [CommonModule, FormsModule, BrandedNavComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective, ModalComponent],
     providers: [FileService, PersistencyService],
     templateUrl: './sandbox.page.html',
     host: {

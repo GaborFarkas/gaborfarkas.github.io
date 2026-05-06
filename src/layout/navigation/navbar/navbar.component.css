@@ -1,12 +1,3 @@
-svg {
-    color: var(--primary-accent);
-    transition: color 100ms linear;
-}
-
-svg:hover {
-    color: var(--secondary-accent);
-}
-
 /* Navbar menu skewed-box styling. Closely couples the nav-dropdown component, but the styling needs to be contextual. */
 @media (min-width: 768px) {
     /* Skew the whole menu selector to have a pointer target for the whole trapezoid.

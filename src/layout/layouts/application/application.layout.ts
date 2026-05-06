@@ -1,8 +1,8 @@
-import { FooterComponent } from "@/layouts/footer/footer.component";
-import { ToastComponent } from "@/layouts/application/toast/toast.component";
+import { FooterComponent } from "@/layout/footer/footer.component";
+import { ToastComponent } from "@/layout/toast/toast.component";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Router, RouterOutlet } from "@angular/router";
-import { LayoutWithAnalytics } from "@/layouts/layout-with-analytics";
+import { LayoutWithAnalytics } from "@/layout/layouts/layout-with-analytics";
 import { NotificationService } from "@/shared/notification.service";
 import { NotificationModel } from "@/shared/notification.model";
 import { Subject, takeUntil } from "rxjs";

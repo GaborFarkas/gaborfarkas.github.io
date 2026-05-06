@@ -1,8 +1,8 @@
-import { FooterComponent } from "@/layouts/footer/footer.component";
-import { NavbarComponent } from "@/layouts/framed/navigation/navbar/navbar.component";
+import { FooterComponent } from "@/layout/footer/footer.component";
+import { NavbarComponent } from "@/layout/navigation/navbar/navbar.component";
 import { Component } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
-import { LayoutWithAnalytics } from "../layout-with-analytics";
+import { LayoutWithAnalytics } from "@/layout/layouts/layout-with-analytics";
 
 /**
  * Layout component containing a navigation bar at the top and a footer at the bottom.

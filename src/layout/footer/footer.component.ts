@@ -2,14 +2,15 @@ import { Component, HostBinding, input, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faLocationDot, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
-import { FooterMapComponent } from '@/layouts/footer/footer-map/footer-map.component';
+import { FooterMapComponent } from '@/layout/footer/footer-map/footer-map.component';
+import { CompanyLogoComponent } from "../company-logo/company-logo.component";
 
 /**
  * Footer component.
  */
 @Component({
     selector: 'footer',
-    imports: [FontAwesomeModule, CommonModule, FooterMapComponent],
+    imports: [FontAwesomeModule, CommonModule, FooterMapComponent, CompanyLogoComponent],
     templateUrl: './footer.component.html',
     styleUrl: './footer.component.css'
 })
