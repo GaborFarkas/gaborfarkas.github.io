@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
-import { FaqBlockComponent } from '@/company/about/faq-block/faq-block.component';
-import { FaqGroupModel } from '@/company/about/faq-block/faq.model';
+import { FaqGroupComponent } from '@/company/about/faq-group/faq-group.component';
+import { FaqGroupModel } from '@/company/about/faq.model';
 
 /**
  * Main content of the about page.
@@ -8,13 +8,13 @@ import { FaqGroupModel } from '@/company/about/faq-block/faq.model';
 @Component({
     selector: 'about-page',
     templateUrl: './about.page.html',
-    imports: [FaqBlockComponent]
+    imports: [FaqGroupComponent]
 })
 export class AboutPage {
-    protected readonly sectionGroups = signal<FaqGroupModel[]>([
+    protected readonly itemGroups = signal<FaqGroupModel[]>([
         {
             prefix: 'Why',
-            sections: [
+            items: [
                 {
                     question: ' are you working like this?',
                     answer: 'Simply put, I\'m not compatible with big companies. Not a fan of modern bureaucracy (there is a rule for everything, yet nothing really works), neither of their money making game. I\'m more about creating value in efficient and sustainable ways. Also, I found myself to thrive in chaos. I can effieciently turn chaos into order, but I don\'t feel useful once everything is in order.'
@@ -35,7 +35,7 @@ export class AboutPage {
         },
         {
             prefix: 'When',
-            sections: [
+            items: [
                 {
                     question: ' will you be available?',
                     answer: 'It depends. Long-term partnerships are taken extremely seriously. Estimation on the next avaiable vacancy can change on the fly based on the non-foreseeable future needs of my current partners. Counseling and small side projects can be scheduled more promptly, especially during the summer, when I don\'t have any teaching duties at the university.'
@@ -48,7 +48,7 @@ export class AboutPage {
         },
         {
             prefix: 'Where',
-            sections: [
+            items: [
                 {
                     question: ' are you based at?',
                     answer: 'In Pécs, Hungary. Usually physical contact is not required for counseling and side projects, only for the team building aspect of long-term partnerships. However, if the demand is high enough to pay my expenses, I\'m willing to travel now and then.'
@@ -61,7 +61,7 @@ export class AboutPage {
         },
         {
             prefix: 'How',
-            sections: [
+            items: [
                 {
                     question: ' do you prioritize your time?',
                     answer: 'University is the first. I reduced my duties to 4-5 hours per week teaching only, but classes have fixed time and students are entitled to uncompromised knowledge. With respect to this, long-term partners always get a fixed weekly budget of my time. Counsels and short-term side projects are managed from the rest.'

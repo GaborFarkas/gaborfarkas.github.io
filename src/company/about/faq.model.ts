@@ -1,7 +1,7 @@
 /**
  * FAQ section item descriptor.
  */
-export interface FaqSectionModel {
+export interface FaqItemModel {
     /**
      * The question of the section.
      */
@@ -23,5 +23,5 @@ export interface FaqGroupModel {
     /**
      * The section descriptors.
      */
-    sections: FaqSectionModel[]
+    items: FaqItemModel[]
 }
