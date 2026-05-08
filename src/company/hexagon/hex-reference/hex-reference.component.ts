@@ -7,13 +7,13 @@ import { Component, input } from '@angular/core';
 @Component({
     selector: 'p.reference',
     imports: [CommonModule],
-    templateUrl: './reference.component.html',
-    styleUrl: './reference.component.css',
+    templateUrl: './hex-reference.component.html',
+    styleUrl: './hex-reference.component.css',
     host: {
         'class': 'relative overflow-hidden hover:overflow-visible'
     }
 })
-export class ReferenceComponent {
+export class HexReferenceComponent {
     /**
      * Orientation of the flyout text from the original hexagon.
      */

@@ -1,7 +1,7 @@
 import { Component, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Orientation, ReferenceComponent } from '@/company/shared/reference/reference.component';
-import { ReferenceDescriptor } from '@/company/shared/reference.model';
+import { Orientation, HexReferenceComponent } from '@/company/hexagon/hex-reference/hex-reference.component';
+import { ReferenceDescriptor } from '@/company/hexagon/reference.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 /**
@@ -9,7 +9,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
  */
 @Component({
     selector: 'div.hero-section',
-    imports: [CommonModule, ReferenceComponent, FontAwesomeModule],
+    imports: [CommonModule, HexReferenceComponent, FontAwesomeModule],
     templateUrl: './hero-section.component.html',
     styleUrl: './hero-section.component.css'
 })

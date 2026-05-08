@@ -1,11 +1,11 @@
 import { Component, signal, viewChildren, WritableSignal } from '@angular/core';
-import { CarouselComponent } from '@/company/landing/carousel/carousel.component';
+import { CarouselComponent } from '@/widgets/carousel/carousel.component';
 import { HeroSceneComponent } from '@/company/landing/hero-scene/hero-scene.component';
 import { Hero, HeroScene, HeroSection } from '@/company/landing/hero.model';
-import { CarouselChangeEvent } from '@/company/landing/carousel/carousel-change-event.model';
+import { CarouselChangeEvent } from '@/widgets/carousel/carousel-change-event.model';
 import { HeroSectionComponent } from '@/company/landing/hero-section/hero-section.component';
 import { faCircleNodes, faDiagramProject, faFileLines, faLaptopCode, faLayerGroup, faMap, faTree, faSection } from '@fortawesome/free-solid-svg-icons';
-import { ReferenceDescriptor } from '@/company/shared/reference.model';
+import { ReferenceDescriptor } from '@/company/hexagon/reference.model';
 import { faGitAlt } from '@fortawesome/free-brands-svg-icons';
 import { CommonModule } from '@angular/common';
 import { PageUrlMapping, StoryUrlMapping } from '@/app/page-url-mapping.model';

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, signal, viewChild } from '@angular/core';
-import { Orientation, ReferenceComponent } from '@/company/shared/reference/reference.component';
-import { RangePipe } from '@/company/counseling/decorated-column/range.pipe';
-import { ReferenceDescriptor } from '@/company/shared/reference.model';
+import { Orientation, HexReferenceComponent } from '@/company/hexagon/hex-reference/hex-reference.component';
+import { RangePipe } from '@/company/hexagon/range.pipe';
+import { ReferenceDescriptor } from '@/company/hexagon/reference.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 /**
@@ -10,7 +10,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
  */
 @Component({
     selector: 'div.col-decorated',
-    imports: [CommonModule, ReferenceComponent, RangePipe, FontAwesomeModule],
+    imports: [CommonModule, HexReferenceComponent, RangePipe, FontAwesomeModule],
     templateUrl: './decorated-column.component.html',
     styleUrl: './decorated-column.component.css',
     host: {
