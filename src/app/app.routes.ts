@@ -19,7 +19,7 @@ export const routes: Routes = [
         children: [
             { path: PageUrlMapping.HOME, loadComponent: () => import('@/company/landing/landing.page').then(m => m.LandingPage) },
             { path: PageUrlMapping.ABOUT, loadComponent: () => import('@/company/about/about.page').then(m => m.AboutPage) },
-            { path: PageUrlMapping.PUBLICATIONS, loadComponent: () => import('@/publications/publications.page').then(m => m.PublicationsPage) },
+            { path: PageUrlMapping.PUBLICATIONS, loadComponent: () => import('@/company/publications/publications.page').then(m => m.PublicationsPage) },
             { path: PageUrlMapping.PARTNERSHIP, loadComponent: () => import('@/company/partnership/partnership.page').then(m => m.PartnershipPage) },
             { path: PageUrlMapping.COUNSELING, loadComponent: () => import('@/company/counseling/counseling.page').then(m => m.CounselingPage) },
             { path: PageUrlMapping.INSIGHTS, loadComponent: () => import('@/stories/stories.page').then(m => m.StoriesPage) },

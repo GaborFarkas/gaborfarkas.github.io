@@ -1,5 +1,5 @@
-import { NotificationLevel, NotificationModel } from "@/shared/notification.model";
-import { NotificationService } from "@/shared/notification.service";
+import { NotificationLevel, NotificationModel } from "@/messaging/notification.model";
+import { NotificationService } from "@/messaging/notification.service";
 import { Component, computed, input, signal } from "@angular/core";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";

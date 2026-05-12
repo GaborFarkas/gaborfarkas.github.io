@@ -3,8 +3,8 @@ import { ToastComponent } from "@/layout/widgets/toast/toast.component";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Router, RouterOutlet } from "@angular/router";
 import { LayoutWithAnalytics } from "@/layout/layouts/layout-with-analytics";
-import { NotificationService } from "@/shared/notification.service";
-import { NotificationModel } from "@/shared/notification.model";
+import { NotificationService } from "@/messaging/notification.service";
+import { NotificationModel } from "@/messaging/notification.model";
 import { Subject, takeUntil } from "rxjs";
 
 /**

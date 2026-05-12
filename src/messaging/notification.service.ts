@@ -1,4 +1,4 @@
-import { NotificationLevel, NotificationModel } from "@/shared/notification.model";
+import { NotificationLevel, NotificationModel } from "@/messaging/notification.model";
 import { Injectable } from "@angular/core";
 import { Observable, ReplaySubject } from "rxjs";
 
@@ -21,15 +21,15 @@ export class NotificationService {
     /**
      * Internal list of current notifications.
      */
-    private notifications_: NotificationModel[] = [];
+    private notificationList: NotificationModel[] = [];
 
     /**
      * Shows a new notification.
      * @param notification The notification descriptor.
      */
     public showNotification(notification: NotificationModel) {
-        if (!this.notifications_.includes(notification)) {
-            this.notifications_.push(notification);
+        if (!this.notificationList.includes(notification)) {
+            this.notificationList.push(notification);
             this.updateObservable();
 
             if (notification.fadeAfter !== undefined) {
@@ -44,8 +44,8 @@ export class NotificationService {
      * @param notification The notification descriptor.
      */
     public closeNotification(notification: NotificationModel) {
-        if (this.notifications_.includes(notification)) {
-            this.notifications_ = this.notifications_.filter(currNotification =>
+        if (this.notificationList.includes(notification)) {
+            this.notificationList = this.notificationList.filter(currNotification =>
                 notification !== currNotification);
             this.updateObservable();
         }
@@ -94,6 +94,6 @@ export class NotificationService {
      * Updates the publicly observable list of notifications.
      */
     private updateObservable() {
-        (this.notifications as ReplaySubject<NotificationModel[]>).next(this.notifications_);
+        (this.notifications as ReplaySubject<NotificationModel[]>).next(this.notificationList);
     }
 }

@@ -21,7 +21,7 @@ import { SelectAutoResetDirective } from "@/web-mapping/sandbox/select-auto-rese
 import { DataValueDirective } from "@/web-mapping/sandbox/data-property/data-value.directive";
 import { ElementWithData } from "@/web-mapping/sandbox/data-property/element-with-data.model";
 import { PersistencyService } from "@/web-mapping/sandbox/persistency.service";
-import { NotificationService } from "@/shared/notification.service";
+import { NotificationService } from "@/messaging/notification.service";
 import { ModalComponent } from "@/web-mapping/shared/modal/modal.component";
 
 /**
