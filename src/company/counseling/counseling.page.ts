@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CardComponent } from '@/layout/widgets/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCartShopping, faCompassDrafting, faDisplay, faFileContract, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoneyBill1Wave, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
-import { randomizer } from '@/array';
+import { randomizer } from '@/utils/randomizer';
 import { DecoratedColumnComponent } from '@/company/hexagon/decorated-column/decorated-column.component';
 import { ReferenceDescriptor } from '@/company/hexagon/reference.model';
 import { faAngular, faLinux } from '@fortawesome/free-brands-svg-icons';

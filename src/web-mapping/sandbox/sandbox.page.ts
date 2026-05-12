@@ -1,4 +1,4 @@
-import { CodeEditorComponent } from "@/web-mapping/sandbox/code-editor/code-editor.component";
+import { CodeEditorComponent } from "@/source-code/code-editor/code-editor.component";
 import { BrandedNavComponent } from "@/layout/navigation/branded-nav/branded-nav.component";
 import { NoPhoneComponent } from "@/web-mapping/sandbox/no-phone/no-phone.component";
 import { PageUrlMapping } from "@/app/page-url-mapping.model";

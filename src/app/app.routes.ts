@@ -32,7 +32,7 @@ export const routes: Routes = [
                     { path: StoryUrlMapping.WEBPROG2, loadComponent: () => import('@/stories/story/insight/web-programming-2/web-programming-2.component').then(m => m.WebProgramming2Component) },
                     { path: StoryUrlMapping.SWDEVTECH, loadComponent: () => import('@/stories/story/insight/software-development-technologies/software-development-technologies.component').then(m => m.SoftwareDevelopmentTechnologiesComponent) },
                     { path: StoryUrlMapping.GDPR, loadComponent: () => import('@/stories/story/insight/how-to-gdpr/how-to-gdpr.component').then(m => m.HowToGdprComponent) },
-                    { path: '**', loadComponent: () => import('@/stories/not-found/not-found.component').then(m => m.NotFoundComponent), data: { text: 'Uh oh! This story must have been left for a journey.' } }
+                    { path: '**', loadComponent: () => import('@/stories/story/not-found/not-found.component').then(m => m.NotFoundComponent), data: { text: 'Uh oh! This story must have been left for a journey.' } }
                 ]
             },
             {
@@ -40,7 +40,7 @@ export const routes: Routes = [
                 loadComponent: () => import('@/stories/story/story.layout').then(m => m.StoryLayout),
                 children: [
                     { path: StoryUrlMapping.LINUXPROG, loadComponent: () => import('@/stories/story/casestudy/linux-as-programming-language/linux-as-programming-language.component').then(m => m.LinuxAsProgrammingLanguageComponent) },
-                    { path: '**', loadComponent: () => import('@/stories/not-found/not-found.component').then(m => m.NotFoundComponent), data: { text: 'Uh oh! This story must have been left for a journey.' } }
+                    { path: '**', loadComponent: () => import('@/stories/story/not-found/not-found.component').then(m => m.NotFoundComponent), data: { text: 'Uh oh! This story must have been left for a journey.' } }
                 ]
             },
             { path: '**', redirectTo: '/' }

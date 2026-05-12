@@ -1,4 +1,4 @@
-import { CodeViewerComponent } from '@/shared/code-viewer/code-viewer.component';
+import { CodeViewerComponent } from '@/source-code/code-viewer/code-viewer.component';
 import { Component } from '@angular/core';
 
 /**
