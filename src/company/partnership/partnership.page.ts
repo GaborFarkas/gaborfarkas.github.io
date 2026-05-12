@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { JigsawPuzzleComponent } from '@/company/partnership/jigsaw-puzzle/jigsaw-puzzle.component';
 import { CommonModule } from '@angular/common';
 import { TimelineComponent } from '@/company/partnership/timeline/timeline.component';
-import { TimelineItemComponent } from '@/company/partnership/timeline/timeline-item/timeline-item.component';
+import { TimelineItemComponent } from '@/company/partnership/timeline-item/timeline-item.component';
 import { faCode, faFileContract, faFileLines, faLightbulb, faMagnifyingGlassChart, faMoneyBillWaveAlt, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faHandshake } from '@fortawesome/free-regular-svg-icons';

@@ -1,5 +1,5 @@
 import { AfterContentInit, Component, contentChildren, input, signal } from '@angular/core';
-import { TimelineItemComponent } from '@/company/partnership/timeline/timeline-item/timeline-item.component';
+import { TimelineItemComponent } from '@/company/partnership/timeline-item/timeline-item.component';
 import { randomizer } from '@/array';
 
 /**
