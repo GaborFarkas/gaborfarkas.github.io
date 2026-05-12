@@ -1,7 +1,7 @@
 /**
- * Options for listing operations taking slices from a data source.
+ * Options for taking slices from a data source.
  */
-export interface ListOptions {
+export interface PaginationOptions {
     /**
      * The number of items to return.
      */

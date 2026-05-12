@@ -4,7 +4,7 @@ import { StoryModel, StoryType } from '@/stories/story.model';
 import { PageUrlMapping } from '@/app/page-url-mapping.model';
 import { StoryService } from '@/stories/story.service';
 import { FileService } from '@/shared/file.service';
-import { CardComponent } from '@/widgets/card/card.component';
+import { CardComponent } from '@/layout/widgets/card/card.component';
 
 /**
  * Frame component of the insights and case studies lists.

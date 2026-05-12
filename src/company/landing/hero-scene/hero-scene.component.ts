@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, computed, ElementRef, input, OnDestroy, OnInit, output, signal, viewChild, viewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TypewriterComponent } from '@/widgets/typewriter/typewriter.component';
+import { TypewriterComponent } from '@/layout/widgets/typewriter/typewriter.component';
 import { HeroScene } from '@/company/landing/hero.model';
 
 /**

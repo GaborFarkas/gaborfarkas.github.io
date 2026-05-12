@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { StoryModel, StoryType } from "@/stories/story.model";
 import { FileService } from "@/shared/file.service";
-import { ListOptions } from "@/stories/list.model";
+import { PaginationOptions } from "@/shared/pagination.model";
 
 /**
  * A service with lists of insight and case study stories with their query and access methods.
@@ -27,7 +27,7 @@ export class StoryService {
     /**
      * Returns every matching story.
      */
-    public async listStoriesAsync(type: StoryType, options: ListOptions): Promise<StoryModel[]> {
+    public async listStoriesAsync(type: StoryType, options: PaginationOptions): Promise<StoryModel[]> {
         if (this.fetchLock) {
             await this.fetchLock;
         }
@@ -61,8 +61,8 @@ export class StoryService {
     }
 
     /**
-     * Returns an empty story descriptor with a NotFoundComponent inside.
-     * @returns The 404 descriptor.
+     * Returns an empty story descriptor.
+     * @returns The empty descriptor.
      */
     public notFound(): StoryModel {
         return {

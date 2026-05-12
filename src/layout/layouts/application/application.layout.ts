@@ -1,5 +1,5 @@
 import { FooterComponent } from "@/layout/footer/footer.component";
-import { ToastComponent } from "@/layout/toast/toast.component";
+import { ToastComponent } from "@/layout/widgets/toast/toast.component";
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Router, RouterOutlet } from "@angular/router";
 import { LayoutWithAnalytics } from "@/layout/layouts/layout-with-analytics";
