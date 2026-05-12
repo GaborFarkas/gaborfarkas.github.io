@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { StoryModel, StoryType } from "@/stories/story.model";
-import { FileService } from "@/shared/file.service";
+import { FileService } from "@/utils/file.service";
 import { PaginationOptions } from "@/shared/pagination.model";
 
 /**

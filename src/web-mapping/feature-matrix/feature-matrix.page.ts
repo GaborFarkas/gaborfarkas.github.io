@@ -8,7 +8,7 @@ import { environment } from '@/environments/environment';
 import { FeatureSupportItem } from '@/web-mapping/shared/feature-support-item.model';
 import { FeatureSupportScore } from '@/web-mapping/shared/feature-support-score.model';
 import { WebMappingLibrary } from '@/web-mapping/shared/web-mapping-library';
-import { FileService } from '@/shared/file.service';
+import { FileService } from '@/utils/file.service';
 import { CommonModule } from '@angular/common';
 import { Component, computed, OnInit, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';

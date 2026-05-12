@@ -3,7 +3,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { StoryModel, StoryType } from '@/stories/story.model';
 import { PageUrlMapping } from '@/app/page-url-mapping.model';
 import { StoryService } from '@/stories/story.service';
-import { FileService } from '@/shared/file.service';
+import { FileService } from '@/utils/file.service';
 
 /**
  * Layout component of a single insight or case study page.

@@ -13,7 +13,7 @@ import { getVersion as getMaplibreVersion } from "maplibre-gl";
 import { VERSION as CesiumVersion } from "@/web-mapping/sandbox/cesium-version";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { faFloppyDisk, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FileService } from "@/shared/file.service";
+import { FileService } from "@/utils/file.service";
 import { FeatureSupportItem } from "@/web-mapping/shared/feature-support-item.model";
 import { GroupedSourceCodeModel, SourceCodeGroup, SourceCodeItem, SourceCodeType } from "@/web-mapping/sandbox/grouped-source-code.model";
 import { TypedTemplateDirective } from "@/web-mapping/sandbox/data-property/typed-template.directive";
