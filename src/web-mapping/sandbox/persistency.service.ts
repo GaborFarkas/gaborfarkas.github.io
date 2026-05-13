@@ -29,18 +29,18 @@ export class PersistencyService {
     public getKeysByPrefix(prefix: string): string[] {
         let keyIndex = 0;
         let key = this.storage.key(keyIndex);
-        const values: string[] = [];
+        const matchKeys: string[] = [];
 
         while (key !== null) {
             if (key.startsWith(`${prefix}:`)) {
-                values.push(key.replace(`${prefix}:`, ''));
+                matchKeys.push(key.replace(`${prefix}:`, ''));
             }
 
             ++keyIndex;
             key = this.storage.key(keyIndex);
         }
 
-        return values;
+        return matchKeys;
     }
 
     /**
