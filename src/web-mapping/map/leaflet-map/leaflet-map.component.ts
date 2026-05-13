@@ -1,37 +1,41 @@
 import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
-import * as Cesium from 'cesium';
-import { WebMap } from '@/web-mapping/shared/web-map.model';
+import * as L from 'leaflet';
+import { WebMap } from '@/web-mapping/map/web-map.model';
 import { FeatureSupportFeature } from '@/web-mapping/shared/feature-support-feature.model';
 
-type CesiumExampleFunc = (this: Cesium.Viewer, lib: typeof Cesium, map: Cesium.Viewer) => void;
+type LeafletExampleFunc = (this: L.Map, lib: typeof L, map: L.Map) => void;
 
 /**
- * Cesium JS web map component.
+ * Leaflet web map component.
  */
 @Component({
-    selector: 'div.cesium',
+    selector: 'div.leaflet',
     standalone: true,
-    templateUrl: './cesium-map.component.html',
-    styleUrl: '../../../../node_modules/cesium/Build/Cesium/Widgets/widgets.css',
+    templateUrl: './leaflet-map.component.html',
+    styleUrl: '../../../../node_modules/leaflet/dist/leaflet.css',
     encapsulation: ViewEncapsulation.None
 })
-export class CesiumMapComponent implements AfterViewInit, WebMap {
+export class LeafletMapComponent implements AfterViewInit, WebMap {
     /**
      * The HTML element for the map canvas.
      */
     private mapElem = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     /**
-     * The Cesium map object.
+     * The Leaflet map object.
      */
-    private map?: Cesium.Viewer;
+    private map?: L.Map;
 
     public example = input<string>();
 
     public exposePlay = input(false);
 
     constructor() {
-        (window as unknown as Record<string, unknown>)['CESIUM_BASE_URL'] = '/assets/cesium/';
+        // Update icon paths
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: '../assets/leaflet/marker-icon-2x.png',
+            shadowUrl: '../assets/leaflet/marker-shadow.png'
+        });
     }
 
     /**
@@ -39,10 +43,13 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
      */
     ngAfterViewInit(): void {
         // Load the small base map.
-        this.map = new Cesium.Viewer(this.mapElem().nativeElement);
-        this.map.camera.setView({
-            destination: Cesium.Cartesian3.fromDegrees(18.2210, 46.0756, 4000000)
-        });
+        this.map = new L.Map(this.mapElem().nativeElement)
+            .setView([46.0756, 18.2210], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(this.map);
 
         const example = this.example();
         if (example) {
@@ -57,8 +64,8 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
     }
 
     public playExample(feature: string): void {
-        import('@/examples/cesiumjs').then(module => {
-            const examples = module.default as unknown as Record<FeatureSupportFeature, CesiumExampleFunc>;
+        import('@/examples/leaflet').then(module => {
+            const examples = module.default as unknown as Record<FeatureSupportFeature, LeafletExampleFunc>;
             if (examples[feature as FeatureSupportFeature]) {
                 this.play(examples[feature as FeatureSupportFeature]);
             }
@@ -66,12 +73,12 @@ export class CesiumMapComponent implements AfterViewInit, WebMap {
     }
 
     /**
-     * Executes a user function in the context of the Cesium map. Passes the Cesium library and the map object as arguments.
+     * Executes a user function in the context of the Leaflet map. Passes the Leaflet library and the map object as arguments.
      * @param func The user function.
      */
-    public play(func: CesiumExampleFunc) {
+    public play(func: LeafletExampleFunc) {
         if (this.map) {
-            func.bind(this.map)(Cesium, this.map);
+            func.bind(this.map)(L, this.map);
         }
     }
 }

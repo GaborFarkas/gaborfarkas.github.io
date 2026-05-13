@@ -1,51 +1,47 @@
 import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
-import { OpenLayers } from '@/web-mapping/shared/openlayers-map/openlayers';
-import { WebMap } from '@/web-mapping/shared/web-map.model';
+import * as Cesium from 'cesium';
+import { WebMap } from '@/web-mapping/map/web-map.model';
 import { FeatureSupportFeature } from '@/web-mapping/shared/feature-support-feature.model';
 
-type OpenLayersExampleFunc = (this: OpenLayers.Map, lib: typeof OpenLayers, map: OpenLayers.Map) => void;
+type CesiumExampleFunc = (this: Cesium.Viewer, lib: typeof Cesium, map: Cesium.Viewer) => void;
 
 /**
- * OpenLayers web map component.
+ * Cesium JS web map component.
  */
 @Component({
-    selector: 'div.openlayers',
+    selector: 'div.cesium',
     standalone: true,
-    templateUrl: './openlayers-map.component.html',
-    styleUrl: '../../../../node_modules/ol/ol.css',
+    templateUrl: './cesium-map.component.html',
+    styleUrl: '../../../../node_modules/cesium/Build/Cesium/Widgets/widgets.css',
     encapsulation: ViewEncapsulation.None
 })
-export class OpenLayersMapComponent implements AfterViewInit, WebMap {
+export class CesiumMapComponent implements AfterViewInit, WebMap {
     /**
      * The HTML element for the map canvas.
      */
     private mapElem = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     /**
-     * The OpenLayers map object.
+     * The Cesium map object.
      */
-    private map?: OpenLayers.Map;
+    private map?: Cesium.Viewer;
 
     public example = input<string>();
 
     public exposePlay = input(false);
+
+    constructor() {
+        (window as unknown as Record<string, unknown>)['CESIUM_BASE_URL'] = '/assets/cesium/';
+    }
 
     /**
      * Loads the base map with a simple style and positions it to Pécs.
      */
     ngAfterViewInit(): void {
         // Load the small base map.
-        this.map = new OpenLayers.Map({
-            target: this.mapElem().nativeElement,
-            view: new OpenLayers.View({
-                center: OpenLayers.proj.fromLonLat([18.2210, 46.0756]),
-                zoom: 5
-            }),
-            layers: [
-                new OpenLayers.layer.Tile({
-                    source: new OpenLayers.source.OSM()
-                })
-            ]
+        this.map = new Cesium.Viewer(this.mapElem().nativeElement);
+        this.map.camera.setView({
+            destination: Cesium.Cartesian3.fromDegrees(18.2210, 46.0756, 4000000)
         });
 
         const example = this.example();
@@ -61,8 +57,8 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
     }
 
     public playExample(feature: string): void {
-        import('@/examples/openlayers').then(module => {
-            const examples = module.default as unknown as Record<FeatureSupportFeature, OpenLayersExampleFunc>;
+        import('@/examples/cesiumjs').then(module => {
+            const examples = module.default as unknown as Record<FeatureSupportFeature, CesiumExampleFunc>;
             if (examples[feature as FeatureSupportFeature]) {
                 this.play(examples[feature as FeatureSupportFeature]);
             }
@@ -70,12 +66,12 @@ export class OpenLayersMapComponent implements AfterViewInit, WebMap {
     }
 
     /**
-     * Executes a user function in the context of the OpenLayers map. Passes the OpenLayers library and the map object as arguments.
+     * Executes a user function in the context of the Cesium map. Passes the Cesium library and the map object as arguments.
      * @param func The user function.
      */
-    public play(func: OpenLayersExampleFunc) {
+    public play(func: CesiumExampleFunc) {
         if (this.map) {
-            func.bind(this.map)(OpenLayers, this.map);
+            func.bind(this.map)(Cesium, this.map);
         }
     }
 }

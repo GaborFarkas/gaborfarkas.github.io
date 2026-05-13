@@ -1,9 +1,9 @@
-import { CesiumMapComponent } from "@/web-mapping/shared/cesium-map/cesium-map.component";
-import { LeafletMapComponent } from "@/web-mapping/shared/leaflet-map/leaflet-map.component";
-import { MaplibreMapComponent } from "@/web-mapping/shared/maplibre-map/maplibre-map.component";
-import { OpenLayersMapComponent } from "@/web-mapping/shared/openlayers-map/openlayers-map.component";
+import { CesiumMapComponent } from "@/web-mapping/map/cesium-map/cesium-map.component";
+import { LeafletMapComponent } from "@/web-mapping/map/leaflet-map/leaflet-map.component";
+import { MaplibreMapComponent } from "@/web-mapping/map/maplibre-map/maplibre-map.component";
+import { OpenLayersMapComponent } from "@/web-mapping/map/openlayers-map/openlayers-map.component";
 import { MapPageQueryParams } from "@/app/page-url-mapping.model";
-import { WebMappingLibrary } from "@/web-mapping/shared/web-mapping-library";
+import { WebMappingLibrary } from "@/web-mapping/map/web-mapping-library";
 import { Component, OnInit, signal } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 

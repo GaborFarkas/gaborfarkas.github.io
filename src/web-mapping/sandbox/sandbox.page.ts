@@ -2,7 +2,7 @@ import { CodeEditorComponent } from "@/source-code/code-editor/code-editor.compo
 import { BrandedNavComponent } from "@/layout/navigation/branded-nav/branded-nav.component";
 import { NoPhoneComponent } from "@/web-mapping/sandbox/no-phone/no-phone.component";
 import { PageUrlMapping } from "@/app/page-url-mapping.model";
-import { WebMappingLibrary } from "@/web-mapping/shared/web-mapping-library";
+import { WebMappingLibrary } from "@/web-mapping/map/web-mapping-library";
 import { CommonModule } from "@angular/common";
 import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
@@ -22,7 +22,7 @@ import { DataValueDirective } from "@/web-mapping/sandbox/data-property/data-val
 import { ElementWithData } from "@/web-mapping/sandbox/data-property/element-with-data.model";
 import { PersistencyService } from "@/web-mapping/sandbox/persistency.service";
 import { NotificationService } from "@/messaging/notification.service";
-import { ModalComponent } from "@/web-mapping/shared/modal/modal.component";
+import { ModalComponent } from "@/web-mapping/modal/modal.component";
 
 /**
  * The sandbox web mapping page.

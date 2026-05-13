@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import fse from 'fs-extra';
 import { FeatureSupportItem } from '../src/web-mapping/shared/feature-support-item.model';
-import { WebMappingLibrary } from '../src/web-mapping/shared/web-mapping-library';
+import { WebMappingLibrary } from '../src/web-mapping/map/web-mapping-library';
 import { FeatureSupportFeature } from '../src/web-mapping/shared/feature-support-feature.model';
 import LeafletExamples from '../src/examples/leaflet';
 import OpenLayersExamples from '../src/examples/openlayers';
