@@ -1,4 +1,4 @@
-import { FeatureSupportScore } from "@/web-mapping/shared/feature-support-score.model";
+import { FeatureSupportScore } from "@/web-mapping/feature-matrix/feature-support-score.model";
 import { WebMappingLibrary } from "@/web-mapping/map/web-mapping-library";
 
 /**

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
 import { OpenLayers } from '@/web-mapping/map/openlayers-map/openlayers';
 import { WebMap } from '@/web-mapping/map/web-map.model';
-import { FeatureSupportFeature } from '@/web-mapping/shared/feature-support-feature.model';
+import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support-feature.model';
 
 type OpenLayersExampleFunc = (this: OpenLayers.Map, lib: typeof OpenLayers, map: OpenLayers.Map) => void;
 

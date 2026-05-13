@@ -14,7 +14,7 @@ export class TypedTemplateDirective<T> {
      * @example
      * // In component:
      * protected const templateTypes!: { title: string, count: number };
-     * // In template
+     * // In template:
      * <ng-template let-title="title" let-count="count"></ng-template>
      */
     public types = input.required<T>();

@@ -1,5 +1,5 @@
-import { FeatureScoreDescriptor } from '@/web-mapping/shared/feature-support-item.model';
-import { FeatureSupportScore } from '@/web-mapping/shared/feature-support-score.model';
+import { FeatureScoreDescriptor } from '@/web-mapping/feature-matrix/feature-support-item.model';
+import { FeatureSupportScore } from '@/web-mapping/feature-matrix/feature-support-score.model';
 import { computed, Directive, input } from '@angular/core';
 
 /**
