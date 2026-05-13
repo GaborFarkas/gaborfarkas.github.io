@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
-import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support-feature.model';
+import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support.model';
 import * as Maplibre from 'maplibre-gl';
 
 const exports: Record<FeatureSupportFeature, (this: Maplibre.Map, maplibregl: typeof Maplibre, map: Maplibre.Map) => void> = {

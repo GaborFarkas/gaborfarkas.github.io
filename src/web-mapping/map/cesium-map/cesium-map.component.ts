@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
 import * as Cesium from 'cesium';
 import { WebMap } from '@/web-mapping/map/web-map.model';
-import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support-feature.model';
+import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support.model';
 
 type CesiumExampleFunc = (this: Cesium.Viewer, lib: typeof Cesium, map: Cesium.Viewer) => void;
 

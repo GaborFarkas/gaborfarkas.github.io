@@ -1,3 +1,5 @@
+import { WebMappingLibrary } from "@/web-mapping/map/web-mapping-library"
+
 /**
  * Enum for features in the feature support matrix.
  */
@@ -83,4 +85,71 @@ export enum FeatureSupportFeature
     GRATICULE = 'Graticule',
     OVERLAY = 'Text box',
     OVERVIEWMAP = 'Overview map'
+}
+
+/**
+ * Enum for feature support scores in the feature support matrix.
+ */
+export enum FeatureSupportScore
+{
+    /**
+     * Unkown development time.
+     */
+    UNKNOWN,
+    /**
+     * Native support.
+     */
+    NATIVE,
+    /**
+     * Low effort development.
+     */
+    LOW,
+    /**
+     * Moderate effort development.
+     */
+    MODERATE,
+    /**
+     * Impossible or infeasible.
+     */
+    HIGH
+}
+
+/**
+ * Represents a single cell or category in the feature support matrix.
+ */
+export interface FeatureSupportItem {
+    /**
+     * Name of the item.
+     */
+    name: string,
+    /**
+     * Name of the item's parent category.
+     */
+    parent?: string,
+    /**
+     * Short description of the item.
+     */
+    description: string,
+    /**
+     * Support score for every assessed web mapping library. Undefined, if the current item is a category.
+     */
+    support?: Record<WebMappingLibrary, FeatureScoreDescriptor>,
+    /**
+     * Extra information for the current item.
+     */
+    addendum?: string
+}
+
+/**
+ * Describes a single library's feature score in the feature support matrix.
+ */
+export interface FeatureScoreDescriptor {
+    /**
+     * The score expressed as an integer.
+     */
+    score: FeatureSupportScore,
+    /**
+     * Line number in the source example file, if the feature has an example.
+     */
+    line?: number
 }

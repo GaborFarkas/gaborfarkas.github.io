@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-nocheck
 import { environment } from '@/environments/environment';
-import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support-feature.model';
+import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support.model';
 import { OpenLayers } from '@/web-mapping/shared/openlayers-map/openlayers';
 
 const exports: Record<FeatureSupportFeature, (this: OpenLayers.Map, ol: typeof OpenLayers, map: OpenLayers.Map) => void> = {
