@@ -40,6 +40,7 @@ export const routes: Routes = [
                 loadComponent: () => import('@/stories/story/story.layout').then(m => m.StoryLayout),
                 children: [
                     { path: StoryUrlMapping.LINUXPROG, loadComponent: () => import('@/stories/story/casestudy/linux-as-programming-language/linux-as-programming-language.component').then(m => m.LinuxAsProgrammingLanguageComponent) },
+                    { path: StoryUrlMapping.PARTITIONING, loadComponent: () => import('@/stories/story/casestudy/technical-domain-partitioning/technical-domain-partitioning.component').then(m => m.TechnicalDomainPartitioningComponent) },
                     { path: '**', loadComponent: () => import('@/stories/story/not-found/not-found.component').then(m => m.NotFoundComponent), data: { text: 'Uh oh! This story must have been left for a journey.' } }
                 ]
             },

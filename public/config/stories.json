@@ -27,6 +27,15 @@
     "lastModified": "2026-05-04T16:00:51.000Z"
   },
   {
+    "title": "Technical and Domain Partitioning",
+    "description": "Style guides usually advocates one versus the other. Do we need to choose, though?",
+    "thumbUrl": "/assets/stories/thumbs/technical-domain-partitioning.png",
+    "category": "casestudy",
+    "slug": "technical-domain-partitioning",
+    "created": "2026-05-16T15:15:35.000Z",
+    "lastModified": "2026-05-16T16:07:08.000Z"
+  },
+  {
     "title": "Linux as a programming language",
     "description": "A short story about a project started in bash becoming a full-fledged software... in bash.",
     "thumbUrl": "/assets/stories/thumbs/linux-as-programming-language.png",
