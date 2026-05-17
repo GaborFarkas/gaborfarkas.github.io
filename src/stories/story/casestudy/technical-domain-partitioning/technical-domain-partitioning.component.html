@@ -1,0 +1,110 @@
+<h1>How to organize code</h1>
+
+<p class="pb-4">How should I organize my source files? What partitioning strategy would be the correct one? Most
+    architecturally conscious developers and teams ask these questions before starting to write code for a new project.
+    I surely do, every time. The answer is, as for so many questions in software architecture, it depends.
+</p>
+
+<p class="pb-4">The starting point is usually a layered architecture. It has grown to be such a significant pattern in
+    modern software development that layered architecture can be considered a universal architectural origin at this
+    point. In this pattern, logic is organized into responsibility groups or layers. Every type of software can define
+    its standard layer stack, grouping similarly working mechanics. Once a layer stack is defined, there is only a
+    single common rule to enforce: layers can only depend on each other in a single direction. This keeps complicated
+    code robust, clean, easier to interpret, and quicker to navigate. Consequently, the project gains better developer
+    experience and becomes more maintainable.
+</p>
+
+<p class="pb-4">I believe the most popular standard layer stack is of the MVC (Model View Controller) web application
+    type. Since MVC applications are monolithic software with frontend and backend components, the layer stack is
+    infrastructure, models, services, factories, controllers, and views. On the other hand, a frontend application has
+    fewer responsibilities, and therefore, its standard layer stack revolves around presentation. An Angular application
+    has services, components, directives and pipes. Using custom layer stacks is also common, especially in
+    Domain-Driven Design, where layers are rather domain-specific than application-specific.
+</p>
+
+<h1>Technical vs domain partitioning</h1>
+
+<p class="pb-2">In a layered architecture, there are two popular strategies for organizing code: technical partitioning
+    and domain partitioning. While there are no standard definitions for them, by summarizing books and articles about
+    software architecture, we can use the following approximations:
+</p>
+<ul class="list-disc pl-10 pb-4">
+    <li><b>Technical partitioning:</b> popularized by clean architecture, source files are placed in folders named after
+        layers
+        in the application's standard layer stack.
+    </li>
+    <li><b>Domain partitioning:</b> popularized by Domain-Driven Design, source files are grouped by functionality.
+        Folder
+        names represent domain modules in the application.</li>
+</ul>
+
+<img class="w-full pb-2 max-w-xl m-auto" src="/assets/stories/technical-domain-partitioning/technical-vs-domain.png"
+    alt="Technical versus domain partitioning in architecture" />
+<p class="pb-8 text-center text-sm">Technical versus domain partitioning in architecture. Source: Neal Ford et. al.
+    (2022): Software Architecture: The Hard Parts</p>
+
+<p class="pb-4">It's been bothering me from the beginning that the two major partitioning strategies are always framed
+    as
+    oppositions. Choose one over the other. Not only in books and articles, but frameworks also tend to vote for
+    one against the other. Most frameworks like to advocate technical partitioning, since they can provide CLI
+    generators for adding new components to standard layers. Others, like Angular, are putting their
+    feet down with domain partitioning. Such preferences tend to propagate quickly, since people like to follow official
+    style guides, and therefore, open source code bases acting as references for new projects, reflect the same
+    structure.
+</p>
+
+<p class="pb-4">This is a major anti-pattern in my opinion. We should treat partitioning strategies like other software
+    design choices: as patterns. Frameworks should stop making preferences and focus on showcasing best practices for
+    different situations in their style guides instead. Experience tells me that there are simple cases where pure
+    technical partitioning is the best choice, but in most cases, using a mix of the two is the best way forward. I
+    usually choose a strategy based on the following flowchart.</p>
+
+<img class="w-full pb-2 max-w-6xl m-auto" src="/assets/stories/technical-domain-partitioning/partitioning-flow.svg"
+    alt="Flowchart about choosing a partitioning strategy" />
+<p class="pb-8 text-center text-sm">My usual workflow of choosing a partitioning strategy</p>
+
+<p class="pb-2">The flowchart contains 4 combinations from the 2 strategies as possible choices:
+</p>
+<ul class="list-disc pl-10 pb-4">
+    <li><b>Technical:</b> a pure technical partitioning pattern. Only viable if the application is small enough to have
+        a single responsibility. Single-purpose microservices or applications with the size of a company landing page
+        come to mind.
+    </li>
+    <li><b>Technical over domain:</b> technical first, then domain-specific subfolders. If you don't know the final
+        complexity or don't have the resources to make proper plans, this is a stable mix with good flexibility. Prepare
+        for a large refactor in the next stage, though. It does not scale well with complexity.
+    </li>
+    <li><b>Domain over technical:</b> domain first, technical subfolders can exist. Flexible for uncertainties in the
+        business logic, but keeps the code base clean and scales well with complexity. You need to plan, as it takes
+        considerable effort to change the base structure later.
+    </li>
+    <li><b>Domain:</b> a pure domain partitioning pattern. Only viable if you have mature ubiquitous language and a
+        well-defined
+        domain model about the real-life business logic the software needs to aid or automate. No technical folders
+        required, as layers are domain-specific. Great for large enterprises with clear vision, mature workflows,
+        vast know-how, and experienced and interconnected teams.
+    </li>
+</ul>
+
+<h1>Subject at hand, a.k.a. the case in the study</h1>
+
+<p class="pb-4">When I first created the website you are currently browsing, I planned to add a few pages dedicated to
+    showcasing skills offered by my company. To keep the architecture's complexity in check, I chose a pure technical
+    partitioning strategy. Then came the stories part as a lightweight blog system. On top of that, I added some tools
+    related to spatial visualization techniques. A lot of new domains, a steep increase in overall complexity. To
+    prevent the application from spiraling out of control, I added some domain folders, transitioning to a technical
+    over domain mixed strategy.</p>
+
+<p class="pb-4">After a while, the application still ended up as a structural spaghetti. Two new domain concepts
+    emerged: stories and web mapping. However, most of the components still lived under flat technical folders, like
+    components, pages, directives, and layouts. To restore maintainability and extensibility, I decided to bite the
+    bullet and rework the technical over domain strategy to a domain over technical one.</p>
+
+<p class="pb-4">Just to illustrate how even a frontend application's architectural refactoring is up to multiple viable
+    decisions, there would have been an alternative. In such a case, you can decide to solve the issue by decomposition.
+    That means separating domains and creating micro-frontends from them, integrating them into a common frame. For me,
+    that would have been implausible, as I deploy the website to GitHub pages as a single deployment unit.</p>
+
+<h1>First phase: defining principal domains</h1>
+
+<p class="pb-4"></p>
