@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CardComponent } from '@/layout/widgets/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCartShopping, faCompassDrafting, faDisplay, faFileContract, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoneyBill1Wave, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faCompassDrafting, faDiagramProject, faDisplay, faFileContract, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoneyBill1Wave, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { randomizer } from '@/utils/randomizer';
 import { DecoratedColumnComponent } from '@/company/hexagon/decorated-column/decorated-column.component';
 import { ReferenceDescriptor } from '@/company/hexagon/reference.model';
@@ -39,6 +39,13 @@ export class CounselingPage implements OnInit {
     protected cardColors = signal<string[]>([]);
 
     protected readonly references = signal<Record<string, ReferenceDescriptor[]>>({
+        [Section.ARCHITECTURE]: [
+            {
+                url: `/${PageUrlMapping.CASESTUDIES}/${StoryUrlMapping.PARTITIONING}`,
+                icon: faDiagramProject,
+                text: 'A case study about code structure and planning'
+            }
+        ],
         [Section.WEB]: [
             {
                 url: 'https://github.com/openlayers/openlayers/commits?author=GaborFarkas',
