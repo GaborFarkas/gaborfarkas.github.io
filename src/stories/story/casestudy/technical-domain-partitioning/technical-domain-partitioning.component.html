@@ -2,7 +2,7 @@
 
 <p class="pb-4">How should I organize my source files? What partitioning strategy would be the correct one? Most
     architecturally conscious developers and teams ask these questions before starting to write code for a new project.
-    I surely do, every time. The answer is, as for so many questions in software architecture, it depends.
+    I surely do, every time. The answer, as for many questions in software architecture, is that it depends.
 </p>
 
 <p class="pb-4">The starting point is usually a layered architecture. It has grown to be such a significant pattern in
@@ -14,28 +14,26 @@
     experience and becomes more maintainable.
 </p>
 
-<p class="pb-4">I believe the most popular standard layer stack is of the MVC (Model View Controller) web application
+<p class="pb-4">I believe the most popular standard layer stack is of the MVC (Model-View-Controller) web application
     type. Since MVC applications are monolithic software with frontend and backend components, the layer stack is
     infrastructure, models, services, factories, controllers, and views. On the other hand, a frontend application has
     fewer responsibilities, and therefore, its standard layer stack revolves around presentation. An Angular application
-    has services, components, directives and pipes. Using custom layer stacks is also common, especially in
+    is built from services, components, directives and pipes. Using custom layer stacks is also common, especially in
     Domain-Driven Design, where layers are rather domain-specific than application-specific.
 </p>
 
 <h1>Technical vs domain partitioning</h1>
 
 <p class="pb-2">In a layered architecture, there are two popular strategies for organizing code: technical partitioning
-    and domain partitioning. While there are no standard definitions for them, by summarizing books and articles about
+    and domain partitioning. While there are no formal definitions for them, by summarizing books and articles about
     software architecture, we can use the following approximations:
 </p>
 <ul class="list-disc pl-10 pb-4">
-    <li><b>Technical partitioning:</b> popularized by clean architecture, source files are placed in folders named after
-        layers
-        in the application's standard layer stack.
+    <li><b>Technical partitioning:</b> popularized by clean architecture, source files are located in folders named
+        after layers in the application's standard layer stack.
     </li>
     <li><b>Domain partitioning:</b> popularized by Domain-Driven Design, source files are grouped by functionality.
-        Folder
-        names represent domain modules in the application.</li>
+        Folder names represent domain modules in the application.</li>
 </ul>
 
 <img class="w-full pb-2 max-w-xl m-auto" src="/assets/stories/technical-domain-partitioning/technical-vs-domain.png"
@@ -43,21 +41,19 @@
 <p class="pb-8 text-center text-sm">Technical versus domain partitioning in architecture. Source: Neal Ford et. al.
     (2022): Software Architecture: The Hard Parts</p>
 
-<p class="pb-4">It's been bothering me from the beginning that the two major partitioning strategies are always framed
-    as
-    oppositions. Choose one over the other. Not only in books and articles, but frameworks also tend to vote for
-    one against the other. Most frameworks like to advocate technical partitioning, since they can provide CLI
-    generators for adding new components to standard layers. Others, like Angular, are putting their
-    feet down with domain partitioning. Such preferences tend to propagate quickly, since people like to follow official
-    style guides, and therefore, open source code bases acting as references for new projects, reflect the same
-    structure.
+<p class="pb-4">It has been bothering me from the beginning that the two major partitioning strategies are always framed
+    as oppositions. Choose one over the other. Not only in books and articles, but frameworks also tend to vote for one
+    against the other. Most frameworks advocate technical partitioning, since they can provide CLI generators for adding
+    new components to standard layers. Others, like Angular, are putting their feet down with domain partitioning. Such
+    preferences tend to propagate quickly, as people follow official style guides. Consequently, open-source code bases
+    acting as references for new projects reflect the same structure.
 </p>
 
 <p class="pb-4">This is a major anti-pattern in my opinion. We should treat partitioning strategies like other software
     design choices: as patterns. Frameworks should stop making preferences and focus on showcasing best practices for
-    different situations in their style guides instead. Experience tells me that there are simple cases where pure
-    technical partitioning is the best choice, but in most cases, using a mix of the two is the best way forward. I
-    usually choose a strategy based on the following flowchart.</p>
+    different situations in their style guides. Experience tells me that there are simple cases where pure technical
+    partitioning is the best choice, but in most cases, using a mix of the two is the way forward. I usually choose a
+    strategy based on the following flowchart.</p>
 
 <img class="w-full pb-2 max-w-6xl m-auto" src="/assets/stories/technical-domain-partitioning/partitioning-flow.svg"
     alt="Flowchart about choosing a partitioning strategy" />
@@ -74,14 +70,15 @@
         complexity or don't have the resources to make proper plans, this is a stable mix with good flexibility. Prepare
         for a large refactor in the next stage, though. It does not scale well with complexity.
     </li>
-    <li><b>Domain over technical:</b> domain first, technical subfolders can exist. Flexible for uncertainties in the
+    <li><b>Domain over technical:</b> domain first, but technical subfolders can exist. Flexible for uncertainties in
+        the
         business logic, but keeps the code base clean and scales well with complexity. You need to plan, as it takes
         considerable effort to change the base structure later.
     </li>
     <li><b>Domain:</b> a pure domain partitioning pattern. Only viable if you have mature ubiquitous language and a
-        well-defined
-        domain model about the real-life business logic the software needs to aid or automate. No technical folders
-        required, as layers are domain-specific. Great for large enterprises with clear vision, mature workflows,
+        well-defined domain model of the real-life business logic the software needs to aid or automate. No technical
+        folders required, as layers are domain-specific. Great for large enterprises with clear vision, mature
+        workflows,
         vast know-how, and experienced and interconnected teams.
     </li>
 </ul>
@@ -89,22 +86,132 @@
 <h1>Subject at hand, a.k.a. the case in the study</h1>
 
 <p class="pb-4">When I first created the website you are currently browsing, I planned to add a few pages dedicated to
-    showcasing skills offered by my company. To keep the architecture's complexity in check, I chose a pure technical
-    partitioning strategy. Then came the stories part as a lightweight blog system. On top of that, I added some tools
-    related to spatial visualization techniques. A lot of new domains, a steep increase in overall complexity. To
-    prevent the application from spiraling out of control, I added some domain folders, transitioning to a technical
-    over domain mixed strategy.</p>
+    showcasing skills offered by my company. To keep the architecture's complexity in check, I used a pure technical
+    partitioning strategy. Then came the stories part as a lightweight blog system. Additionally, I added some tools
+    related to spatial visualization techniques. All in all, I ended up with a steep increase in overall complexity. To
+    prevent the application from spiraling out of control, I added some domain folders, transitioning to a "technical
+    over domain" mixed strategy.</p>
 
-<p class="pb-4">After a while, the application still ended up as a structural spaghetti. Two new domain concepts
-    emerged: stories and web mapping. However, most of the components still lived under flat technical folders, like
+<p class="pb-4">After a while, the application still ended up as architectural spaghetti. Two new domain concepts
+    emerged: stories and web mapping. However, most components still lived under flat technical folders, like
     components, pages, directives, and layouts. To restore maintainability and extensibility, I decided to bite the
     bullet and rework the technical over domain strategy to a domain over technical one.</p>
 
-<p class="pb-4">Just to illustrate how even a frontend application's architectural refactoring is up to multiple viable
+<p class="pb-4">To illustrate how even a frontend application's architectural refactoring offers multiple viable
     decisions, there would have been an alternative. In such a case, you can decide to solve the issue by decomposition.
-    That means separating domains and creating micro-frontends from them, integrating them into a common frame. For me,
-    that would have been implausible, as I deploy the website to GitHub pages as a single deployment unit.</p>
+    Done by separating domains and creating micro-frontends from them, integrating all the pieces into a central layout.
+    For me, that would have been implausible, as I deploy the website to GitHub pages as a single deployment unit.</p>
 
 <h1>First phase: defining principal domains</h1>
 
-<p class="pb-4"></p>
+<p class="pb-4">My goal in the initial phase was to define a rough domain structure in the codebase and to eliminate
+    flat technical folders, such as components, directives, models, pages, pipes, services, and utils.
+    The last commit in the old structure is
+    <a href="https://github.com/GaborFarkas/gaborfarkas.github.io/tree/31c8980399315a0937f9342e94c64db607afdca5"
+        target="_blank" class="underline">31c8980</a>.
+</p>
+
+<h2>State</h2>
+<ul class="list-disc pl-10 pb-4">
+    <li>Software elements are mostly in flat, technical folders.</li>
+    <li>The two existing domains (stories, web-mapping) are just folders.</li>
+    <li>The dependency graph is chaotic. It's challenging to navigate the codebase due to its current complexity.</li>
+</ul>
+
+<p class="pb-4">I applied an incremental, step-by-step restructuring technique, where I identified coarse-grained
+    domains and moved together source files exclusively used by them. This step was a bunch of file-moving and
+    namespace-renaming operations. Most of the restructuring affected the original company pages, since stories and
+    spatial visualization had their own domain folders from the beginning.</p>
+
+<p class="pb-4">In the end, every company page got its own domain and owned all exclusive components, models, utilities,
+    and services. The repository state at that point can be browsed at <a
+        href="https://github.com/GaborFarkas/gaborfarkas.github.io/tree/8b06eea1074755055d75f7d41bc6ad4daca57394"
+        target="_blank" class="underline">8b06eea</a>. This step was fairly trivial, but the need for fine-tuning was
+    obvious. The code base got littered with shared folders. Those annoying shared folders! I really cannot stand them,
+    as they don't fit in my mental models. They are not technical or domain-specific; they are shared, a common
+    functional attribute in clean object-oriented code. I often use the term for projects, libraries, and system
+    components, but not for software elements.</p>
+
+<h2>State</h2>
+<ul class="list-disc pl-10 pb-4">
+    <li>Software elements are grouped in coarse-grained domains.</li>
+    <li>The dependency graph reflects ownership, it's easier to navigate.</li>
+    <li>There are a lot of shared folders, weakening the structure.</li>
+    <li>Edge cases (like array.ts) are just placed somewhere.</li>
+</ul>
+
+<h1>Second phase: refinement by planning</h1>
+
+<p class="pb-4">The resulting structure after the first phase was strong enough to call it a structure and not chaos.
+    However, it was still not strong enough to hit the bar. Edge case utilities were living in random places. There was
+    a "layouts" technical partition I had no idea what to do with. Domain boundaries were not clear enough to make the
+    structure really logical and easily maintainable.</p>
+
+<p class="pb-4">For the next step, moving files between folders was not enough. To go further, I needed to create a
+    software plan. My favorite method for software planning is the C4 model. It is a simple, extendable model capable of
+    mapping a software system on different levels, like an online global map. If you zoom out, you see continents. As
+    you zoom in, details are continuously unfolding before you until you see your house.</p>
+
+<p class="pb-4">The first level represents the context of the whole software system. For a simple frontend application
+    without many coupling points, it's not too interesting. The second level unwraps the software system and displays
+    coupling between its components. That is also very straightforward, although there are some interesting details
+    about the build pipeline.</p>
+
+<div class="pb-2 w-full flex gap-8 items-center flex-col lg:flex-row">
+    <div class="flex">
+        <img class="w-full" src="/assets/docs/l1-system-context.drawio.svg" alt="C4 level 1 plan of this website" />
+    </div>
+    <div class="flex">
+        <img class="flex-shrink-1 object-contain" src="/assets/docs/l2-containers.drawio.svg"
+            alt="C4 level 2 plan of this website" />
+    </div>
+</div>
+<p class="pb-8 text-center text-sm">Level 1 (left) and level 2 (right) C4 plans of this website</p>
+
+<p class="pb-2">In this case, the real magic happens on the third level. It contains the internal workings of software
+    in a software system. That is the level to reason about structure and to move every element to its final place.
+    Another iterative task. I picked a coarse-grained domain, identified every source file associated with it, and made
+    one of the following decisions:</p>
+<ul class="list-disc pl-10 pb-4">
+    <li>Keep the source file in its current partition.</li>
+    <li>Move the source file to another partition where it's a better fit.</li>
+    <li>Create a new partition for the source file and move it there.</li>
+</ul>
+
+<p class="pb-4">Using this method, domains were clarified one by one. New subdomains emerged, as well as technical
+    partitions inside domains where a technical grouping could be justified. Edge cases also found their places in the
+    refined structure. It turned out that layout is a perfectly fine domain term in a frontend application. Components
+    defining the common layout of pages are layout components. Once I finished with every major domain, I ended up with
+    a large but really informative C4 level 3 diagram.</p>
+
+<img class="w-full pb-2" src="/assets/docs/l3-components-web-application.drawio.svg"
+    alt="C4 level 3 plan of this website" />
+<p class="pb-8 text-center text-sm">Level 3 C4 plan of this website</p>
+
+<p class="pb-4">Purple rectangles are routed components, meaning they are used by the router to compose pages. Blue
+    rectangles are elements used in routed components. Grey rectangles are libraries or other external dependencies.
+    Blue dashed contexts are domain partitions. Green dashed contexts are technical partitions. Not every file is
+    displayed; there is no need for that in such a plan, only the important ones affecting the application's structure.
+</p>
+
+<p class="pb-4">While the plan seems large and convoluted, once you get the grasp of it, you can progress really fast. I
+    managed to complete the 3 levels in less than 8 hours. The diagram reflects commit <a
+        href="https://github.com/GaborFarkas/gaborfarkas.github.io/tree/7137b3894fa83c958b739bb70f70b16b7505b2ef"
+        target="_blank" class="underline">7137b38</a>, although the same structure is preserved in newer versions.</p>
+
+<h2>State</h2>
+<ul class="list-disc pl-10 pb-4">
+    <li>Software elements are grouped in fine-grained domains and technical partitions.</li>
+    <li>Dependent components are close and easy to navigate.</li>
+    <li>No shared folders, no edge cases, everything is in its place.</li>
+</ul>
+
+<p class="pb-2">As a bonus, the C4 plan shed some light on architectural flaws. Fixing them along with code smells and
+    other issues will be the topic of a future case study, though.</p>
+<ul class="list-disc pl-10 pb-4">
+    <li>The sandbox page is a hedgehog with high efferent coupling and therefore high instability.</li>
+    <li>The feature support page and the map page depend on the same set of components, showing a lack of abstraction.
+        That part of the plan is a maze.</li>
+    <li>The sandbox page's navigation bar depends on a faraway layout component to provide its own customization. Long
+        arrows moving across multiple partitions are hard to track.</li>
+</ul>
