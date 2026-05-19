@@ -3,7 +3,7 @@ import { JigsawPuzzleComponent } from '@/company/partnership/jigsaw-puzzle/jigsa
 import { CommonModule } from '@angular/common';
 import { TimelineComponent } from '@/company/partnership/timeline/timeline.component';
 import { TimelineItemComponent } from '@/company/partnership/timeline-item/timeline-item.component';
-import { faCode, faFileContract, faFileLines, faLightbulb, faMagnifyingGlassChart, faMoneyBillWaveAlt, faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faFileContract, faFileLines, faLightbulb, faMagnifyingGlassChart, faMoneyBillWaveAlt, faPeopleGroup, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faHandshake } from '@fortawesome/free-regular-svg-icons';
 
@@ -33,6 +33,8 @@ export class PartnershipPage {
     protected readonly faFileContract = signal(faFileContract).asReadonly();
 
     protected readonly faMoneyBillWave = signal(faMoneyBillWaveAlt).asReadonly();
+
+    protected readonly faPeopleGroup = signal(faPeopleGroup).asReadonly();
     //#endregion
 
     /**
