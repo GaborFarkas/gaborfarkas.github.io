@@ -9571,7 +9571,7 @@ export interface MapProjection {
     /**
      * Gets the {@link Ellipsoid}.
      */
-    ellipsoid: Ellipsoid;
+    readonly ellipsoid: Ellipsoid;
     /**
      * Projects {@link Cartographic} coordinates, in radians, to projection-specific map coordinates, in meters.
      * @param cartographic - The coordinates to project.
@@ -16122,25 +16122,25 @@ export class ScreenSpaceEventHandler {
      * Set a function to be executed on an input event.
      * @param action - Function to be executed when the input event occurs.
      * @param type - The ScreenSpaceEventType of input event.
-     * @param [modifier] - A KeyboardEventModifier key that is held when a <code>type</code>
+     * @param [modifiers] - The KeyboardEventModifier keys that are held when a <code>type</code>
      * event occurs.
      */
-    setInputAction(action: ScreenSpaceEventHandler.PositionedEventCallback | ScreenSpaceEventHandler.MotionEventCallback | ScreenSpaceEventHandler.WheelEventCallback | ScreenSpaceEventHandler.TwoPointEventCallback | ScreenSpaceEventHandler.TwoPointMotionEventCallback, type: ScreenSpaceEventType, modifier?: KeyboardEventModifier): void;
+    setInputAction(action: ScreenSpaceEventHandler.PositionedEventCallback | ScreenSpaceEventHandler.MotionEventCallback | ScreenSpaceEventHandler.WheelEventCallback | ScreenSpaceEventHandler.TwoPointEventCallback | ScreenSpaceEventHandler.TwoPointMotionEventCallback, type: ScreenSpaceEventType, modifiers?: KeyboardEventModifier[] | KeyboardEventModifier): void;
     /**
      * Returns the function to be executed on an input event.
      * @param type - The ScreenSpaceEventType of input event.
-     * @param [modifier] - A KeyboardEventModifier key that is held when a <code>type</code>
+     * @param [modifiers] - The KeyboardEventModifier keys that are held when a <code>type</code>
      * event occurs.
      * @returns The function to be executed on an input event.
      */
-    getInputAction(type: ScreenSpaceEventType, modifier?: KeyboardEventModifier): ScreenSpaceEventHandler.PositionedEventCallback | ScreenSpaceEventHandler.MotionEventCallback | ScreenSpaceEventHandler.WheelEventCallback | ScreenSpaceEventHandler.TwoPointEventCallback | ScreenSpaceEventHandler.TwoPointMotionEventCallback;
+    getInputAction(type: ScreenSpaceEventType, modifiers?: KeyboardEventModifier[] | KeyboardEventModifier): ScreenSpaceEventHandler.PositionedEventCallback | ScreenSpaceEventHandler.MotionEventCallback | ScreenSpaceEventHandler.WheelEventCallback | ScreenSpaceEventHandler.TwoPointEventCallback | ScreenSpaceEventHandler.TwoPointMotionEventCallback;
     /**
      * Removes the function to be executed on an input event.
      * @param type - The ScreenSpaceEventType of input event.
-     * @param [modifier] - A KeyboardEventModifier key that is held when a <code>type</code>
+     * @param [modifiers] - The KeyboardEventModifier keys that are held when a <code>type</code>
      * event occurs.
      */
-    removeInputAction(type: ScreenSpaceEventType, modifier?: KeyboardEventModifier): void;
+    removeInputAction(type: ScreenSpaceEventType, modifiers?: KeyboardEventModifier[] | KeyboardEventModifier): void;
     /**
      * Returns true if this object was destroyed; otherwise, false.
      * <br /><br />
@@ -18939,6 +18939,31 @@ export type TypedArray = Float64Array | Float32Array | Uint32Array | Uint16Array
 export type TypedArrayConstructor = Float64ArrayConstructor | Float32ArrayConstructor | Uint32ArrayConstructor | Uint16ArrayConstructor | Uint8ArrayConstructor | Int32ArrayConstructor | Int16ArrayConstructor | Int8ArrayConstructor;
 
 export type Destroyable = any;
+
+/**
+ * A GeoJSON position expressed as [longitude, latitude] or [longitude, latitude, altitude].
+ */
+export type GeoJsonPosition = number[];
+
+/**
+ * A GeoJSON geometry object.
+ */
+export type GeoJsonGeometry = any;
+
+/**
+ * A GeoJSON feature object.
+ */
+export type GeoJsonFeature = any;
+
+/**
+ * A GeoJSON feature collection object.
+ */
+export type GeoJsonFeatureCollection = any;
+
+/**
+ * A top-level GeoJSON object (Geometry, Feature, or FeatureCollection).
+ */
+export type GeoJson = GeoJsonGeometry | GeoJsonFeature | GeoJsonFeatureCollection;
 
 /**
  * Determines if a given date is a leap year.
@@ -27711,13 +27736,24 @@ export type BufferPointOptions = {
  *   collection.get(i, point);
  *   point.setMaterial(material);
  * }
+ * @param [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ * @param [options.allowPicking = false] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
+ * @param [options.boundingVolume] - Bounding volume, in world space, for the collection. When
+ *    unspecified, a bounding volume is computed automatically and updated when primitive positions change. When
+ *    specified, users are responsible for updating bounding volume as needed. Pre-computing the bounding volume
+ *    manually, and updating it only as needed, will improve performance for larger dynamic collections.
  */
 export class BufferPointCollection extends BufferPrimitiveCollection<BufferPoint> {
     constructor(options: {
+        modelMatrix?: Matrix4;
         primitiveCountMax?: number;
+        positionDatatype?: ComponentDatatype;
+        positionNormalized?: boolean;
         show?: boolean;
-        debugShowBoundingVolume?: boolean;
         allowPicking?: boolean;
+        boundingVolume?: BoundingSphere;
+        debugShowBoundingVolume?: boolean;
+        blendOption?: BlendOption;
     });
     /**
      * Adds a new point to the collection, with the specified options. A
@@ -27946,6 +27982,10 @@ export type BufferPolygonOptions = {
  *   polygon.setMaterial(material);
  * }
  * @param [options.allowPicking = true] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
+ * @param [options.boundingVolume] - Bounding volume, in world space, for the collection. When
+ *    unspecified, a bounding volume is computed automatically and updated when primitive positions change. When
+ *    specified, users are responsible for updating bounding volume as needed. Pre-computing the bounding volume
+ *    manually, and updating it only as needed, will improve performance for larger dynamic collections.
  */
 export class BufferPolygonCollection extends BufferPrimitiveCollection<BufferPolygon> {
     constructor(options: {
@@ -27954,9 +27994,12 @@ export class BufferPolygonCollection extends BufferPrimitiveCollection<BufferPol
         holeCountMax?: number;
         triangleCountMax?: number;
         positionDatatype?: ComponentDatatype;
+        positionNormalized?: boolean;
         show?: boolean;
         allowPicking?: boolean;
+        boundingVolume?: BoundingSphere;
         debugShowBoundingVolume?: boolean;
+        blendOption?: BlendOption;
     });
     /**
      * Duplicates the contents of this collection into the result collection.
@@ -28236,7 +28279,14 @@ export type BufferPrimitiveOptions = {
  * {@link Color}, {@link Cartesian3}, and other objects can all be reused when working with large collections,
  * using the {@link https://en.wikipedia.org/wiki/Flyweight_pattern|flyweight pattern}.</p>
  * @param [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ * @param [options.positionNormalized = false] - When <code>true</code>, integer position values are treated as normalized,
+ *   where the full integer range maps to [-1, 1] (signed) or [0, 1] (unsigned). Only relevant for integer position datatypes
+ *   (BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT).
  * @param [options.allowPicking = false] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
+ * @param [options.boundingVolume] - Bounding volume, in world space, for the collection. When
+ *    unspecified, a bounding volume is computed automatically and updated when primitive positions change. When
+ *    specified, users are responsible for updating bounding volume as needed. Pre-computing the bounding volume
+ *    manually, and updating it only as needed, will improve performance for larger dynamic collections.
  */
 export class BufferPrimitiveCollection<T extends BufferPrimitive> {
     constructor(options: {
@@ -28245,16 +28295,22 @@ export class BufferPrimitiveCollection<T extends BufferPrimitive> {
         vertexCountMax?: number;
         show?: boolean;
         positionDatatype?: ComponentDatatype;
+        positionNormalized?: boolean;
         allowPicking?: boolean;
+        boundingVolume?: BoundingSphere;
         debugShowBoundingVolume?: boolean;
+        blendOption?: BlendOption;
     });
     /**
      * Determines if primitives in this collection will be shown.
      */
     show: boolean;
+    /**
+     * Transforms geometry from model to world coordinates.
+     */
     protected readonly _modelMatrix: Matrix4;
     protected readonly _boundingVolume: BoundingSphere;
-    protected readonly _boundingVolumeWC: BoundingSphere;
+    protected readonly _boundingVolumeAutoUpdate: boolean;
     /**
      * This property is for debugging only; it is not for production use nor is it optimized.
      * <p>
@@ -28349,15 +28405,20 @@ export class BufferPrimitiveCollection<T extends BufferPrimitive> {
      */
     readonly modelMatrix: Matrix4;
     /**
-     * Local bounding volume for all primitives in the collection, including both
+     * World-space bounding volume for all primitives in the collection, including both
      * shown and hidden primitives.
      */
     readonly boundingVolume: BoundingSphere;
     /**
-     * World bounding volume for all primitives in the collection, including both
-     * shown and hidden primitives.
+     * The component datatype used to store position values.
      */
-    readonly boundingVolumeWC: BoundingSphere;
+    readonly positionDatatype: ComponentDatatype;
+    /**
+     * When <code>true</code>, integer position values are treated as normalized
+     * values, where the full integer range maps to [-1, 1] (signed) or [0, 1]
+     * (unsigned).
+     */
+    readonly positionNormalized: boolean;
     /**
      * Returns a JSON-serializable array representing the collection. This encoding
      * is not memory-efficient, and should generally be used for debugging and
@@ -29321,8 +29382,7 @@ export enum Cesium3DTileColorBlendMode {
  * This type describes an interface and is not intended to be instantiated directly.
  * </p>
  */
-export class Cesium3DTileContent {
-    constructor();
+export interface Cesium3DTileContent {
     /**
      * Gets the number of features in the tile.
      */
@@ -30683,6 +30743,7 @@ export namespace Cesium3DTileset {
      * @property [debugColorizeTiles = false] - For debugging only. When true, assigns a random color to each tile.
      * @property [enableDebugWireframe = false] - For debugging only. This must be true for debugWireframe to work in WebGL1. This cannot be set after the tileset has been created.
      * @property [debugWireframe = false] - For debugging only. When true, render's each tile's content as a wireframe.
+     * @property [edgeDisplayMode = EdgeDisplayMode.SURFACES_ONLY] - Controls how edges from the {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility} glTF extension are rendered relative to surface geometry.
      * @property [debugShowBoundingVolume = false] - For debugging only. When true, renders the bounding volume for each tile.
      * @property [debugShowContentBoundingVolume = false] - For debugging only. When true, renders the bounding volume for each tile's content.
      * @property [debugShowViewerRequestVolume = false] - For debugging only. When true, renders the viewer request volume for each tile.
@@ -30751,6 +30812,7 @@ export namespace Cesium3DTileset {
         debugColorizeTiles?: boolean;
         enableDebugWireframe?: boolean;
         debugWireframe?: boolean;
+        edgeDisplayMode?: EdgeDisplayMode;
         debugShowBoundingVolume?: boolean;
         debugShowContentBoundingVolume?: boolean;
         debugShowViewerRequestVolume?: boolean;
@@ -31175,6 +31237,13 @@ export class Cesium3DTileset {
      * </p>
      */
     debugWireframe: boolean;
+    /**
+     * Controls how edges from the
+     * {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility}
+     * glTF extension are rendered relative to surface geometry. Tile content
+     * primitives that do not declare the extension are unaffected.
+     */
+    edgeDisplayMode: EdgeDisplayMode;
     /**
      * This property is for debugging only; it is not optimized for production use.
      * <p>
@@ -33405,6 +33474,35 @@ export class DynamicEnvironmentMapManager {
 }
 
 /**
+ * Defines how edges contributed by the
+ * {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility}
+ * glTF extension are rendered relative to surface geometry.
+ * <p>
+ * Primitives that do not include the extension are unaffected by this setting
+ * and always render normally.
+ * </p>
+ */
+export enum EdgeDisplayMode {
+    /**
+     * Render surfaces only. Edges from the
+     * {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility}
+     * extension are hidden.
+     */
+    SURFACES_ONLY = 0,
+    /**
+     * Render both surfaces and edges. Edges from the
+     * {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility}
+     * extension are composited on top of the surface geometry.
+     */
+    SURFACES_AND_EDGES = 1,
+    /**
+     * Render edges only. Surface geometry is hidden for primitives that have edge visibility data,
+     * approximating CAD-style wireframe rendering. Primitives without the extension are unaffected.
+     */
+    EDGES_ONLY = 2
+}
+
+/**
  * An appearance for geometry on the surface of the ellipsoid like {@link PolygonGeometry}
  * and {@link RectangleGeometry}, which supports all materials like {@link MaterialAppearance}
  * with {@link MaterialAppearance.MaterialSupport.ALL}.  However, this appearance requires
@@ -33861,14 +33959,16 @@ export class FrameRateMonitor {
     destroy(): void;
 }
 
+export interface GaussianSplat3DTileContent extends Cesium3DTileContent {
+}
+
 /**
  * Represents the contents of a glTF or glb using the {@link https://github.com/CesiumGS/glTF/tree/draft-splat-spz/extensions/2.0/Khronos/KHR_gaussian_splatting | KHR_gaussian_splatting} and {@link https://github.com/CesiumGS/glTF/tree/draft-splat-spz/extensions/2.0/Khronos/KHR_gaussian_splatting_compression_spz_2 | KHR_gaussian_splatting_compression_spz_2} extensions.
  * <p>
  * Implements the {@link Cesium3DTileContent} interface.
  * </p>
  */
-export class GaussianSplat3DTileContent {
-    constructor();
+export class GaussianSplat3DTileContent implements Cesium3DTileContent {
     /**
      * Performs checks to ensure that the provided tileset has the Gaussian Splatting extensions.
      * @param tileset - The tileset to check for the extensions.
@@ -33933,7 +34033,7 @@ export class GaussianSplat3DTileContent {
      * The resource that this content was loaded from.
      * <p>
      */
-    readonly url: Resource;
+    readonly url: string;
     /**
      * Returns whether the feature has this property.
      * @param batchId - The batchId for the feature.
@@ -33952,6 +34052,75 @@ export class GaussianSplat3DTileContent {
      * @returns The corresponding {@link Cesium3DTileFeature} object.
      */
     getFeature(batchId: number): Cesium3DTileFeature;
+}
+
+export type GeoJsonPrimitiveConstructorOptions = {
+    geoJson?: any;
+    url?: Resource | string;
+    ellipsoid?: Ellipsoid;
+    allowPicking?: boolean;
+    show?: boolean;
+    pickObjectFactory?: (...params: any[]) => any;
+};
+
+/**
+ * Lightweight GeoJSON loader that converts features directly into
+ * {@link BufferPointCollection}, {@link BufferPolylineCollection}, and
+ * {@link BufferPolygonCollection}.
+ *
+ * Unlike {@link GeoJsonDataSource}, this path does not create entities.
+ * Instead, it exposes high-throughput buffer primitive collections that can be
+ * added directly to {@link Scene#primitives}.
+ * @example
+ * const loader = await Cesium.GeoJsonPrimitive.fromUrl("./data.geojson");
+ * viewer.scene.primitives.add(loader);
+ *
+ * loader.points;     // BufferPointCollection | undefined
+ * loader.polylines;  // BufferPolylineCollection | undefined
+ * loader.polygons;   // BufferPolygonCollection | undefined
+ * loader.ids;        // source feature IDs
+ * loader.properties; // source feature properties
+ */
+export class GeoJsonPrimitive {
+    constructor(options?: GeoJsonPrimitiveConstructorOptions);
+    /**
+     * Loader source URL when created via {@link GeoJsonPrimitive.fromUrl}.
+     */
+    readonly url: string | undefined;
+    /**
+     * Feature count represented by the loaded collections.
+     */
+    readonly featureCount: number;
+    /**
+     * Lookup table from integer ID generated by GeoJsonPrimitive, to integer or string Feature ID from GeoJSON source.
+     */
+    readonly ids: (string | number | undefined)[];
+    /**
+     * Source GeoJSON properties, indexed by generated integer ID.
+     */
+    readonly properties: Record<string, unknown>[];
+    /**
+     * Buffer point collection for point geometries.
+     */
+    readonly points: BufferPointCollection | undefined;
+    /**
+     * Buffer polyline collection for linestring geometries.
+     */
+    readonly polylines: BufferPolylineCollection | undefined;
+    /**
+     * Buffer polygon collection for polygon geometries.
+     */
+    readonly polygons: BufferPolygonCollection | undefined;
+    /**
+     * Loads GeoJSON from a URL or {@link Resource}.
+     */
+    static fromUrl(url: Resource | string, options?: GeoJsonPrimitiveConstructorOptions): Promise<GeoJsonPrimitive>;
+    /**
+     * Creates a loader directly from a parsed GeoJSON object.
+     */
+    static fromGeoJson(geoJson: any, options?: GeoJsonPrimitiveConstructorOptions): GeoJsonPrimitive;
+    getId(featureId: number): void;
+    getProperties(featureId: number): void;
 }
 
 /**
@@ -34358,6 +34527,15 @@ export class GlobeTranslucency {
  * Loads the gltf object
  */
 export function loadGltfJson(): void;
+
+export type EXTMeshPolygonExtension = {
+    count: number;
+    indicesOffsets: number;
+    loopIndices?: number;
+    loopIndicesOffsets?: number;
+    triangleIndices?: number;
+    triangleIndicesOffsets?: number;
+};
 
 /**
  * Removes an extension from gltf.extensions, gltf.extensionsUsed, gltf.extensionsRequired, and any other objects in the glTF if it is present.
@@ -37655,6 +37833,32 @@ export class Light {
 }
 
 /**
+ * A Mapbox Vector Tiles (MVT) data provider. Loads .mvt or .pbf tiles, converting tiles
+ * dynamically (at runtime) into 3D Tiles.
+ *
+ * <div class="notice">
+ * This object is normally not instantiated directly, use {@link MVTDataProvider.fromUrl}.
+ * </div>
+ */
+export class MVTDataProvider {
+    /**
+     * Creates an MVTDataProvider from the specified URL template and options.
+     * @param url - URL template, containing {z}, {x}, and {y} placeholders.
+     * @param [options] - Provider options.
+     * @param [options.minZoom = 0] - Minimum zoom level represented in the generated tileset.
+     * @param [options.maxZoom = 14] - Maximum zoom level represented in the generated tileset.
+     * @param [options.extent] - Optional geographic extent in radians to constrain the generated tile tree.
+     * @param [options.featureIdProperty] - MVT property name to use as feature ID.
+     */
+    static fromUrl(url: Resource | string, options?: {
+        minZoom?: number;
+        maxZoom?: number;
+        extent?: Rectangle;
+        featureIdProperty?: string;
+    }): void;
+}
+
+/**
  * Describes how the map will operate in 2D.
  */
 export enum MapMode2D {
@@ -39524,6 +39728,11 @@ export enum LightingModel {
  *  {@link https://github.com/KhronosGroup/glTF/pull/2514|EXT_mesh_primitive_restart}
  *  </li>
  *  <li>
+ *  {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility}
+ *  (edges are hidden by default; set {@link EdgeDisplayMode} via
+ *  {@link Model#edgeDisplayMode} or {@link Cesium3DTileset#edgeDisplayMode} to display them)
+ *  </li>
+ *  <li>
  *  {@link https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Vendor/EXT_meshopt_compression|EXT_meshopt_compression}
  *  </li>
  *  <li>
@@ -39696,6 +39905,13 @@ export class Model {
      * </p>
      */
     debugWireframe: boolean;
+    /**
+     * Controls how edges from the
+     * {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility}
+     * glTF extension are rendered relative to surface geometry. Primitives that
+     * do not declare the extension are unaffected by this setting.
+     */
+    edgeDisplayMode: EdgeDisplayMode;
     /**
      * Whether or not to render the model.
      */
@@ -39995,6 +40211,7 @@ export class Model {
      * @param [options.color] - A color that blends with the model's rendered color.
      * @param [options.colorBlendMode = ColorBlendMode.HIGHLIGHT] - Defines how the color blends with the model.
      * @param [options.colorBlendAmount = 0.5] - Value used to determine the color strength when the <code>colorBlendMode</code> is <code>MIX</code>. A value of 0.0 results in the model's rendered color while a value of 1.0 results in a solid color, with any value in-between resulting in a mix of the two.
+     * @param [options.edgeDisplayMode = EdgeDisplayMode.SURFACES_ONLY] - Controls how edges from the {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility} extension are rendered relative to surface geometry.
      * @param [options.silhouetteColor = Color.RED] - The silhouette color. If more than 256 models have silhouettes enabled, there is a small chance that overlapping models will have minor artifacts.
      * @param [options.silhouetteSize = 0.0] - The size of the silhouette in pixels.
      * @param [options.enableShowOutline = true] - Whether to enable outlines for models using the {@link https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Vendor/CESIUM_primitive_outline|CESIUM_primitive_outline} extension. This can be set false to avoid post-processing geometry at load time. When false, the showOutlines and outlineColor options are ignored.
@@ -40049,6 +40266,7 @@ export class Model {
         color?: Color;
         colorBlendMode?: ColorBlendMode;
         colorBlendAmount?: number;
+        edgeDisplayMode?: EdgeDisplayMode;
         silhouetteColor?: Color;
         silhouetteSize?: number;
         enableShowOutline?: boolean;
@@ -46107,7 +46325,8 @@ export class VoxelPrimitive {
      */
     clippingPlanes: ClippingPlaneCollection;
     /**
-     * Gets or sets the custom shader. If undefined, {@link VoxelPrimitive.DefaultCustomShader} is set.
+     * Gets or sets the custom shader. If undefined, attempt to build a default custom shader
+     * appropriate to the metadata type. If that fails, use {@link VoxelPrimitive.DefaultCustomShader}.
      */
     customShader: CustomShader;
     /**
@@ -46140,7 +46359,21 @@ export class VoxelPrimitive {
  * This type describes an interface and is not intended to be instantiated directly.
  */
 export class VoxelProvider {
-    constructor();
+    /**
+     * Requests the data for a given tile.
+     * @param [options] - Object with the following properties:
+     * @param [options.tileLevel = 0] - The tile's level.
+     * @param [options.tileX = 0] - The tile's X coordinate.
+     * @param [options.tileY = 0] - The tile's Y coordinate.
+     * @param [options.tileZ = 0] - The tile's Z coordinate.
+     * @returns A promise resolving to a VoxelContent containing the data for the tile, or undefined if the request could not be scheduled this frame.
+     */
+    requestData(options?: {
+        tileLevel?: number;
+        tileX?: number;
+        tileY?: number;
+        tileZ?: number;
+    }): Promise<VoxelContent> | undefined;
     /**
      * A transform from local space to global space.
      */
@@ -46205,21 +46438,6 @@ export class VoxelProvider {
      * The number of levels of detail containing available tiles in the tileset.
      */
     readonly availableLevels: number | undefined;
-    /**
-     * Requests the data for a given tile.
-     * @param [options] - Object with the following properties:
-     * @param [options.tileLevel = 0] - The tile's level.
-     * @param [options.tileX = 0] - The tile's X coordinate.
-     * @param [options.tileY = 0] - The tile's Y coordinate.
-     * @param [options.tileZ = 0] - The tile's Z coordinate.
-     * @returns A promise resolving to a VoxelContent containing the data for the tile, or undefined if the request could not be scheduled this frame.
-     */
-    requestData(options?: {
-        tileLevel?: number;
-        tileX?: number;
-        tileY?: number;
-        tileZ?: number;
-    }): Promise<VoxelContent> | undefined;
 }
 
 /**
