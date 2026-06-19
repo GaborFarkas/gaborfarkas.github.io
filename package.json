@@ -27,7 +27,6 @@
   "homepage": "https://github.com/GaborFarkas/gaborfarkas.github.io#readme",
   "dependencies": {
     "@analytics/simple-analytics": "^0.4.1",
-    "@angular/animations": "^22.0.2",
     "@angular/common": "^22.0.2",
     "@angular/compiler": "^22.0.2",
     "@angular/core": "^22.0.2",
