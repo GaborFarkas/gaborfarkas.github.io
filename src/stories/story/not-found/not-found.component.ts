@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import { randomizer } from '@/utils/randomizer';
 import { AttributedPicture } from '@/stories/story/not-found/attributed-picture.model';
 import { CommonModule } from '@angular/common';
@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 @Component({
     selector: 'not-found',
     imports: [CommonModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './not-found.component.html'
 })
 export class NotFoundComponent {

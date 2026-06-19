@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit, SimpleChanges, OnChanges, input, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, SimpleChanges, OnChanges, input, signal, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Typewriter component for creating animated texts, outputting them character by character.
  */
 @Component({
     selector: 'div.typewriter',
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './typewriter.component.html'
 })
 export class TypewriterComponent implements OnInit, OnDestroy, OnChanges {

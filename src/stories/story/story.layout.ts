@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { StoryModel, StoryType } from '@/stories/story.model';
 import { PageUrlMapping } from '@/app/page-url-mapping.model';
@@ -14,6 +14,7 @@ import { FileService } from '@/utils/file.service';
     imports: [RouterOutlet],
     providers: [StoryService, FileService],
     templateUrl: './story.layout.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './story.layout.css'
 })
 export class StoryLayout {

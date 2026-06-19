@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * A reference hexagon holding a short description and a link.
@@ -9,6 +9,7 @@ import { Component, input } from '@angular/core';
     imports: [CommonModule],
     templateUrl: './hex-reference.component.html',
     styleUrl: './hex-reference.component.css',
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         'class': 'relative overflow-hidden hover:overflow-visible'
     }

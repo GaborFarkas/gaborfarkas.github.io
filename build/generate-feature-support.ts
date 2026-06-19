@@ -121,6 +121,11 @@ async function getExampleAsync(lib: WebMappingLibrary, exampleFunc?: (this: any,
     if (!exampleFunc) return undefined;
 
     let lineNum = '0';
+
+    // Mock fetch to avoid invalid URL exceptions with an unusable trace.
+    const oldFetch = global.fetch;
+    global.fetch = async (_, __) => { return new Response() };
+
     try {
         // Trigger an error by calling ther func with invalid params
         if (exampleFunc.toString().startsWith('async')) {
@@ -136,6 +141,9 @@ async function getExampleAsync(lib: WebMappingLibrary, exampleFunc?: (this: any,
             lineNum = funcLine!.split(":")[1];
         }
     }
+
+    // Restore default fetch function.
+    global.fetch = oldFetch;
 
     return parseInt(lineNum);
 }

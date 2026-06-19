@@ -1,4 +1,4 @@
-import { Component, signal, viewChildren, WritableSignal } from '@angular/core';
+import { Component, signal, viewChildren, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { CarouselComponent } from '@/layout/widgets/carousel/carousel.component';
 import { HeroSceneComponent } from '@/company/landing/hero-scene/hero-scene.component';
 import { Hero, HeroScene, HeroSection } from '@/company/landing/hero.model';
@@ -17,6 +17,7 @@ import { PageUrlMapping, StoryUrlMapping } from '@/app/page-url-mapping.model';
     selector: 'landing-page',
     templateUrl: './landing.page.html',
     imports: [CommonModule, CarouselComponent, HeroSceneComponent, HeroSectionComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './landing.page.css'
 })
 export class LandingPage {

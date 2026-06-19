@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input, signal } from '@angular/core';
+import { Component, input, signal, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * A general card component with 2 faces, capable of flipping with an animation.
@@ -9,6 +9,7 @@ import { Component, input, signal } from '@angular/core';
     imports: [CommonModule],
     templateUrl: './card.component.html',
     styleUrl: './card.component.css',
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[style.--item-color]': 'color()'
     }

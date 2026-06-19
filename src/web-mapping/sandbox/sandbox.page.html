@@ -11,7 +11,7 @@
         <select [reset]="'0'" (change)="loadCodeSnippetAsync($event.target)" class="w-48 text-ellipsis overflow-x-hidden">
             <option value="0" class="text-gray-400">Load snippet</option>
             <ng-container
-                *ngTemplateOutlet="loadCodeOptions; context: { items: this.availableCodes()[this.library]?.children }" />
+                *ngTemplateOutlet="loadCodeOptions; context: { items: $safeNavigationMigration(this.availableCodes()[this.library]?.children) }" />
         </select>
         <div class="flex items-center select-none cursor-pointer" (click)="runCode()" (keypress)="runCode()" tabindex="0">
             <fa-icon [icon]="faPlay()" class="text-green-900 pr-2" size="1x" />

@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NavDropdownItem } from '@/layout/navigation/nav-dropdown.model';
 import { CommonModule } from '@angular/common';
 
@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
     selector: 'nav-dropdown',
     imports: [CommonModule],
     templateUrl: './nav-dropdown.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './nav-dropdown.component.css'
 })
 export class NavDropdownComponent {

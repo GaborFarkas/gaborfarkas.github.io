@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { CompanyLogoComponent } from "@/layout/company-logo/company-logo.component";
 
 /**
@@ -11,6 +11,7 @@ import { CompanyLogoComponent } from "@/layout/company-logo/company-logo.compone
     host: {
         'class': 'flex flex-row h-full items-center'
     },
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CompanyLogoComponent]
 })
 export class BrandedNavComponent {

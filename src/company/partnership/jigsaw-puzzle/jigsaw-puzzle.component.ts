@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, ElementRef, input, OnInit, output, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, ElementRef, input, OnInit, output, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { PuzzlePiece, generatePuzzle } from '@/company/partnership/jigsaw-puzzle/puzzle.model';
 import { CommonModule } from '@angular/common';
 
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
     selector: 'div.jigsaw',
     imports: [CommonModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './jigsaw-puzzle.component.html'
 })
 export class JigsawPuzzleComponent implements OnInit, AfterViewInit {

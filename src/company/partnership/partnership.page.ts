@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { JigsawPuzzleComponent } from '@/company/partnership/jigsaw-puzzle/jigsaw-puzzle.component';
 import { CommonModule } from '@angular/common';
 import { TimelineComponent } from '@/company/partnership/timeline/timeline.component';
@@ -14,6 +14,7 @@ import { faHandshake } from '@fortawesome/free-regular-svg-icons';
     selector: 'partnership-page',
     imports: [CommonModule, JigsawPuzzleComponent, TimelineComponent, TimelineItemComponent, FontAwesomeModule],
     templateUrl: './partnership.page.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './partnership.page.css'
 })
 export class PartnershipPage {

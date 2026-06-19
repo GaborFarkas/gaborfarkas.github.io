@@ -1,6 +1,6 @@
 import { FooterComponent } from "@/layout/footer/footer.component";
 import { NavbarComponent } from "@/layout/navigation/navbar/navbar.component";
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { LayoutWithAnalytics } from "@/layout/layouts/layout-with-analytics";
 
@@ -11,6 +11,7 @@ import { LayoutWithAnalytics } from "@/layout/layouts/layout-with-analytics";
 @Component({
     selector: 'framed-layout',
     imports: [RouterOutlet, NavbarComponent, FooterComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './framed.layout.html'
 })
 export class FramedLayout extends LayoutWithAnalytics { }

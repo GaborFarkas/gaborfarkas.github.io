@@ -1,4 +1,4 @@
-import { Component, input } from "@angular/core";
+import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 
 /**
  * Company logo component
@@ -7,6 +7,7 @@ import { Component, input } from "@angular/core";
     selector: 'company-logo',
     standalone: true,
     templateUrl: './company-logo.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './company-logo.component.css'
 })
 export class CompanyLogoComponent {

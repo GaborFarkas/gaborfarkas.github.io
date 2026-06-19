@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NavDropdownComponent } from '@/layout/navigation/nav-dropdown/nav-dropdown.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +14,7 @@ import { CompanyLogoComponent } from "@/layout/company-logo/company-logo.compone
     selector: 'nav.navbar',
     imports: [NavDropdownComponent, FontAwesomeModule, CommonModule, CompanyLogoComponent],
     templateUrl: './navbar.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {

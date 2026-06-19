@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AttributionControl, FullscreenControl, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
 import { environment } from '@/environments/environment';
 import BuildingControl from '@/layout/footer/maplibregl/BuildingControl';
@@ -10,6 +10,7 @@ import LayerToggleControl from '@/layout/footer/maplibregl/LayerToggleControl';
 @Component({
     selector: 'footer-map',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './footer-map.component.html'
 })
 export class FooterMapComponent implements AfterViewInit {

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, input, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import * as Maplibre from 'maplibre-gl';
 import { WebMap } from '@/web-mapping/map/web-map.model';
 import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support.model';
@@ -11,6 +11,7 @@ type MaplibreExampleFunc = (this: Maplibre.Map, maplibregl: typeof Maplibre, map
 @Component({
     selector: 'div.maplibre',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './maplibre-map.component.html'
 })
 export class MaplibreMapComponent implements AfterViewInit, WebMap {

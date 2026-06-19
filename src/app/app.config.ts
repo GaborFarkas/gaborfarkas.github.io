@@ -5,8 +5,8 @@ import { routes } from '@/app/app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { BrowserModule } from '@angular/platform-browser';
 import { dateReviverInterceptorProvider } from '@/app/http-interceptors/date-reviver.interceptor';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
-    providers: [provideRouter(routes, withComponentInputBinding()), provideAnimationsAsync(), importProvidersFrom([BrowserModule]), provideHttpClient(withInterceptorsFromDi()), dateReviverInterceptorProvider]
+    providers: [provideRouter(routes, withComponentInputBinding()), provideAnimationsAsync(), importProvidersFrom([BrowserModule]), provideHttpClient(withXhr(), withInterceptorsFromDi()), dateReviverInterceptorProvider]
 };

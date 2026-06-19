@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, contentChildren, input, signal } from '@angular/core';
+import { AfterContentInit, Component, contentChildren, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { TimelineItemComponent } from '@/company/partnership/timeline-item/timeline-item.component';
 import { randomizer } from '@/utils/randomizer';
 
@@ -10,6 +10,7 @@ import { randomizer } from '@/utils/randomizer';
     standalone: true,
     templateUrl: './timeline.component.html',
     styleUrl: './timeline.component.css',
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         'class': 'relative'
     }

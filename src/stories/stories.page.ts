@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { StoryModel, StoryType } from '@/stories/story.model';
 import { PageUrlMapping } from '@/app/page-url-mapping.model';
@@ -14,6 +14,7 @@ import { CardComponent } from '@/layout/widgets/card/card.component';
     imports: [CardComponent],
     providers: [StoryService, FileService],
     templateUrl: './stories.page.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './stories.page.css'
 })
 export class StoriesPage implements OnInit, OnDestroy {

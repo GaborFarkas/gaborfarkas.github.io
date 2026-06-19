@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import * as Cesium from 'cesium';
 import { WebMap } from '@/web-mapping/map/web-map.model';
 import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support.model';
@@ -13,6 +13,7 @@ type CesiumExampleFunc = (this: Cesium.Viewer, lib: typeof Cesium, map: Cesium.V
     standalone: true,
     templateUrl: './cesium-map.component.html',
     styleUrl: '../../../../node_modules/cesium/Build/Cesium/Widgets/widgets.css',
+    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })
 export class CesiumMapComponent implements AfterViewInit, WebMap {

@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { FaqItemModel } from '@/company/about/faq.model';
 import { CommonModule } from '@angular/common';
 
@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
     selector: 'div.faq-section',
     imports: [CommonModule],
     templateUrl: './faq-item.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './faq-item.component.css'
 })
 export class FaqItemComponent {

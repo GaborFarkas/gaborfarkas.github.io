@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, input, model, output, signal } from '@angular/core';
+import { Component, computed, input, model, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
@@ -12,6 +12,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
     imports: [CommonModule, FontAwesomeModule],
     templateUrl: './timeline-item.component.html',
     styleUrl: './timeline-item.component.css',
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class]': 'class()',
         '[style.--item-color]': 'color()'

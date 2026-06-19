@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, input, OnInit, signal, viewChild, ViewEncapsulation } from "@angular/core";
+import { Component, computed, effect, ElementRef, input, OnInit, signal, viewChild, ViewEncapsulation, ChangeDetectionStrategy } from "@angular/core";
 import { highlightAllUnder } from 'prismjs';
 
 /**
@@ -11,6 +11,7 @@ import { highlightAllUnder } from 'prismjs';
         '../../../node_modules/prismjs/themes/prism.min.css',
         './code-viewer.component.css'
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })
 export class CodeViewerComponent implements OnInit {

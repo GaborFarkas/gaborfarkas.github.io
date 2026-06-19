@@ -4,7 +4,7 @@ import { NoPhoneComponent } from "@/web-mapping/sandbox/no-phone/no-phone.compon
 import { PageUrlMapping } from "@/app/page-url-mapping.model";
 import { WebMappingLibrary } from "@/web-mapping/map/web-mapping-library";
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild, ChangeDetectionStrategy } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { VERSION as OpenLayersVersion } from "ol";
@@ -32,6 +32,7 @@ import { ModalComponent } from "@/web-mapping/modal/modal.component";
     imports: [CommonModule, FormsModule, BrandedNavComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective, ModalComponent],
     providers: [FileService, PersistencyService],
     templateUrl: './sandbox.page.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         class: 'flex flex-col h-full'
     }

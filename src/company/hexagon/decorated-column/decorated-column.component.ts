@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Orientation, HexReferenceComponent } from '@/company/hexagon/hex-reference/hex-reference.component';
 import { RangePipe } from '@/company/hexagon/range.pipe';
 import { ReferenceDescriptor } from '@/company/hexagon/reference.model';
@@ -13,6 +13,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     imports: [CommonModule, HexReferenceComponent, RangePipe, FontAwesomeModule],
     templateUrl: './decorated-column.component.html',
     styleUrl: './decorated-column.component.css',
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         'class': 'w-full flex justify-between'
     }

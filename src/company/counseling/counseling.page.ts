@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CardComponent } from '@/layout/widgets/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCartShopping, faCompassDrafting, faDiagramProject, faDisplay, faFileContract, faGlobe, faGroupArrowsRotate, faIceCream, faLayerGroup, faListCheck, faMoneyBill1Wave, faMoon, faSitemap } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +14,7 @@ import { PageUrlMapping, StoryUrlMapping } from '@/app/page-url-mapping.model';
 @Component({
     selector: 'counseling-page',
     imports: [CardComponent, FontAwesomeModule, DecoratedColumnComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './counseling.page.html'
 })
 export class CounselingPage implements OnInit {

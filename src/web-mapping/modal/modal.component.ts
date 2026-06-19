@@ -1,5 +1,5 @@
 
-import { Component, input, output, signal, ViewContainerRef } from '@angular/core';
+import { Component, input, output, signal, ViewContainerRef, ChangeDetectionStrategy } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +13,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
     host: {
         class: 'w-full lg:w-4/5 h-full lg:h-4/5 outline-none'
     },
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FontAwesomeModule]
 })
 export class ModalComponent {

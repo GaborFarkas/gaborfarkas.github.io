@@ -1,4 +1,4 @@
-import { Component, HostBinding, input, signal } from '@angular/core';
+import { Component, HostBinding, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faLocationDot, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,7 @@ import { CompanyLogoComponent } from "../company-logo/company-logo.component";
     selector: 'footer',
     imports: [FontAwesomeModule, CommonModule, FooterMapComponent, CompanyLogoComponent],
     templateUrl: './footer.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './footer.component.css'
 })
 export class FooterComponent {
