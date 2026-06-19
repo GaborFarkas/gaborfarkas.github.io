@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { FaqItemModel } from '@/company/about/faq.model';
 import { CommonModule } from '@angular/common';
 
@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
     selector: 'div.faq-section',
     imports: [CommonModule],
     templateUrl: './faq-item.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './faq-item.component.css'
 })
 export class FaqItemComponent {
@@ -31,14 +30,14 @@ export class FaqItemComponent {
     /**
      * Gets or sets if the FAQ item is expanded. Backing field.
      */
-    private expanded_ = false;
+    private expanded_ = signal(false);
 
     /**
      * Gets or sets if the FAQ item is expanded.
      */
     private set expanded(val: boolean) {
-        if (val !== this.expanded_) {
-            this.expanded_ = val;
+        if (val !== this.expanded_()) {
+            this.expanded_.set(val);
         }
     }
 
@@ -46,7 +45,7 @@ export class FaqItemComponent {
      * Gets or sets if the FAQ item is expanded.
      */
     public get expanded(): boolean {
-        return this.expanded_;
+        return this.expanded_();
     }
 
     /**

@@ -1,4 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FaqGroupComponent } from '@/company/about/faq-group/faq-group.component';
 import { FaqGroupModel } from '@/company/about/faq.model';
 
@@ -8,7 +8,6 @@ import { FaqGroupModel } from '@/company/about/faq.model';
 @Component({
     selector: 'about-page',
     templateUrl: './about.page.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FaqGroupComponent]
 })
 export class AboutPage {
