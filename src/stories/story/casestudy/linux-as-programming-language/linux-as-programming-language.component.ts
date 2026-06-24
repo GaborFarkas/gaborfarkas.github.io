@@ -1,5 +1,5 @@
 import { CodeViewerComponent } from '@/source-code/code-viewer/code-viewer.component';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component } from '@angular/core';
 
 /**
  * Linux as a programming language case study
@@ -7,7 +7,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 @Component({
     selector: 'linux-as-programming-language',
     templateUrl: './linux-as-programming-language.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CodeViewerComponent]
 })
 export class LinuxAsProgrammingLanguageComponent {

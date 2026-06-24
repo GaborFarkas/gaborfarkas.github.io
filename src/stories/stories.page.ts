@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { StoryModel, StoryType } from '@/stories/story.model';
 import { PageUrlMapping } from '@/app/page-url-mapping.model';
@@ -14,7 +14,6 @@ import { CardComponent } from '@/layout/widgets/card/card.component';
     imports: [CardComponent],
     providers: [StoryService, FileService],
     templateUrl: './stories.page.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './stories.page.css'
 })
 export class StoriesPage implements OnInit, OnDestroy {
@@ -97,9 +96,9 @@ export class StoriesPage implements OnInit, OnDestroy {
             skip: this.page() * 10,
             take: 10
         });
-        this.stories.set(this.page() === 0 ? newStories : this.stories().concat(newStories));
+        this.stories.update(stories => stories.length === 0 ? newStories : stories.concat(newStories));
 
-        this.page.update(value => value++);
+        this.page.update(value => value + 1);
         if (newStories.length < 10) {
             this.noMorePages = true;
         }
