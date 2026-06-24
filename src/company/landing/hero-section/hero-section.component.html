@@ -11,8 +11,8 @@
     </div>
     <div class="absolute top-0 h-full hidden md:block slant" [ngClass]="{'flip': flip()}">
         <div class="absolute decoration w-fit h-fit flex select-none">
-            <p class="reference w-full h-full" [flyoutText]="$safeNavigationMigration(references()[flip() ? 0 : 2]?.text)"
-                [url]="$safeNavigationMigration(references()[flip() ? 0 : 2]?.url)"
+            <p class="reference w-full h-full" [flyoutText]="references()[flip() ? 0 : 2]?.text"
+                [url]="references()[flip() ? 0 : 2]?.url"
                 [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT"
                 [flyoutFlip]="flip()">
                 @if (references()[flip() ? 0 : 2]?.icon) {
@@ -20,15 +20,15 @@
                         referenceIcon></fa-icon>
                 }
             </p>
-            <p class="reference w-full h-full" [flyoutText]="$safeNavigationMigration(references()[1]?.text)" [url]="$safeNavigationMigration(references()[1]?.url)"
+            <p class="reference w-full h-full" [flyoutText]="references()[1]?.text" [url]="references()[1]?.url"
                 [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT"
                 [flyoutFlip]="flip()">
                 @if (references()[1]?.icon) {
                     <fa-icon size="xl" class="text-primary" [icon]="references()[1]!.icon!" referenceIcon></fa-icon>
                 }
             </p>
-            <p class="reference w-full h-full" [flyoutText]="$safeNavigationMigration(references()[flip() ? 2 : 0]?.text)"
-                [url]="$safeNavigationMigration(references()[flip() ? 2 : 0]?.url)"
+            <p class="reference w-full h-full" [flyoutText]="references()[flip() ? 2 : 0]?.text"
+                [url]="references()[flip() ? 2 : 0]?.url"
                 [flyoutOrientation]="flip()? Orientation().BOTTOMRIGHT : Orientation().BOTTOMLEFT"
                 [flyoutFlip]="flip()">
                 @if (references()[flip() ? 2 : 0]?.icon) {
