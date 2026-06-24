@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component } from '@angular/core';
 
 /**
  * Main content of the publications page.
@@ -6,7 +6,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 @Component({
     selector: 'publications-page',
     standalone: true,
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './publications.page.html'
 })
 export class PublicationsPage { }
