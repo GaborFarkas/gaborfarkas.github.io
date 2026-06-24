@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, input, Input, OnDestroy, output, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, Input, OnDestroy, output, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
@@ -11,7 +11,6 @@ import { CarouselChangeEvent } from '@/layout/widgets/carousel/carousel-change-e
     selector: 'div.carousel',
     imports: [CommonModule, FontAwesomeModule],
     templateUrl: './carousel.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './carousel.component.css'
 })
 export class CarouselComponent implements OnDestroy, AfterViewInit {

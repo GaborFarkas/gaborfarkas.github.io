@@ -1,4 +1,4 @@
-import { Component, input, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Orientation, HexReferenceComponent } from '@/company/hexagon/hex-reference/hex-reference.component';
 import { ReferenceDescriptor } from '@/company/hexagon/reference.model';
@@ -11,7 +11,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     selector: 'div.hero-section',
     imports: [CommonModule, HexReferenceComponent, FontAwesomeModule],
     templateUrl: './hero-section.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './hero-section.component.css'
 })
 export class HeroSectionComponent {

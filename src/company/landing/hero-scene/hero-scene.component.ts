@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, ElementRef, input, OnDestroy, OnInit, output, signal, viewChild, viewChildren, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, computed, ElementRef, input, OnDestroy, OnInit, output, signal, viewChild, viewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TypewriterComponent } from '@/layout/widgets/typewriter/typewriter.component';
 import { HeroScene } from '@/company/landing/hero.model';
@@ -10,7 +10,6 @@ import { HeroScene } from '@/company/landing/hero.model';
     selector: 'div.hero-scene',
     imports: [CommonModule, TypewriterComponent],
     templateUrl: './hero-scene.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './hero-scene.component.css'
 })
 export class HeroSceneComponent implements AfterViewInit, OnInit, OnDestroy {
