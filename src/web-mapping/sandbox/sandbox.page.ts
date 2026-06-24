@@ -4,7 +4,7 @@ import { NoPhoneComponent } from "@/web-mapping/sandbox/no-phone/no-phone.compon
 import { PageUrlMapping } from "@/app/page-url-mapping.model";
 import { WebMappingLibrary } from "@/web-mapping/map/web-mapping-library";
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild, ChangeDetectionStrategy } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit, signal, viewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { DomSanitizer } from "@angular/platform-browser";
 import { VERSION as OpenLayersVersion } from "ol";
@@ -32,7 +32,6 @@ import { ModalComponent } from "@/web-mapping/modal/modal.component";
     imports: [CommonModule, FormsModule, BrandedNavComponent, NoPhoneComponent, CodeEditorComponent, FontAwesomeModule, TypedTemplateDirective, SelectAutoResetDirective, DataValueDirective, ModalComponent],
     providers: [FileService, PersistencyService],
     templateUrl: './sandbox.page.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         class: 'flex flex-col h-full'
     }
@@ -159,14 +158,16 @@ export class SandboxPage implements OnInit, OnDestroy {
     private featureSupportItems: FeatureSupportItem[] = [];
 
     /**
-     * The available codes for the currently loaded web mapping libraries including examples and locally saved codes.
+     * Caches available code snippets to prevent repeated queries when the user frequently changes libs.
      */
-    protected availableCodes = signal<Record<WebMappingLibrary, GroupedSourceCodeModel | undefined>>({
+    private codeSnippetCache_: Record<WebMappingLibrary, GroupedSourceCodeModel | undefined> = {
         [WebMappingLibrary.LEAFLET]: undefined,
         [WebMappingLibrary.OPENLAYERS]: undefined,
         [WebMappingLibrary.MAPLIBRE]: undefined,
         [WebMappingLibrary.CESIUM]: undefined
-    });
+    };
+
+    protected availableSnippets = signal<GroupedSourceCodeModel | undefined>(undefined);
 
     /**
      * The currently active snippet (backing field).
@@ -339,7 +340,7 @@ export class SandboxPage implements OnInit, OnDestroy {
      * @param forceRebuild Forcefully rebuild the tree to synchronize with changes.
      */
     private loadSnippets(forceRebuild = false) {
-        if (forceRebuild || !this.availableCodes()[this.library]) {
+        if (forceRebuild || !this.codeSnippetCache_[this.library]) {
             const model: GroupedSourceCodeModel = {
                 children: []
             };
@@ -413,9 +414,10 @@ export class SandboxPage implements OnInit, OnDestroy {
                 model.children.push(examplesModel);
             }
 
-
-            this.availableCodes()[this.library] = model;
+            this.codeSnippetCache_[this.library] = model;
         }
+
+        this.availableSnippets.set(this.codeSnippetCache_[this.library]);
     }
 
     /**
@@ -440,7 +442,7 @@ export class SandboxPage implements OnInit, OnDestroy {
         this.notificationService.showSuccess(`Successfully saved current code as ${this.saveSnippetName()}`, 2000);
 
         // Find snippet and make it active
-        const localSnippet = (this.availableCodes()[this.library]?.children.find(
+        const localSnippet = (this.availableSnippets()?.children.find(
             child => child.name === 'Saved snippets') as SourceCodeGroup)?.children.find(child =>
                 child.name === this.saveSnippetName()) as SourceCodeItem | undefined;
         if (localSnippet) {

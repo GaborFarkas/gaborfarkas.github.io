@@ -9,7 +9,7 @@ import { FeatureSupportItem, FeatureSupportScore } from '@/web-mapping/feature-m
 import { WebMappingLibrary } from '@/web-mapping/map/web-mapping-library';
 import { FileService } from '@/utils/file.service';
 import { CommonModule } from '@angular/common';
-import { Component, computed, OnInit, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, OnInit, signal, viewChild } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -21,7 +21,6 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
     templateUrl: './feature-matrix.page.html',
     styleUrl: './feature-matrix.page.css',
     imports: [CommonModule, FontAwesomeModule, FeatureSupportScoreDirective, ModalComponent, LeafletMapComponent, OpenLayersMapComponent, MaplibreMapComponent, CesiumMapComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
     providers: [FileService]
 })
 export class FeatureMatrixPage implements OnInit {

@@ -1,6 +1,6 @@
 import { TokensProviderCache } from "@/source-code/code-editor/monaco-vscode-textmate";
 import { MonacoLoaderService } from "@/source-code/code-editor/monaco-loader.service";
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, viewChild, ChangeDetectionStrategy } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, viewChild } from "@angular/core";
 import * as monacoType from "monaco-editor/esm/vs/editor/editor.api";
 
 declare const monaco: typeof monacoType;
@@ -13,7 +13,6 @@ declare const monaco: typeof monacoType;
     standalone: true,
     providers: [MonacoLoaderService],
     templateUrl: './code-editor.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['../../../node_modules/monaco-editor/min/vs/editor/editor.main.css']
 })
 export class CodeEditorComponent implements AfterViewInit, OnDestroy {

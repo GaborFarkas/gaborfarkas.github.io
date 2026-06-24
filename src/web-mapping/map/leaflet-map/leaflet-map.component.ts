@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
 import * as L from 'leaflet';
 import { WebMap } from '@/web-mapping/map/web-map.model';
 import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support.model';
@@ -13,7 +13,6 @@ type LeafletExampleFunc = (this: L.Map, lib: typeof L, map: L.Map) => void;
     standalone: true,
     templateUrl: './leaflet-map.component.html',
     styleUrl: '../../../../node_modules/leaflet/dist/leaflet.css',
-    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })
 export class LeafletMapComponent implements AfterViewInit, WebMap {

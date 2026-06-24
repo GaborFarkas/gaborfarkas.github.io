@@ -1,6 +1,6 @@
 import { NotificationLevel, NotificationModel } from "@/messaging/notification.model";
 import { NotificationService } from "@/messaging/notification.service";
-import { Component, computed, input, signal, ChangeDetectionStrategy } from "@angular/core";
+import { Component, computed, input, signal } from "@angular/core";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
@@ -11,7 +11,6 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
     selector: 'div.toast',
     imports: [FontAwesomeModule],
     templateUrl: './toast.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./toast.component.css']
 })
 export class ToastComponent {

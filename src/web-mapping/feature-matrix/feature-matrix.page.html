@@ -199,7 +199,7 @@
     </p>
 </div>
 
-<dialog class="modal" [windowTitle]="$safeNavigationMigration(playingItem()?.name) + ' in ' + playingLibrary()" [gitHubUrl]="playingExampleUrl()"
+<dialog class="modal" [windowTitle]="playingItem()?.name + ' in ' + playingLibrary()" [gitHubUrl]="playingExampleUrl()"
     (closed)="clearExample()">
     @if (playingLibrary() === WebMappingLibrary().LEAFLET) {
         <div #leafletContainer class="h-full w-full">

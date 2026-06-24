@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy } from "@angular/core";
+import { Component, input } from "@angular/core";
 
 /**
  * A component for pages unavailable on small devices (e.g. phones).
@@ -6,7 +6,6 @@ import { Component, input, ChangeDetectionStrategy } from "@angular/core";
 @Component({
     selector: 'div.no-phone',
     standalone: true,
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './no-phone.component.html'
 })
 export class NoPhoneComponent {

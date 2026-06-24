@@ -8,10 +8,10 @@
         }
         <fa-icon [icon]="faFloppyDisk()" title="Save as new snippet" class="cursor-pointer"
             (click)="openSaveDialog()" />
-        <select [reset]="'0'" (change)="loadCodeSnippetAsync($event.target)" class="w-48 text-ellipsis overflow-x-hidden">
+        <select [reset]="'0'" (change)="loadCodeSnippetAsync($event.target)" class="w-48 text-ellipsis overflow-x-hidden" name="snippet-select">
             <option value="0" class="text-gray-400">Load snippet</option>
             <ng-container
-                *ngTemplateOutlet="loadCodeOptions; context: { items: $safeNavigationMigration(this.availableCodes()[this.library]?.children) }" />
+                *ngTemplateOutlet="loadCodeOptions; context: { items: this.availableSnippets()?.children }" />
         </select>
         <div class="flex items-center select-none cursor-pointer" (click)="runCode()" (keypress)="runCode()" tabindex="0">
             <fa-icon [icon]="faPlay()" class="text-green-900 pr-2" size="1x" />

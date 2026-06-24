@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, viewChild, ViewEncapsulation } from '@angular/core';
 import { OpenLayers } from '@/web-mapping/map/openlayers-map/openlayers';
 import { WebMap } from '@/web-mapping/map/web-map.model';
 import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support.model';
@@ -13,7 +13,6 @@ type OpenLayersExampleFunc = (this: OpenLayers.Map, lib: typeof OpenLayers, map:
     standalone: true,
     templateUrl: './openlayers-map.component.html',
     styleUrl: '../../../../node_modules/ol/ol.css',
-    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })
 export class OpenLayersMapComponent implements AfterViewInit, WebMap {

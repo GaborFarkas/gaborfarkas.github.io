@@ -1,6 +1,6 @@
 import { FooterComponent } from "@/layout/footer/footer.component";
 import { ToastComponent } from "@/layout/widgets/toast/toast.component";
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Router, RouterOutlet } from "@angular/router";
 import { LayoutWithAnalytics } from "@/layout/layouts/layout-with-analytics";
 import { NotificationService } from "@/messaging/notification.service";
@@ -16,7 +16,6 @@ import { Subject, takeUntil } from "rxjs";
     imports: [RouterOutlet, FooterComponent, ToastComponent],
     providers: [NotificationService],
     templateUrl: './application.layout.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         'class': 'flex flex-col w-full h-full overflow-hidden'
     }
