@@ -3616,8 +3616,6 @@ export enum ClockStep {
     SYSTEM_CLOCK = 2
 }
 
-export function hue2rgb(): void;
-
 /**
  * A color, specified using red, green, blue, and alpha values,
  * which range from <code>0</code> (no intensity) to <code>1.0</code> (full intensity).
@@ -8736,17 +8734,20 @@ export enum IndexDatatype {
     UNSIGNED_INT = WebGLConstants.UNSIGNED_INT
 }
 
-export namespace InterpolationAlgorithm {
+/**
+ * The interface for interpolation algorithms.
+ */
+export interface InterpolationAlgorithm {
     /**
      * Gets the name of this interpolation algorithm.
      */
-    var type: string;
+    type: string;
     /**
      * Given the desired degree, returns the number of data points required for interpolation.
      * @param degree - The desired degree of interpolation.
      * @returns The number of required data points needed for the desired degree of interpolation.
      */
-    function getRequiredDataPoints(degree: number): number;
+    getRequiredDataPoints(degree: number): number;
     /**
      * Performs zero order interpolation.
      * @param x - The independent variable for which the dependent variables will be interpolated.
@@ -8759,7 +8760,7 @@ export namespace InterpolationAlgorithm {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    function interpolateOrderZero(x: number, xTable: number[], yTable: number[], yStride: number, result?: number[]): number[];
+    interpolateOrderZero(x: number, xTable: number[], yTable: number[], yStride: number, result?: number[]): number[];
     /**
      * Performs higher order interpolation.  Not all interpolators need to support high-order interpolation,
      * if this function remains undefined on implementing objects, interpolateOrderZero will be used instead.
@@ -8775,13 +8776,7 @@ export namespace InterpolationAlgorithm {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    function interpolate(x: number, xTable: number[], yTable: number[], yStride: number, inputOrder: number, outputOrder: number, result?: number[]): number[];
-}
-
-/**
- * The interface for interpolation algorithms.
- */
-export interface InterpolationAlgorithm {
+    interpolate(x: number, xTable: number[], yTable: number[], yStride: number, inputOrder: number, outputOrder: number, result?: number[]): number[];
 }
 
 /**
@@ -16793,16 +16788,6 @@ export class TerrainData {
     wasCreatedByUpsampling(): boolean;
 }
 
-/**
- * Creates an axis-aligned bounding box for a quadtree node at the given tree-space coordinates and level.
- * This AABB is in the tree's local space (where the root node of the tree is a unit cube in its own local space).
- * @param x - The x coordinate of the node.
- * @param y - The y coordinate of the node.
- * @param level - The level of the node.
- * @returns The axis-aligned bounding box for the node.
- */
-export function createAABBForNode(x: number, y: number, level: number): AxisAlignedBoundingBox;
-
 export namespace TerrainProvider {
     /**
      * A function that is called when an error occurs.
@@ -19133,15 +19118,6 @@ export function srgbToLinear(value: number): number;
  * @param numberOfArrays - The number of arrays to divide the provided array into.
  */
 export function subdivideArray(array: any[], numberOfArrays: number): void;
-
-/**
- * Computes dimensions for text, based on current canvas state.
- *
- * Rounds metrics, excluding width, to whole pixels. This is purely to minimize
- * rendering differences with migration to in-browser measureText(), and may be
- * revised in the future. See: github.com/CesiumGS/cesium/pull/13081
- */
-export function measureText(): void;
 
 /**
  * Writes the given text into a new canvas.  The canvas will be sized to fit the text.
@@ -22642,39 +22618,6 @@ export class KmlDataSource {
     update(time: JulianDate): boolean;
 }
 
-/**
- * Contains KML Feature data loaded into the <code>Entity.kml</code> property by {@link KmlDataSource}.
- */
-export class KmlFeatureData {
-    constructor();
-    /**
-     * Gets the atom syndication format author field.
-     */
-    author: KmlFeatureData.Author;
-    /**
-     * Gets the link.
-     */
-    link: KmlFeatureData.Link;
-    /**
-     * Gets the unstructured address field.
-     */
-    address: string;
-    /**
-     * Gets the phone number.
-     */
-    phoneNumber: string;
-    /**
-     * Gets the snippet.
-     */
-    snippet: string;
-    /**
-     * Gets the extended data, parsed into a JSON object.
-     * Currently only the <code>Data</code> property is supported.
-     * <code>SchemaData</code> and custom data are ignored.
-     */
-    extendedData: string;
-}
-
 export namespace KmlFeatureData {
     /**
      * @property name - Gets the name.
@@ -22702,6 +22645,38 @@ export namespace KmlFeatureData {
         title: string;
         length: string;
     };
+}
+
+/**
+ * Contains KML Feature data loaded into the <code>Entity.kml</code> property by {@link KmlDataSource}.
+ */
+export class KmlFeatureData {
+    /**
+     * Gets the atom syndication format author field.
+     */
+    author: KmlFeatureData.Author;
+    /**
+     * Gets the link.
+     */
+    link: KmlFeatureData.Link;
+    /**
+     * Gets the unstructured address field.
+     */
+    address: string;
+    /**
+     * Gets the phone number.
+     */
+    phoneNumber: string;
+    /**
+     * Gets the snippet.
+     */
+    snippet: string;
+    /**
+     * Gets the extended data, parsed into a JSON object.
+     * Currently only the <code>Data</code> property is supported.
+     * <code>SchemaData</code> and custom data are ignored.
+     */
+    extendedData: string;
 }
 
 /**
@@ -23413,10 +23388,11 @@ export namespace PathGraphics {
      * @property [leadTime] - A Property specifying the number of seconds in front the object to show.
      * @property [trailTime] - A Property specifying the number of seconds behind of the object to show.
      * @property [width = 1.0] - A numeric Property specifying the width in pixels.
-     * @property [resolution = 60] - A numeric Property specifying the maximum number of seconds to step when sampling the position.
+     * @property [resolution = 60] - A numeric Property specifying the maximum number of seconds to step when sampling the position. Fractional positive values are allowed; in PORTIONS materialMode, non-positive values fall back to the default resolution of 60 seconds.
      * @property [material = Color.WHITE] - A Property specifying the material used to draw the path.
      * @property [distanceDisplayCondition] - A Property specifying at what distance from the camera that this path will be displayed.
      * @property [relativeTo] - A Property specifying the frame in which to visualize the path. Use another entity's id to visualize the path relative to that entity, or use the string values "FIXED" or "INERTIAL" to visualize the path in those reference frames.
+     * @property [materialMode] - A Property specifying how material properties are applied along the path.
      */
     type ConstructorOptions = {
         show?: Property | boolean;
@@ -23427,6 +23403,7 @@ export namespace PathGraphics {
         material?: MaterialProperty | Color;
         distanceDisplayCondition?: Property | DistanceDisplayCondition;
         relativeTo?: Property | string;
+        materialMode?: Property | PathMode;
     };
 }
 
@@ -23458,6 +23435,7 @@ export class PathGraphics {
     width: Property | undefined;
     /**
      * Gets or sets the Property specifying the maximum number of seconds to step when sampling the position.
+     * Fractional positive values are allowed; in PORTIONS materialMode, non-positive values fall back to the default resolution of 60 seconds.
      */
     resolution: Property | undefined;
     /**
@@ -23484,6 +23462,21 @@ export class PathGraphics {
      * @param source - The object to be merged into this object.
      */
     merge(source: PathGraphics): void;
+}
+
+/**
+ * Defines how material properties are applied along a path.
+ */
+export enum PathMode {
+    /**
+     * The material is applied to the entire path as a whole.
+     */
+    WHOLE = 0,
+    /**
+     * The material is applied in portions based on temporal position information,
+     * using interval-based material properties.
+     */
+    PORTIONS = 1
 }
 
 /**
@@ -26094,8 +26087,6 @@ export enum TextureMinificationFilter {
      */
     LINEAR_MIPMAP_LINEAR = WebGLConstants.LINEAR_MIPMAP_LINEAR
 }
-
-export function addAttribute(): void;
 
 /**
  * An appearance defines the full GLSL vertex and fragment shaders and the
@@ -32172,33 +32163,6 @@ export class ClippingPolygon {
 }
 
 /**
- * Returns a deep copy of the given array.
- *
- * If the input is undefined, then <code>undefined</code> is returned.
- *
- * Otherwise, the result will be a copy of the given array, where
- * each element is copied with <code>Cartesian3.clone</code>.
- * @param input - The input array
- * @returns The copy
- */
-export function copyArrayCartesian3(input: Cartesian3[] | undefined): Cartesian3[] | undefined;
-
-/**
- * Returns whether the given arrays are component-wise equal.
- *
- * When both arrays are undefined, then <code>true</code> is returned.
- * When only one array is defined, or they are both defined but have
- * different lengths, then <code>false</code> is returned.
- *
- * Otherwise, returns whether the corresponding elements of the arrays
- * are equal, as of <code>Cartesian3.equals</code>.
- * @param a - The first array
- * @param b - The second array
- * @returns Whether the arrays are equal
- */
-export function equalsArrayCartesian3(a: Cartesian3[] | undefined, b: Cartesian3[] | undefined): boolean;
-
-/**
  * Specifies a set of clipping polygons. Clipping polygons selectively disable rendering in a region
  * inside or outside the specified list of {@link ClippingPolygon} objects for a single glTF model, 3D Tileset, or the globe.
  *
@@ -33198,47 +33162,6 @@ export enum DepthFunction {
      */
     ALWAYS = WebGLConstants.ALWAYS
 }
-
-/**
- * Returns a shader statement that applies the inverse of the
- * value transform to the given value, based on the given offset
- * and scale.
- * @param input - The input value
- * @param offset - The offset
- * @param scale - The scale
- * @returns The statement
- */
-export function unapplyValueTransform(input: string, offset: string, scale: string): string;
-
-/**
- * Returns a shader statement that applies the inverse of the
- * normalization, based on the given component type
- * @param input - The input value
- * @param componentType - The component type
- * @returns The statement
- */
-export function unnormalize(input: string, componentType: string): string;
-
-/**
- * Creates a shader statement that returns the value of the specified
- * property, normalized to the range [0, 1].
- * @param classProperty - The class property
- * @param metadataProperty - The metadata property, either
- * a `PropertyTextureProperty` or a `PropertyAttributeProperty`
- * @returns The string
- */
-export function getSourceValueStringScalar(classProperty: MetadataClassProperty, metadataProperty: any): string;
-
-/**
- * Creates a shader statement that returns the value of the specified
- * component of the given property, normalized to the range [0, 1].
- * @param classProperty - The class property
- * @param metadataProperty - The metadata property, either
- * a `PropertyTextureProperty` or a `PropertyAttributeProperty`
- * @param componentName - The name, in ["x", "y", "z", "w"]
- * @returns The string
- */
-export function getSourceValueStringComponent(classProperty: MetadataClassProperty, metadataProperty: any, componentName: string): string;
 
 /**
  * A light that gets emitted in a single direction from infinitely far away.
@@ -34522,11 +34445,6 @@ export class GlobeTranslucency {
      */
     rectangle: Rectangle;
 }
-
-/**
- * Loads the gltf object
- */
-export function loadGltfJson(): void;
 
 export type EXTMeshPolygonExtension = {
     count: number;
@@ -38559,14 +38477,6 @@ export class Material {
 }
 
 /**
- * Loads the images for a cubemap uniform, if it has changed since the last time this was called.
- * @param material - The material to load the cubemap images for.
- * @param uniformId - The ID of the uniform that corresponds to the cubemap images.
- * @returns A promise that resolves when the images are loaded, or a resolved promise if image loading is not necessary.
- */
-export function loadCubeMapImagesForUniform(material: Material, uniformId: string): any;
-
-/**
  * An appearance for arbitrary geometry (as opposed to {@link EllipsoidSurfaceAppearance}, for example)
  * that supports shading with materials.
  * @example
@@ -39506,36 +39416,6 @@ export class CorrelationGroup {
     readonly params: Spdcf[];
 }
 
-/**
- * Creates a Matrix3 that describes a covariance matrix (which is
- * symmetric) from the array containing the upper triangle, in
- * column-major order.
- * @param array - The input array
- * @returns The Matrix3
- */
-export function createCovarianceMatrixFromUpperTriangle(array: number[]): Matrix3;
-
-/**
- * Creates an `AnchorPointDirect` from the given JSON representation
- * @param anchorPointDirectJson - The input JSON
- * @returns The direct anchor point
- */
-export function createAnchorPointDirect(anchorPointDirectJson: any): AnchorPointDirect;
-
-/**
- * Creates an `AnchorPointIndirect` from the given JSON representation
- * @param anchorPointIndirectJson - The input JSON
- * @returns The indirect anchor point
- */
-export function createAnchorPointIndirect(anchorPointIndirectJson: any): AnchorPointIndirect;
-
-/**
- * Creates a `CorrelationGroup` from the given JSON representation
- * @param correlationGroupJson - The input JSON
- * @returns The correlation group
- */
-export function createCorrelationGroup(correlationGroupJson: any): CorrelationGroup;
-
 export namespace GltfGpmLocal {
     /**
      * Initialization options for the GltfGpmLocal constructor
@@ -39758,6 +39638,9 @@ export enum LightingModel {
  *  </li>
  *  <li>
  *  {@link https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_mesh_quantization|KHR_mesh_quantization}
+ *  </li>
+ *  <li>
+ *  {@link https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_meshopt_compression|KHR_meshopt_compression}
  *  </li>
  *  <li>
  *  {@link https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Khronos/KHR_texture_basisu|KHR_texture_basisu}
@@ -41556,34 +41439,6 @@ export class PerInstanceColorAppearance {
 }
 
 /**
- * Compute the rectangle that describes the part of the drawing buffer
- * that is relevant for picking.
- * @param drawingBufferHeight - The height of the drawing buffer
- * @param position - The position inside the drawing buffer
- * @param width - The width of the rectangle, assumed to
- * be an odd integer number, default : 3.0
- * @param height - The height of the rectangle. If unspecified,
- * height will default to the value of <code>width</code>
- * @param result - The result rectangle
- * @returns The result rectangle
- */
-export function computePickingDrawingBufferRectangle(drawingBufferHeight: number, position: Cartesian2, width: number | undefined, height: number | undefined, result: BoundingRectangle): BoundingRectangle;
-
-/**
- * Setup needed before picking.
- * @param windowPosition - Window coordinates to perform picking on.
- * @param drawingBufferRectangle - The output drawing buffer recangle.
- * @param [width = 3] - Width of the pick rectangle.
- * @param [height = 3] - Height of the pick rectangle.
- */
-export function pickBegin(scene: Scene, windowPosition: Cartesian2, drawingBufferRectangle: BoundingRectangle, width?: number, height?: number): void;
-
-/**
- * Teardown needed after picking.
- */
-export function pickEnd(scene: Scene): void;
-
-/**
  * Information about metadata that is supposed to be picked
  * @property schemaId - The optional ID of the metadata schema
  * @property className - The name of the metadata class
@@ -41596,44 +41451,6 @@ export type PickedMetadataInfo = {
     propertyName: string;
     classProperty: MetadataClassProperty;
 };
-
-/**
- * @param pickedResults - the results from the pickCallback
- * @param limit - If supplied, stop drilling after collecting this many picks.
- * @returns whether picking should end
- */
-export function addDrillPickedResults(pickedResults: object[], limit: number, results: object[], pickedPrimitives: object[], pickedAttributes: object[], pickedFeatures: object[]): boolean;
-
-/**
- * Drill pick by repeatedly calling a given `pickCallback`, each time stripping away the previously picked objects.
- * @param pickCallback - Pick callback to execute each iteration
- * @param [limit = Number.MAX_VALUE] - If supplied, stop drilling after collecting this many picks
- * @returns List of picked results
- */
-export function drillPick(pickCallback: (...params: any[]) => any, limit?: number): object[];
-
-/**
- * Remove all invalid binary body references from the batch table
- * JSON of the given parsed content.
- *
- * This is a workaround for gracefully handling the invalid PNTS
- * files that may have been created by the point cloud tiler.
- * See https://github.com/CesiumGS/cesium/issues/12872
- *
- * When the batch table JSON is undefined, nothing will be done.
- * When the batch table binary is defined, nothing will be done
- * (assuming that any binary body references are valid - this is
- * not checked here).
- *
- * Otherwise, this will remove all binary body references from the
- * batch table JSON that are not resolved from draco via the
- * `parsedContent.draco.batchTableProperties`.
- *
- * If any (invalid) binary body reference is found (and removed),
- * a one-time warning will be printed.
- * @param parsedContent - The parsed content
- */
-export function removeInvalidBinaryBodyReferences(parsedContent: any): void;
 
 /**
  * Options for performing point attenuation based on geometric error when rendering
@@ -44226,18 +44043,6 @@ export class Scene {
      */
     destroy(): void;
 }
-
-/**
- * Determine how translucent surfaces will be handled.
- *
- * When OIT is enabled, then this will delegate to OIT.executeCommands.
- * Otherwise, it will just be executeTranslucentCommandsBackToFront
- * for render passes, or executeTranslucentCommandsFrontToBack for
- * other passes.
- * @param scene - The scene.
- * @returns A function to execute translucent commands.
- */
-export function obtainTranslucentCommandExecutionFunction(scene: Scene): (...params: any[]) => any;
 
 /**
  * Indicates if the scene is viewed in 3D, 2D, or 2.5D Columbus view.
