@@ -22,6 +22,13 @@
         transition: background-color 50ms linear;
     }
 
+    /* Only color left-side separator of the first element in non-hover mode. This fixes increased width issue by
+       imperfect rendering of overlapping separators from adjacent elements. Plus, as both separators are rendered
+       but transparent, the elements are not jittering on hover when both sides are needed (color change). */
+    nav-dropdown:not(:first-child):before {
+        background-color: transparent;
+    }
+
     nav-dropdown:after {
         left: 2px;
     }
