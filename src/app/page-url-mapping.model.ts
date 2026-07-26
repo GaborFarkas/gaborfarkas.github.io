@@ -22,7 +22,8 @@ export enum StoryUrlMapping {
     SWDEVTECH = 'software-development-technologies',
     LINUXPROG = 'linux-as-programming-language',
     GDPR = 'how-to-gdpr',
-    PARTITIONING = 'technical-domain-partitioning'
+    PARTITIONING = 'technical-domain-partitioning',
+    SWDOC = 'software-documentation'
 }
 
 /**

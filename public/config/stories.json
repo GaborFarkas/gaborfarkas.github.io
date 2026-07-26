@@ -9,6 +9,15 @@
     "lastModified": "2026-06-24T17:24:20.000Z"
   },
   {
+    "title": "On Software Documentation Techniques",
+    "description": "Gain insight into advanced sofware documentation methods built on best practices and polished with experience in software architecture.",
+    "thumbUrl": "/assets/stories/thumbs/software-documentation.png",
+    "category": "insight",
+    "slug": "software-documentation",
+    "created": "2026-07-26T10:08:39.000Z",
+    "lastModified": "2026-07-26T10:44:16.000Z"
+  },
+  {
     "title": "Software Development Technologies",
     "description": "Understand the main reasons behind my software architecture heavy teaching style on the example of a typical Software Development Technologies class setup.",
     "thumbUrl": "/assets/stories/thumbs/software-development-technologies.png",

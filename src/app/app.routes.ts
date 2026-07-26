@@ -32,6 +32,7 @@ export const routes: Routes = [
                     { path: StoryUrlMapping.WEBPROG2, loadComponent: () => import('@/stories/story/insight/web-programming-2/web-programming-2.component').then(m => m.WebProgramming2Component) },
                     { path: StoryUrlMapping.SWDEVTECH, loadComponent: () => import('@/stories/story/insight/software-development-technologies/software-development-technologies.component').then(m => m.SoftwareDevelopmentTechnologiesComponent) },
                     { path: StoryUrlMapping.GDPR, loadComponent: () => import('@/stories/story/insight/how-to-gdpr/how-to-gdpr.component').then(m => m.HowToGdprComponent) },
+                    { path: StoryUrlMapping.SWDOC, loadComponent: () => import('@/stories/story/insight/software-documentation/software-documentation.component').then(m => m.SoftwareDocumentationComponent) },
                     { path: '**', loadComponent: () => import('@/stories/story/not-found/not-found.component').then(m => m.NotFoundComponent), data: { text: 'Uh oh! This story must have been left for a journey.' } }
                 ]
             },
