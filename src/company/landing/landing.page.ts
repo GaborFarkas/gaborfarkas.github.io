@@ -56,8 +56,8 @@ export class LandingPage {
                 icon: faSection
             },
             {
-                url: '',
-                text: 'A case study on project documentation (coming soon)',
+                url: `/${PageUrlMapping.INSIGHTS}/${StoryUrlMapping.SWDOC}`,
+                text: 'Documenting what\'s important, when it\'s important',
                 icon: faFileLines
             }
         ],

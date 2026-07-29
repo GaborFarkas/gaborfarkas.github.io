@@ -1,0 +1,178 @@
+<h1>This is not a guide</h1>
+
+<p class="pb-4">Creating the means for efficient collaboration, knowledge transfer, and the involvement of new team
+    members through high-quality software documentation has always been a cornerstone of my practice. It's probably
+    coming from my research years, where building on existing, well-documented knowledge was a necessity.</p>
+
+<p class="pb-4">I spent years finding a good documentation practice for software projects. There are a vast number of
+    guides out there promising a one-size-fits-all methodology. None of them worked out of the box. Some of them hold
+    valuable insights, but I think, in the end, this is a subjective matter. Best practices must align with developers,
+    management, domain experts, and other individuals working on the same project. Therefore, there is no single best
+    way to document software. Just like in designing and writing software, there are best practices and patterns to
+    choose from selectively.</p>
+
+<p class="pb-8">With this article, my goal is to provide brief insight into a set of common techniques I apply to most
+    large software projects I have the honor and responsibility of designing. It's not a comprehensive guide, but a set
+    of patterns I deem most useful for making software maintainable and extendable through documentation. You are
+    welcome to take it, leave it, or anything in between.</p>
+
+<h1>Keep it simple, stupid</h1>
+
+<p class="pb-4">For an awfully long time, my documentation style was reflecting the academic doctrines of thoroughness
+    and precision. Slowly, mostly due to working on larger-scale projects, I started to sway towards simplicity.
+    Currently, all my methods revolve around simplicity, a central principle both in scalable software design and
+    documentation.</p>
+
+<p class="pb-4">There are two major challenges in documenting software: writing documentation, and
+    getting people to read it. The larger challenge is the latter. Consequently, the strongest indicator of good
+    documentation is if project collaborators can find and interpret it on their own or with little guidance. An
+    unorganized stack of documents spread over repositories, cloud storage, internal network storage, and even printed
+    media does not motivate people to learn. Luckily, this problem is quite simple to tackle.</p>
+
+<p class="pb-4">
+    In software development projects, most components are under version control. Therefore, the product is in one or
+    more repositories. Documentation should sit with the product. Therefore, software documentation's natural place is
+    the repository the documented software component lives in. The scope of a documentation should be a single software
+    component (e.g., a deployment unit or a module), and it should be bundled with the code. Most documentation types
+    can be composed from multiple repositories to provide a larger picture when needed.</p>
+
+<p class="pb-4">The other major challenge, writing documentation, can be tackled efficiently by constraining formats and
+    tools to have maximum productivity. Writing documentation is always a chore. More for some, less for others. Truth
+    is, it doesn't matter if a developer likes writing documentation or not; the most competent person for documenting a
+    feature is always the author. Therefore, the goal is to make documenting less time-consuming and more
+    straightforward for developers.</p>
+
+<p class="pb-2">I try to stick with a single constraint: every step in creating every documentation must be achievable
+    from the IDE without opening any other tool. If developers can use a single environment to create, navigate, edit,
+    and preview all the software documentation, extending it won't feel like such a burden as keeping a changelog in
+    docx format up to date. Markdown is an obvious choice for free-text software documentation, like architecture
+    specifications, developer guides, and user manuals. For creating diagrams, I use draw.io for two reasons:</p>
+<ul class="list-disc pl-10 pb-4">
+    <li>My preferred IDE is Visual Studio Code, and there is an extension for editing draw.io files from the IDE.</li>
+    <li>Diagrams in draw.io can use a .drawio.svg extension, resulting in an SVG file with the diagram code embedded
+        in it. The diagram stays editable while it can be used as an SVG image in Markdown documents.</li>
+</ul>
+
+<img class="w-full pb-2" src="/assets/stories/software-documentation/drawio-markdown.jpeg"
+    alt="Editing a diagram displayed in a Markdown preview window" />
+<p class="pb-8 text-center text-sm">Most common documentation workflows can be done from the IDE. The same diagram is
+    edited on the left and previewed in a Markdown document on the right.</p>
+
+<h1>Architecture before implementation</h1>
+
+<p class="pb-4">Every document required to keep up to date along with the software increases maintenance costs. For that
+    single reason, I like to keep my starting list short. The first document I usually write when I have a good idea
+    about the problem to solve is the architectural specification. More specifically, the first draft. Since
+    architectural needs can change with evolving requirements, the architectural specification is a living document
+    discussing the structural plans of the software.</p>
+
+<p class="pb-4">The architectural documentation is a very simple Markdown document. I don't use any images or diagrams,
+    just headings, lists, and text. The content is dry technical details about the structural properties of the software
+    component or software system. Everything related to structure can go there: containers, security, contracts,
+    database, caching, rate limiting, etc. The style should be technical and as technology-independent as possible. In
+    the end, you might realize your initial stack is not fit for solving the problem. In that case, a good architecture
+    specification stays valid.</p>
+
+<p class="pb-4">While the architecture specification is perfect to level the field, it's far from a blueprint. Humans
+    are visual; we recognize patterns. For me, the easiest way to navigate through complexity is a system plan
+    visualized on a diagram. The first version does not need to be complete, but you should be able to identify any
+    serious oversights in the design. It should reflect the big picture accurately enough to lay out the path for
+    development. Its goal is to avoid breaking down the application to its core when mistakes get realized.</p>
+
+<p class="pb-2">The best method I know for the job is the C4 model. It visualizes software like a set of maps with
+    different scales. The model has 4 levels, but not all are equally important, especially during the planning phase.
+</p>
+<ul class="list-disc pl-10 pb-4">
+    <li>First level: system context. It shows how the software system relates to other internal and external systems
+        and users it needs to interface with. It's useful to see dependencies and plan constraints accordingly.</li>
+    <li>Second level: containers. It shows how the software system's internal containers relate to each other. While
+        technically it's not 100% accurate, you can think of containers as deployment units in this sense. This is the
+        most important level during planning as it shows high-level architecture, lets you focus on principal
+        relationships in the system, and filters out noise.</li>
+    <li>Third level: components. Every custom container in the software system can have a component diagram showing
+        internal relationships between important classes, objects, and other abstractions. While it's closely coupled
+        with the implementation, I like to introduce it at the initial planning phase. I generally use the third level
+        to outline domain areas and technical partitions, especially if the container is monolithic.</li>
+    <li>Fourth level: code. Even the C4 model's author advocates against using this level. It's only there for the model
+        to cover all levels of detail in software. This level is the traditional UML-based class diagram. I like to
+        avoid planning with such detail if possible. It ties the hands of developers, forces them into using my
+        particular mindset, and restricts their creativity. It's usually better to leave implementation details to the
+        development phase.</li>
+</ul>
+
+<img class="w-full pb-2" src="/assets/stories/software-documentation/architecture-platform.jpeg"
+    alt="A C4 level 2 plan and an architecture specification" />
+<p class="pb-8 text-center text-sm">A C4 level 2 plan on the left and part of the architecture specification on the
+    right. Both are documenting the same platform with a monolithic backend.</p>
+
+<p class="pb-4">Of course, most software development efforts require a plethora of other documentation types; the ones
+    we discussed are only the select few I like to prepare and include in every project. Deployment diagrams, data flow
+    diagrams, user manuals, and developer guides come to mind when I think about typical requirements of larger
+    developments. Usually, those are created during or after the implementation, and they are a chore to keep up to
+    date. However, most of them can benefit from strong architectural documentation. The architecture specification cuts
+    corners in writing developer-facing documentation, while the diagrams provide an inventory for feature groups needed
+    to explain in user-facing ones.</p>
+
+<h1>Always tinkering</h1>
+
+<p class="pb-4">While I like to keep documentation lean, I also like to experiment with simple techniques holding the
+    potential of improving productivity. One of my newest experiments revolves around domain-driven design. One of the
+    major points in domain-driven design is creating a ubiquitous language. It is a common language used by both domain
+    experts and developers, assembled mainly from domain terms, but also reflecting the technical aspects of the
+    software product. If phrased correctly, it can close the gap in understanding between domain experts and developers.
+    With that, domain experts can reason about software logic more easily, developers can derive deeper models, and the
+    software can do its job more accurately and efficiently. Not to mention easier communication, less friction in
+    meetings, and greater willingness to collaborate due to more pleasant discussions. It's like speaking the same
+    dialect, at last.</p>
+
+<p class="pb-4">A good thing is, domain experts willing to contribute to a software development effort are
+    technologically adept, to say the least. They typically understand UMLs, flowcharts, sequence diagrams, and a
+    surprisingly large amount of technical lingo about the internal workings of software and software systems.
+    Consequently, the ubiquitous language can be documented as a Markdown file along with the source code, written
+    for both developers and domain experts, simplified only on demand.</p>
+
+<p class="pb-4">The goal of this domain language document is to gather all domain information and synthesize it into a
+    valid model before implementing a module. Technical details irrelevant to domain experts are left out, but domain
+    classes are meticulously documented with their flows and relations. For visualizing object relations, I went back to
+    the old reliable UML diagrams. In the end, the domain language documentation should look similar to a developer
+    guide, but concentrate on domain objects, terminology, and business logic. Furthermore, it should make perfect sense
+    to domain experts and developers as well.</p>
+
+<img class="w-full pb-2" src="/assets/stories/software-documentation/domain-language.jpeg"
+    alt="First page of the domain language documentation" />
+<p class="pb-8 text-center text-sm">First page of a domain language documentation. Some domain concepts were changed to
+    plain terms.</p>
+
+<h1>Aligning documentation with AI</h1>
+
+<p class="pb-4">A controversial topic in deep professional circles; however, we cannot avoid it in current times.
+    Opinions and preferences aside, agentic development workflows are popular, increasingly capable, and will probably
+    stay with us. Since AI agents are trained to work with the same documentation as human developers, writing
+    documentation compatible with agentic workflows is logical in every sense. Futureproofing, productivity,
+    compatibility- you name it.</p>
+
+<p class="pb-4">As a disclaimer, I haven't used any AI models directly yet. I considered hopping on the train, but I
+    love taking the scenic road too much. It's the journey that matters to me. All the experience, insights, and
+    breakthroughs accumulated on the way. Truth is, specifications should be written by humans. It is important to
+    take an incremental approach, building step by step. That's the only way you get a sufficiently deep and dense
+    model; you need to let the complexity unfold and get into shape in your head. Development is a different topic.
+    Agents can do amazing work there if the documentation is solid and the instructions are unequivocal, easily
+    outpacing any of us. In that area, I decided to remain an artisan for now and write code where handcrafting matters.
+</p>
+
+<p class="pb-4">I saw several agentic development configurations, though. Mostly from blog posts and colleagues working
+    with different tooling. All agentic workflows use a common aproach to get into context: read a bunch of Markdown
+    documents. The content can differ according to the model behind the agent, but all can interpret itemized technical
+    specifications. Furthermore, the architecture documentation we discussed before has a significant overlap with a
+    typical claude.md file. I believe all system and software specifications useful for human developers bundled with
+    the code in Markdown format are equally useful for agents.</p>
+
+<p class="pb-4">Interpreting diagrams is harder for AI, though. However, they do not need to interpret the image if the
+    diagrams have markups embedded in them. It would be interesting to try whether models used for everyday development
+    can gather any insight from draw.io diagrams. If not, an extra few paragraphs of instructions on how to interpret
+    them should do the trick. Also, C4 has a modeling language to model software as directed graphs. That code-based
+    approach has multiple perks, although I find using it inconvenient in the planning phase where everything is
+    plastic. For one, by using a C4 visualization tool, like Structurizr, you can browse the software components, filter
+    out irrelevant parts, and gain insights for refactors and extensions faster. Also, AI models should parse and
+    interpret components and relationships more easily from a model than from reading a generic XML markup for a
+    hard-coded C4 view.</p>
