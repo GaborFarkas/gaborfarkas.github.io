@@ -50,12 +50,12 @@ export class FooterComponent {
     /**
      * Helper variable for tracking if we need to copy to the clipboard.
      */
-    private dblClick = false;
+    private dblClick = signal(false);
 
     /**
      * Helper variable for user feedback on a single click.
      */
-    protected singleClick = false;
+    protected singleClick = signal(false);
 
     /**
      * Copies the email address to the clickboard.
@@ -64,8 +64,8 @@ export class FooterComponent {
         // Delay the main logic by a bit more than the typical maximum dblclick browser delay, which is not standardized.
         setTimeout(function (this: FooterComponent) {
             // If we still haven't registered a second click, copy to clipboard.
-            if (!this.dblClick) {
-                this.singleClick = true;
+            if (!this.dblClick()) {
+                this.singleClick.set(true);
                 const emailAddress = this.rawEmail;
                 if (!navigator.clipboard) {
                     this.fallbackCopyToClipboard(emailAddress);
@@ -76,10 +76,10 @@ export class FooterComponent {
                     function (this: FooterComponent) {
                         this.fallbackCopyToClipboard(emailAddress);
                     }.bind(this));
-                setTimeout(() => this.singleClick = false, 1000);
+                setTimeout(() => this.singleClick.set(false), 1000);
             }
 
-            this.dblClick = false;
+            this.dblClick.set(false);
         }.bind(this), 600);
     }
 
@@ -107,7 +107,7 @@ export class FooterComponent {
      * Opens a new email composer window.
      */
     protected openEmail() {
-        this.dblClick = true;
+        this.dblClick.set(true);
         window.open(`mailto:${this.rawEmail}`, '_blank');
     }
 }
