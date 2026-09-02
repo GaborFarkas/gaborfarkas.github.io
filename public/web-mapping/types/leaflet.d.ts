@@ -3217,7 +3217,7 @@ declare namespace Icon {
 declare function icon(options: IconOptions): Icon;
 
 interface DivIconOptions extends BaseIconOptions {
-    html?: string | HTMLElement | false | undefined;
+    html?: string | Element | false | undefined;
     bgPos?: PointExpression | undefined;
     iconSize?: PointExpression | undefined;
     iconAnchor?: PointExpression | undefined;

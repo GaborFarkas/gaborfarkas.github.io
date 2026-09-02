@@ -1610,6 +1610,38 @@ declare function getIntersectionArea(extent1: Extent$1, extent2: Extent$1): numb
  */
 declare function getIntersection(extent1: Extent$1, extent2: Extent$1, dest?: Extent$1): Extent$1;
 /**
+ * Get the difference between two extents, i.e. the area(s) of `extent1` that
+ * are not covered by `extent2`.  Returns an array of between 0 and 4 extents.
+ *
+ * When the extents do not intersect the returned array contains `extent1` as
+ * its only element.  When `extent2` completely contains `extent1` the returned
+ * array is empty.  Otherwise up to four non-overlapping extents are returned
+ * that together cover exactly the parts of `extent1` outside `extent2`.
+ *
+ * The decomposition used is:
+ *
+ * ```
+ * ┌────┬─────────┬────┐  ← y2
+ * │    │   top   │    │
+ * │    ├─────────┤    │  ← iy2
+ * │left│ (gone)  │right│
+ * │    ├─────────┤    │  ← iy1
+ * │    │ bottom  │    │
+ * └────┴─────────┴────┘  ← y1
+ * x1  ix1       ix2   x2
+ * ```
+ *
+ * The left and right strips span the full height of `extent1` while the top
+ * and bottom strips are clamped horizontally to the intersection, so the four
+ * rectangles tile perfectly without overlap or gaps.
+ *
+ * @param {Extent} extent1 Extent to subtract from.
+ * @param {Extent} extent2 Extent to subtract.
+ * @return {Array<Extent>} Remaining extents (0–4 elements).
+ * @api
+ */
+declare function getDifference(extent1: Extent$1, extent2: Extent$1): Array<Extent$1>;
+/**
  * @param {Extent} extent Extent.
  * @return {number} Margin.
  */
@@ -1712,6 +1744,15 @@ declare function wrapX$2(extent: Extent$1, projection: Projection): Extent$1;
  * @return {Array<Extent>} The extent within the real world extent.
  */
 declare function wrapAndSliceX(extent: Extent$1, projection: Projection, multiWorld?: boolean): Array<Extent$1>;
+/**
+ * Subtract several rectangles from a base rectangle. Returns a set of disjoint
+ * rectangles that together cover the base rectangle minus the union of the
+ * subtracted rectangles, by repeatedly applying {@link module:ol/extent.getDifference}.
+ * @param {Extent} base Base rectangle.
+ * @param {Array<Extent>} subtract Rectangles to subtract.
+ * @return {Array<Extent>} Remainder rectangles.
+ */
+declare function subtractExtents(base: Extent$1, subtract: Array<Extent$1>): Array<Extent$1>;
 /**
  * An array of numbers representing an extent: `[minx, miny, maxx, maxy]`.
  */
@@ -2201,7 +2242,7 @@ declare function create$1(): Transform;
  * @param {!Transform} transform Transform.
  * @return {!Transform} Transform.
  */
-declare function reset(transform: Transform): Transform;
+declare function reset$1(transform: Transform): Transform;
 /**
  * Multiply the underlying matrices of two transforms and return the result in
  * the first transform.
@@ -2245,7 +2286,7 @@ declare function apply(transform: Transform, coordinate: Coordinate | Pixel): Co
  * @param {number} angle Angle in radians.
  * @return {!Transform} The rotated transform.
  */
-declare function rotate$2(transform: Transform, angle: number): Transform;
+declare function rotate$3(transform: Transform, angle: number): Transform;
 /**
  * Applies scale to a given transform.
  * @param {!Transform} transform Transform.
@@ -2339,6 +2380,25 @@ declare function fromString$1(cssTransform: string): Transform;
  * @return {boolean} The two matrices are equal.
  */
 declare function equivalent(cssTransform1: string, cssTransform2: string): boolean;
+/**
+ * An array representing an affine 2d transformation for use with
+ * {@link module:ol/transform} functions. The array has 6 elements.
+ * @typedef {!Array<number>} Transform
+ * @api
+ */
+/**
+ * Collection of affine 2d transformation functions. The functions work on an
+ * array of 6 elements. The element order is compatible with the [SVGMatrix
+ * interface](https://developer.mozilla.org/en-US/docs/Web/API/SVGMatrix) and is
+ * a subset (elements a to f) of a 3×3 matrix:
+ * ```
+ * [ a c e ]
+ * [ b d f ]
+ * [ 0 0 1 ]
+ * ```
+ */
+/** @type {Transform} */
+declare const IDENTITY_TRANSFORM: Transform;
 /**
  * An array representing an affine 2d transformation for use with
  * {@link module :ol/transform} functions. The array has 6 elements.
@@ -2649,7 +2709,7 @@ declare function equals(coordinate1: Coordinate, coordinate2: Coordinate): boole
  * @return {Coordinate} Coordinate.
  * @api
  */
-declare function rotate$1(coordinate: Coordinate, angle: number): Coordinate;
+declare function rotate$2(coordinate: Coordinate, angle: number): Coordinate;
 /**
  * Scale `coordinate` by `scale`. `coordinate` is modified in place and returned
  * by the function.
@@ -2820,6 +2880,12 @@ type Options$1U = {
      */
     sizes?: Size[] | undefined;
     /**
+     * Pre-built tile ranges for each
+     * zoom level. When provided, these are used directly as the full tile ranges instead of computing
+     * them from `sizes`. Useful for setting per-level tile index bounds (e.g. from WMTS `TileMatrixSetLimits`).
+     */
+    tileRanges?: TileRange[] | undefined;
+    /**
      * Tile size.
      * Default is `[256, 256]`.
      */
@@ -2855,6 +2921,9 @@ type Options$1U = {
  * for which tile requests are made by sources. If the bottom-left corner of
  * an extent is used as `origin` or `origins`, then the `y` value must be
  * negative because OpenLayers tile coordinates use the top left as the origin.
+ * @property {Array<import("../TileRange.js").default>} [tileRanges] Pre-built tile ranges for each
+ * zoom level. When provided, these are used directly as the full tile ranges instead of computing
+ * them from `sizes`. Useful for setting per-level tile index bounds (e.g. from WMTS `TileMatrixSetLimits`).
  * @property {number|import("../size.js").Size} [tileSize] Tile size.
  * Default is `[256, 256]`.
  * @property {Array<number|import("../size.js").Size>} [tileSizes] Tile sizes. If given, the array length
@@ -3280,6 +3349,10 @@ type Options$1T = {
      */
     extent?: Extent$1 | undefined;
     /**
+     * Minimum zoom.
+     */
+    minZoom?: number | undefined;
+    /**
      * The tile grid origin, i.e.
      * where the `x` and `y` axes meet (`[z, 0, 0]`). Tile coordinates increase left
      * to right and downwards. If not specified, `extent` or `origins` must be provided.
@@ -3316,6 +3389,11 @@ type Options$1T = {
      */
     sizes?: Size[] | undefined;
     /**
+     * Pre-built tile ranges for each
+     * zoom level. When provided, used instead of `sizes` to set per-level tile index bounds.
+     */
+    tileRanges?: TileRange[] | undefined;
+    /**
      * Tile size.
      */
     tileSize?: number | Size | undefined;
@@ -3331,6 +3409,7 @@ type Options$1T = {
  * outside this extent will be requested by {@link module:ol/source/Tile~TileSource} sources.
  * When no `origin` or `origins` are configured, the `origin` will be set to the
  * top-left corner of the extent.
+ * @property {number} [minZoom=0] Minimum zoom.
  * @property {import("../coordinate.js").Coordinate} [origin] The tile grid origin, i.e.
  * where the `x` and `y` axes meet (`[z, 0, 0]`). Tile coordinates increase left
  * to right and downwards. If not specified, `extent` or `origins` must be provided.
@@ -3352,6 +3431,8 @@ type Options$1T = {
  * which tile requests are made by sources. If the bottom-left corner of
  * an extent is used as `origin` or `origins`, then the `y` value must be
  * negative because OpenLayers tile coordinates use the top left as the origin.
+ * @property {Array<import("../TileRange.js").default>} [tileRanges] Pre-built tile ranges for each
+ * zoom level. When provided, used instead of `sizes` to set per-level tile index bounds.
  * @property {number|import("../size.js").Size} [tileSize] Tile size.
  * @property {Array<number|import("../size.js").Size>} [tileSizes] Tile sizes. The length of
  * this array needs to match the length of the `resolutions` array.
@@ -5208,6 +5289,13 @@ declare class ZIndexContext {
      */
     private offset_;
     /**
+     * Name of the method last accessed on the proxy, pushed together with its
+     * arguments when the method is actually called.
+     * @private
+     * @type {string|symbol}
+     */
+    private pendingMethod_;
+    /**
      * @private
      * @type {ZIndexContextProxy}
      */
@@ -5218,9 +5306,10 @@ declare class ZIndexContext {
      */
     private push_;
     /**
-     * @private
+     * Pushes the method name captured at access time together with the arguments
+     * passed at call time. Reused across all proxied method calls.
      * @param {...*} args Args.
-     * @return {ZIndexContext} This.
+     * @private
      */
     private pushMethodArgs_;
     /**
@@ -10683,6 +10772,11 @@ declare class LayerRenderer<LayerType extends Layer> extends Observable {
      */
     protected maxStaleKeys: number;
     /**
+     * @type {string}
+     * @protected
+     */
+    protected renderedSourceKey_: string;
+    /**
      * @return {Array<string>} Get the list of stale keys.
      */
     getStaleKeys(): Array<string>;
@@ -10690,6 +10784,12 @@ declare class LayerRenderer<LayerType extends Layer> extends Observable {
      * @param {string} key The new stale key.
      */
     prependStaleKey(key: string): void;
+    /**
+     * Remember the previous source key as stale when the key changes.
+     * @param {string} sourceKey The current source key.
+     * @protected
+     */
+    protected updateStaleKeys(sourceKey: string): void;
     /**
      * Asynchronous layer level hit detection.
      * @param {import("../pixel.js").Pixel} pixel Pixel.
@@ -10832,6 +10932,11 @@ type Options$1I<SourceType extends Source = Source, Properties extends {
      */
     render?: RenderFunction | undefined;
     /**
+     * Background color for the layer. If not specified, no background
+     * will be rendered.
+     */
+    background?: BackgroundColor | undefined;
+    /**
      * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
      */
     properties?: Properties | undefined;
@@ -10920,6 +11025,8 @@ type State$2 = {
  * @property {import("../Map.js").default|null} [map] Map.
  * @property {RenderFunction} [render] Render function. Takes the frame state as input and is expected to return an
  * HTML element. Will overwrite the default rendering for the layer.
+ * @property {import("./Base.js").BackgroundColor} [background] Background color for the layer. If not specified, no background
+ * will be rendered.
  * @property {Properties} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
  */
 /**
@@ -12376,6 +12483,15 @@ declare class Source extends BaseObject<{
      * @return {Promise<import("../View.js").ViewOptions>} A promise for view-related properties.
      */
     getView(): Promise<ViewOptions>;
+    /**
+     * Resolve once the source is ready to be used (its state is `ready`), or
+     * reject if it fails to load (its state is `error`). Sources that configure
+     * asynchronously can use this to expose data (e.g. dimensions) through a
+     * promise instead of the `change` event.
+     * @return {Promise<void>} Resolves when the source is ready.
+     * @protected
+     */
+    protected ready(): Promise<void>;
     /**
      * Get the state of the source, see {@link import("./Source.js").State} for possible states.
      * @return {import("./Source.js").State} State.
@@ -16077,55 +16193,1183 @@ declare function primaryAction(mapBrowserEvent: MapBrowserEvent): boolean;
 type Condition = (this: unknown, arg1: MapBrowserEvent) => boolean;
 
 /**
+ * Anchor unit can be either a fraction of the icon size or in pixels.
+ */
+type IconAnchorUnits = "fraction" | "pixels";
+/**
+ * Icon origin. One of 'bottom-left', 'bottom-right', 'top-left', 'top-right'.
+ */
+type IconOrigin = "bottom-left" | "bottom-right" | "top-left" | "top-right";
+type Options$1u = {
+    /**
+     * Anchor. Default value is the icon center.
+     */
+    anchor?: number[] | undefined;
+    /**
+     * Origin of the anchor: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    anchorOrigin?: IconOrigin | undefined;
+    /**
+     * Units in which the anchor x value is
+     * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
+     * the x value in pixels.
+     */
+    anchorXUnits?: IconAnchorUnits | undefined;
+    /**
+     * Units in which the anchor y value is
+     * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
+     * the y value in pixels.
+     */
+    anchorYUnits?: IconAnchorUnits | undefined;
+    /**
+     * Color to tint the icon. If not specified,
+     * the icon will be left as is.
+     */
+    color?: string | Color | undefined;
+    /**
+     * The `crossOrigin` attribute for loaded images. Note that you must provide a
+     * `crossOrigin` value if you want to access pixel data with the Canvas renderer.
+     * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+     */
+    crossOrigin?: string | null | undefined;
+    /**
+     * The `referrerPolicy` property for loaded images.
+     */
+    referrerPolicy?: ReferrerPolicy | undefined;
+    /**
+     * Image object for the icon.
+     */
+    img?: HTMLCanvasElement | OffscreenCanvas | HTMLImageElement | ImageBitmap | undefined;
+    /**
+     * Displacement of the icon in pixels.
+     * Positive values will shift the icon right and up.
+     */
+    displacement?: number[] | undefined;
+    /**
+     * Opacity of the icon.
+     */
+    opacity?: number | undefined;
+    /**
+     * The width of the icon in pixels. This can't be used together with `scale`.
+     */
+    width?: number | undefined;
+    /**
+     * The height of the icon in pixels. This can't be used together with `scale`.
+     */
+    height?: number | undefined;
+    /**
+     * Scale.
+     */
+    scale?: number | Size | undefined;
+    /**
+     * Whether to rotate the icon with the view.
+     */
+    rotateWithView?: boolean | undefined;
+    /**
+     * Rotation in radians (positive rotation clockwise).
+     */
+    rotation?: number | undefined;
+    /**
+     * Offset which, together with `size` and `offsetOrigin`, defines the
+     * sub-rectangle to use from the original (sprite) image.
+     */
+    offset?: number[] | undefined;
+    /**
+     * Origin of the offset: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    offsetOrigin?: IconOrigin | undefined;
+    /**
+     * Icon size in pixels. Used together with `offset` to define the
+     * sub-rectangle to use from the original (sprite) image.
+     */
+    size?: Size | undefined;
+    /**
+     * Image source URI.
+     */
+    src?: string | undefined;
+    /**
+     * Declutter mode.
+     */
+    declutterMode?: DeclutterMode | undefined;
+};
+/**
+ * @classdesc
+ * Set icon style for vector features.
+ * @api
+ */
+declare class Icon extends ImageStyle {
+    /**
+     * @param {Options} [options] Options.
+     */
+    constructor(options?: Options$1u);
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private anchor_;
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private normalizedAnchor_;
+    /**
+     * @private
+     * @type {IconOrigin}
+     */
+    private anchorOrigin_;
+    /**
+     * @private
+     * @type {IconAnchorUnits}
+     */
+    private anchorXUnits_;
+    /**
+     * @private
+     * @type {IconAnchorUnits}
+     */
+    private anchorYUnits_;
+    /**
+     * @private
+     * @type {?string}
+     */
+    private crossOrigin_;
+    /**
+     * @private
+     * @type {ReferrerPolicy}
+     */
+    private referrerPolicy_;
+    /**
+     * @private
+     * @type {import("../color.js").Color}
+     */
+    private color_;
+    /**
+     * @private
+     * @type {import("./IconImage.js").default}
+     */
+    private iconImage_;
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private offset_;
+    /**
+     * @private
+     * @type {IconOrigin}
+     */
+    private offsetOrigin_;
+    /**
+     * @private
+     * @type {Array<number>}
+     */
+    private origin_;
+    /**
+     * @private
+     * @type {import("../size.js").Size}
+     */
+    private size_;
+    initialOptions_: Options$1u | undefined;
+    /**
+     * Clones the style. The underlying Image/HTMLCanvasElement is not cloned.
+     * @return {Icon} The cloned style.
+     * @api
+     * @override
+     */
+    override clone(): Icon;
+    /**
+     * Set the anchor point. The anchor determines the center point for the
+     * symbolizer.
+     *
+     * @param {Array<number>} anchor Anchor.
+     * @api
+     */
+    setAnchor(anchor: Array<number>): void;
+    /**
+     * Get the icon color.
+     * @return {import("../color.js").Color} Color.
+     * @api
+     */
+    getColor(): Color;
+    /**
+     * Set the icon color.
+     *
+     * Warning: Repeatedly setting the color on an icon style
+     * causes the icon image to be re-created each time. This can have a
+     * severe performance impact.
+     *
+     * @param {import("../color.js").Color|string|null|undefined} color Color.
+     */
+    setColor(color: Color | string | null | undefined): void;
+    /**
+     * Get the image icon.
+     * @param {number} pixelRatio Pixel ratio.
+     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image or Canvas element. If the Icon
+     * style was configured with `src` or with a not let loaded `img`, an `ImageBitmap` will be returned.
+     * @api
+     * @override
+     */
+    override getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
+    /**
+     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image element.
+     * @override
+     */
+    override getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
+    /**
+     * Get the image URL.
+     * @return {string|undefined} Image src.
+     * @api
+     */
+    getSrc(): string | undefined;
+    /**
+     * Set the image URI
+     * @param {string} src Image source URI
+     * @api
+     */
+    setSrc(src: string): void;
+    /**
+     * Get the width of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
+     * @return {number} Icon width (in pixels).
+     * @api
+     */
+    getWidth(): number;
+    /**
+     * Get the height of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
+     * @return {number} Icon height (in pixels).
+     * @api
+     */
+    getHeight(): number;
+}
+
+/**
+ * @module ol/style/flat
+ */
+/**
+ * @api
+ * @fileoverview Vector layers can be styled with an object literal containing properties for
+ * stroke, fill, image, and text styles.  The types below can be composed into a single object.
+ * For example, a style with both stroke and fill properties could look like this:
+ *
+ *     const style = {
+ *       'stroke-color': 'yellow',
+ *       'stroke-width': 1.5,
+ *       'fill-color': 'orange',
+ *     };
+ *
+ * See details about the available properties depending on what type of symbolizer should be applied:
+ *  {@link module:ol/style/flat~FlatStroke Stroke} - properties for applying a stroke to lines and polygons
+ *  {@link module:ol/style/flat~FlatFill Fill} - properties for filling polygons
+ *  {@link module:ol/style/flat~FlatText Text} - properties for labeling points, lines, and polygons
+ *  {@link module:ol/style/flat~FlatIcon Icon} - properties for rendering points with an icon
+ *  {@link module:ol/style/flat~FlatCircle Circle} - properties for rendering points with a circle
+ *  {@link module:ol/style/flat~FlatShape Shape} - properties for rendering points with a regular shape
+ *
+ * To conditionally apply styles based on a filter, a list of {@link module:ol/style/flat~Rule rules} can be used.
+ * For example, to style points with a big orange circle if the population is greater than 1 million and
+ * a smaller blue circle otherwise:
+ *
+ *     const rules = [
+ *       {
+ *         filter: ['>', ['get', 'population'], 1_000_000],
+ *         style: {
+ *           'circle-radius': 10,
+ *           'circle-fill-color': 'red',
+ *         }
+ *       },
+ *       {
+ *         else: true,
+ *         style: {
+ *           'circle-radius': 5,
+ *           'circle-fill-color': 'blue',
+ *         },
+ *       },
+ *     ];
+ */
+/**
+ * A literal boolean (e.g. `true`) or an expression that evaluates to a boolean (e.g. `['>', ['get', 'population'], 1_000_000]`).
+ *
+ * @typedef {boolean|Array} BooleanExpression
+ */
+/**
+ * A literal string (e.g. `'hello'`) or an expression that evaluates to a string (e.g. `['get', 'greeting']`).
+ *
+ * @typedef {string|Array} StringExpression
+ */
+/**
+ * A literal number (e.g. `42`) or an expression that evaluates to a number (e.g. `['+', 40, 2]`).
+ *
+ * @typedef {number|Array} NumberExpression
+ */
+/**
+ * A CSS named color (e.g. `'blue'`), an array of 3 RGB values (e.g. `[0, 255, 0]`), an array of 4 RGBA values
+ * (e.g. `[0, 255, 0, 0.5]`), or an expression that evaluates to one of these color types (e.g. `['get', 'color']`).
+ *
+ * @typedef {import("../color.js").Color|string|Array} ColorExpression
+ */
+/**
+ * An array of numbers (e.g. `[1, 2, 3]`) or an expression that evaluates to the same (e.g. `['get', 'values']`).
+ *
+ * @typedef {Array<number>|Array} NumberArrayExpression
+ */
+/**
+ * An array of two numbers (e.g. `[10, 20]`) or an expression that evaluates to the same (e.g. `['get', 'size']`).
+ *
+ * @typedef {number|Array<number>|Array} SizeExpression
+ */
+/**
+ * For static styling, the [layer.setStyle()]{@link module:ol/layer/Vector~VectorLayer#setStyle} method
+ * can be called with an object literal that has fill, stroke, text, icon, regular shape, and/or circle properties.
+ * @api
+ *
+ * @typedef {FlatFill & FlatStroke & FlatText & FlatIcon & FlatShape & FlatCircle} FlatStyle
+ */
+/**
+ * A flat style literal or an array of the same.
+ *
+ * @typedef {FlatStyle|Array<FlatStyle>|Array<Rule>} FlatStyleLike
+ */
+/**
+ * Fill style properties applied to polygon features.
+ *
+ * @typedef {Object} FlatFill
+ * @property {ColorExpression} [fill-color] The fill color. `'none'` means no fill and no hit detection (applies to Canvas only).
+ * @property {StringExpression} [fill-pattern-src] Fill pattern image source URI. If `fill-color` is defined as well,
+ * it will be used to tint this image. (Expressions only in Canvas)
+ * @property {SizeExpression} [fill-pattern-size] Fill pattern image size in pixels.
+ * Can be used together with `fill-pattern-offset` to define the sub-rectangle to use
+ * from a fill pattern image sprite sheet.
+ * @property {SizeExpression} [fill-pattern-offset=[0, 0]] Offset, which, together with the size and the offset origin, define the
+ * sub-rectangle to use from the original fill pattern image.
+ * @property {import("./Icon.js").IconOrigin} [fill-pattern-offset-origin='top-left'] Origin of the offset: `bottom-left`, `bottom-right`,
+ * `top-left` or `top-right`. (WebGL only)
+ */
+/**
+ * Stroke style properties applied to line strings and polygon boundaries. To apply a stroke, at least one of
+ * `stroke-color` or `stroke-width` must be provided.
+ *
+ * @typedef {Object} FlatStroke
+ * @property {ColorExpression} [stroke-color] The stroke color.
+ * @property {NumberExpression} [stroke-width] Stroke pixel width.
+ * @property {StringExpression} [stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`.
+ * @property {StringExpression} [stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`.
+ * @property {NumberArrayExpression} [stroke-line-dash] Line dash pattern.
+ * @property {NumberExpression} [stroke-line-dash-offset=0] Line dash offset.
+ * @property {NumberExpression} [stroke-miter-limit=10] Miter limit.
+ * @property {NumberExpression} [stroke-offset] Stroke offset in pixel along the normal. A positive value offsets the line to the right,
+ * relative to the direction of the line.
+ * @property {string} [stroke-pattern-src] Stroke pattern image source URI. If `stroke-color` is defined as well,
+ * it will be used to tint this image. (WebGL only)
+ * @property {SizeExpression} [stroke-pattern-offset=[0, 0]] Offset, which, together with the size and the offset origin,
+ * define the sub-rectangle to use from the original stroke pattern image. (WebGL only)
+ * @property {import("./Icon.js").IconOrigin} [stroke-pattern-offset-origin='top-left'] Origin of the offset: `bottom-left`, `bottom-right`,
+ * `top-left` or `top-right`. (WebGL only)
+ * @property {SizeExpression} [stroke-pattern-size] Stroke pattern image size in pixel. Can be used together with `stroke-pattern-offset` to define the
+ * sub-rectangle to use from the origin (sprite) fill pattern image. (WebGL only)
+ * @property {NumberExpression} [stroke-pattern-spacing] Spacing between each pattern occurrence in pixels; 0 if undefined. (WebGL only)
+ * @property {NumberExpression} [stroke-pattern-start-offset] Stroke pattern offset in pixels at the start of the line. (WebGL only)
+ * @property {NumberExpression} [z-index] The zIndex of the style.
+ */
+/**
+ * Label style properties applied to all features. At a minimum, a `text-value` must be provided.
+ * Note: text style is currently not supported in WebGL layers
+ *
+ * @typedef {Object} FlatText
+ * @property {StringExpression} [text-value] Text content (with `\n` for line breaks).
+ * @property {StringExpression} [text-font='10px sans-serif'] Font style as [CSS `font`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font) value.
+ * @property {NumberExpression} [text-max-angle=Math.PI/4] When `text-placement` is set to `'line'`, allow a maximum angle between adjacent characters.
+ * The expected value is in radians, and the default is 45° (`Math.PI / 4`).
+ * @property {NumberExpression} [text-offset-x=0] Horizontal text offset in pixels. A positive will shift the text right.
+ * @property {NumberExpression} [text-offset-y=0] Vertical text offset in pixels. A positive will shift the text down.
+ * @property {BooleanExpression} [text-overflow=false] For polygon labels or when `placement` is set to `'line'`, allow text to exceed
+ * the width of the polygon at the label position or the length of the path that it follows.
+ * @property {StringExpression} [text-placement='point'] Text placement.
+ * @property {NumberExpression} [text-repeat] Repeat interval in pixels. When set, the text will be repeated at this interval. Only available when
+ * `text-placement` is set to `'line'`. Overrides `text-align`.
+ * @property {SizeExpression} [text-scale] Scale.
+ * @property {BooleanExpression} [text-rotate-with-view=false] Whether to rotate the text with the view.
+ * @property {NumberExpression} [text-rotation=0] Rotation in radians (positive rotation clockwise).
+ * @property {StringExpression} [text-align] Text alignment. Possible values: `'left'`, `'right'`, `'center'`, `'end'` or `'start'`.
+ * Default is `'center'` for `'text-placement': 'point'`. For `'text-placement': 'line'`, the default is to let the renderer choose a
+ * placement where `text-max-angle` is not exceeded.
+ * @property {StringExpression} [text-justify] Text justification within the text box.
+ * If not set, text is justified towards the `textAlign` anchor.
+ * Otherwise, use options `'left'`, `'center'`, or `'right'` to justify the text within the text box.
+ * **Note:** `text-justify` is ignored for immediate rendering and also for `'text-placement': 'line'`.
+ * @property {StringExpression} [text-baseline='middle'] Text base line. Possible values: `'bottom'`, `'top'`, `'middle'`, `'alphabetic'`,
+ * `'hanging'`, `'ideographic'`.
+ * @property {NumberArrayExpression} [text-padding=[0, 0, 0, 0]] Padding in pixels around the text for decluttering and background. The order of
+ * values in the array is `[top, right, bottom, left]`.
+ * @property {ColorExpression} [text-fill-color] The fill color. `'none'` means no fill and no hit detection.
+ * @property {ColorExpression} [text-background-fill-color] The fill color. `'none'` means no fill and no hit detection.
+ * @property {ColorExpression} [text-stroke-color] The stroke color.
+ * @property {StringExpression} [text-stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`.
+ * @property {StringExpression} [text-stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`.
+ * @property {NumberArrayExpression} [text-stroke-line-dash] Line dash pattern.
+ * @property {NumberExpression} [text-stroke-line-dash-offset=0] Line dash offset.
+ * @property {NumberExpression} [text-stroke-miter-limit=10] Miter limit.
+ * @property {NumberExpression} [text-stroke-width] Stroke pixel width.
+ * @property {ColorExpression} [text-background-stroke-color] The stroke color.
+ * @property {StringExpression} [text-background-stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`.
+ * @property {StringExpression} [text-background-stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`.
+ * @property {NumberArrayExpression} [text-background-stroke-line-dash] Line dash pattern.
+ * @property {NumberExpression} [text-background-stroke-line-dash-offset=0] Line dash offset.
+ * @property {NumberExpression} [text-background-stroke-miter-limit=10] Miter limit.
+ * @property {NumberExpression} [text-background-stroke-width] Stroke pixel width.
+ * @property {import("./Style.js").DeclutterMode} [text-declutter-mode] Declutter mode
+ * @property {NumberExpression} [z-index] The zIndex of the style.
+ */
+/**
+ * Icon style properties applied to point features. `icon-src` must be provided to render
+ * points with an icon.
+ *
+ * @typedef {Object} FlatIcon
+ * @property {string} [icon-src] Image source URI.
+ * @property {NumberArrayExpression} [icon-anchor=[0.5, 0.5]] Anchor. Default value is the icon center.
+ * @property {import("./Icon.js").IconOrigin} [icon-anchor-origin='top-left'] Origin of the anchor: `bottom-left`, `bottom-right`,
+ * `top-left` or `top-right`.
+ * @property {import("./Icon.js").IconAnchorUnits} [icon-anchor-x-units='fraction'] Units in which the anchor x value is
+ * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
+ * the x value in pixels.
+ * @property {import("./Icon.js").IconAnchorUnits} [icon-anchor-y-units='fraction'] Units in which the anchor y value is
+ * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
+ * the y value in pixels.
+ * @property {ColorExpression} [icon-color] Color to tint the icon. If not specified,
+ * the icon will be left as is.
+ * @property {null|string} [icon-cross-origin] The `crossOrigin` attribute for loaded images. Note that you must provide a
+ * `icon-cross-origin` value if you want to access pixel data with the Canvas renderer.
+ * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+ * @property {SizeExpression} [icon-offset=[0, 0]] Offset, which, together with the size and the offset origin, define the
+ * sub-rectangle to use from the original icon image.
+ * @property {NumberArrayExpression} [icon-displacement=[0,0]] Displacement of the icon.
+ * @property {import("./Icon.js").IconOrigin} [icon-offset-origin='top-left'] Origin of the offset: `bottom-left`, `bottom-right`,
+ * `top-left` or `top-right`.
+ * @property {NumberExpression} [icon-opacity=1] Opacity of the icon.
+ * @property {SizeExpression} [icon-scale=1] Scale.
+ * @property {NumberExpression} [icon-width] Width of the icon. If not specified, the actual image width will be used. Cannot be combined
+ * with `scale`. (Expressions only in WebGL)
+ * @property {NumberExpression} [icon-height] Height of the icon. If not specified, the actual image height will be used. Cannot be combined
+ * with `scale`. (Expressions only in WebGL)
+ * @property {NumberExpression} [icon-rotation=0] Rotation in radians (positive rotation clockwise).
+ * @property {BooleanExpression} [icon-rotate-with-view=false] Whether to rotate the icon with the view. (Expressions only supported in Canvas)
+ * @property {SizeExpression} [icon-size] Icon size in pixel. Can be used together with `icon-offset` to define the
+ * sub-rectangle to use from the origin (sprite) icon image. (Expressions only in WebGL)
+ * @property {import("./Style.js").DeclutterMode} [icon-declutter-mode] Declutter mode (Canvas only)
+ * @property {NumberExpression} [z-index] The zIndex of the style. (Canvas only)
+ */
+/**
+ * Regular shape style properties for rendering point features. At least `shape-points` must be provided.
+ *
+ * @typedef {Object} FlatShape
+ * @property {NumberExpression} [shape-points] Number of points for stars and regular polygons. In case of a polygon, the number of points
+ * is the number of sides. (Expressions only in WebGL)
+ * @property {ColorExpression} [shape-fill-color] The fill color. `'none'` means no fill and no hit detection.
+ * @property {ColorExpression} [shape-stroke-color] The stroke color.
+ * @property {NumberExpression} [shape-stroke-width] Stroke pixel width.
+ * @property {StringExpression} [shape-stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`. (Canvas only)
+ * @property {StringExpression} [shape-stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`. (Canvas only)
+ * @property {NumberArrayExpression} [shape-stroke-line-dash] Line dash pattern. (Canvas only)
+ * @property {NumberExpression} [shape-stroke-line-dash-offset=0] Line dash offset. (Canvas only)
+ * @property {NumberExpression} [shape-stroke-miter-limit=10] Miter limit. (Canvas only)
+ * @property {NumberExpression} [shape-radius] Radius of a regular polygon. (Expressions only in WebGL)
+ * @property {NumberExpression} [shape-radius2] Second radius to make a star instead of a regular polygon. (Expressions only in WebGL)
+ * @property {NumberExpression} [shape-angle=0] Shape's angle in radians. A value of 0 will have one of the shape's point facing up. (Expressions only in WebGL)
+ * @property {NumberArrayExpression} [shape-displacement=[0,0]] Displacement of the shape
+ * @property {NumberExpression} [shape-opacity] Shape opacity. (WebGL only)
+ * @property {NumberExpression} [shape-rotation=0] Rotation in radians (positive rotation clockwise).
+ * @property {BooleanExpression} [shape-rotate-with-view=false] Whether to rotate the shape with the view. (Expression only supported in Canvas)
+ * @property {SizeExpression} [shape-scale=1] Scale. Unless two-dimensional scaling is required a better
+ * result may be obtained with appropriate settings for `shape-radius` and `shape-radius2`.
+ * @property {import("./Style.js").DeclutterMode} [shape-declutter-mode] Declutter mode. (Canvas only)
+ * @property {NumberExpression} [z-index] The zIndex of the style. (Canvas only)
+ */
+/**
+ * Circle style properties for rendering point features. At least `circle-radius` must be provided.
+ *
+ * @typedef {Object} FlatCircle
+ * @property {NumberExpression} [circle-radius] Circle radius.
+ * @property {ColorExpression} [circle-fill-color] The fill color. `'none'` means no fill and no hit detection.
+ * @property {ColorExpression} [circle-stroke-color] The stroke color.
+ * @property {NumberExpression} [circle-stroke-width] Stroke pixel width.
+ * @property {StringExpression} [circle-stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`. (Canvas only)
+ * @property {StringExpression} [circle-stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`. (Canvas only)
+ * @property {NumberArrayExpression} [circle-stroke-line-dash] Line dash pattern. (Canvas only)
+ * @property {NumberExpression} [circle-stroke-line-dash-offset=0] Line dash offset. (Canvas only)
+ * @property {NumberExpression} [circle-stroke-miter-limit=10] Miter limit. (Canvas only)
+ * @property {NumberArrayExpression} [circle-displacement=[0,0]] displacement
+ * @property {SizeExpression} [circle-scale=1] Scale. A two-dimensional scale will produce an ellipse.
+ * Unless two-dimensional scaling is required a better result may be obtained with an appropriate setting for `circle-radius`.
+ * @property {NumberExpression} [circle-opacity] Circle opacity. (WebGL only)
+ * @property {NumberExpression} [circle-rotation=0] Rotation in radians
+ * (positive rotation clockwise, meaningful only when used in conjunction with a two-dimensional scale).
+ * @property {BooleanExpression} [circle-rotate-with-view=false] Whether to rotate the shape with the view (Expression only supported in Canvas)
+ * (meaningful only when used in conjunction with a two-dimensional scale).
+ * @property {import("./Style.js").DeclutterMode} [circle-declutter-mode] Declutter mode (Canvas only)
+ * @property {NumberExpression} [z-index] The zIndex of the style. (Canvas only)
+ */
+/**
+ * These default style properties are applied when no other style is given.
+ *
+ * @typedef {Object} DefaultStyle
+ * @property {string} fill-color `'rgba(255,255,255,0.4)'`
+ * @property {string} stroke-color `'#3399CC'`
+ * @property {number} stroke-width `1.25`
+ * @property {number} circle-radius `5`
+ * @property {string} circle-fill-color `'rgba(255,255,255,0.4)'`
+ * @property {number} circle-stroke-width `1.25`
+ * @property {string} circle-stroke-color `'#3399CC'`
+ */
+/**
+ * @return {DefaultStyle} The default flat style.
+ */
+declare function createDefaultStyle(): DefaultStyle;
+/**
+ * A literal boolean (e.g. `true`) or an expression that evaluates to a boolean (e.g. `['>', ['get', 'population'], 1_000_000]`).
+ */
+type BooleanExpression = boolean | any[];
+/**
+ * A literal string (e.g. `'hello'`) or an expression that evaluates to a string (e.g. `['get', 'greeting']`).
+ */
+type StringExpression = string | any[];
+/**
+ * A literal number (e.g. `42`) or an expression that evaluates to a number (e.g. `['+', 40, 2]`).
+ */
+type NumberExpression = number | any[];
+/**
+ * A CSS named color (e.g. `'blue'`), an array of 3 RGB values (e.g. `[0, 255, 0]`), an array of 4 RGBA values
+ * (e.g. `[0, 255, 0, 0.5]`), or an expression that evaluates to one of these color types (e.g. `['get', 'color']`).
+ */
+type ColorExpression = Color | string | any[];
+/**
+ * An array of numbers (e.g. `[1, 2, 3]`) or an expression that evaluates to the same (e.g. `['get', 'values']`).
+ */
+type NumberArrayExpression = Array<number> | any[];
+/**
+ * An array of two numbers (e.g. `[10, 20]`) or an expression that evaluates to the same (e.g. `['get', 'size']`).
+ */
+type SizeExpression = number | Array<number> | any[];
+/**
+ * For static styling, the [layer.setStyle()]{@link module :ol/layer/Vector~VectorLayer#setStyle} method
+ * can be called with an object literal that has fill, stroke, text, icon, regular shape, and/or circle properties.
+ */
+type FlatStyle$1 = FlatFill & FlatStroke & FlatText & FlatIcon & FlatShape & FlatCircle;
+/**
+ * A flat style literal or an array of the same.
+ */
+type FlatStyleLike$1 = FlatStyle$1 | Array<FlatStyle$1> | Array<Rule>;
+/**
+ * Fill style properties applied to polygon features.
+ */
+type FlatFill = {
+    /**
+     * The fill color. `'none'` means no fill and no hit detection (applies to Canvas only).
+     */
+    "fill-color"?: ColorExpression | undefined;
+    /**
+     * Fill pattern image source URI. If `fill-color` is defined as well,
+     * it will be used to tint this image. (Expressions only in Canvas)
+     */
+    "fill-pattern-src"?: StringExpression | undefined;
+    /**
+     * Fill pattern image size in pixels.
+     * Can be used together with `fill-pattern-offset` to define the sub-rectangle to use
+     * from a fill pattern image sprite sheet.
+     */
+    "fill-pattern-size"?: SizeExpression | undefined;
+    /**
+     * Offset, which, together with the size and the offset origin, define the
+     * sub-rectangle to use from the original fill pattern image.
+     */
+    "fill-pattern-offset"?: SizeExpression | undefined;
+    /**
+     * Origin of the offset: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`. (WebGL only)
+     */
+    "fill-pattern-offset-origin"?: IconOrigin | undefined;
+};
+/**
+ * Stroke style properties applied to line strings and polygon boundaries. To apply a stroke, at least one of
+ * `stroke-color` or `stroke-width` must be provided.
+ */
+type FlatStroke = {
+    /**
+     * The stroke color.
+     */
+    "stroke-color"?: ColorExpression | undefined;
+    /**
+     * Stroke pixel width.
+     */
+    "stroke-width"?: NumberExpression | undefined;
+    /**
+     * Line cap style: `butt`, `round`, or `square`.
+     */
+    "stroke-line-cap"?: StringExpression | undefined;
+    /**
+     * Line join style: `bevel`, `round`, or `miter`.
+     */
+    "stroke-line-join"?: StringExpression | undefined;
+    /**
+     * Line dash pattern.
+     */
+    "stroke-line-dash"?: NumberArrayExpression | undefined;
+    /**
+     * Line dash offset.
+     */
+    "stroke-line-dash-offset"?: NumberExpression | undefined;
+    /**
+     * Miter limit.
+     */
+    "stroke-miter-limit"?: NumberExpression | undefined;
+    /**
+     * Stroke offset in pixel along the normal. A positive value offsets the line to the right,
+     * relative to the direction of the line.
+     */
+    "stroke-offset"?: NumberExpression | undefined;
+    /**
+     * Stroke pattern image source URI. If `stroke-color` is defined as well,
+     * it will be used to tint this image. (WebGL only)
+     */
+    "stroke-pattern-src"?: string | undefined;
+    /**
+     * Offset, which, together with the size and the offset origin,
+     * define the sub-rectangle to use from the original stroke pattern image. (WebGL only)
+     */
+    "stroke-pattern-offset"?: SizeExpression | undefined;
+    /**
+     * Origin of the offset: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`. (WebGL only)
+     */
+    "stroke-pattern-offset-origin"?: IconOrigin | undefined;
+    /**
+     * Stroke pattern image size in pixel. Can be used together with `stroke-pattern-offset` to define the
+     * sub-rectangle to use from the origin (sprite) fill pattern image. (WebGL only)
+     */
+    "stroke-pattern-size"?: SizeExpression | undefined;
+    /**
+     * Spacing between each pattern occurrence in pixels; 0 if undefined. (WebGL only)
+     */
+    "stroke-pattern-spacing"?: NumberExpression | undefined;
+    /**
+     * Stroke pattern offset in pixels at the start of the line. (WebGL only)
+     */
+    "stroke-pattern-start-offset"?: NumberExpression | undefined;
+    /**
+     * The zIndex of the style.
+     */
+    "z-index"?: NumberExpression | undefined;
+};
+/**
+ * Label style properties applied to all features. At a minimum, a `text-value` must be provided.
+ * Note: text style is currently not supported in WebGL layers
+ */
+type FlatText = {
+    /**
+     * Text content (with `\n` for line breaks).
+     */
+    "text-value"?: StringExpression | undefined;
+    /**
+     * Font style as [CSS `font`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font) value.
+     */
+    "text-font"?: StringExpression | undefined;
+    /**
+     * When `text-placement` is set to `'line'`, allow a maximum angle between adjacent characters.
+     * The expected value is in radians, and the default is 45° (`Math.PI / 4`).
+     */
+    "text-max-angle"?: NumberExpression | undefined;
+    /**
+     * Horizontal text offset in pixels. A positive will shift the text right.
+     */
+    "text-offset-x"?: NumberExpression | undefined;
+    /**
+     * Vertical text offset in pixels. A positive will shift the text down.
+     */
+    "text-offset-y"?: NumberExpression | undefined;
+    /**
+     * For polygon labels or when `placement` is set to `'line'`, allow text to exceed
+     * the width of the polygon at the label position or the length of the path that it follows.
+     */
+    "text-overflow"?: BooleanExpression | undefined;
+    /**
+     * Text placement.
+     */
+    "text-placement"?: StringExpression | undefined;
+    /**
+     * Repeat interval in pixels. When set, the text will be repeated at this interval. Only available when
+     * `text-placement` is set to `'line'`. Overrides `text-align`.
+     */
+    "text-repeat"?: NumberExpression | undefined;
+    /**
+     * Scale.
+     */
+    "text-scale"?: SizeExpression | undefined;
+    /**
+     * Whether to rotate the text with the view.
+     */
+    "text-rotate-with-view"?: BooleanExpression | undefined;
+    /**
+     * Rotation in radians (positive rotation clockwise).
+     */
+    "text-rotation"?: NumberExpression | undefined;
+    /**
+     * Text alignment. Possible values: `'left'`, `'right'`, `'center'`, `'end'` or `'start'`.
+     * Default is `'center'` for `'text-placement': 'point'`. For `'text-placement': 'line'`, the default is to let the renderer choose a
+     * placement where `text-max-angle` is not exceeded.
+     */
+    "text-align"?: StringExpression | undefined;
+    /**
+     * Text justification within the text box.
+     * If not set, text is justified towards the `textAlign` anchor.
+     * Otherwise, use options `'left'`, `'center'`, or `'right'` to justify the text within the text box.
+     * **Note:** `text-justify` is ignored for immediate rendering and also for `'text-placement': 'line'`.
+     */
+    "text-justify"?: StringExpression | undefined;
+    /**
+     * Text base line. Possible values: `'bottom'`, `'top'`, `'middle'`, `'alphabetic'`,
+     * `'hanging'`, `'ideographic'`.
+     */
+    "text-baseline"?: StringExpression | undefined;
+    /**
+     * Padding in pixels around the text for decluttering and background. The order of
+     * values in the array is `[top, right, bottom, left]`.
+     */
+    "text-padding"?: NumberArrayExpression | undefined;
+    /**
+     * The fill color. `'none'` means no fill and no hit detection.
+     */
+    "text-fill-color"?: ColorExpression | undefined;
+    /**
+     * The fill color. `'none'` means no fill and no hit detection.
+     */
+    "text-background-fill-color"?: ColorExpression | undefined;
+    /**
+     * The stroke color.
+     */
+    "text-stroke-color"?: ColorExpression | undefined;
+    /**
+     * Line cap style: `butt`, `round`, or `square`.
+     */
+    "text-stroke-line-cap"?: StringExpression | undefined;
+    /**
+     * Line join style: `bevel`, `round`, or `miter`.
+     */
+    "text-stroke-line-join"?: StringExpression | undefined;
+    /**
+     * Line dash pattern.
+     */
+    "text-stroke-line-dash"?: NumberArrayExpression | undefined;
+    /**
+     * Line dash offset.
+     */
+    "text-stroke-line-dash-offset"?: NumberExpression | undefined;
+    /**
+     * Miter limit.
+     */
+    "text-stroke-miter-limit"?: NumberExpression | undefined;
+    /**
+     * Stroke pixel width.
+     */
+    "text-stroke-width"?: NumberExpression | undefined;
+    /**
+     * The stroke color.
+     */
+    "text-background-stroke-color"?: ColorExpression | undefined;
+    /**
+     * Line cap style: `butt`, `round`, or `square`.
+     */
+    "text-background-stroke-line-cap"?: StringExpression | undefined;
+    /**
+     * Line join style: `bevel`, `round`, or `miter`.
+     */
+    "text-background-stroke-line-join"?: StringExpression | undefined;
+    /**
+     * Line dash pattern.
+     */
+    "text-background-stroke-line-dash"?: NumberArrayExpression | undefined;
+    /**
+     * Line dash offset.
+     */
+    "text-background-stroke-line-dash-offset"?: NumberExpression | undefined;
+    /**
+     * Miter limit.
+     */
+    "text-background-stroke-miter-limit"?: NumberExpression | undefined;
+    /**
+     * Stroke pixel width.
+     */
+    "text-background-stroke-width"?: NumberExpression | undefined;
+    /**
+     * Declutter mode
+     */
+    "text-declutter-mode"?: DeclutterMode | undefined;
+    /**
+     * The zIndex of the style.
+     */
+    "z-index"?: NumberExpression | undefined;
+};
+/**
+ * Icon style properties applied to point features. `icon-src` must be provided to render
+ * points with an icon.
+ */
+type FlatIcon = {
+    /**
+     * Image source URI.
+     */
+    "icon-src"?: string | undefined;
+    /**
+     * Anchor. Default value is the icon center.
+     */
+    "icon-anchor"?: NumberArrayExpression | undefined;
+    /**
+     * Origin of the anchor: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    "icon-anchor-origin"?: IconOrigin | undefined;
+    /**
+     * Units in which the anchor x value is
+     * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
+     * the x value in pixels.
+     */
+    "icon-anchor-x-units"?: IconAnchorUnits | undefined;
+    /**
+     * Units in which the anchor y value is
+     * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
+     * the y value in pixels.
+     */
+    "icon-anchor-y-units"?: IconAnchorUnits | undefined;
+    /**
+     * Color to tint the icon. If not specified,
+     * the icon will be left as is.
+     */
+    "icon-color"?: ColorExpression | undefined;
+    /**
+     * The `crossOrigin` attribute for loaded images. Note that you must provide a
+     * `icon-cross-origin` value if you want to access pixel data with the Canvas renderer.
+     * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
+     */
+    "icon-cross-origin"?: string | null | undefined;
+    /**
+     * Offset, which, together with the size and the offset origin, define the
+     * sub-rectangle to use from the original icon image.
+     */
+    "icon-offset"?: SizeExpression | undefined;
+    /**
+     * Displacement of the icon.
+     */
+    "icon-displacement"?: NumberArrayExpression | undefined;
+    /**
+     * Origin of the offset: `bottom-left`, `bottom-right`,
+     * `top-left` or `top-right`.
+     */
+    "icon-offset-origin"?: IconOrigin | undefined;
+    /**
+     * Opacity of the icon.
+     */
+    "icon-opacity"?: NumberExpression | undefined;
+    /**
+     * Scale.
+     */
+    "icon-scale"?: SizeExpression | undefined;
+    /**
+     * Width of the icon. If not specified, the actual image width will be used. Cannot be combined
+     * with `scale`. (Expressions only in WebGL)
+     */
+    "icon-width"?: NumberExpression | undefined;
+    /**
+     * Height of the icon. If not specified, the actual image height will be used. Cannot be combined
+     * with `scale`. (Expressions only in WebGL)
+     */
+    "icon-height"?: NumberExpression | undefined;
+    /**
+     * Rotation in radians (positive rotation clockwise).
+     */
+    "icon-rotation"?: NumberExpression | undefined;
+    /**
+     * Whether to rotate the icon with the view. (Expressions only supported in Canvas)
+     */
+    "icon-rotate-with-view"?: BooleanExpression | undefined;
+    /**
+     * Icon size in pixel. Can be used together with `icon-offset` to define the
+     * sub-rectangle to use from the origin (sprite) icon image. (Expressions only in WebGL)
+     */
+    "icon-size"?: SizeExpression | undefined;
+    /**
+     * Declutter mode (Canvas only)
+     */
+    "icon-declutter-mode"?: DeclutterMode | undefined;
+    /**
+     * The zIndex of the style. (Canvas only)
+     */
+    "z-index"?: NumberExpression | undefined;
+};
+/**
+ * Regular shape style properties for rendering point features. At least `shape-points` must be provided.
+ */
+type FlatShape = {
+    /**
+     * Number of points for stars and regular polygons. In case of a polygon, the number of points
+     * is the number of sides. (Expressions only in WebGL)
+     */
+    "shape-points"?: NumberExpression | undefined;
+    /**
+     * The fill color. `'none'` means no fill and no hit detection.
+     */
+    "shape-fill-color"?: ColorExpression | undefined;
+    /**
+     * The stroke color.
+     */
+    "shape-stroke-color"?: ColorExpression | undefined;
+    /**
+     * Stroke pixel width.
+     */
+    "shape-stroke-width"?: NumberExpression | undefined;
+    /**
+     * Line cap style: `butt`, `round`, or `square`. (Canvas only)
+     */
+    "shape-stroke-line-cap"?: StringExpression | undefined;
+    /**
+     * Line join style: `bevel`, `round`, or `miter`. (Canvas only)
+     */
+    "shape-stroke-line-join"?: StringExpression | undefined;
+    /**
+     * Line dash pattern. (Canvas only)
+     */
+    "shape-stroke-line-dash"?: NumberArrayExpression | undefined;
+    /**
+     * Line dash offset. (Canvas only)
+     */
+    "shape-stroke-line-dash-offset"?: NumberExpression | undefined;
+    /**
+     * Miter limit. (Canvas only)
+     */
+    "shape-stroke-miter-limit"?: NumberExpression | undefined;
+    /**
+     * Radius of a regular polygon. (Expressions only in WebGL)
+     */
+    "shape-radius"?: NumberExpression | undefined;
+    /**
+     * Second radius to make a star instead of a regular polygon. (Expressions only in WebGL)
+     */
+    "shape-radius2"?: NumberExpression | undefined;
+    /**
+     * Shape's angle in radians. A value of 0 will have one of the shape's point facing up. (Expressions only in WebGL)
+     */
+    "shape-angle"?: NumberExpression | undefined;
+    /**
+     * Displacement of the shape
+     */
+    "shape-displacement"?: NumberArrayExpression | undefined;
+    /**
+     * Shape opacity. (WebGL only)
+     */
+    "shape-opacity"?: NumberExpression | undefined;
+    /**
+     * Rotation in radians (positive rotation clockwise).
+     */
+    "shape-rotation"?: NumberExpression | undefined;
+    /**
+     * Whether to rotate the shape with the view. (Expression only supported in Canvas)
+     */
+    "shape-rotate-with-view"?: BooleanExpression | undefined;
+    /**
+     * Scale. Unless two-dimensional scaling is required a better
+     * result may be obtained with appropriate settings for `shape-radius` and `shape-radius2`.
+     */
+    "shape-scale"?: SizeExpression | undefined;
+    /**
+     * Declutter mode. (Canvas only)
+     */
+    "shape-declutter-mode"?: DeclutterMode | undefined;
+    /**
+     * The zIndex of the style. (Canvas only)
+     */
+    "z-index"?: NumberExpression | undefined;
+};
+/**
+ * Circle style properties for rendering point features. At least `circle-radius` must be provided.
+ */
+type FlatCircle = {
+    /**
+     * Circle radius.
+     */
+    "circle-radius"?: NumberExpression | undefined;
+    /**
+     * The fill color. `'none'` means no fill and no hit detection.
+     */
+    "circle-fill-color"?: ColorExpression | undefined;
+    /**
+     * The stroke color.
+     */
+    "circle-stroke-color"?: ColorExpression | undefined;
+    /**
+     * Stroke pixel width.
+     */
+    "circle-stroke-width"?: NumberExpression | undefined;
+    /**
+     * Line cap style: `butt`, `round`, or `square`. (Canvas only)
+     */
+    "circle-stroke-line-cap"?: StringExpression | undefined;
+    /**
+     * Line join style: `bevel`, `round`, or `miter`. (Canvas only)
+     */
+    "circle-stroke-line-join"?: StringExpression | undefined;
+    /**
+     * Line dash pattern. (Canvas only)
+     */
+    "circle-stroke-line-dash"?: NumberArrayExpression | undefined;
+    /**
+     * Line dash offset. (Canvas only)
+     */
+    "circle-stroke-line-dash-offset"?: NumberExpression | undefined;
+    /**
+     * Miter limit. (Canvas only)
+     */
+    "circle-stroke-miter-limit"?: NumberExpression | undefined;
+    /**
+     * displacement
+     */
+    "circle-displacement"?: NumberArrayExpression | undefined;
+    /**
+     * Scale. A two-dimensional scale will produce an ellipse.
+     * Unless two-dimensional scaling is required a better result may be obtained with an appropriate setting for `circle-radius`.
+     */
+    "circle-scale"?: SizeExpression | undefined;
+    /**
+     * Circle opacity. (WebGL only)
+     */
+    "circle-opacity"?: NumberExpression | undefined;
+    /**
+     * Rotation in radians
+     * (positive rotation clockwise, meaningful only when used in conjunction with a two-dimensional scale).
+     */
+    "circle-rotation"?: NumberExpression | undefined;
+    /**
+     * Whether to rotate the shape with the view (Expression only supported in Canvas)
+     * (meaningful only when used in conjunction with a two-dimensional scale).
+     */
+    "circle-rotate-with-view"?: BooleanExpression | undefined;
+    /**
+     * Declutter mode (Canvas only)
+     */
+    "circle-declutter-mode"?: DeclutterMode | undefined;
+    /**
+     * The zIndex of the style. (Canvas only)
+     */
+    "z-index"?: NumberExpression | undefined;
+};
+/**
+ * These default style properties are applied when no other style is given.
+ */
+type DefaultStyle = {
+    /**
+     * `'rgba(255,255,255,0.4)'`
+     */
+    "fill-color": string;
+    /**
+     * `'#3399CC'`
+     */
+    "stroke-color": string;
+    /**
+     * `1.25`
+     */
+    "stroke-width": number;
+    /**
+     * `5`
+     */
+    "circle-radius": number;
+    /**
+     * `'rgba(255,255,255,0.4)'`
+     */
+    "circle-fill-color": string;
+    /**
+     * `1.25`
+     */
+    "circle-stroke-width": number;
+    /**
+     * `'#3399CC'`
+     */
+    "circle-stroke-color": string;
+};
+/**
+ * A rule is used to conditionally apply a style. If the rule's filter evaluates to true,
+ * the style will be applied.
+ */
+type Rule = {
+    /**
+     * The style to be applied if the filter matches.
+     */
+    style: FlatStyle$1 | Array<FlatStyle$1>;
+    /**
+     * The filter used
+     * to determine if a style applies. If no filter is included, the rule always applies
+     * (unless it is an else rule).
+     */
+    filter?: EncodedExpression | undefined;
+    /**
+     * If true, the rule applies only if no other previous rule applies.
+     * If the else rule also has a filter, the rule will not apply if the filter does not match.
+     */
+    else?: boolean | undefined;
+};
+/**
+ * Style variables are provided as an object. The variables can be read in a {@link import ("../expr/expression.js").ExpressionValue style expression}
+ * using the `['var', 'varName']` operator.
+ * Each variable must hold a literal value (not an expression).
+ */
+type StyleVariables = {
+    [x: string]: string | number | boolean | number[];
+};
+
+/**
  * Get a string representation for a type.
- * @param {number} type The type.
+ * @param {ValueType} type The type.
  * @return {string} The type name.
  */
-declare function typeName(type: number): string;
+declare function typeName(type: ValueType$2): string;
 /**
- * @param {number} broad The broad type.
- * @param {number} specific The specific type.
+ * @param {ValueType} broad The broad type.
+ * @param {ValueType} specific The specific type.
  * @return {boolean} The broad type includes the specific type.
  */
-declare function includesType(broad: number, specific: number): boolean;
+declare function includesType(broad: ValueType$2, specific: ValueType$2): boolean;
 /**
- * @param {number} oneType One type.
- * @param {number} otherType Another type.
+ * @param {ValueType} oneType One type.
+ * @param {ValueType} otherType Another type.
  * @return {boolean} The set of types overlap (share a common specific type)
  */
-declare function overlapsType(oneType: number, otherType: number): boolean;
+declare function overlapsType(oneType: ValueType$2, otherType: ValueType$2): boolean;
 /**
- * @param {number} type The type.
- * @param {number} expected The expected type.
+ * @param {ValueType} type The type.
+ * @param {ValueType} expected The expected type.
  * @return {boolean} The given type is exactly the expected type.
  */
-declare function isType(type: number, expected: number): boolean;
+declare function isType(type: ValueType$2, expected: ValueType$2): boolean;
 /**
  * @typedef {LiteralExpression|CallExpression} Expression
  */
 /**
  * @typedef {Object} ParsingContext
- * @property {Set<string>} variables Variables referenced with the 'var' operator.
- * @property {Set<string>} properties Properties referenced with the 'get' operator.
+ * @property {Map<string, ValueType>} variables Variables referenced with the 'var' operator; key is name, value is type.
+ * @property {Map<string, ValueType>} properties Properties referenced with the 'get' operator; key is name, value is type.
  * @property {boolean} featureId The style uses the feature id.
  * @property {boolean} geometryType The style uses the feature geometry type.
  * @property {boolean} mCoordinate The style uses the M coordinate of geometries
  * @property {boolean} mapState The style uses the map state (view state or time elapsed).
+ * @property {import('../style/flat.js').StyleVariables} [inputVariables] Variable values (i.e. style variables) given as input during parsing to help with type narrowing
  */
 /**
+ * @param {import('../style/flat.js').StyleVariables} [inputVariables] Variable values (i.e. style variables) given as input during parsing to help with type narrowing
  * @return {ParsingContext} A new parsing context.
  */
-declare function newParsingContext(): ParsingContext$1;
+declare function newParsingContext(inputVariables?: StyleVariables): ParsingContext$1;
 /**
  * @typedef {LiteralValue|Array} EncodedExpression
  */
 /**
  * @param {EncodedExpression} encoded The encoded expression.
- * @param {number} expectedType The expected type.
+ * @param {ValueType} expectedType The expected type.
  * @param {ParsingContext} context The parsing context.
  * @return {Expression} The parsed expression result.
  */
-declare function parse$1(encoded: EncodedExpression, expectedType: number, context: ParsingContext$1): Expression;
+declare function parse$1(encoded: EncodedExpression, expectedType: ValueType$2, context: ParsingContext$1): Expression;
 /**
  * Returns a simplified geometry type suited for the `geometry-type` operator
  * @param {import('../geom/Geometry.js').default|import('../render/Feature.js').default} geometry Geometry object
@@ -16145,20 +17389,20 @@ declare const AnyType: number;
  */
 declare class LiteralExpression {
     /**
-     * @param {number} type The value type.
+     * @param {ValueType} type The value type.
      * @param {LiteralValue} value The literal value.
      */
-    constructor(type: number, value: LiteralValue);
+    constructor(type: ValueType$2, value: LiteralValue);
     type: number;
     value: LiteralValue;
 }
 declare class CallExpression {
     /**
-     * @param {number} type The return type.
+     * @param {ValueType} type The return type.
      * @param {string} operator The operator.
      * @param {...Expression} args The arguments.
      */
-    constructor(type: number, operator: string, ...args: Expression[]);
+    constructor(type: ValueType$2, operator: string, ...args: Expression[]);
     type: number;
     operator: string;
     args: Expression[];
@@ -16172,13 +17416,13 @@ declare const Ops: {
 type Expression = LiteralExpression | CallExpression;
 type ParsingContext$1 = {
     /**
-     * Variables referenced with the 'var' operator.
+     * Variables referenced with the 'var' operator; key is name, value is type.
      */
-    variables: Set<string>;
+    variables: Map<string, ValueType$2>;
     /**
-     * Properties referenced with the 'get' operator.
+     * Properties referenced with the 'get' operator; key is name, value is type.
      */
-    properties: Set<string>;
+    properties: Map<string, ValueType$2>;
     /**
      * The style uses the feature id.
      */
@@ -16195,6 +17439,12 @@ type ParsingContext$1 = {
      * The style uses the map state (view state or time elapsed).
      */
     mapState: boolean;
+    /**
+     * Variable values (i.e. style variables) given as input during parsing to help with type narrowing
+     */
+    inputVariables?: {
+        [x: string]: string | number | boolean | number[];
+    } | undefined;
 };
 type EncodedExpression = LiteralValue | any[];
 /**
@@ -16317,8 +17567,12 @@ type EncodedExpression = LiteralValue | any[];
  * * {@link module :ol/color~Color}
  */
 type ExpressionValue = Array<any> | Color | string | number | boolean;
+type ValueType$2 = number;
 type LiteralValue = boolean | number | string | Array<number>;
 
+/**
+ * @typedef {import('./expression.js').ValueType} ValueType
+ */
 /**
  * @fileoverview This module includes functions to build expressions for evaluation on the CPU.
  * Building is composed of two steps: parsing and compiling.  The parsing step takes an encoded
@@ -16367,11 +17621,12 @@ declare function newEvaluationContext(): EvaluationContext$1;
  */
 /**
  * @param {import('./expression.js').EncodedExpression} encoded The encoded expression.
- * @param {number} type The expected type.
+ * @param {ValueType} type The expected type.
  * @param {import('./expression.js').ParsingContext} context The parsing context.
  * @return {ExpressionEvaluator} The expression evaluator.
  */
-declare function buildExpression$1(encoded: EncodedExpression, type: number, context: ParsingContext$1): ExpressionEvaluator;
+declare function buildExpression$1(encoded: EncodedExpression, type: ValueType$1, context: ParsingContext$1): ExpressionEvaluator;
+type ValueType$1 = ValueType$2;
 type EvaluationContext$1 = {
     /**
      * The values for properties used in 'get' expressions.
@@ -16481,29 +17736,21 @@ declare function uniformNameForVariable(variableName: string): string;
  * @typedef {import("./expression.js").LiteralExpression} LiteralExpression
  */
 /**
- * @typedef {Object} CompilationContextProperty
- * @property {string} name Name
- * @property {number} type Resolved property type
- */
-/**
- * @typedef {Object} CompilationContextVariable
- * @property {string} name Name
- * @property {number} type Resolved variable type
- */
-/**
  * @typedef {Object} CompilationContext
- * @property {Object<string, CompilationContextProperty>} properties The values for properties used in 'get' expressions.
- * @property {Object<string, CompilationContextVariable>} variables The values for variables used in 'var' expressions.
+ * @property {Map<string, ValueType>} variables Variables and their types (transferred from the parsing context)
+ * @property {Map<string, ValueType>} properties Properties and their types (transferred from the parsing context)
  * @property {Object<string, string>} functions Lookup of functions used by the style.
  * @property {number} [bandCount] Number of bands per pixel.
  * @property {Array<PaletteTexture>} [paletteTextures] List of palettes used by the style.
  * @property {boolean} featureId Whether the feature ID is used in the expression
  * @property {boolean} geometryType Whether the geometry type is used in the expression
+ * @property {import('../style/flat.js').StyleVariables} [inputVariables] Variable values (i.e. style variables) given as input during parsing to help with type narrowing
  */
 /**
+ * @param {import('../style/flat.js').StyleVariables} [inputVariables] Variable values (i.e. style variables) given as input during parsing to help with type narrowing
  * @return {CompilationContext} A new compilation context.
  */
-declare function newCompilationContext(): CompilationContext;
+declare function newCompilationContext(inputVariables?: StyleVariables): CompilationContext;
 /**
  * @typedef {string} CompiledExpression
  */
@@ -16526,39 +17773,16 @@ declare const GEOMETRY_TYPE_PROPERTY_NAME: "geometryType";
  * The value `-9999999` will be used to indicate that a property on a feature is not defined, similar to a "no data" value.
  */
 declare const UNDEFINED_PROP_VALUE: -9999999;
-type CompilationContextProperty = {
-    /**
-     * Name
-     */
-    name: string;
-    /**
-     * Resolved property type
-     */
-    type: number;
-};
-type CompilationContextVariable = {
-    /**
-     * Name
-     */
-    name: string;
-    /**
-     * Resolved variable type
-     */
-    type: number;
-};
+type ValueType = ValueType$2;
 type CompilationContext = {
     /**
-     * The values for properties used in 'get' expressions.
+     * Variables and their types (transferred from the parsing context)
      */
-    properties: {
-        [x: string]: CompilationContextProperty;
-    };
+    variables: Map<string, ValueType>;
     /**
-     * The values for variables used in 'var' expressions.
+     * Properties and their types (transferred from the parsing context)
      */
-    variables: {
-        [x: string]: CompilationContextVariable;
-    };
+    properties: Map<string, ValueType>;
     /**
      * Lookup of functions used by the style.
      */
@@ -16581,6 +17805,12 @@ type CompilationContext = {
      * Whether the geometry type is used in the expression
      */
     geometryType: boolean;
+    /**
+     * Variable values (i.e. style variables) given as input during parsing to help with type narrowing
+     */
+    inputVariables?: {
+        [x: string]: string | number | boolean | number[];
+    } | undefined;
 };
 type CompiledExpression = string;
 
@@ -16692,7 +17922,7 @@ declare class JSONFeature<FeatureType extends FeatureLike = Feature$2<Geometry$1
 
 type EsriJSONFeatureSet = arcgis_rest_api.FeatureSet;
 type EsriJSONGeometry = arcgis_rest_api.Geometry;
-type Options$1u = {
+type Options$1t = {
     /**
      * Geometry name to use when creating features.
      */
@@ -16714,7 +17944,7 @@ declare class EsriJSON extends JSONFeature<Feature$2<Geometry$1, {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1u);
+    constructor(options?: Options$1t);
     /**
      * Name of the geometry attribute for features.
      * @type {string|undefined}
@@ -17191,7 +18421,7 @@ declare class XMLFeature extends FeatureFormat<Feature$2<Geometry$1, {
     writeGeometryNode(geometry: Geometry$1, options?: WriteOptions): Node;
 }
 
-type Options$1t = {
+type Options$1s = {
     /**
      * Feature
      * namespace. If not defined will be derived from GML. If multiple
@@ -17296,7 +18526,7 @@ declare class GMLBase extends XMLFeature {
     /**
      * @param {Options} [options] Optional configuration object.
      */
-    constructor(options?: Options$1t);
+    constructor(options?: Options$1s);
     /**
      * @protected
      * @type {Array<string>|string|undefined}
@@ -18260,7 +19490,7 @@ type GPXMetadata = {
      */
     extensions?: any;
 };
-type Options$1s = {
+type Options$1r = {
     /**
      * Callback function
      * to process `extensions` nodes. To prevent memory leaks, this callback function must
@@ -18308,7 +19538,7 @@ declare class GPX extends XMLFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1s);
+    constructor(options?: Options$1r);
     /**
      * @type {ReadExtensions|undefined}
      * @private
@@ -18544,7 +19774,7 @@ type GeoJSONFeature = Feature$1;
 type GeoJSONFeatureCollection = FeatureCollection;
 type GeoJSONGeometry = Geometry;
 type GeoJSONGeometryCollection = GeometryCollection;
-type Options$1r<FeatureType extends FeatureLike = Feature$2<Geometry$1, {
+type Options$1q<FeatureType extends FeatureLike = Feature$2<Geometry$1, {
     [x: string]: any;
 }>> = {
     /**
@@ -18619,7 +19849,7 @@ declare class GeoJSON<FeatureType extends FeatureLike = Feature$2<Geometry$1, {
     /**
      * @param {Options<FeatureType>} [options] Options.
      */
-    constructor(options?: Options$1r<FeatureType>);
+    constructor(options?: Options$1q<FeatureType>);
     /**
      * Name of the geometry attribute for features.
      * @type {string|undefined}
@@ -18784,7 +20014,7 @@ declare class TextFeature extends FeatureFormat<Feature$2<Geometry$1, {
  * IGC altitude/z. One of 'barometric', 'gps', 'none'.
  */
 type IGCZ = "barometric" | "gps" | "none";
-type Options$1q = {
+type Options$1p = {
     /**
      * Altitude mode. Possible
      * values are `'barometric'`, `'gps'`, and `'none'`.
@@ -18810,7 +20040,7 @@ declare class IGC extends TextFeature {
     /**
      * @param {Options} [options] Options.
      */
-    constructor(options?: Options$1q);
+    constructor(options?: Options$1p);
     /**
      * @private
      * @type {IGCZ}
@@ -18848,7 +20078,7 @@ declare class IGC extends TextFeature {
     private lodStop_;
 }
 
-type Options$1p = {
+type Options$1o = {
     /**
      * Attributions.
      */
@@ -18946,7 +20176,7 @@ declare class UrlTile extends TileSource<Tile$1> {
     /**
      * @param {Options} options Image tile options.
      */
-    constructor(options: Options$1p);
+    constructor(options: Options$1o);
     /**
      * @private
      * @type {boolean}
@@ -19141,7 +20371,7 @@ declare class ReprojTile extends Tile$1 {
     private unlistenSources_;
 }
 
-type Options$1o = {
+type Options$1n = {
     /**
      * Attributions.
      */
@@ -19300,7 +20530,7 @@ declare class TileImage extends UrlTile {
     /**
      * @param {!Options} options Image tile options.
      */
-    constructor(options: Options$1o);
+    constructor(options: Options$1n);
     /**
      * @protected
      * @type {?string}
@@ -19391,7 +20621,7 @@ declare class TileImage extends UrlTile {
     setTileGridForProjection(projection: ProjectionLike, tilegrid: TileGrid): void;
 }
 
-type Options$1n = {
+type Options$1m = {
     /**
      * Attributions.
      */
@@ -19499,7 +20729,7 @@ declare class IIIF extends TileImage {
      * to parse Image API service information responses into constructor options.
      * @api
      */
-    constructor(options?: Options$1n);
+    constructor(options?: Options$1m);
 }
 
 /**
@@ -19631,256 +20861,7 @@ declare class IIIFInfo {
      * @return {import("../source/IIIF.js").Options|undefined} IIIF tile source ready constructor options.
      * @api
      */
-    getTileSourceOptions(preferredOptions?: PreferredOptions): Options$1n | undefined;
-}
-
-/**
- * Anchor unit can be either a fraction of the icon size or in pixels.
- */
-type IconAnchorUnits = "fraction" | "pixels";
-/**
- * Icon origin. One of 'bottom-left', 'bottom-right', 'top-left', 'top-right'.
- */
-type IconOrigin = "bottom-left" | "bottom-right" | "top-left" | "top-right";
-type Options$1m = {
-    /**
-     * Anchor. Default value is the icon center.
-     */
-    anchor?: number[] | undefined;
-    /**
-     * Origin of the anchor: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    anchorOrigin?: IconOrigin | undefined;
-    /**
-     * Units in which the anchor x value is
-     * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
-     * the x value in pixels.
-     */
-    anchorXUnits?: IconAnchorUnits | undefined;
-    /**
-     * Units in which the anchor y value is
-     * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
-     * the y value in pixels.
-     */
-    anchorYUnits?: IconAnchorUnits | undefined;
-    /**
-     * Color to tint the icon. If not specified,
-     * the icon will be left as is.
-     */
-    color?: string | Color | undefined;
-    /**
-     * The `crossOrigin` attribute for loaded images. Note that you must provide a
-     * `crossOrigin` value if you want to access pixel data with the Canvas renderer.
-     * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
-     */
-    crossOrigin?: string | null | undefined;
-    /**
-     * The `referrerPolicy` property for loaded images.
-     */
-    referrerPolicy?: ReferrerPolicy | undefined;
-    /**
-     * Image object for the icon.
-     */
-    img?: HTMLCanvasElement | OffscreenCanvas | HTMLImageElement | ImageBitmap | undefined;
-    /**
-     * Displacement of the icon in pixels.
-     * Positive values will shift the icon right and up.
-     */
-    displacement?: number[] | undefined;
-    /**
-     * Opacity of the icon.
-     */
-    opacity?: number | undefined;
-    /**
-     * The width of the icon in pixels. This can't be used together with `scale`.
-     */
-    width?: number | undefined;
-    /**
-     * The height of the icon in pixels. This can't be used together with `scale`.
-     */
-    height?: number | undefined;
-    /**
-     * Scale.
-     */
-    scale?: number | Size | undefined;
-    /**
-     * Whether to rotate the icon with the view.
-     */
-    rotateWithView?: boolean | undefined;
-    /**
-     * Rotation in radians (positive rotation clockwise).
-     */
-    rotation?: number | undefined;
-    /**
-     * Offset which, together with `size` and `offsetOrigin`, defines the
-     * sub-rectangle to use from the original (sprite) image.
-     */
-    offset?: number[] | undefined;
-    /**
-     * Origin of the offset: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    offsetOrigin?: IconOrigin | undefined;
-    /**
-     * Icon size in pixels. Used together with `offset` to define the
-     * sub-rectangle to use from the original (sprite) image.
-     */
-    size?: Size | undefined;
-    /**
-     * Image source URI.
-     */
-    src?: string | undefined;
-    /**
-     * Declutter mode.
-     */
-    declutterMode?: DeclutterMode | undefined;
-};
-/**
- * @classdesc
- * Set icon style for vector features.
- * @api
- */
-declare class Icon extends ImageStyle {
-    /**
-     * @param {Options} [options] Options.
-     */
-    constructor(options?: Options$1m);
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private anchor_;
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private normalizedAnchor_;
-    /**
-     * @private
-     * @type {IconOrigin}
-     */
-    private anchorOrigin_;
-    /**
-     * @private
-     * @type {IconAnchorUnits}
-     */
-    private anchorXUnits_;
-    /**
-     * @private
-     * @type {IconAnchorUnits}
-     */
-    private anchorYUnits_;
-    /**
-     * @private
-     * @type {?string}
-     */
-    private crossOrigin_;
-    /**
-     * @private
-     * @type {ReferrerPolicy}
-     */
-    private referrerPolicy_;
-    /**
-     * @private
-     * @type {import("../color.js").Color}
-     */
-    private color_;
-    /**
-     * @private
-     * @type {import("./IconImage.js").default}
-     */
-    private iconImage_;
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private offset_;
-    /**
-     * @private
-     * @type {IconOrigin}
-     */
-    private offsetOrigin_;
-    /**
-     * @private
-     * @type {Array<number>}
-     */
-    private origin_;
-    /**
-     * @private
-     * @type {import("../size.js").Size}
-     */
-    private size_;
-    initialOptions_: Options$1m | undefined;
-    /**
-     * Clones the style. The underlying Image/HTMLCanvasElement is not cloned.
-     * @return {Icon} The cloned style.
-     * @api
-     * @override
-     */
-    override clone(): Icon;
-    /**
-     * Set the anchor point. The anchor determines the center point for the
-     * symbolizer.
-     *
-     * @param {Array<number>} anchor Anchor.
-     * @api
-     */
-    setAnchor(anchor: Array<number>): void;
-    /**
-     * Get the icon color.
-     * @return {import("../color.js").Color} Color.
-     * @api
-     */
-    getColor(): Color;
-    /**
-     * Set the icon color.
-     *
-     * Warning: Repeatedly setting the color on an icon style
-     * causes the icon image to be re-created each time. This can have a
-     * severe performance impact.
-     *
-     * @param {import("../color.js").Color|string|null|undefined} color Color.
-     */
-    setColor(color: Color | string | null | undefined): void;
-    /**
-     * Get the image icon.
-     * @param {number} pixelRatio Pixel ratio.
-     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image or Canvas element. If the Icon
-     * style was configured with `src` or with a not let loaded `img`, an `ImageBitmap` will be returned.
-     * @api
-     * @override
-     */
-    override getImage(pixelRatio: number): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
-    /**
-     * @return {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|ImageBitmap} Image element.
-     * @override
-     */
-    override getHitDetectionImage(): HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
-    /**
-     * Get the image URL.
-     * @return {string|undefined} Image src.
-     * @api
-     */
-    getSrc(): string | undefined;
-    /**
-     * Set the image URI
-     * @param {string} src Image source URI
-     * @api
-     */
-    setSrc(src: string): void;
-    /**
-     * Get the width of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
-     * @return {number} Icon width (in pixels).
-     * @api
-     */
-    getWidth(): number;
-    /**
-     * Get the height of the icon (in pixels). Will return undefined when the icon image is not yet loaded.
-     * @return {number} Icon height (in pixels).
-     * @api
-     */
-    getHeight(): number;
+    getTileSourceOptions(preferredOptions?: PreferredOptions): Options$1m | undefined;
 }
 
 /**
@@ -20264,7 +21245,7 @@ declare class MVT<FeatureType extends FeatureLike = RenderFeature> extends Featu
     /**
      * Read the raw geometry from the pbf offset stored in a raw feature's geometry
      * property.
-     * @param {PBF} pbf PBF.
+     * @param {PbfReader} pbf PBF.
      * @param {Object} feature Raw feature.
      * @param {Array<number>} flatCoordinates Array to store flat coordinates in.
      * @param {Array<number>} ends Array to store ends in.
@@ -20273,7 +21254,7 @@ declare class MVT<FeatureType extends FeatureLike = RenderFeature> extends Featu
     private readRawGeometry_;
     /**
      * @private
-     * @param {PBF} pbf PBF
+     * @param {PbfReader} pbf PBF
      * @param {Object} rawFeature Raw Mapbox feature.
      * @param {import("./Feature.js").ReadOptions} options Read options.
      * @return {FeatureType|null} Feature.
@@ -20680,7 +21661,7 @@ type WriteTransactionOptions = {
     /**
      * GML options for the WFS transaction writer.
      */
-    gmlOptions?: Options$1t | undefined;
+    gmlOptions?: Options$1s | undefined;
     /**
      * WFS version to use for the transaction. Can be either `1.0.0`, `1.1.0` or `2.0.0`.
      */
@@ -21833,6 +22814,24 @@ declare function linearRingss$1(flatCoordinates: Array<number>, offset: number, 
 declare function linearRingss(flatCoordinates: Array<number>, offset: number, endss: Array<Array<number>>, stride: number): Array<number>;
 
 /**
+ * Clip flat line strings to the given extent. Parts outside the extent are
+ * dropped and a vertex is inserted where a segment crosses the boundary. A line
+ * that leaves and re-enters the extent is split into separate parts so that
+ * positions derived from the result (e.g. labels placed along the line) stay
+ * within the extent. Output coordinates have a stride of 2.
+ * @param {Array<number>} flatCoordinates Flat coordinates.
+ * @param {Array<number>} ends Ends.
+ * @param {number} stride Stride.
+ * @param {import("../../extent.js").Extent} extent Extent to clip to.
+ * @return {{flatCoordinates: Array<number>, ends: Array<number>}} Clipped flat
+ *     coordinates and ends.
+ */
+declare function clipFlatLineStrings(flatCoordinates: Array<number>, ends: Array<number>, stride: number, extent: Extent$1): {
+    flatCoordinates: Array<number>;
+    ends: Array<number>;
+};
+
+/**
  * Return the squared of the largest distance between any pair of consecutive
  * coordinates.
  * @param {Array<number>} flatCoordinates Flat coordinates.
@@ -22487,7 +23486,7 @@ declare function transform2D(flatCoordinates: Array<number>, offset: number, end
  * @param {Array<number>} [dest] Destination.
  * @return {Array<number>} Transformed coordinates.
  */
-declare function rotate(flatCoordinates: Array<number>, offset: number, end: number, stride: number, angle: number, anchor: Array<number>, dest?: Array<number>): Array<number>;
+declare function rotate$1(flatCoordinates: Array<number>, offset: number, end: number, stride: number, angle: number, anchor: Array<number>, dest?: Array<number>): Array<number>;
 /**
  * Scale the coordinates.
  * @param {Array<number>} flatCoordinates Flat coordinates.
@@ -23331,8 +24330,13 @@ declare class VectorSource<FeatureType extends FeatureLike = Feature$2<Geometry$
      */
     loadFeatures(extent: Extent$1, resolution: number, projection: Projection): void;
     /**
-     * Remove an extent from the list of loaded extents.
-     * @param {import("../extent.js").Extent} extent Extent.
+     * Marks an extent as not loaded, preserving any loaded areas outside it.
+     *
+     * Any previously loaded extent overlapping the given extent is split into its
+     * remaining non-overlapping parts using {@link module:ol/extent~getDifference getDifference()},
+     * which are then re-inserted into the tree.
+     *
+     * @param {import("../extent.js").Extent} extent Extent to mark as not loaded.
      * @api
      */
     removeLoadedExtent(extent: Extent$1): void;
@@ -24102,883 +25106,6 @@ declare class DragZoom extends DragBox {
 type LineCoordType$1 = Array<Coordinate>;
 
 /**
- * @module ol/style/flat
- */
-/**
- * @api
- * @fileoverview Vector layers can be styled with an object literal containing properties for
- * stroke, fill, image, and text styles.  The types below can be composed into a single object.
- * For example, a style with both stroke and fill properties could look like this:
- *
- *     const style = {
- *       'stroke-color': 'yellow',
- *       'stroke-width': 1.5,
- *       'fill-color': 'orange',
- *     };
- *
- * See details about the available properties depending on what type of symbolizer should be applied:
- *  {@link module:ol/style/flat~FlatStroke Stroke} - properties for applying a stroke to lines and polygons
- *  {@link module:ol/style/flat~FlatFill Fill} - properties for filling polygons
- *  {@link module:ol/style/flat~FlatText Text} - properties for labeling points, lines, and polygons
- *  {@link module:ol/style/flat~FlatIcon Icon} - properties for rendering points with an icon
- *  {@link module:ol/style/flat~FlatCircle Circle} - properties for rendering points with a circle
- *  {@link module:ol/style/flat~FlatShape Shape} - properties for rendering points with a regular shape
- *
- * To conditionally apply styles based on a filter, a list of {@link module:ol/style/flat~Rule rules} can be used.
- * For example, to style points with a big orange circle if the population is greater than 1 million and
- * a smaller blue circle otherwise:
- *
- *     const rules = [
- *       {
- *         filter: ['>', ['get', 'population'], 1_000_000],
- *         style: {
- *           'circle-radius': 10,
- *           'circle-fill-color': 'red',
- *         }
- *       },
- *       {
- *         else: true,
- *         style: {
- *           'circle-radius': 5,
- *           'circle-fill-color': 'blue',
- *         },
- *       },
- *     ];
- */
-/**
- * A literal boolean (e.g. `true`) or an expression that evaluates to a boolean (e.g. `['>', ['get', 'population'], 1_000_000]`).
- *
- * @typedef {boolean|Array} BooleanExpression
- */
-/**
- * A literal string (e.g. `'hello'`) or an expression that evaluates to a string (e.g. `['get', 'greeting']`).
- *
- * @typedef {string|Array} StringExpression
- */
-/**
- * A literal number (e.g. `42`) or an expression that evaluates to a number (e.g. `['+', 40, 2]`).
- *
- * @typedef {number|Array} NumberExpression
- */
-/**
- * A CSS named color (e.g. `'blue'`), an array of 3 RGB values (e.g. `[0, 255, 0]`), an array of 4 RGBA values
- * (e.g. `[0, 255, 0, 0.5]`), or an expression that evaluates to one of these color types (e.g. `['get', 'color']`).
- *
- * @typedef {import("../color.js").Color|string|Array} ColorExpression
- */
-/**
- * An array of numbers (e.g. `[1, 2, 3]`) or an expression that evaluates to the same (e.g. `['get', 'values']`).
- *
- * @typedef {Array<number>|Array} NumberArrayExpression
- */
-/**
- * An array of two numbers (e.g. `[10, 20]`) or an expression that evaluates to the same (e.g. `['get', 'size']`).
- *
- * @typedef {number|Array<number>|Array} SizeExpression
- */
-/**
- * For static styling, the [layer.setStyle()]{@link module:ol/layer/Vector~VectorLayer#setStyle} method
- * can be called with an object literal that has fill, stroke, text, icon, regular shape, and/or circle properties.
- * @api
- *
- * @typedef {FlatFill & FlatStroke & FlatText & FlatIcon & FlatShape & FlatCircle} FlatStyle
- */
-/**
- * A flat style literal or an array of the same.
- *
- * @typedef {FlatStyle|Array<FlatStyle>|Array<Rule>} FlatStyleLike
- */
-/**
- * Fill style properties applied to polygon features.
- *
- * @typedef {Object} FlatFill
- * @property {ColorExpression} [fill-color] The fill color. `'none'` means no fill and no hit detection (applies to Canvas only).
- * @property {StringExpression} [fill-pattern-src] Fill pattern image source URI. If `fill-color` is defined as well,
- * it will be used to tint this image. (Expressions only in Canvas)
- * @property {SizeExpression} [fill-pattern-size] Fill pattern image size in pixels.
- * Can be used together with `fill-pattern-offset` to define the sub-rectangle to use
- * from a fill pattern image sprite sheet.
- * @property {SizeExpression} [fill-pattern-offset=[0, 0]] Offset, which, together with the size and the offset origin, define the
- * sub-rectangle to use from the original fill pattern image.
- * @property {import("./Icon.js").IconOrigin} [fill-pattern-offset-origin='top-left'] Origin of the offset: `bottom-left`, `bottom-right`,
- * `top-left` or `top-right`. (WebGL only)
- */
-/**
- * Stroke style properties applied to line strings and polygon boundaries. To apply a stroke, at least one of
- * `stroke-color` or `stroke-width` must be provided.
- *
- * @typedef {Object} FlatStroke
- * @property {ColorExpression} [stroke-color] The stroke color.
- * @property {NumberExpression} [stroke-width] Stroke pixel width.
- * @property {StringExpression} [stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`.
- * @property {StringExpression} [stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`.
- * @property {NumberArrayExpression} [stroke-line-dash] Line dash pattern.
- * @property {NumberExpression} [stroke-line-dash-offset=0] Line dash offset.
- * @property {NumberExpression} [stroke-miter-limit=10] Miter limit.
- * @property {NumberExpression} [stroke-offset] Stroke offset in pixel along the normal. A positive value offsets the line to the right,
- * relative to the direction of the line.
- * @property {string} [stroke-pattern-src] Stroke pattern image source URI. If `stroke-color` is defined as well,
- * it will be used to tint this image. (WebGL only)
- * @property {SizeExpression} [stroke-pattern-offset=[0, 0]] Offset, which, together with the size and the offset origin,
- * define the sub-rectangle to use from the original stroke pattern image. (WebGL only)
- * @property {import("./Icon.js").IconOrigin} [stroke-pattern-offset-origin='top-left'] Origin of the offset: `bottom-left`, `bottom-right`,
- * `top-left` or `top-right`. (WebGL only)
- * @property {SizeExpression} [stroke-pattern-size] Stroke pattern image size in pixel. Can be used together with `stroke-pattern-offset` to define the
- * sub-rectangle to use from the origin (sprite) fill pattern image. (WebGL only)
- * @property {NumberExpression} [stroke-pattern-spacing] Spacing between each pattern occurrence in pixels; 0 if undefined. (WebGL only)
- * @property {NumberExpression} [stroke-pattern-start-offset] Stroke pattern offset in pixels at the start of the line. (WebGL only)
- * @property {NumberExpression} [z-index] The zIndex of the style.
- */
-/**
- * Label style properties applied to all features. At a minimum, a `text-value` must be provided.
- * Note: text style is currently not supported in WebGL layers
- *
- * @typedef {Object} FlatText
- * @property {StringExpression} [text-value] Text content (with `\n` for line breaks).
- * @property {StringExpression} [text-font='10px sans-serif'] Font style as [CSS `font`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font) value.
- * @property {NumberExpression} [text-max-angle=Math.PI/4] When `text-placement` is set to `'line'`, allow a maximum angle between adjacent characters.
- * The expected value is in radians, and the default is 45° (`Math.PI / 4`).
- * @property {NumberExpression} [text-offset-x=0] Horizontal text offset in pixels. A positive will shift the text right.
- * @property {NumberExpression} [text-offset-y=0] Vertical text offset in pixels. A positive will shift the text down.
- * @property {BooleanExpression} [text-overflow=false] For polygon labels or when `placement` is set to `'line'`, allow text to exceed
- * the width of the polygon at the label position or the length of the path that it follows.
- * @property {StringExpression} [text-placement='point'] Text placement.
- * @property {NumberExpression} [text-repeat] Repeat interval in pixels. When set, the text will be repeated at this interval. Only available when
- * `text-placement` is set to `'line'`. Overrides `text-align`.
- * @property {SizeExpression} [text-scale] Scale.
- * @property {BooleanExpression} [text-rotate-with-view=false] Whether to rotate the text with the view.
- * @property {NumberExpression} [text-rotation=0] Rotation in radians (positive rotation clockwise).
- * @property {StringExpression} [text-align] Text alignment. Possible values: `'left'`, `'right'`, `'center'`, `'end'` or `'start'`.
- * Default is `'center'` for `'text-placement': 'point'`. For `'text-placement': 'line'`, the default is to let the renderer choose a
- * placement where `text-max-angle` is not exceeded.
- * @property {StringExpression} [text-justify] Text justification within the text box.
- * If not set, text is justified towards the `textAlign` anchor.
- * Otherwise, use options `'left'`, `'center'`, or `'right'` to justify the text within the text box.
- * **Note:** `text-justify` is ignored for immediate rendering and also for `'text-placement': 'line'`.
- * @property {StringExpression} [text-baseline='middle'] Text base line. Possible values: `'bottom'`, `'top'`, `'middle'`, `'alphabetic'`,
- * `'hanging'`, `'ideographic'`.
- * @property {NumberArrayExpression} [text-padding=[0, 0, 0, 0]] Padding in pixels around the text for decluttering and background. The order of
- * values in the array is `[top, right, bottom, left]`.
- * @property {ColorExpression} [text-fill-color] The fill color. `'none'` means no fill and no hit detection.
- * @property {ColorExpression} [text-background-fill-color] The fill color. `'none'` means no fill and no hit detection.
- * @property {ColorExpression} [text-stroke-color] The stroke color.
- * @property {StringExpression} [text-stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`.
- * @property {StringExpression} [text-stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`.
- * @property {NumberArrayExpression} [text-stroke-line-dash] Line dash pattern.
- * @property {NumberExpression} [text-stroke-line-dash-offset=0] Line dash offset.
- * @property {NumberExpression} [text-stroke-miter-limit=10] Miter limit.
- * @property {NumberExpression} [text-stroke-width] Stroke pixel width.
- * @property {ColorExpression} [text-background-stroke-color] The stroke color.
- * @property {StringExpression} [text-background-stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`.
- * @property {StringExpression} [text-background-stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`.
- * @property {NumberArrayExpression} [text-background-stroke-line-dash] Line dash pattern.
- * @property {NumberExpression} [text-background-stroke-line-dash-offset=0] Line dash offset.
- * @property {NumberExpression} [text-background-stroke-miter-limit=10] Miter limit.
- * @property {NumberExpression} [text-background-stroke-width] Stroke pixel width.
- * @property {import("./Style.js").DeclutterMode} [text-declutter-mode] Declutter mode
- * @property {NumberExpression} [z-index] The zIndex of the style.
- */
-/**
- * Icon style properties applied to point features. `icon-src` must be provided to render
- * points with an icon.
- *
- * @typedef {Object} FlatIcon
- * @property {string} [icon-src] Image source URI.
- * @property {NumberArrayExpression} [icon-anchor=[0.5, 0.5]] Anchor. Default value is the icon center.
- * @property {import("./Icon.js").IconOrigin} [icon-anchor-origin='top-left'] Origin of the anchor: `bottom-left`, `bottom-right`,
- * `top-left` or `top-right`.
- * @property {import("./Icon.js").IconAnchorUnits} [icon-anchor-x-units='fraction'] Units in which the anchor x value is
- * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
- * the x value in pixels.
- * @property {import("./Icon.js").IconAnchorUnits} [icon-anchor-y-units='fraction'] Units in which the anchor y value is
- * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
- * the y value in pixels.
- * @property {ColorExpression} [icon-color] Color to tint the icon. If not specified,
- * the icon will be left as is.
- * @property {null|string} [icon-cross-origin] The `crossOrigin` attribute for loaded images. Note that you must provide a
- * `icon-cross-origin` value if you want to access pixel data with the Canvas renderer.
- * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
- * @property {SizeExpression} [icon-offset=[0, 0]] Offset, which, together with the size and the offset origin, define the
- * sub-rectangle to use from the original icon image.
- * @property {NumberArrayExpression} [icon-displacement=[0,0]] Displacement of the icon.
- * @property {import("./Icon.js").IconOrigin} [icon-offset-origin='top-left'] Origin of the offset: `bottom-left`, `bottom-right`,
- * `top-left` or `top-right`.
- * @property {NumberExpression} [icon-opacity=1] Opacity of the icon.
- * @property {SizeExpression} [icon-scale=1] Scale.
- * @property {NumberExpression} [icon-width] Width of the icon. If not specified, the actual image width will be used. Cannot be combined
- * with `scale`. (Expressions only in WebGL)
- * @property {NumberExpression} [icon-height] Height of the icon. If not specified, the actual image height will be used. Cannot be combined
- * with `scale`. (Expressions only in WebGL)
- * @property {NumberExpression} [icon-rotation=0] Rotation in radians (positive rotation clockwise).
- * @property {BooleanExpression} [icon-rotate-with-view=false] Whether to rotate the icon with the view. (Expressions only supported in Canvas)
- * @property {SizeExpression} [icon-size] Icon size in pixel. Can be used together with `icon-offset` to define the
- * sub-rectangle to use from the origin (sprite) icon image. (Expressions only in WebGL)
- * @property {import("./Style.js").DeclutterMode} [icon-declutter-mode] Declutter mode (Canvas only)
- * @property {NumberExpression} [z-index] The zIndex of the style. (Canvas only)
- */
-/**
- * Regular shape style properties for rendering point features. At least `shape-points` must be provided.
- *
- * @typedef {Object} FlatShape
- * @property {NumberExpression} [shape-points] Number of points for stars and regular polygons. In case of a polygon, the number of points
- * is the number of sides. (Expressions only in WebGL)
- * @property {ColorExpression} [shape-fill-color] The fill color. `'none'` means no fill and no hit detection.
- * @property {ColorExpression} [shape-stroke-color] The stroke color.
- * @property {NumberExpression} [shape-stroke-width] Stroke pixel width.
- * @property {StringExpression} [shape-stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`. (Canvas only)
- * @property {StringExpression} [shape-stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`. (Canvas only)
- * @property {NumberArrayExpression} [shape-stroke-line-dash] Line dash pattern. (Canvas only)
- * @property {NumberExpression} [shape-stroke-line-dash-offset=0] Line dash offset. (Canvas only)
- * @property {NumberExpression} [shape-stroke-miter-limit=10] Miter limit. (Canvas only)
- * @property {NumberExpression} [shape-radius] Radius of a regular polygon. (Expressions only in WebGL)
- * @property {NumberExpression} [shape-radius2] Second radius to make a star instead of a regular polygon. (Expressions only in WebGL)
- * @property {NumberExpression} [shape-angle=0] Shape's angle in radians. A value of 0 will have one of the shape's point facing up. (Expressions only in WebGL)
- * @property {NumberArrayExpression} [shape-displacement=[0,0]] Displacement of the shape
- * @property {NumberExpression} [shape-opacity] Shape opacity. (WebGL only)
- * @property {NumberExpression} [shape-rotation=0] Rotation in radians (positive rotation clockwise).
- * @property {BooleanExpression} [shape-rotate-with-view=false] Whether to rotate the shape with the view. (Expression only supported in Canvas)
- * @property {SizeExpression} [shape-scale=1] Scale. Unless two-dimensional scaling is required a better
- * result may be obtained with appropriate settings for `shape-radius` and `shape-radius2`.
- * @property {import("./Style.js").DeclutterMode} [shape-declutter-mode] Declutter mode. (Canvas only)
- * @property {NumberExpression} [z-index] The zIndex of the style. (Canvas only)
- */
-/**
- * Circle style properties for rendering point features. At least `circle-radius` must be provided.
- *
- * @typedef {Object} FlatCircle
- * @property {NumberExpression} [circle-radius] Circle radius.
- * @property {ColorExpression} [circle-fill-color] The fill color. `'none'` means no fill and no hit detection.
- * @property {ColorExpression} [circle-stroke-color] The stroke color.
- * @property {NumberExpression} [circle-stroke-width] Stroke pixel width.
- * @property {StringExpression} [circle-stroke-line-cap='round'] Line cap style: `butt`, `round`, or `square`. (Canvas only)
- * @property {StringExpression} [circle-stroke-line-join='round'] Line join style: `bevel`, `round`, or `miter`. (Canvas only)
- * @property {NumberArrayExpression} [circle-stroke-line-dash] Line dash pattern. (Canvas only)
- * @property {NumberExpression} [circle-stroke-line-dash-offset=0] Line dash offset. (Canvas only)
- * @property {NumberExpression} [circle-stroke-miter-limit=10] Miter limit. (Canvas only)
- * @property {NumberArrayExpression} [circle-displacement=[0,0]] displacement
- * @property {SizeExpression} [circle-scale=1] Scale. A two-dimensional scale will produce an ellipse.
- * Unless two-dimensional scaling is required a better result may be obtained with an appropriate setting for `circle-radius`.
- * @property {NumberExpression} [circle-opacity] Circle opacity. (WebGL only)
- * @property {NumberExpression} [circle-rotation=0] Rotation in radians
- * (positive rotation clockwise, meaningful only when used in conjunction with a two-dimensional scale).
- * @property {BooleanExpression} [circle-rotate-with-view=false] Whether to rotate the shape with the view (Expression only supported in Canvas)
- * (meaningful only when used in conjunction with a two-dimensional scale).
- * @property {import("./Style.js").DeclutterMode} [circle-declutter-mode] Declutter mode (Canvas only)
- * @property {NumberExpression} [z-index] The zIndex of the style. (Canvas only)
- */
-/**
- * These default style properties are applied when no other style is given.
- *
- * @typedef {Object} DefaultStyle
- * @property {string} fill-color `'rgba(255,255,255,0.4)'`
- * @property {string} stroke-color `'#3399CC'`
- * @property {number} stroke-width `1.25`
- * @property {number} circle-radius `5`
- * @property {string} circle-fill-color `'rgba(255,255,255,0.4)'`
- * @property {number} circle-stroke-width `1.25`
- * @property {string} circle-stroke-color `'#3399CC'`
- */
-/**
- * @return {DefaultStyle} The default flat style.
- */
-declare function createDefaultStyle(): DefaultStyle;
-/**
- * A literal boolean (e.g. `true`) or an expression that evaluates to a boolean (e.g. `['>', ['get', 'population'], 1_000_000]`).
- */
-type BooleanExpression = boolean | any[];
-/**
- * A literal string (e.g. `'hello'`) or an expression that evaluates to a string (e.g. `['get', 'greeting']`).
- */
-type StringExpression = string | any[];
-/**
- * A literal number (e.g. `42`) or an expression that evaluates to a number (e.g. `['+', 40, 2]`).
- */
-type NumberExpression = number | any[];
-/**
- * A CSS named color (e.g. `'blue'`), an array of 3 RGB values (e.g. `[0, 255, 0]`), an array of 4 RGBA values
- * (e.g. `[0, 255, 0, 0.5]`), or an expression that evaluates to one of these color types (e.g. `['get', 'color']`).
- */
-type ColorExpression = Color | string | any[];
-/**
- * An array of numbers (e.g. `[1, 2, 3]`) or an expression that evaluates to the same (e.g. `['get', 'values']`).
- */
-type NumberArrayExpression = Array<number> | any[];
-/**
- * An array of two numbers (e.g. `[10, 20]`) or an expression that evaluates to the same (e.g. `['get', 'size']`).
- */
-type SizeExpression = number | Array<number> | any[];
-/**
- * For static styling, the [layer.setStyle()]{@link module :ol/layer/Vector~VectorLayer#setStyle} method
- * can be called with an object literal that has fill, stroke, text, icon, regular shape, and/or circle properties.
- */
-type FlatStyle$1 = FlatFill & FlatStroke & FlatText & FlatIcon & FlatShape & FlatCircle;
-/**
- * A flat style literal or an array of the same.
- */
-type FlatStyleLike$1 = FlatStyle$1 | Array<FlatStyle$1> | Array<Rule>;
-/**
- * Fill style properties applied to polygon features.
- */
-type FlatFill = {
-    /**
-     * The fill color. `'none'` means no fill and no hit detection (applies to Canvas only).
-     */
-    "fill-color"?: ColorExpression | undefined;
-    /**
-     * Fill pattern image source URI. If `fill-color` is defined as well,
-     * it will be used to tint this image. (Expressions only in Canvas)
-     */
-    "fill-pattern-src"?: StringExpression | undefined;
-    /**
-     * Fill pattern image size in pixels.
-     * Can be used together with `fill-pattern-offset` to define the sub-rectangle to use
-     * from a fill pattern image sprite sheet.
-     */
-    "fill-pattern-size"?: SizeExpression | undefined;
-    /**
-     * Offset, which, together with the size and the offset origin, define the
-     * sub-rectangle to use from the original fill pattern image.
-     */
-    "fill-pattern-offset"?: SizeExpression | undefined;
-    /**
-     * Origin of the offset: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`. (WebGL only)
-     */
-    "fill-pattern-offset-origin"?: IconOrigin | undefined;
-};
-/**
- * Stroke style properties applied to line strings and polygon boundaries. To apply a stroke, at least one of
- * `stroke-color` or `stroke-width` must be provided.
- */
-type FlatStroke = {
-    /**
-     * The stroke color.
-     */
-    "stroke-color"?: ColorExpression | undefined;
-    /**
-     * Stroke pixel width.
-     */
-    "stroke-width"?: NumberExpression | undefined;
-    /**
-     * Line cap style: `butt`, `round`, or `square`.
-     */
-    "stroke-line-cap"?: StringExpression | undefined;
-    /**
-     * Line join style: `bevel`, `round`, or `miter`.
-     */
-    "stroke-line-join"?: StringExpression | undefined;
-    /**
-     * Line dash pattern.
-     */
-    "stroke-line-dash"?: NumberArrayExpression | undefined;
-    /**
-     * Line dash offset.
-     */
-    "stroke-line-dash-offset"?: NumberExpression | undefined;
-    /**
-     * Miter limit.
-     */
-    "stroke-miter-limit"?: NumberExpression | undefined;
-    /**
-     * Stroke offset in pixel along the normal. A positive value offsets the line to the right,
-     * relative to the direction of the line.
-     */
-    "stroke-offset"?: NumberExpression | undefined;
-    /**
-     * Stroke pattern image source URI. If `stroke-color` is defined as well,
-     * it will be used to tint this image. (WebGL only)
-     */
-    "stroke-pattern-src"?: string | undefined;
-    /**
-     * Offset, which, together with the size and the offset origin,
-     * define the sub-rectangle to use from the original stroke pattern image. (WebGL only)
-     */
-    "stroke-pattern-offset"?: SizeExpression | undefined;
-    /**
-     * Origin of the offset: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`. (WebGL only)
-     */
-    "stroke-pattern-offset-origin"?: IconOrigin | undefined;
-    /**
-     * Stroke pattern image size in pixel. Can be used together with `stroke-pattern-offset` to define the
-     * sub-rectangle to use from the origin (sprite) fill pattern image. (WebGL only)
-     */
-    "stroke-pattern-size"?: SizeExpression | undefined;
-    /**
-     * Spacing between each pattern occurrence in pixels; 0 if undefined. (WebGL only)
-     */
-    "stroke-pattern-spacing"?: NumberExpression | undefined;
-    /**
-     * Stroke pattern offset in pixels at the start of the line. (WebGL only)
-     */
-    "stroke-pattern-start-offset"?: NumberExpression | undefined;
-    /**
-     * The zIndex of the style.
-     */
-    "z-index"?: NumberExpression | undefined;
-};
-/**
- * Label style properties applied to all features. At a minimum, a `text-value` must be provided.
- * Note: text style is currently not supported in WebGL layers
- */
-type FlatText = {
-    /**
-     * Text content (with `\n` for line breaks).
-     */
-    "text-value"?: StringExpression | undefined;
-    /**
-     * Font style as [CSS `font`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/font) value.
-     */
-    "text-font"?: StringExpression | undefined;
-    /**
-     * When `text-placement` is set to `'line'`, allow a maximum angle between adjacent characters.
-     * The expected value is in radians, and the default is 45° (`Math.PI / 4`).
-     */
-    "text-max-angle"?: NumberExpression | undefined;
-    /**
-     * Horizontal text offset in pixels. A positive will shift the text right.
-     */
-    "text-offset-x"?: NumberExpression | undefined;
-    /**
-     * Vertical text offset in pixels. A positive will shift the text down.
-     */
-    "text-offset-y"?: NumberExpression | undefined;
-    /**
-     * For polygon labels or when `placement` is set to `'line'`, allow text to exceed
-     * the width of the polygon at the label position or the length of the path that it follows.
-     */
-    "text-overflow"?: BooleanExpression | undefined;
-    /**
-     * Text placement.
-     */
-    "text-placement"?: StringExpression | undefined;
-    /**
-     * Repeat interval in pixels. When set, the text will be repeated at this interval. Only available when
-     * `text-placement` is set to `'line'`. Overrides `text-align`.
-     */
-    "text-repeat"?: NumberExpression | undefined;
-    /**
-     * Scale.
-     */
-    "text-scale"?: SizeExpression | undefined;
-    /**
-     * Whether to rotate the text with the view.
-     */
-    "text-rotate-with-view"?: BooleanExpression | undefined;
-    /**
-     * Rotation in radians (positive rotation clockwise).
-     */
-    "text-rotation"?: NumberExpression | undefined;
-    /**
-     * Text alignment. Possible values: `'left'`, `'right'`, `'center'`, `'end'` or `'start'`.
-     * Default is `'center'` for `'text-placement': 'point'`. For `'text-placement': 'line'`, the default is to let the renderer choose a
-     * placement where `text-max-angle` is not exceeded.
-     */
-    "text-align"?: StringExpression | undefined;
-    /**
-     * Text justification within the text box.
-     * If not set, text is justified towards the `textAlign` anchor.
-     * Otherwise, use options `'left'`, `'center'`, or `'right'` to justify the text within the text box.
-     * **Note:** `text-justify` is ignored for immediate rendering and also for `'text-placement': 'line'`.
-     */
-    "text-justify"?: StringExpression | undefined;
-    /**
-     * Text base line. Possible values: `'bottom'`, `'top'`, `'middle'`, `'alphabetic'`,
-     * `'hanging'`, `'ideographic'`.
-     */
-    "text-baseline"?: StringExpression | undefined;
-    /**
-     * Padding in pixels around the text for decluttering and background. The order of
-     * values in the array is `[top, right, bottom, left]`.
-     */
-    "text-padding"?: NumberArrayExpression | undefined;
-    /**
-     * The fill color. `'none'` means no fill and no hit detection.
-     */
-    "text-fill-color"?: ColorExpression | undefined;
-    /**
-     * The fill color. `'none'` means no fill and no hit detection.
-     */
-    "text-background-fill-color"?: ColorExpression | undefined;
-    /**
-     * The stroke color.
-     */
-    "text-stroke-color"?: ColorExpression | undefined;
-    /**
-     * Line cap style: `butt`, `round`, or `square`.
-     */
-    "text-stroke-line-cap"?: StringExpression | undefined;
-    /**
-     * Line join style: `bevel`, `round`, or `miter`.
-     */
-    "text-stroke-line-join"?: StringExpression | undefined;
-    /**
-     * Line dash pattern.
-     */
-    "text-stroke-line-dash"?: NumberArrayExpression | undefined;
-    /**
-     * Line dash offset.
-     */
-    "text-stroke-line-dash-offset"?: NumberExpression | undefined;
-    /**
-     * Miter limit.
-     */
-    "text-stroke-miter-limit"?: NumberExpression | undefined;
-    /**
-     * Stroke pixel width.
-     */
-    "text-stroke-width"?: NumberExpression | undefined;
-    /**
-     * The stroke color.
-     */
-    "text-background-stroke-color"?: ColorExpression | undefined;
-    /**
-     * Line cap style: `butt`, `round`, or `square`.
-     */
-    "text-background-stroke-line-cap"?: StringExpression | undefined;
-    /**
-     * Line join style: `bevel`, `round`, or `miter`.
-     */
-    "text-background-stroke-line-join"?: StringExpression | undefined;
-    /**
-     * Line dash pattern.
-     */
-    "text-background-stroke-line-dash"?: NumberArrayExpression | undefined;
-    /**
-     * Line dash offset.
-     */
-    "text-background-stroke-line-dash-offset"?: NumberExpression | undefined;
-    /**
-     * Miter limit.
-     */
-    "text-background-stroke-miter-limit"?: NumberExpression | undefined;
-    /**
-     * Stroke pixel width.
-     */
-    "text-background-stroke-width"?: NumberExpression | undefined;
-    /**
-     * Declutter mode
-     */
-    "text-declutter-mode"?: DeclutterMode | undefined;
-    /**
-     * The zIndex of the style.
-     */
-    "z-index"?: NumberExpression | undefined;
-};
-/**
- * Icon style properties applied to point features. `icon-src` must be provided to render
- * points with an icon.
- */
-type FlatIcon = {
-    /**
-     * Image source URI.
-     */
-    "icon-src"?: string | undefined;
-    /**
-     * Anchor. Default value is the icon center.
-     */
-    "icon-anchor"?: NumberArrayExpression | undefined;
-    /**
-     * Origin of the anchor: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    "icon-anchor-origin"?: IconOrigin | undefined;
-    /**
-     * Units in which the anchor x value is
-     * specified. A value of `'fraction'` indicates the x value is a fraction of the icon. A value of `'pixels'` indicates
-     * the x value in pixels.
-     */
-    "icon-anchor-x-units"?: IconAnchorUnits | undefined;
-    /**
-     * Units in which the anchor y value is
-     * specified. A value of `'fraction'` indicates the y value is a fraction of the icon. A value of `'pixels'` indicates
-     * the y value in pixels.
-     */
-    "icon-anchor-y-units"?: IconAnchorUnits | undefined;
-    /**
-     * Color to tint the icon. If not specified,
-     * the icon will be left as is.
-     */
-    "icon-color"?: ColorExpression | undefined;
-    /**
-     * The `crossOrigin` attribute for loaded images. Note that you must provide a
-     * `icon-cross-origin` value if you want to access pixel data with the Canvas renderer.
-     * See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image for more detail.
-     */
-    "icon-cross-origin"?: string | null | undefined;
-    /**
-     * Offset, which, together with the size and the offset origin, define the
-     * sub-rectangle to use from the original icon image.
-     */
-    "icon-offset"?: SizeExpression | undefined;
-    /**
-     * Displacement of the icon.
-     */
-    "icon-displacement"?: NumberArrayExpression | undefined;
-    /**
-     * Origin of the offset: `bottom-left`, `bottom-right`,
-     * `top-left` or `top-right`.
-     */
-    "icon-offset-origin"?: IconOrigin | undefined;
-    /**
-     * Opacity of the icon.
-     */
-    "icon-opacity"?: NumberExpression | undefined;
-    /**
-     * Scale.
-     */
-    "icon-scale"?: SizeExpression | undefined;
-    /**
-     * Width of the icon. If not specified, the actual image width will be used. Cannot be combined
-     * with `scale`. (Expressions only in WebGL)
-     */
-    "icon-width"?: NumberExpression | undefined;
-    /**
-     * Height of the icon. If not specified, the actual image height will be used. Cannot be combined
-     * with `scale`. (Expressions only in WebGL)
-     */
-    "icon-height"?: NumberExpression | undefined;
-    /**
-     * Rotation in radians (positive rotation clockwise).
-     */
-    "icon-rotation"?: NumberExpression | undefined;
-    /**
-     * Whether to rotate the icon with the view. (Expressions only supported in Canvas)
-     */
-    "icon-rotate-with-view"?: BooleanExpression | undefined;
-    /**
-     * Icon size in pixel. Can be used together with `icon-offset` to define the
-     * sub-rectangle to use from the origin (sprite) icon image. (Expressions only in WebGL)
-     */
-    "icon-size"?: SizeExpression | undefined;
-    /**
-     * Declutter mode (Canvas only)
-     */
-    "icon-declutter-mode"?: DeclutterMode | undefined;
-    /**
-     * The zIndex of the style. (Canvas only)
-     */
-    "z-index"?: NumberExpression | undefined;
-};
-/**
- * Regular shape style properties for rendering point features. At least `shape-points` must be provided.
- */
-type FlatShape = {
-    /**
-     * Number of points for stars and regular polygons. In case of a polygon, the number of points
-     * is the number of sides. (Expressions only in WebGL)
-     */
-    "shape-points"?: NumberExpression | undefined;
-    /**
-     * The fill color. `'none'` means no fill and no hit detection.
-     */
-    "shape-fill-color"?: ColorExpression | undefined;
-    /**
-     * The stroke color.
-     */
-    "shape-stroke-color"?: ColorExpression | undefined;
-    /**
-     * Stroke pixel width.
-     */
-    "shape-stroke-width"?: NumberExpression | undefined;
-    /**
-     * Line cap style: `butt`, `round`, or `square`. (Canvas only)
-     */
-    "shape-stroke-line-cap"?: StringExpression | undefined;
-    /**
-     * Line join style: `bevel`, `round`, or `miter`. (Canvas only)
-     */
-    "shape-stroke-line-join"?: StringExpression | undefined;
-    /**
-     * Line dash pattern. (Canvas only)
-     */
-    "shape-stroke-line-dash"?: NumberArrayExpression | undefined;
-    /**
-     * Line dash offset. (Canvas only)
-     */
-    "shape-stroke-line-dash-offset"?: NumberExpression | undefined;
-    /**
-     * Miter limit. (Canvas only)
-     */
-    "shape-stroke-miter-limit"?: NumberExpression | undefined;
-    /**
-     * Radius of a regular polygon. (Expressions only in WebGL)
-     */
-    "shape-radius"?: NumberExpression | undefined;
-    /**
-     * Second radius to make a star instead of a regular polygon. (Expressions only in WebGL)
-     */
-    "shape-radius2"?: NumberExpression | undefined;
-    /**
-     * Shape's angle in radians. A value of 0 will have one of the shape's point facing up. (Expressions only in WebGL)
-     */
-    "shape-angle"?: NumberExpression | undefined;
-    /**
-     * Displacement of the shape
-     */
-    "shape-displacement"?: NumberArrayExpression | undefined;
-    /**
-     * Shape opacity. (WebGL only)
-     */
-    "shape-opacity"?: NumberExpression | undefined;
-    /**
-     * Rotation in radians (positive rotation clockwise).
-     */
-    "shape-rotation"?: NumberExpression | undefined;
-    /**
-     * Whether to rotate the shape with the view. (Expression only supported in Canvas)
-     */
-    "shape-rotate-with-view"?: BooleanExpression | undefined;
-    /**
-     * Scale. Unless two-dimensional scaling is required a better
-     * result may be obtained with appropriate settings for `shape-radius` and `shape-radius2`.
-     */
-    "shape-scale"?: SizeExpression | undefined;
-    /**
-     * Declutter mode. (Canvas only)
-     */
-    "shape-declutter-mode"?: DeclutterMode | undefined;
-    /**
-     * The zIndex of the style. (Canvas only)
-     */
-    "z-index"?: NumberExpression | undefined;
-};
-/**
- * Circle style properties for rendering point features. At least `circle-radius` must be provided.
- */
-type FlatCircle = {
-    /**
-     * Circle radius.
-     */
-    "circle-radius"?: NumberExpression | undefined;
-    /**
-     * The fill color. `'none'` means no fill and no hit detection.
-     */
-    "circle-fill-color"?: ColorExpression | undefined;
-    /**
-     * The stroke color.
-     */
-    "circle-stroke-color"?: ColorExpression | undefined;
-    /**
-     * Stroke pixel width.
-     */
-    "circle-stroke-width"?: NumberExpression | undefined;
-    /**
-     * Line cap style: `butt`, `round`, or `square`. (Canvas only)
-     */
-    "circle-stroke-line-cap"?: StringExpression | undefined;
-    /**
-     * Line join style: `bevel`, `round`, or `miter`. (Canvas only)
-     */
-    "circle-stroke-line-join"?: StringExpression | undefined;
-    /**
-     * Line dash pattern. (Canvas only)
-     */
-    "circle-stroke-line-dash"?: NumberArrayExpression | undefined;
-    /**
-     * Line dash offset. (Canvas only)
-     */
-    "circle-stroke-line-dash-offset"?: NumberExpression | undefined;
-    /**
-     * Miter limit. (Canvas only)
-     */
-    "circle-stroke-miter-limit"?: NumberExpression | undefined;
-    /**
-     * displacement
-     */
-    "circle-displacement"?: NumberArrayExpression | undefined;
-    /**
-     * Scale. A two-dimensional scale will produce an ellipse.
-     * Unless two-dimensional scaling is required a better result may be obtained with an appropriate setting for `circle-radius`.
-     */
-    "circle-scale"?: SizeExpression | undefined;
-    /**
-     * Circle opacity. (WebGL only)
-     */
-    "circle-opacity"?: NumberExpression | undefined;
-    /**
-     * Rotation in radians
-     * (positive rotation clockwise, meaningful only when used in conjunction with a two-dimensional scale).
-     */
-    "circle-rotation"?: NumberExpression | undefined;
-    /**
-     * Whether to rotate the shape with the view (Expression only supported in Canvas)
-     * (meaningful only when used in conjunction with a two-dimensional scale).
-     */
-    "circle-rotate-with-view"?: BooleanExpression | undefined;
-    /**
-     * Declutter mode (Canvas only)
-     */
-    "circle-declutter-mode"?: DeclutterMode | undefined;
-    /**
-     * The zIndex of the style. (Canvas only)
-     */
-    "z-index"?: NumberExpression | undefined;
-};
-/**
- * These default style properties are applied when no other style is given.
- */
-type DefaultStyle = {
-    /**
-     * `'rgba(255,255,255,0.4)'`
-     */
-    "fill-color": string;
-    /**
-     * `'#3399CC'`
-     */
-    "stroke-color": string;
-    /**
-     * `1.25`
-     */
-    "stroke-width": number;
-    /**
-     * `5`
-     */
-    "circle-radius": number;
-    /**
-     * `'rgba(255,255,255,0.4)'`
-     */
-    "circle-fill-color": string;
-    /**
-     * `1.25`
-     */
-    "circle-stroke-width": number;
-    /**
-     * `'#3399CC'`
-     */
-    "circle-stroke-color": string;
-};
-/**
- * A rule is used to conditionally apply a style. If the rule's filter evaluates to true,
- * the style will be applied.
- */
-type Rule = {
-    /**
-     * The style to be applied if the filter matches.
-     */
-    style: FlatStyle$1 | Array<FlatStyle$1>;
-    /**
-     * The filter used
-     * to determine if a style applies. If no filter is included, the rule always applies
-     * (unless it is an else rule).
-     */
-    filter?: EncodedExpression | undefined;
-    /**
-     * If true, the rule applies only if no other previous rule applies.
-     * If the else rule also has a filter, the rule will not apply if the filter does not match.
-     */
-    else?: boolean | undefined;
-};
-/**
- * Style variables are provided as an object. The variables can be read in a {@link import ("../expr/expression.js").ExpressionValue style expression}
- * using the `['var', 'varName']` operator.
- * Each variable must hold a literal value (not an expression).
- */
-type StyleVariables = {
-    [x: string]: string | number | boolean | number[];
-};
-
-/**
  * @classdesc
  * This class is a wrapper around the association of both a `WebGLTexture` and a `WebGLFramebuffer` instances,
  * simplifying initialization and binding for rendering.
@@ -25463,16 +25590,6 @@ declare class WebGLHelper extends Disposable {
     private needsToBeRecreated_;
     /**
      * @private
-     * @type {import("../transform.js").Transform}
-     */
-    private offsetRotateMatrix_;
-    /**
-     * @private
-     * @type {import("../transform.js").Transform}
-     */
-    private offsetScaleMatrix_;
-    /**
-     * @private
      * @type {Array<number>}
      */
     private tmpMat4_;
@@ -25690,9 +25807,10 @@ declare class WebGLHelper extends Disposable {
      * The resulting transform can be used to convert world space coordinates to view coordinates in the [-1, 1] range.
      * @param {import("../Map.js").FrameState} frameState Frame state.
      * @param {import("../transform.js").Transform} transform Transform to update.
+     * @param {boolean} [ignoreRotation] If true, view rotation will not be added to the transform
      * @return {import("../transform.js").Transform} The updated transform object.
      */
-    makeProjectionTransform(frameState: FrameState, transform: Transform): Transform;
+    makeProjectionTransform(frameState: FrameState, transform: Transform, ignoreRotation?: boolean): Transform;
     /**
      * Give a value for a standard float uniform
      * @param {string} uniform Uniform name
@@ -25899,6 +26017,16 @@ declare class WebGLLayerRenderer<LayerType extends Layer> extends LayerRenderer<
      * @protected
      */
     protected clearCache(): void;
+    /**
+     * @protected
+     * @param {Array<PostProcessesOptions>} postProcesses New post processes array
+     */
+    protected setPostProcesses(postProcesses: Array<PostProcessesOptions>): void;
+    /**
+     * @protected
+     * @return {Array<PostProcessesOptions>} Array of post processes
+     */
+    protected getPostProcesses(): Array<PostProcessesOptions>;
     /**
      * @param {import("../../render/EventType.js").default} type Event type.
      * @param {WebGLRenderingContext} context The rendering context.
@@ -26608,6 +26736,7 @@ declare function computeHash(input: any | string): string;
  * @property {ShaderBuilder} builder Shader builder pre-configured according to a given style
  * @property {import("./VectorStyleRenderer.js").UniformDefinitions} uniforms Uniform definitions
  * @property {import("./VectorStyleRenderer.js").AttributeDefinitions} attributes Attribute definitions
+ * @property {import("../../style/flat.js").Rule} [sourceRule] Style and filter that was parsed (if any)
  */
 /**
  * Parses a {@link import("../../style/flat.js").FlatStyle} object and returns a {@link ShaderBuilder}
@@ -26636,6 +26765,10 @@ type StyleParseResult = {
      * Attribute definitions
      */
     attributes: AttributeDefinitions;
+    /**
+     * Style and filter that was parsed (if any)
+     */
+    sourceRule?: Rule | undefined;
 };
 
 type Feature = Feature$2;
@@ -26933,19 +27066,26 @@ type UniformDefinitions = {
  * Buffers organized like so: [indicesBuffer, vertexAttributesBuffer, instanceAttributesBuffer]
  */
 type WebGLArrayBufferSet = Array<WebGLArrayBuffer>;
+/**
+ * Anything set to null means there's nothing to render for that category.
+ */
 type WebGLBuffers = {
     /**
      * Array containing indices and vertices buffers for polygons
      */
-    polygonBuffers: WebGLArrayBufferSet;
+    polygonBuffers: WebGLArrayBufferSet | null;
     /**
      * Array containing indices and vertices buffers for line strings
      */
-    lineStringBuffers: WebGLArrayBufferSet;
+    lineStringBuffers: WebGLArrayBufferSet | null;
     /**
      * Array containing indices and vertices buffers for points
      */
-    pointBuffers: WebGLArrayBufferSet;
+    pointBuffers: WebGLArrayBufferSet | null;
+    /**
+     * Key corresponding to a text instructions set
+     */
+    textInstructionsKey: string | null;
     /**
      * Inverse of the transform applied when generating buffers
      */
@@ -26970,9 +27110,11 @@ type FlatStyleLike = FlatStyleLike$1;
  */
 /**
  * @typedef {Object} WebGLBuffers
- * @property {WebGLArrayBufferSet} polygonBuffers Array containing indices and vertices buffers for polygons
- * @property {WebGLArrayBufferSet} lineStringBuffers Array containing indices and vertices buffers for line strings
- * @property {WebGLArrayBufferSet} pointBuffers Array containing indices and vertices buffers for points
+ * Anything set to null means there's nothing to render for that category.
+ * @property {WebGLArrayBufferSet|null} polygonBuffers Array containing indices and vertices buffers for polygons
+ * @property {WebGLArrayBufferSet|null} lineStringBuffers Array containing indices and vertices buffers for line strings
+ * @property {WebGLArrayBufferSet|null} pointBuffers Array containing indices and vertices buffers for points
+ * @property {string|null} textInstructionsKey Key corresponding to a text instructions set
  * @property {import("../../transform.js").Transform} invertVerticesTransform Inverse of the transform applied when generating buffers
  */
 /**
@@ -27024,7 +27166,7 @@ type FlatStyleLike = FlatStyleLike$1;
  * The `generateBuffers` method returns a promise resolving to WebGL buffers that are intended to be rendered by the
  * same renderer.
  */
-declare class VectorStyleRenderer {
+declare class VectorStyleRenderer extends Disposable {
     /**
      * @param {FlatStyleLike|StyleShaders|Array<StyleShaders>} styles Vector styles expressed as flat styles, flat style rules or style shaders
      * @param {import('../../style/flat.js').StyleVariables} variables Style variables
@@ -27041,6 +27183,12 @@ declare class VectorStyleRenderer {
      * @private
      */
     private hitDetectionEnabled_;
+    /**
+     * Flat style like; if shaders are given as input, will use the `sourceRule` property of the shaders
+     * `null` if no Flat style equivalent is available (e.g. custom-made shaders); in that case no text rendering will happen
+     * @type {FlatStyleLike|null}
+     */
+    flatStyle: FlatStyleLike | null;
     /**
      * @type {Array<StyleShaders>}
      * @private
@@ -27064,14 +27212,37 @@ declare class VectorStyleRenderer {
     hasFill_: boolean;
     hasStroke_: boolean;
     hasSymbol_: boolean;
+    hasText_: boolean | null;
+    /**
+     * @private
+     */
+    private textOverlayCanvas_;
+    /**
+     * @private
+     */
+    private textOverlayContext_;
+    /**
+     * @type {import("../../Map.js").FrameState}
+     * @private
+     */
+    private textOverlayRenderFrameState_;
+    /**
+     * @type {Worker}
+     * @private
+     */
+    private textOverlayWorker_;
+    /** @type {Set<string>} */
+    textOverlayRenderList_: Set<string>;
     /**
      * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
      * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
-     * @return {Promise<WebGLBuffers|null>} A promise resolving to WebGL buffers; returns null if buffers are empty
+     * @param {number} resolution View resolution; used for text render instructions if any
+     * @return {Promise<WebGLBuffers>} A promise resolving to WebGL buffers; buffer sets are set to `null` if nothing to render
      */
-    generateBuffers(geometryBatch: MixedGeometryBatch, transform: Transform): Promise<WebGLBuffers | null>;
+    generateBuffers(geometryBatch: MixedGeometryBatch, transform: Transform, resolution: number): Promise<WebGLBuffers>;
     /**
      * @param {import('./MixedGeometryBatch.js').default} geometryBatch Geometry batch
+     * @param {LabelsArray} labelsArray Labels array
      * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
      * @return {RenderInstructions} Render instructions
      * @private
@@ -27085,6 +27256,15 @@ declare class VectorStyleRenderer {
      * @private
      */
     private generateBuffersForType_;
+    /**
+     * @param {RenderInstructions} renderInstructions Render instructions
+     * @param {import('../../webgl/LabelsArray.js').default} labelsArray Labels array
+     * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
+     * @param {number} resolution View resolution to be used as a basis when computing text overflow
+     * @return {Promise<string>|null} Resolves to a key corresponding to the text draw instructions; null if no text to render
+     * @private
+     */
+    private generateTextInstructions_;
     /**
      * Render the geometries in the given buffers.
      * @param {WebGLBuffers} buffers WebGL Buffers to draw
@@ -27103,10 +27283,28 @@ declare class VectorStyleRenderer {
      */
     private renderInternal_;
     /**
+     * @param {WebGLBuffers} buffers WebGL Buffers to draw
+     * @private
+     */
+    private renderText_;
+    /**
+     * Render the geometries in the given buffers.
+     * @param {import("../../Map.js").FrameState} frameState Frame state
+     * @return {Promise<void>} A promise resolving after the post rendering step is over
+     */
+    finalizeTextRender(frameState: FrameState): Promise<void>;
+    /**
      * @param {import('../../webgl/Helper.js').default} helper Helper
      * @param {WebGLBuffers} buffers WebGL Buffers to reload if any
      */
     setHelper(helper: WebGLHelper, buffers?: WebGLBuffers): void;
+    getTextOverlayCanvas(): HTMLCanvasElement | undefined;
+    getTextOverlayFrameState(): FrameState;
+    /**
+     * Dispose of text instructions in worker.
+     * @param {string} key Key corresponding to the instructions set to dispose
+     */
+    disposeTextInstructions(key: string): void;
 }
 
 type StyleShaders$1 = StyleShaders$2;
@@ -27192,6 +27390,14 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
     /**
      * @private
      */
+    private layerRevision_;
+    /**
+     * @private
+     */
+    private skipNextTextRender_;
+    /**
+     * @private
+     */
     private previousExtent_;
     /**
      * This transform is updated on every frame and is the composition of:
@@ -27216,6 +27422,10 @@ declare class WebGLVectorLayerRenderer extends WebGLLayerRenderer<any> {
      * @private
      */
     private style_;
+    /**
+     * @private
+     */
+    private hasText_;
     /**
      * @type {VectorStyleRenderer}
      * @public
@@ -27886,8 +28096,10 @@ declare class CanvasLayerRenderer<LayerType extends Layer> extends LayerRenderer
      * @param {HTMLElement} target Potential render target.
      * @param {string} transform CSS transform matrix.
      * @param {string} [backgroundColor] Background color.
+     * @param {number} [width] Physical pixel width of the rendering canvas.
+     * @param {number} [height] Physical pixel height of the rendering canvas.
      */
-    useContainer(target: HTMLElement, transform: string, backgroundColor?: string): void;
+    useContainer(target: HTMLElement, transform: string, backgroundColor?: string, width?: number, height?: number): void;
     /**
      * @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} context Context.
      * @param {import("../../Map.js").FrameState} frameState Frame state.
@@ -28053,9 +28265,9 @@ declare function getRequestUrl$2(baseUrl: string, extent: Extent$1, resolution: 
  * @property {boolean} [hidpi=true] Use the `ol/Map#pixelRatio` value when requesting the image from
  * the remote server.
  * @property {Object<string,*>} [params] ArcGIS Rest parameters. This field is optional. Service
- * defaults will be used for any fields not specified. `FORMAT` is `PNG32` by default. `F` is
- * `IMAGE` by default. `TRANSPARENT` is `true` by default.  `BBOX`, `SIZE`, `BBOXSR`, and `IMAGESR`
- * will be set dynamically. Set `LAYERS` to override the default service layer visibility. See
+ * defaults will be used for any fields not specified. `format` is `png32` by default. `f` is
+ * `image` by default. `transparent` is `true` by default.  `bbox`, `size`, `bboxSR`, and `imageSR`
+ * will be set dynamically. Set `layers` to override the default service layer visibility. See
  * https://developers.arcgis.com/rest/services-reference/export-map.htm
  * for further reference.
  * @property {import("../proj.js").ProjectionLike} [projection] Projection. Default is 'EPSG:3857'.
@@ -28094,9 +28306,9 @@ type LoaderOptions$6 = {
     hidpi?: boolean | undefined;
     /**
      * ArcGIS Rest parameters. This field is optional. Service
-     * defaults will be used for any fields not specified. `FORMAT` is `PNG32` by default. `F` is
-     * `IMAGE` by default. `TRANSPARENT` is `true` by default.  `BBOX`, `SIZE`, `BBOXSR`, and `IMAGESR`
-     * will be set dynamically. Set `LAYERS` to override the default service layer visibility. See
+     * defaults will be used for any fields not specified. `format` is `png32` by default. `f` is
+     * `image` by default. `transparent` is `true` by default.  `bbox`, `size`, `bboxSR`, and `imageSR`
+     * will be set dynamically. Set `layers` to override the default service layer visibility. See
      * https://developers.arcgis.com/rest/services-reference/export-map.htm
      * for further reference.
      */
@@ -28338,6 +28550,9 @@ type CoverageArea = {
 /**
  * @classdesc
  * Layer source for Bing Maps tile data.
+ * @deprecated Bing Maps for Enterprise is being retired on June 30th, 2028. Use
+ * `ol/source/ImageTile` with the Azure Maps tile API instead. See the azure-maps
+ * example for guidance.
  * @api
  */
 declare class BingMaps extends TileImage {
@@ -29066,6 +29281,13 @@ type Options$U = {
      */
     bandCount?: number | undefined;
     /**
+     * Whether the data includes an alpha band.  Used when
+     * reprojecting to decide whether a coverage alpha band needs to be appended so areas
+     * outside the source footprint render transparent.  Defaults to `true` for 2 (luminance
+     * alpha) or 4 (RGBA) bands and `false` otherwise.
+     */
+    hasAlpha?: boolean | undefined;
+    /**
      * Use interpolated values when resampling.  By default,
      * the nearest neighbor is used when resampling.
      */
@@ -29125,6 +29347,10 @@ type Options$U = {
  * @property {boolean} [wrapX=false] Render tiles beyond the antimeridian.
  * @property {number} [transition] Transition time when fading in new tiles (in milliseconds).
  * @property {number} [bandCount=4] Number of bands represented in the data.
+ * @property {boolean} [hasAlpha] Whether the data includes an alpha band.  Used when
+ * reprojecting to decide whether a coverage alpha band needs to be appended so areas
+ * outside the source footprint render transparent.  Defaults to `true` for 2 (luminance
+ * alpha) or 4 (RGBA) bands and `false` otherwise.
  * @property {boolean} [interpolate=false] Use interpolated values when resampling.  By default,
  * the nearest neighbor is used when resampling.
  * @property {CrossOriginAttribute} [crossOrigin='anonymous'] The crossOrigin property to pass to loaders for image data.
@@ -29181,6 +29407,13 @@ declare class DataTileSource<TileType extends Tile$1 = DataTile> extends TileSou
      * @type {number}
      */
     bandCount: number;
+    /**
+     * Whether the data includes an alpha band.  When `false`, reprojection
+     * appends a coverage alpha band so areas outside the source footprint
+     * render transparent instead of opaque.
+     * @type {boolean}
+     */
+    hasAlpha: boolean;
     /**
      * The 1-based band index for the nodata alpha band.
      * @type {number|undefined}
@@ -30914,11 +31147,6 @@ declare class GeoTIFFSource extends DataTileSource<DataTile> {
      */
     private normalize_;
     /**
-     * @type {boolean}
-     * @private
-     */
-    private addAlpha_;
-    /**
      * @type {Error}
      * @private
      */
@@ -31262,9 +31490,9 @@ type Options$R = {
     interpolate?: boolean | undefined;
     /**
      * ArcGIS Rest parameters. This field is optional. Service
-     * defaults will be used for any fields not specified. `FORMAT` is `PNG32` by default. `F` is
-     * `IMAGE` by default. `TRANSPARENT` is `true` by default.  `BBOX`, `SIZE`, `BBOXSR`, and `IMAGESR`
-     * will be set dynamically. Set `LAYERS` to override the default service layer visibility. See
+     * defaults will be used for any fields not specified. `format` is `png32` by default. `f` is
+     * `image` by default. `transparent` is `true` by default.  `bbox`, `size`, `bboxSR`, and `imageSR`
+     * will be set dynamically. Set `layers` to override the default service layer visibility. See
      * https://developers.arcgis.com/rest/services-reference/export-map.htm
      * for further reference.
      */
@@ -31307,9 +31535,9 @@ type Options$R = {
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
  * @property {Object<string,*>} [params] ArcGIS Rest parameters. This field is optional. Service
- * defaults will be used for any fields not specified. `FORMAT` is `PNG32` by default. `F` is
- * `IMAGE` by default. `TRANSPARENT` is `true` by default.  `BBOX`, `SIZE`, `BBOXSR`, and `IMAGESR`
- * will be set dynamically. Set `LAYERS` to override the default service layer visibility. See
+ * defaults will be used for any fields not specified. `format` is `png32` by default. `f` is
+ * `image` by default. `transparent` is `true` by default.  `bbox`, `size`, `bboxSR`, and `imageSR`
+ * will be set dynamically. Set `layers` to override the default service layer visibility. See
  * https://developers.arcgis.com/rest/services-reference/export-map.htm
  * for further reference.
  * @property {import("../proj.js").ProjectionLike} [projection] Projection. Default is the view projection.
@@ -32754,6 +32982,14 @@ declare class VectorTile<FeatureType extends FeatureLike = RenderFeature> extend
      */
     getOverlaps(): boolean;
     /**
+     * @param {number} resolution Resolution.
+     * @param {import("../proj/Projection.js").default} projection Projection.
+     * @param {number|import("../array.js").NearestDirectionFunction} zDirection Z direction.
+     * @return {number} Source z.
+     * @private
+     */
+    private getSourceZ_;
+    /**
      * @param {number} pixelRatio Pixel ratio.
      * @param {import("../proj/Projection.js").default} projection Projection.
      * @param {VectorRenderTile} tile Vector render tile.
@@ -33091,6 +33327,11 @@ type Options$H = {
      */
     operation?: Operation | undefined;
     /**
+     * Use interpolated values when resampling. By default,
+     * linear interpolation is used when resampling. Set to `false` to use the nearest neighbor instead.
+     */
+    interpolate?: boolean | undefined;
+    /**
      * Functions that will be made available to operations run in a worker.
      */
     lib?: any;
@@ -33129,6 +33370,8 @@ type RasterSourceOnSignature<Return> = OnSignature<EventTypes, BaseEvent, Return
  * @property {Operation} [operation] Raster operation.
  * The operation will be called with data from input sources
  * and the output will be assigned to the raster source.
+ * @property {boolean} [interpolate=true] Use interpolated values when resampling. By default,
+ * linear interpolation is used when resampling. Set to `false` to use the nearest neighbor instead.
  * @property {Object} [lib] Functions that will be made available to operations run in a worker.
  * @property {number} [threads] By default, operations will be run in a single worker thread.
  * To avoid using workers altogether, set `threads: 0`.  For pixel operations, operations can
@@ -33272,6 +33515,7 @@ declare class RasterSource extends ImageSource {
     /**
      * Called when pixel processing is complete.
      * @param {import("../Map.js").FrameState} frameState The frame state.
+     * @param {Array<number>} sourceRevisions Source revisions when processing started.
      * @param {Error} err Any error during processing.
      * @param {ImageData} output The output image data.
      * @param {Object|Array<Object>} data The user data (or an array if more than one thread).
@@ -33464,9 +33708,9 @@ type Options$F = {
     interpolate?: boolean | undefined;
     /**
      * ArcGIS Rest parameters. This field is optional. Service defaults will be
-     * used for any fields not specified. `FORMAT` is `PNG32` by default. `F` is `IMAGE` by
-     * default. `TRANSPARENT` is `true` by default.  `BBOX`, `SIZE`, `BBOXSR`,
-     * and `IMAGESR` will be set dynamically. Set `LAYERS` to
+     * used for any fields not specified. `format` is `png32` by default. `f` is `image` by
+     * default. `transparent` is `true` by default.  `bbox`, `size`, `bboxSR`,
+     * and `imageSR` will be set dynamically. Set `layers` to
      * override the default service layer visibility. See
      * https://developers.arcgis.com/rest/services-reference/export-map.htm
      * for further reference.
@@ -33544,9 +33788,9 @@ type Options$F = {
  * @property {boolean} [interpolate=true] Use interpolated values when resampling.  By default,
  * linear interpolation is used when resampling.  Set to false to use the nearest neighbor instead.
  * @property {Object<string,*>} [params] ArcGIS Rest parameters. This field is optional. Service defaults will be
- * used for any fields not specified. `FORMAT` is `PNG32` by default. `F` is `IMAGE` by
- * default. `TRANSPARENT` is `true` by default.  `BBOX`, `SIZE`, `BBOXSR`,
- * and `IMAGESR` will be set dynamically. Set `LAYERS` to
+ * used for any fields not specified. `format` is `png32` by default. `f` is `image` by
+ * default. `transparent` is `true` by default.  `bbox`, `size`, `bboxSR`,
+ * and `imageSR` will be set dynamically. Set `layers` to
  * override the default service layer visibility. See
  * https://developers.arcgis.com/rest/services-reference/export-map.htm
  * for further reference.
@@ -35471,11 +35715,6 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
     protected renderedTiles: Array<Tile$1>;
     /**
      * @private
-     * @type {string}
-     */
-    private renderedSourceKey_;
-    /**
-     * @private
      * @type {number}
      */
     private renderedSourceRevision_;
@@ -35606,9 +35845,13 @@ declare class CanvasTileLayerRenderer<LayerType extends TileLayer | VectorTileLa
      * @param {number} h Height of the tile.
      * @param {number} gutter Tile gutter.
      * @param {boolean} transition Apply an alpha transition.
+     * @param {Array<import("../../extent.js").Extent>} [clipRects] Sub-rectangles
+     *     of the tile to draw. When not provided, the whole tile is drawn; when an
+     *     empty array is provided, nothing is drawn (the tile is fully covered by
+     *     higher-z tiles).
      * @protected
      */
-    protected drawTile(tile: Tile$1, frameState: FrameState, x: number, y: number, w: number, h: number, gutter: number, transition: boolean): void;
+    protected drawTile(tile: Tile$1, frameState: FrameState, x: number, y: number, w: number, h: number, gutter: number, transition: boolean, clipRects?: Array<Extent$1>): void;
     /**
      * @return {HTMLCanvasElement|OffscreenCanvas} Image
      */
@@ -35686,9 +35929,11 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
      * @param {number} h Height of the tile.
      * @param {number} gutter Tile gutter.
      * @param {boolean} transition Apply an alpha transition.
+     * @param {Array<import("../../extent.js").Extent>} [clipRects] Sub-rectangles
+     *     of the tile to draw.
      * @override
      */
-    override drawTile(tile: VectorRenderTile, frameState: FrameState, x: number, y: number, w: number, h: number, gutter: number, transition: boolean): void;
+    override drawTile(tile: VectorRenderTile, frameState: FrameState, x: number, y: number, w: number, h: number, gutter: number, transition: boolean, clipRects?: Array<Extent$1>): void;
     /**
      * @param {import("../../VectorRenderTile.js").default} tile Tile.
      * @param {number} pixelRatio Pixel ratio.
@@ -35719,6 +35964,21 @@ declare class CanvasVectorTileLayerRenderer extends CanvasTileLayerRenderer<Vect
      * @return {import('../../transform.js').Transform} Transform to use to render this tile
      */
     getTileRenderTransform(tile: VectorRenderTile, frameState: FrameState): Transform;
+    /**
+     * Clips the current tile to the regions not already covered by higher-z tiles.
+     * The tile extents are axis-aligned in world coordinates, so the covered
+     * regions can be subtracted as rectangles and a single clip applied to the
+     * disjoint remainder.
+     * @param {CanvasRenderingContext2D|import("../../render/canvas/ZIndexContext.js").ZIndexContextProxy} clipContext Context to apply the clip to.
+     * @param {import("../../extent.js").Extent} currentExtent World extent of the current tile.
+     * @param {Array<import("../../extent.js").Extent>} clips World extents of previously rendered tiles.
+     * @param {Array<number>} clipZs Zoom levels of previously rendered tiles.
+     * @param {number} currentZ Zoom level of the current tile.
+     * @param {import("../../transform.js").Transform} transform Transform from world to render coordinates.
+     * @return {boolean} The context was saved and needs to be restored.
+     * @private
+     */
+    private clipTileContext_;
     /**
      * @param {import("../../Feature.js").FeatureLike} feature Feature.
      * @param {number} squaredTolerance Squared tolerance.
@@ -38002,8 +38262,20 @@ declare class Modify extends PointerInteraction {
      */
     private deactivateTrace_;
     /**
+     * Determine whether a trace from `fromIndex` to `toIndex` passes at least one
+     * vertex of the target (i.e. whether it would add any traced coordinates).
+     * The index math mirrors {@link addTracedCoordinates_}.
+     * @param {number} fromIndex The start index.
+     * @param {number} toIndex The end index.
+     * @return {boolean} At least one target vertex lies between the indices.
+     * @private
+     */
+    private tracePassesVertex_;
+    /**
      * Update the trace.
      * @param {import("../MapBrowserEvent.js").default} event Event.
+     * @return {import('../coordinate.js').Coordinate|undefined} The coordinate the
+     * dragged vertex was snapped onto a target edge, if any.
      * @private
      */
     private updateTrace_;
@@ -38022,6 +38294,19 @@ declare class Modify extends PointerInteraction {
      * @private
      */
     private addOrRemoveTracedCoordinates_;
+    /**
+     * Tracing splices coordinates into a ring next to the dragged vertex, but only
+     * adjusts the index of the trace segment itself.  The dragged vertex' other
+     * segments in `dragSegments_` reference the same ring, so their stored index
+     * must be shifted too - otherwise the next {@link updateGeometry_} writes the
+     * dragged vertex to the wrong coordinate and scrambles the ring.
+     * @param {SegmentData} traceSegmentData The trace segment (adjusted by the
+     * caller and skipped here).
+     * @param {number} atIndex Segments at or after this coordinate index shift.
+     * @param {number} delta Coordinates added (positive) or removed (negative).
+     * @private
+     */
+    private shiftTracedSegmentIndices_;
     /**
      * @param {number} fromIndex The start index.
      * @param {number} toIndex The end index.
@@ -38382,7 +38667,7 @@ declare class PinchZoom extends PointerInteraction {
 /**
  * A function that takes a {@link module:ol/Feature~Feature} and returns `true` if the feature may be
  * selected or `false` otherwise.
- * @typedef {function(import("../Feature.js").default, import("../layer/Layer.js").default<import("../source/Source.js").default>):boolean} FilterFunction
+ * @typedef {function(import("../Feature.js").default, import("../layer/Layer.js").default<import("../source/Source.js").default> | undefined):boolean} FilterFunction
  */
 /**
  * @typedef {Object} Options
@@ -38477,7 +38762,7 @@ declare class SelectEvent extends BaseEvent {
  * A function that takes a {@link module :ol/Feature~Feature} and returns `true` if the feature may be
  * selected or `false` otherwise.
  */
-type FilterFunction$1 = (arg0: Feature$2, arg1: Layer<Source>) => boolean;
+type FilterFunction$1 = (arg0: Feature$2, arg1: Layer<Source> | undefined) => boolean;
 type Options$k = {
     /**
      * A function
@@ -39608,6 +39893,19 @@ declare class WebGLTileLayer extends BaseTileLayer<DataTileSource<ImageTile | Da
      */
     private styleVariables_;
     /**
+     * The band count the shaders were last built for (may include a coverage
+     * band added when reprojecting an alpha-less source).
+     * @type {number}
+     * @private
+     */
+    private styleBandCount_;
+    /**
+     * The nodata band index the shaders were last built for.
+     * @type {number|undefined}
+     * @private
+     */
+    private styleNodataBandIndex_;
+    /**
      * Gets the sources for this layer, for a given extent and resolution.
      * @param {import("../extent.js").Extent} extent Extent.
      * @param {number} resolution Resolution.
@@ -39625,14 +39923,46 @@ declare class WebGLTileLayer extends BaseTileLayer<DataTileSource<ImageTile | Da
     private handleSourceUpdate_;
     /**
      * @private
+     * @return {SourceType} The first render source (or null).
+     */
+    private getFirstSource_;
+    /**
+     * Whether reprojecting the source to the given projection appends a coverage
+     * alpha band (only for sources that do not already carry an alpha band).
+     * @private
+     * @param {SourceType} source The render source.
+     * @param {import("../proj/Projection.js").default} [projection] The render projection.
+     * @return {boolean} A coverage band is added.
+     */
+    private usesCoverageBand_;
+    /**
+     * @private
+     * @param {import("../proj/Projection.js").default} [projection] The render projection.
      * @return {number} The number of source bands.
      */
     private getSourceBandCount_;
     /**
      * @private
+     * @param {import("../proj/Projection.js").default} [projection] The render projection.
      * @return {number|undefined} The 1-based band index for the nodata alpha band.
      */
     private getSourceNodataBandIndex_;
+    /**
+     * Parse the style for the given render projection, tracking the band layout
+     * used.  The render projection determines whether a coverage band is added
+     * for reprojected alpha-less sources.
+     * @private
+     * @param {import("../proj/Projection.js").default} [projection] The render projection.
+     * @return {ReturnType<typeof parseStyle>} The parsed style.
+     */
+    private parseStyleForRender_;
+    /**
+     * Rebuild the shaders for the given render projection and apply them to the
+     * renderer.
+     * @private
+     * @param {import("../proj/Projection.js").default} [projection] The render projection.
+     */
+    private applyShaders_;
     /**
      * @override
      */
@@ -39808,6 +40138,11 @@ declare class TileTexture extends BaseTileRepresentation<TileType$1> {
  */
 declare function create(): Mat4;
 /**
+ * @param {Mat4} out Flattened 4x4 matrix being reset.
+ * @return {Mat4} Reset 4x4 matrix
+ */
+declare function reset(out: Mat4): Mat4;
+/**
  * @param {Mat4} mat4 Flattened 4x4 matrix receiving the result.
  * @param {import("../transform.js").Transform} transform Transformation matrix.
  * @return {Mat4} "2D transformation matrix as flattened 4x4 matrix."
@@ -39856,6 +40191,15 @@ declare function translate(m: Mat4, x: number, y: number, z: number, out?: Mat4)
  * @return {Mat4} out
  */
 declare function translation(x: number, y: number, z: number, out?: Mat4): Mat4;
+/**
+ * Rotate a matrix around the Z axis, only affecting X and Y components.
+ *
+ * @param {Mat4} m the matrix to rotate
+ * @param {number} angle How much to rotate (in radians).
+ * @param {Mat4} [out] the receiving matrix
+ * @return {Mat4} out
+ */
+declare function rotate(m: Mat4, angle: number, out?: Mat4): Mat4;
 type Mat4 = Array<number>;
 
 type TileRepresentationLookup = {
@@ -40046,6 +40390,16 @@ declare class WebGLBaseTileLayerRenderer<LayerType extends BaseLayerType, TileTy
      * @protected
      */
     protected beforeFinalize(frameState: FrameState): void;
+    /**
+     * Look for a ready tile at the same coordinate from a previous source key.
+     * A match is added to the provided lookup at the target zoom level.
+     * @param {import("../../tilecoord.js").TileCoord} tileCoord The target tile coordinate.
+     * @param {TileRepresentationLookup} tileRepresentationLookup Lookup of
+     * tile representations by zoom level.
+     * @return {boolean} A stale tile was found and added to the lookup.
+     * @private
+     */
+    private findStaleTile_;
     /**
      * Look for tiles covering the provided tile coordinate at an alternate
      * zoom level.  Loaded tiles will be added to the provided tile representation lookup.
@@ -40720,6 +41074,11 @@ type Options$c = {
      */
     wrapX?: boolean | undefined;
     /**
+     * Background color for the layer. If not specified, no background
+     * will be rendered.
+     */
+    background?: BackgroundColor | undefined;
+    /**
      * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
      */
     properties?: {
@@ -40823,6 +41182,8 @@ type Options$c = {
  * [30, 10]
  * ```
  * @property {boolean} [wrapX=true] Whether to repeat the graticule horizontally.
+ * @property {import("./Base.js").BackgroundColor} [background] Background color for the layer. If not specified, no background
+ * will be rendered.
  * @property {Object<string, *>} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
  */
 /**
@@ -41235,6 +41596,11 @@ type Options$b<FeatureType extends FeatureLike = Feature$2<Geometry$1, {
      * Point source.
      */
     source?: VectorSourceType | undefined;
+    /**
+     * Background color for the layer. If not specified, no background
+     * will be rendered.
+     */
+    background?: BackgroundColor | undefined;
     /**
      * Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
      */
@@ -41740,6 +42106,10 @@ declare class TileGeometry extends BaseTileRepresentation<VectorRenderTile> {
      */
     maskVertices: WebGLArrayBuffer;
     /**
+     * @type {number}
+     */
+    wantedResolution: number;
+    /**
      * @private
      */
     private generateMaskBuffer_;
@@ -41766,6 +42136,10 @@ type Options$8 = {
      */
     disableHitDetection?: boolean | undefined;
     /**
+     * Post-processes definitions
+     */
+    postProcesses?: PostProcessesOptions[] | undefined;
+    /**
      * The vector tile cache size.
      */
     cacheSize?: number | undefined;
@@ -41785,6 +42159,7 @@ type LayerType = BaseTileLayer<any, any>;
  * using the `['var', 'varName']` operator.
  * @property {boolean} [disableHitDetection=false] Setting this to true will provide a slight performance boost, but will
  * prevent all hit detection on the layer.
+ * @property {Array<import("./Layer.js").PostProcessesOptions>} [postProcesses] Post-processes definitions
  * @property {number} [cacheSize=512] The vector tile cache size.
  */
 /**
@@ -41811,6 +42186,10 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<Ba
      * @private
      */
     private style_;
+    /**
+     * @private
+     */
+    private hasText_;
     /**
      * @type {import('../../style/flat.js').StyleVariables}
      * @private
@@ -41846,6 +42225,14 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<Ba
      */
     private tileMaskProgram_;
     /**
+     * @private
+     */
+    private layerRevision_;
+    /**
+     * @private
+     */
+    private skipNextTextRender_;
+    /**
      * @param {Options} options Options.
      * @override
      */
@@ -41875,6 +42262,10 @@ declare class WebGLVectorTileLayerRenderer extends WebGLBaseTileLayerRenderer<Ba
      * @override
      */
     override beforeTilesMaskRender(frameState: any): boolean;
+    /**
+     * @override
+     */
+    override beforeFinalize(frameState: any): void;
     /**
      * @override
      */
@@ -42415,6 +42806,11 @@ declare function getProjectionCodeLookup(): (arg0: string) => Promise<string>;
  * @api
  */
 declare function fromProjectionCode(code: string): Promise<Projection>;
+/**
+ * @param {*} def Projection definition.
+ * @return {Projection} The projection.
+ */
+declare function fromProjectionDefinition(def: any): Projection;
 /**
  * Set the lookup function for getting proj4 or WKT definitions given an EPSG code.
  * By default, the {@link module:ol/proj/proj4.fromEPSGCode} function uses the
@@ -43062,18 +43458,28 @@ declare const HIT_DETECT_RESOLUTION: 0.5;
  * and pass a more complete evaluation context (variables, zoom, time, etc.).
  *
  * @param {Array<import('../../style/flat.js').Rule>} rules The rules.
+ * @param {ParsingContext} [parsingContext] Optional parsing context; will create a new one if not provided
  * @return {import('../../style/Style.js').StyleFunction} A style function.
  */
-declare function rulesToStyleFunction(rules: Array<Rule>): StyleFunction;
+declare function rulesToStyleFunction(rules: Array<Rule>, parsingContext?: ParsingContext): StyleFunction;
 /**
  * This function adapts a style evaluator to the existing style function interface.
  * After we have deprecated the style function, we can use the compiled rules directly
  * and pass a more complete evaluation context (variables, zoom, time, etc.).
  *
  * @param {Array<import('../../style/flat.js').FlatStyle>} flatStyles The flat styles.
+ * @param {ParsingContext} [parsingContext] Optional parsing context; will create a new one if not provided
  * @return {import('../../style/Style.js').StyleFunction} A style function.
  */
-declare function flatStylesToStyleFunction(flatStyles: Array<FlatStyle$1>): StyleFunction;
+declare function flatStylesToStyleFunction(flatStyles: Array<FlatStyle$1>, parsingContext?: ParsingContext): StyleFunction;
+/**
+ * This function handles any kind of style that matches the FlatStyleLike type.
+ *
+ * @param {import('../../style/flat.js').FlatStyleLike} flatStyleLike The flat style.
+ * @param {ParsingContext} [parsingContext] Optional parsing context; will create a new one if not provided
+ * @return {import('../../style/Style.js').StyleFunction} A style function.
+ */
+declare function flatStyleLikeToStyleFunction(flatStyleLike: FlatStyleLike$1, parsingContext?: ParsingContext): StyleFunction;
 /**
  * @typedef {function(EvaluationContext):Array<Style>} RuleSetEvaluator
  */
@@ -43190,7 +43596,8 @@ type BufferPositions = {
  * @param {import("../../expr/gpu.js").CompilationContext} compilationContext Compilation context
  * @param {import("../../expr/expression.js").EncodedExpression} value Value
  * @param {number} [expectedType] Expected final type (can be several types combined)
- * @param {import("../../expr/expression.js").ParsingContext} [parsingContext] Optional parsing context to be used
+ * @param {import("../../expr/expression.js").ParsingContext} [parsingContext] Optional parsing context to be used;
+ * if not specified, a new context using input variables from the compilation context will be used
  * @return {string} GLSL-compatible output
  */
 declare function expressionToGlsl(compilationContext: CompilationContext, value: EncodedExpression, expectedType?: number, parsingContext?: ParsingContext$1): string;
@@ -43268,6 +43675,34 @@ declare function colorEncodeIdAndPack(id: number, array?: Array<number>): Array<
 declare function colorDecodeId(color: Array<number>): number;
 
 /**
+ * @classdesc
+ * This class stores text values using typed arrays internally.
+ * Labels are stored as separate UTF-8 characters in a single Uint8Array.
+ * The Uint8Array is resized when the capacity exceeds to avoid costly concatenation.
+ */
+declare class LabelsArray {
+    /**
+     * @private
+     */
+    private array_;
+    actualSize_: number;
+    /**
+     * @type {Map<string, Array<number>>}
+     * @private
+     */
+    private labelPositionMap_;
+    /**
+     * @param {string} label Label to append to the end of the array
+     * @return {Array<number>} An array containing 1/ the position of the label in the typed array and 2/ the size of the label in the array
+     */
+    push(label: string): Array<number>;
+    /**
+     * @return {Uint8Array} Typed array containing the encoded labels.
+     */
+    getArray(): Uint8Array;
+}
+
+/**
  * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
  * @return {number} Cumulated size of all attributes
  */
@@ -43277,31 +43712,103 @@ declare function getCustomAttributesSize(customAttributes: AttributeDefinitions)
  * [ x0, y0, customAttr0, ... , xN, yN, customAttrN ]
  * @param {import("./MixedGeometryBatch.js").PointGeometryBatch} batch Point geometry batch
  * @param {Float32Array} renderInstructions Render instructions
+ * @param {import('../../webgl/LabelsArray.js').default} labels Typed array of the values of string attributes, encoded as UTF-8 and appended next to each other
  * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
  * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
  * @return {Float32Array} Generated render instructions
  */
-declare function generatePointRenderInstructions(batch: PointGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
+declare function generatePointRenderInstructions(batch: PointGeometryBatch, renderInstructions: Float32Array, labels: LabelsArray, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
 /**
  * Render instructions for lines are structured like so:
  * [ customAttr0, ... , customAttrN, numberOfVertices0, x0, y0, ... , xN, yN, numberOfVertices1, ... ]
  * @param {import("./MixedGeometryBatch.js").LineStringGeometryBatch} batch Line String geometry batch
  * @param {Float32Array} renderInstructions Render instructions
+ * @param {import('../../webgl/LabelsArray.js').default} labels Typed array of the values of string attributes, encoded as UTF-8 and appended next to each other
  * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
  * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
  * @return {Float32Array} Generated render instructions
  */
-declare function generateLineStringRenderInstructions(batch: LineStringGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
+declare function generateLineStringRenderInstructions(batch: LineStringGeometryBatch, renderInstructions: Float32Array, labels: LabelsArray, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
 /**
  * Render instructions for polygons are structured like so:
  * [ customAttr0, ..., customAttrN, numberOfRings, numberOfVerticesInRing0, ..., numberOfVerticesInRingN, x0, y0, ..., xN, yN, numberOfRings,... ]
  * @param {import("./MixedGeometryBatch.js").PolygonGeometryBatch} batch Polygon geometry batch
  * @param {Float32Array} renderInstructions Render instructions
+ * @param {import('../../webgl/LabelsArray.js').default} labels Typed array of the values of string attributes, encoded as UTF-8 and appended next to each other
  * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes
  * @param {import("../../transform.js").Transform} transform Transform to apply to coordinates
  * @return {Float32Array} Generated render instructions
  */
-declare function generatePolygonRenderInstructions(batch: PolygonGeometryBatch, renderInstructions: Float32Array, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
+declare function generatePolygonRenderInstructions(batch: PolygonGeometryBatch, renderInstructions: Float32Array, labels: LabelsArray, customAttributes: AttributeDefinitions, transform: Transform): Float32Array;
+
+/**
+ * This will serialize a frame state into a cloneable object.
+ * Note: the user projection is written as code in the frame state because it won't be available in the worker.
+ * Caveat: this won't work for custom/non-standard projections!
+ * @param {import("../../Map.js").FrameState} frameState Frame state
+ * @return {Object} Serialized as object
+ */
+declare function serializeFrameState(frameState: FrameState): any;
+/**
+ * @param {Object} serialized Serialized frame state
+ * @return {import("../../Map.js").FrameState} Frame state
+ */
+declare function deserializeFrameState(serialized: any): FrameState;
+
+/**
+ * @param {import('../../style/flat.js').FlatStyleLike} style Single flat style
+ * @return {boolean} Whether the style has text-related properties
+ */
+declare function hasTextStyle(style: FlatStyleLike$1): boolean;
+/**
+ * @param {import('../../style/flat.js').FlatStyleLike} style Single flat style
+ * @return {import('../../style/flat.js').FlatStyleLike} Style with text-related properties only;
+ * NOTE: THIS MUTATES THE OBJECT
+ */
+declare function stripNonTextStyleProperties(style: FlatStyleLike$1): FlatStyleLike$1;
+/**
+ * @param {function(): HTMLCanvasElement} textOverlayCanvasGetter Function that returns the canvas where the text overlay was rendered
+ * @param {function(): import('../../Map.js').FrameState} textOverlayFrameStateGetter Function that returns the frame state used for rendering the text overlay
+ * @return {import("../../renderer/webgl/Layer.js").PostProcessesOptions} Post-process definition for text rendering
+ */
+declare function createPostProcessDefinition(textOverlayCanvasGetter: () => HTMLCanvasElement, textOverlayFrameStateGetter: () => FrameState): PostProcessesOptions;
+/**
+ * Uses a Canvas Text Builder to render labels for polygons described in a RenderInstructions typed array
+ * @param {Float32Array} renderInstructions Array of render instructions for polygons.
+ * @param {Uint8Array} labels Integer array containing encoded labels (from LabelsArray)
+ * @param {Map<string,import('../../expr/expression.js').ValueType>} properties Properties
+ * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes definitions
+ * @param {import('../canvas/TextBuilder.js').default} textBuilder Text builder
+ * @param {import('../../style/Style.js').StyleFunction} styleFunction Text style
+ * @private
+ */
+declare function convertPolygonRenderInstructionsToCanvasTextBuilder(renderInstructions: Float32Array, labels: Uint8Array, properties: Map<string, ValueType$2>, customAttributes: AttributeDefinitions, textBuilder: CanvasTextBuilder, styleFunction: StyleFunction): void;
+/**
+ Uses a Canvas Text Builder to render labels for line strings described in a RenderInstructions typed array
+ * @param {Float32Array} renderInstructions Array of render instructions for lines.
+ * @param {Uint8Array} labels Integer array containing encoded labels (from LabelsArray)
+ * @param {Map<string,import('../../expr/expression.js').ValueType>} properties Properties
+ * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes definitions
+ * @param {import('../canvas/TextBuilder.js').default} textBuilder Text builder
+ * @param {import('../../style/Style.js').StyleFunction} styleFunction Text style
+ * @private
+ */
+declare function convertLineStringRenderInstructionsToCanvasTextBuilder(renderInstructions: Float32Array, labels: Uint8Array, properties: Map<string, ValueType$2>, customAttributes: AttributeDefinitions, textBuilder: CanvasTextBuilder, styleFunction: StyleFunction): void;
+/**
+ Uses a Canvas Text Builder to render labels for points described in a RenderInstructions typed array
+ * @param {Float32Array} renderInstructions Array of render instructions for points.
+ * @param {Uint8Array} labels Integer array containing encoded labels (from LabelsArray)
+ * @param {Map<string,import('../../expr/expression.js').ValueType>} properties Properties
+ * @param {import('./VectorStyleRenderer.js').AttributeDefinitions} customAttributes Custom attributes definitions
+ * @param {import('../canvas/TextBuilder.js').default} textBuilder Text builder
+ * @param {import('../../style/Style.js').StyleFunction} styleFunction Text style
+ * @private
+ */
+declare function convertPointRenderInstructionsToCanvasTextBuilder(renderInstructions: Float32Array, labels: Uint8Array, properties: Map<string, ValueType$2>, customAttributes: AttributeDefinitions, textBuilder: CanvasTextBuilder, styleFunction: StyleFunction): void;
+declare namespace TextUniforms {
+    let TEXT_OVERLAY_TEXTURE: string;
+    let TEXT_OVERLAY_MATRIX: string;
+}
 
 /**
  * @classdesc
@@ -43411,6 +43918,12 @@ type Options$6 = {
      * Render reprojection edges.
      */
     renderEdges?: boolean | undefined;
+    /**
+     * Whether the source tiles already include an
+     * alpha band.  When `false`, an alpha band marking the reprojected coverage is
+     * appended to the output so areas outside the source footprint render transparent.
+     */
+    hasAlpha?: boolean | undefined;
 };
 /**
  * @typedef {function(number, number, number, number) : import("../DataTile.js").default} TileGetter
@@ -43438,6 +43951,9 @@ type Options$6 = {
  * transitions in milliseconds. A duration of 0 disables the opacity transition.
  * @property {import("../transform.js").Transform} [transformMatrix] Source transform matrix.
  * @property {boolean} [renderEdges] Render reprojection edges.
+ * @property {boolean} [hasAlpha=true] Whether the source tiles already include an
+ * alpha band.  When `false`, an alpha band marking the reprojected coverage is
+ * appended to the output so areas outside the source footprint render transparent.
  */
 /**
  * @classdesc
@@ -43455,6 +43971,13 @@ declare class ReprojDataTile extends DataTile {
      * @type {boolean | Array<number>}
      */
     private renderEdges_;
+    /**
+     * Whether the source tiles already carry an alpha band.  When `false`, a
+     * coverage alpha band is appended to the reprojected output.
+     * @private
+     * @type {boolean}
+     */
+    private hasAlpha_;
     /**
      * @private
      * @type {number}
@@ -43928,6 +44451,12 @@ type ImageExtent = {
  * To disable the opacity transition, pass `transition: 0`.
  * @property {boolean} [wrapX=false] Render tiles beyond the tile grid extent.
  * @property {ResampleMethod} [resample='nearest'] Resampling method if bands are not available for all multi-scale levels.
+ * @property {Object<string, number|string>} [dimensions] Fixed index for each non-spatial
+ * dimension of the band arrays, keyed by dimension name (e.g. `{time: 0}` for the first time step
+ * of a `[time, y, x]` cube); unspecified dimensions default to `0`. Names come from each array's
+ * `dimension_names`, or are the axis position as a string when it has none. Only integer indices
+ * are supported. Use the names from {@link getDimensions}, and change the selection on the fly with
+ * {@link module:ol/source/GeoZarr~GeoZarr#updateDimensions}.
  */
 /**
  * Source for GeoZarr stores conforming to the following conventions:
@@ -43950,6 +44479,12 @@ declare class GeoZarr extends DataTileSource<DataTile> {
      * @private
      */
     private url_;
+    /**
+     * Fixed index per non-spatial dimension name, from the `dimensions` option.
+     * @type {Object<string, number|string>}
+     * @private
+     */
+    private dimensions_;
     /**
      * @type {Error|null}
      */
@@ -43998,6 +44533,33 @@ declare class GeoZarr extends DataTileSource<DataTile> {
      */
     private bands_;
     /**
+     * Per-band selection along non-spatial dimensions: `undefined` for 2-D
+     * arrays, otherwise an array aligned to the array rank with a fixed integer
+     * at each extra axis and `null` at the two spatial axes (e.g. `[2, null,
+     * null]` for a `[time, y, x]` array with `time: 2`).
+     * @type {Array<Array<number|null>|undefined>}
+     * @private
+     */
+    private bandExtraSelection_;
+    /**
+     * Per-band spatial (y, x) axis positions, as `{row, col}`.
+     * @type {Array<{row: number, col: number}>}
+     * @private
+     */
+    private bandSpatialAxes_;
+    /**
+     * The two spatial axis names from the group's `spatial:dimensions` (`[y, x]`).
+     * @type {Array<string>|undefined}
+     * @private
+     */
+    private spatialDimensionNames_;
+    /**
+     * Non-spatial dimensions of the bands, exposed via {@link getDimensions}.
+     * @type {Array<{name: string, size: number}>}
+     * @private
+     */
+    private extraDimensions_;
+    /**
      * @type {Object<string, Array<string>> | null}
      * @private
      */
@@ -44033,6 +44595,109 @@ declare class GeoZarr extends DataTileSource<DataTile> {
      * @private
      */
     private resolveBandOwnership_;
+    /**
+     * Open a Zarr array (path relative to its group) through the shared cache, so
+     * concurrent opens of the same array are deduplicated.
+     * @param {number} groupIndex The band's group index.
+     * @param {string} path The array path relative to the group.
+     * @return {Promise<import('zarrita').Array<import('zarrita').DataType, any>>} The array.
+     * @private
+     */
+    private openArray_;
+    /**
+     * Consolidated metadata for a group, with keys relative to that group.
+     * @param {number} groupIndex The group index.
+     * @return {Object} The group's consolidated metadata.
+     * @private
+     */
+    private groupMetadata_;
+    /**
+     * Look up a band's Zarr v3 array metadata from consolidated metadata, trying
+     * the multi-scale key (`<matrixId>/<band>`) first and falling back to a
+     * single-scale key (`<band>`).
+     * @param {string} band The band name.
+     * @param {number} groupIndex The index of the band's group.
+     * @return {Object|undefined} The array metadata, or undefined when unavailable.
+     * @private
+     */
+    private getBandArrayMeta_;
+    /**
+     * Locate the 1-D coordinate array for a non-spatial dimension, by name among
+     * the group's 1-D arrays.
+     * @param {string} name The dimension name.
+     * @return {{path: string, groupIndex: number, meta: Object}|null} The path
+     *     (relative to the group), group index, and array metadata; or `null`.
+     * @private
+     */
+    private coordinateArray_;
+    /**
+     * Get the non-spatial dimensions of the bands (e.g. `time`) that can be fixed
+     * through the `dimensions` option, keyed by dimension name. Each entry has its
+     * `size` and the `attributes` of its coordinate array (e.g. `units`, for
+     * interpreting the values from {@link getValue}), or `attributes: null` when
+     * there is no coordinate array. Resolves with an empty object for 2-D bands,
+     * once the source is `ready`; rejects if the source fails to load.
+     * @return {Promise<Object<string, {size: number, attributes: Object|null}>>}
+     *     The selectable dimensions.
+     */
+    getDimensions(): Promise<{
+        [x: string]: {
+            size: number;
+            attributes: any | null;
+        };
+    }>;
+    /**
+     * Read the coordinate value at an index along a non-spatial dimension (e.g.
+     * the timestamp for a `time` index), for labeling the current selection. The
+     * value is returned raw (as stored, e.g. a `bigint` for a 64-bit integer
+     * axis); use the `attributes` from {@link getDimensions} to interpret it.
+     * Returns `null` for a dimension without a coordinate array. Available once
+     * the source is `ready`.
+     * @param {string} name The dimension name (see {@link getDimensions}).
+     * @param {number} index The index along the dimension.
+     * @return {Promise<number|bigint|null>} The coordinate value, or null.
+     */
+    getValue(name: string, index: number): Promise<number | bigint | null>;
+    /**
+     * Change the fixed index of one or more non-spatial dimensions (e.g. move to
+     * another `time` slice) without rebuilding the source. Values are merged into
+     * the current selection, so a partial update like `{time: 3}` leaves the other
+     * dimensions untouched. Takes effect immediately when the source is `ready`,
+     * otherwise once it becomes ready.
+     * @param {Object<string, number|string>} dimensions Index per dimension name
+     *     to change; see the `dimensions` constructor option.
+     */
+    updateDimensions(dimensions: {
+        [x: string]: string | number;
+    }): void;
+    /**
+     * Locate the spatial (y, x) axes of an array (see {@link getSpatialAxes}) and
+     * its remaining non-spatial axes.
+     * @param {Object|undefined} arrayMeta Zarr v3 array metadata.
+     * @return {{row: number, col: number, extra: Array<number>}} The row (y) and
+     *     column (x) axis positions and the remaining extra axes, in array order.
+     * @private
+     */
+    private axesOf_;
+    /**
+     * Describe the non-spatial dimensions of an array. Each is named by its
+     * `dimension_names` entry, or by its axis position when there are none.
+     * @param {Object|undefined} arrayMeta Zarr v3 array metadata.
+     * @return {Array<{name: string, size: number, axis: number}>} The extra dimensions, outermost first.
+     * @private
+     */
+    private extraDimsOf_;
+    /**
+     * Resolve the fixed index for each non-spatial dimension of a band array from
+     * the `dimensions` option. Returns `undefined` for 2-D arrays, otherwise an
+     * array aligned to the array rank with a fixed integer at each extra axis and
+     * `null` at the two spatial axes (e.g. `[2, null, null]` for a `[time, y, x]`
+     * array with `{time: 2}`).
+     * @param {Object|undefined} arrayMeta Zarr v3 array metadata.
+     * @return {Array<number|null>|undefined} The extra-axis selection template.
+     * @private
+     */
+    private resolveExtraSelection_;
 }
 type ResampleMethod = "nearest" | "linear";
 type Band = {
@@ -44084,6 +44749,17 @@ type Options$5 = {
      * Resampling method if bands are not available for all multi-scale levels.
      */
     resample?: ResampleMethod | undefined;
+    /**
+     * Fixed index for each non-spatial
+     * dimension of the band arrays, keyed by dimension name (e.g. `{time: 0}` for the first time step
+     * of a `[time, y, x]` cube); unspecified dimensions default to `0`. Names come from each array's
+     * `dimension_names`, or are the axis position as a string when it has none. Only integer indices
+     * are supported. Use the names from {@link getDimensions}, and change the selection on the fly with
+     * {@link module :ol/source/GeoZarr~GeoZarr#updateDimensions}.
+     */
+    dimensions?: {
+        [x: string]: string | number;
+    } | undefined;
 };
 
 type Options$4 = {
@@ -44532,6 +45208,10 @@ type Options$3 = {
      * To disable the opacity transition, pass `transition: 0`.
      */
     transition?: number | undefined;
+    /**
+     * MIME type for each process response (`responses[].format.type`), for example `image/png` or `image/jpeg`.
+     */
+    format?: string | undefined;
 };
 /**
  * @typedef {Object} Options
@@ -44553,6 +45233,7 @@ type Options$3 = {
  * @property {boolean} [wrapX=true] Wrap the world horizontally.
  * @property {number} [transition] Duration of the opacity transition for rendering.
  * To disable the opacity transition, pass `transition: 0`.
+ * @property {string} [format='image/png'] MIME type for each process response (`responses[].format.type`), for example `image/png` or `image/jpeg`.
  */
 /**
  * @classdesc
@@ -44595,6 +45276,11 @@ declare class SentinelHub extends DataTileSource<DataTile> {
      * @type {string}
      * @private
      */
+    private format_;
+    /**
+     * @type {string}
+     * @private
+     */
     private token_;
     /**
      * @type {ReturnType<typeof setTimeout>}
@@ -44617,6 +45303,13 @@ declare class SentinelHub extends DataTileSource<DataTile> {
      * @api
      */
     setData(data: Array<ProcessRequestInputDataItem>): void;
+    /**
+     * Set the MIME type for process API tile responses (`responses[].format.type`).
+     *
+     * @param {string} format Format type (for example `image/png` or `image/jpeg`).
+     * @api
+     */
+    setFormat(format: string): void;
     /**
      * Set or update the Evalscript used to process the data.  Either a process object or a string
      * Evalscript can be provided.  If a process object is provided, it will be serialized to produce the
@@ -46088,7 +46781,7 @@ declare class WebGLPostProcessingPass {
         export { equals as equals };
         export { format as format };
         export { getWorldsAway as getWorldsAway };
-        export { rotate$1 as rotate };
+        export { rotate$2 as rotate };
         export { scale$2 as scale };
         export { squaredDistance$1 as squaredDistance };
         export { squaredDistanceToSegment as squaredDistanceToSegment };
@@ -46230,6 +46923,7 @@ declare class WebGLPostProcessingPass {
         export { getBottomRight as getBottomRight };
         export { getCenter as getCenter };
         export { getCorner as getCorner };
+        export { getDifference as getDifference };
         export { getEnlargedArea as getEnlargedArea };
         export { getForViewAndSize as getForViewAndSize };
         export { getHeight as getHeight };
@@ -46246,6 +46940,7 @@ declare class WebGLPostProcessingPass {
         export { isEmpty$1 as isEmpty };
         export { returnOrUpdate as returnOrUpdate };
         export { scaleFromCenter as scaleFromCenter };
+        export { subtractExtents as subtractExtents };
         export { wrapAndSliceX as wrapAndSliceX };
         export { wrapX$2 as wrapX };
     }
@@ -46377,6 +47072,9 @@ declare class WebGLPostProcessingPass {
             namespace center {
                 export { linearRingss as linearRingss };
             }
+            namespace clip {
+                export { clipFlatLineStrings as clipFlatLineStrings };
+            }
             namespace closest {
                 export { arrayMaxSquaredDelta as arrayMaxSquaredDelta };
                 export { assignClosestArrayPoint as assignClosestArrayPoint };
@@ -46466,7 +47164,7 @@ declare class WebGLPostProcessingPass {
                 export { lineStringIsClosed as lineStringIsClosed };
             }
             namespace transform {
-                export { rotate as rotate };
+                export { rotate$1 as rotate };
                 export { scale$1 as scale };
                 export { transform2D as transform2D };
                 export { translate$1 as translate };
@@ -46614,6 +47312,7 @@ declare class WebGLPostProcessingPass {
             export { epsgLookupMapTiler as epsgLookupMapTiler };
             export { fromEPSGCode as fromEPSGCode };
             export { fromProjectionCode as fromProjectionCode };
+            export { fromProjectionDefinition as fromProjectionDefinition };
             export { getEPSGLookup as getEPSGLookup };
             export { getProjectionCodeLookup as getProjectionCodeLookup };
             export { isRegistered as isRegistered };
@@ -46699,6 +47398,7 @@ declare class WebGLPostProcessingPass {
             export namespace style {
                 export { buildRuleSet as buildRuleSet };
                 export { buildStyle as buildStyle };
+                export { flatStyleLikeToStyleFunction as flatStyleLikeToStyleFunction };
                 export { flatStylesToStyleFunction as flatStylesToStyleFunction };
                 export { rulesToStyleFunction as rulesToStyleFunction };
             }
@@ -46741,9 +47441,22 @@ declare class WebGLPostProcessingPass {
                 export { generatePolygonRenderInstructions as generatePolygonRenderInstructions };
                 export { getCustomAttributesSize as getCustomAttributesSize };
             }
+            export namespace serialize {
+                export { deserializeFrameState as deserializeFrameState };
+                export { serializeFrameState as serializeFrameState };
+            }
             export namespace style {
                 export { computeHash as computeHash };
                 export { parseLiteralStyle as parseLiteralStyle };
+            }
+            export namespace textUtil {
+                export { TextUniforms as TextUniforms };
+                export { convertLineStringRenderInstructionsToCanvasTextBuilder as convertLineStringRenderInstructionsToCanvasTextBuilder };
+                export { convertPointRenderInstructionsToCanvasTextBuilder as convertPointRenderInstructionsToCanvasTextBuilder };
+                export { convertPolygonRenderInstructionsToCanvasTextBuilder as convertPolygonRenderInstructionsToCanvasTextBuilder };
+                export { createPostProcessDefinition as createPostProcessDefinition };
+                export { hasTextStyle as hasTextStyle };
+                export { stripNonTextStyleProperties as stripNonTextStyleProperties };
             }
         }
     }
@@ -46959,6 +47672,7 @@ declare class WebGLPostProcessingPass {
         export { nullTileUrlFunction as nullTileUrlFunction };
     }
     export namespace transform {
+        export { IDENTITY_TRANSFORM as IDENTITY_TRANSFORM };
         export { apply as apply };
         export { compose as compose };
         export { composeCssTransform as composeCssTransform };
@@ -46970,8 +47684,8 @@ declare class WebGLPostProcessingPass {
         export { makeInverse as makeInverse };
         export { makeScale as makeScale };
         export { multiply as multiply };
-        export { reset as reset };
-        export { rotate$2 as rotate };
+        export { reset$1 as reset };
+        export { rotate$3 as rotate };
         export { scale$3 as scale };
         export { set as set };
         export { setFromArray as setFromArray };
@@ -46994,6 +47708,8 @@ declare class WebGLPostProcessingPass {
             export { create as create };
             export { fromTransform as fromTransform };
             export { orthographic as orthographic };
+            export { reset as reset };
+            export { rotate as rotate };
             export { scale as scale };
             export { translate as translate };
             export { translation as translation };
@@ -47011,6 +47727,7 @@ declare class WebGLPostProcessingPass {
         export { ELEMENT_ARRAY_BUFFER as ELEMENT_ARRAY_BUFFER };
         export { FLOAT as FLOAT };
         export { WebGLHelper as Helper };
+        export { LabelsArray as LabelsArray };
         export { PaletteTexture as PaletteTexture };
         export { WebGLPostProcessingPass as PostProcessingPass };
         export { WebGLRenderTarget as RenderTarget };

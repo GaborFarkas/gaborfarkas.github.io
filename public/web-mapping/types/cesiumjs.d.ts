@@ -619,10 +619,9 @@ export namespace ArcGISTiledElevationTerrainProvider {
  *   token: "KED1aF_I4UzXOHy3BnhwyBHU4l5oY6rO6walkmHoYqGp4XyIWUd5YZUC1ZrLAzvV40pR6gBXQayh0eFA8m6vPg.."
  * });
  * viewer.terrainProvider = terrainProvider;
- * @param [options] - A url or an object describing initialization options
  */
 export class ArcGISTiledElevationTerrainProvider {
-    constructor(options?: CesiumTerrainProvider.ConstructorOptions);
+    constructor();
     /**
      * Gets an event that is raised when the terrain provider encounters an asynchronous error.  By subscribing
      * to the event, you will be notified of the error and can potentially recover from it.  Event listeners
@@ -8449,6 +8448,10 @@ export class HeightmapTerrainData {
  */
 export namespace HermitePolynomialApproximation {
     /**
+     * Gets the name of this interpolation algorithm.
+     */
+    var type: string;
+    /**
      * Given the desired degree, returns the number of data points required for interpolation.
      * @param degree - The desired degree of interpolation.
      * @param [inputOrder = 0] - The order of the inputs (0 means just the data, 1 means the data and its derivative, etc).
@@ -8776,7 +8779,7 @@ export interface InterpolationAlgorithm {
      * @param [result] - An existing array into which to store the result.
      * @returns The array of interpolated values, or the result parameter if one was provided.
      */
-    interpolate(x: number, xTable: number[], yTable: number[], yStride: number, inputOrder: number, outputOrder: number, result?: number[]): number[];
+    interpolate?(x: number, xTable: number[], yTable: number[], yStride: number, inputOrder: number, outputOrder: number, result?: number[]): number[];
 }
 
 /**
@@ -9162,6 +9165,252 @@ export class IonResource extends Resource {
 }
 
 /**
+ * The type of geometry a snap resolved to, reported by {@link IonSnapService#snap}
+ * as {@link IonSnapService.Result} <code>geometryType</code>. Values match the iTwin.js
+ * {@link https://www.itwinjs.org/reference/core-frontend/locatingelements/hitgeomtype/|HitGeomType} enum.
+ */
+export enum IonSnapGeometryType {
+    /**
+     * No geometry type.
+     */
+    NONE = 0,
+    /**
+     * A point.
+     */
+    POINT = 1,
+    /**
+     * A line segment.
+     */
+    SEGMENT = 2,
+    /**
+     * A curve.
+     */
+    CURVE = 3,
+    /**
+     * An arc.
+     */
+    ARC = 4,
+    /**
+     * A surface.
+     * <p>
+     * With {@link IonSnapMode} <code>NEAREST</code>, this value indicates
+     * the snap tracked the surface under the cursor because no edge was within
+     * the snap aperture. This means the snap point was not pulled to an edge.
+     * Edge snaps report one of the other types along with the edge geometry in
+     * {@link IonSnapService.Result} <code>curve</code>, which is absent when
+     * tracking a surface.
+     * </p>
+     */
+    SURFACE = 5
+}
+
+/**
+ * How close a snap result is to the cursor, reported by {@link IonSnapService#snap}
+ * as {@link IonSnapService.Result} <code>heat</code>. Values match the iTwin.js
+ * {@link https://www.itwinjs.org/reference/core-frontend/locatingelements/snapheat/|SnapHeat} enum.
+ */
+export enum IonSnapHeat {
+    /**
+     * The snap is not close to the cursor.
+     */
+    NONE = 0,
+    /**
+     * The snap is of interest, but outside the snap aperture.
+     */
+    NOT_IN_RANGE = 1,
+    /**
+     * The snap point is within the snap aperture of the close point in view space.
+     */
+    IN_RANGE = 2
+}
+
+/**
+ * The snap modes supported by {@link IonSnapService#snap}. These follow the
+ * MicroStation snap mode semantics; see the
+ * {@link https://docs.bentley.com/LiveContent/web/MicroStation%20Help-v27/en/GUID-77D54C0B-D6FF-13DA-5EC8-3196330F5244.html|MicroStation documentation}
+ * for reference.
+ */
+export enum IonSnapMode {
+    /**
+     * Snaps to the point on the element nearest to the cursor. When the cursor
+     * is farther than the snap aperture from an edge, tracks the surface under
+     * the cursor instead.
+     */
+    NEAREST = 1,
+    /**
+     * Snaps to the nearest of the element's keypoints. Keypoints are defined by
+     * the element's geometry type and the snap divisor.
+     * <p>
+     * On linear elements, keypoints are regularly spaced along each segment:
+     * the number of keypoints on a segment is one greater than the snap
+     * divisor, and a segment's midpoint is a keypoint only when the divisor is
+     * even. The ion API does not currently accept a snap divisor, so the
+     * server's default divisor applies.
+     * </p>
+     */
+    NEAREST_KEYPOINT = 2,
+    /**
+     * Snaps to the center of elements that have centers (such as circles and
+     * arcs). For other elements, may snap to the centroid.
+     */
+    CENTER = 8
+}
+
+/**
+ * The type of the parent geometry a snap resolved to, reported by
+ * {@link IonSnapService#snap} as {@link IonSnapService.Result} <code>parentGeometryType</code>.
+ * Values match the iTwin.js
+ * {@link https://www.itwinjs.org/reference/core-frontend/locatingelements/hitparentgeomtype/|HitParentGeomType} enum.
+ */
+export enum IonSnapParentGeometryType {
+    /**
+     * No parent geometry type.
+     */
+    NONE = 0,
+    /**
+     * A wire body.
+     */
+    WIRE = 1,
+    /**
+     * A sheet body.
+     */
+    SHEET = 2,
+    /**
+     * A solid body.
+     */
+    SOLID = 3,
+    /**
+     * A mesh.
+     */
+    MESH = 4,
+    /**
+     * Text.
+     */
+    TEXT = 5
+}
+
+export namespace IonSnapService {
+    /**
+     * The result of a successful {@link IonSnapService#snap}. Extends
+     * {@link SnapService.Result} with ion-specific fields.
+     * @property [snapPoint] - The snapped point. This is the point to consume.
+     * @property [hitPoint] - The point where the cursor hit the geometry: the nearest edge point when within the snap aperture, otherwise the surface point under the cursor.
+     * @property [heat] - How close the snap point is to the close point in view space.
+     * @property [geometryType] - The type of geometry snapped to.
+     * @property [parentGeometryType] - The type of the parent geometry snapped to.
+     * @property [normal] - The surface normal at the snap point, in the model's local cartesian frame.
+     * @property [curve] - The curve geometry near the snap point, with points as WGS84 degrees objects.
+     */
+    type Result = {
+        snapPoint?: Cartesian3;
+        hitPoint?: Cartesian3;
+        heat?: IonSnapHeat;
+        geometryType?: IonSnapGeometryType;
+        parentGeometryType?: IonSnapParentGeometryType;
+        normal?: any;
+        curve?: any;
+    };
+}
+
+/**
+ * Provides interactive snap-to-geometry against a Cesium ion 3D Tiles asset
+ * backed by a BIM/CAD Database model, using the ion REST API's element snap
+ * endpoint.
+ *
+ * This class handles conversions between the reference frame of a
+ * source BIM/CAD Database and the view-dependent screen space pixel
+ * coordinates. Each snap, it transforms using the ion asset's source
+ * reference frame, the camera's transform, and the canvas
+ * dimensions so that view-dependent features— such as the pixel aperture,
+ * nearest position, or surface tracking— behave correctly.
+ *
+ * This object is normally not instantiated directly, use {@link IonSnapService.fromAssetId}.
+ * @example
+ * const snapper = await Cesium.IonSnapService.fromAssetId(123456);
+ * const canvas = viewer.scene.canvas;
+ * const result = await snapper.snap({
+ *   elementId: "0x30000000df2",
+ *   testPoint: pickedPosition,
+ *   camera: viewer.camera,
+ *   canvasWidth: canvas.clientWidth,
+ *   canvasHeight: canvas.clientHeight,
+ * });
+ * if (Cesium.defined(result)) {
+ *   console.log("snapped to", result.snapPoint);
+ * }
+ * @param options - Object with the following properties:
+ * @param options.assetId - The ion asset id.
+ * @param options.resource - The asset's ion API resource.
+ * @param options.ecefTransform - A 4x4 transformation matrix from the source BIM/CAD Database reference frame local to the world's fixed reference frame.
+ */
+export class IonSnapService {
+    constructor(options: {
+        assetId: number;
+        resource: Resource;
+        ecefTransform: Matrix4;
+    });
+    /**
+     * A 4x4 transformation matrix from the source BIM/CAD Database reference frame local to the world's fixed reference frame.
+     */
+    readonly ecefTransform: Matrix4;
+    /**
+     * The ion asset id this snapper operates on.
+     */
+    readonly assetId: number;
+    /**
+     * Creates an {@link IonSnapService} for the given ion asset, fetching
+     * the asset's ECEF transform from the ion REST API.
+     * @param assetId - The ion ID of a 3D Tiles asset backed by a BIM/CAD Database model.
+     * @param [options] - Object with the following properties:
+     * @param [options.accessToken = Ion.defaultAccessToken] - The ion access token to use.
+     * @param [options.server = Ion.defaultServer] - The ion API server to use.
+     * @returns A snapper bound to the asset.
+     */
+    static fromAssetId(assetId: number, options?: {
+        accessToken?: string;
+        server?: string | Resource;
+    }): Promise<IonSnapService>;
+    /**
+     * Requests a snap against an element of this asset.
+     *
+     * A view-correct world-to-view matrix is composed from
+     * <code>options.camera</code>, <code>options.canvasWidth</code>, and
+     * <code>options.canvasHeight</code> so view-dependent snapping (nearest
+     * ordering, pixel apertures, surface tracking) matches the current view.
+     *
+     * Only 3D views are supported: the camera must be viewing in
+     * {@link SceneMode.SCENE3D}.
+     * @param options - Object with the following properties:
+     * @param options.elementId - The element id to snap to, as a hex string, e.g. <code>"0x30000000df2"</code>.
+     * @param options.testPoint - The point to snap from, typically the picked cursor position.
+     * @param options.camera - The camera defining the current view. Must be viewing in {@link SceneMode.SCENE3D}.
+     * @param options.canvasWidth - The canvas width in CSS pixels.
+     * @param options.canvasHeight - The canvas height in CSS pixels.
+     * @param [options.closePoint = options.testPoint] - A reference point near the target geometry that seeds the snap search.
+     * @param [options.snapAperture = IonSnapService.DEFAULT_SNAP_APERTURE] - The snap tolerance in CSS pixels of the world-to-view output space.
+     * @param [options.snapMode = IonSnapMode.NEAREST] - The type of snap to perform.
+     * @returns The snap result, or <code>undefined</code> if the element was not found or no snap was possible for it.
+     */
+    snap(options: {
+        elementId: string;
+        testPoint: Cartesian3;
+        camera: Camera;
+        canvasWidth: number;
+        canvasHeight: number;
+        closePoint?: Cartesian3;
+        snapAperture?: number;
+        snapMode?: IonSnapMode;
+    }): Promise<IonSnapService.Result | undefined>;
+    /**
+     * The default snap tolerance used by {@link IonSnapService#snap} when
+     * <code>options.snapAperture</code> is not provided, in CSS pixels of the
+     * world-to-view output space. This is {@link SnapService}'s
+     * <code>DEFAULT_SNAP_APERTURE</code> for this implementation.
+     */
+    static readonly DEFAULT_SNAP_APERTURE: number;
+}
+
+/**
  * Constants related to ISO8601 support.
  */
 export namespace Iso8601 {
@@ -9430,6 +9679,10 @@ export enum KeyboardEventModifier {
  */
 export namespace LagrangePolynomialApproximation {
     /**
+     * Gets the name of this interpolation algorithm.
+     */
+    var type: string;
+    /**
      * Given the desired degree, returns the number of data points required for interpolation.
      * @param degree - The desired degree of interpolation.
      * @returns The number of required data points needed for the desired degree of interpolation.
@@ -9473,6 +9726,10 @@ export class LeapSecond {
  * An {@link InterpolationAlgorithm} for performing linear interpolation.
  */
 export namespace LinearApproximation {
+    /**
+     * Gets the name of this interpolation algorithm.
+     */
+    var type: string;
     /**
      * Given the desired degree, returns the number of data points required for interpolation.
      * Since linear interpolation can only generate a first degree polynomial, this function
@@ -9788,6 +10045,26 @@ export namespace Math {
      * @returns The linearly interpolated value.
      */
     function lerp(p: number, q: number, time: number): number;
+    /**
+     * @property value - The new value after applying the smooth damp.
+     * @property velocity - The updated current velocity.
+     */
+    type SmoothDampResult = {
+        value: number;
+        velocity: number;
+    };
+    /**
+     * Gradually changes a value towards a target value over time. The smoothing function uses a spring-damping algorithm based on Game Programming Gems 4 Chapter 1.10.
+     * @param p - The current value.
+     * @param q - The target value.
+     * @param velocity - The current velocity.
+     * @param [deltaTime = 0.0] - The time since the last call to this function. Value must be greater than or equal to 0.0.
+     * @param [maximumSpeed = Number.POSITIVE_INFINITY] - Optionally allows clamping to the specified maximum speed.
+     * @param [smoothTime = 0.0001] - Approximately the time it will take to reach the target. A smaller value will reach the target faster. This value must be greater than or equal to 0.0001.
+     * @param [result] - An object to store the result. If not provided, a new object will be created and returned.
+     * @returns An object containing the new value and the updated current velocity.
+     */
+    function smoothDamp(p: number, q: number, velocity: number, deltaTime?: number, maximumSpeed?: number, smoothTime?: number, result?: SmoothDampResult): SmoothDampResult;
     /**
      * pi
      */
@@ -16362,6 +16639,61 @@ export class SimplePolylineGeometry {
     static createGeometry(simplePolylineGeometry: SimplePolylineGeometry): Geometry | undefined;
 }
 
+export namespace SnapService {
+    /**
+     * The result of a successful {@link SnapService#snap}.
+     *
+     * Implementations may return additional properties beyond those listed here.
+     * @property [snapPoint] - The snapped point. This is the point to consume.
+     * @property [hitPoint] - The point where the cursor hit the geometry: the nearest edge point when within the snap aperture, otherwise the surface point under the cursor.
+     */
+    type Result = {
+        snapPoint?: Cartesian3;
+        hitPoint?: Cartesian3;
+    };
+}
+
+/**
+ * Provides snap-to-geometry through an external service, which snaps against
+ * source geometry hosted remotely rather than geometry loaded in the scene.
+ * This type describes an interface and is not intended to be used.
+ */
+export class SnapService {
+    /**
+     * Requests a snap against geometry known to the service.
+     *
+     * The camera and canvas dimensions describe the current view so the
+     * implementation can perform view-dependent snapping (nearest ordering,
+     * pixel apertures, surface tracking) correctly.
+     *
+     * Implementations may accept additional options beyond those listed here.
+     * @param options - Object with the following properties:
+     * @param options.elementId - An implementation-defined identifier of the geometry to snap to.
+     * @param options.testPoint - The point to snap from, typically the picked cursor position.
+     * @param options.camera - The camera defining the current view.
+     * @param options.canvasWidth - The canvas width in CSS pixels.
+     * @param options.canvasHeight - The canvas height in CSS pixels.
+     * @param [options.closePoint = options.testPoint] - A reference point near the target geometry that seeds the snap search.
+     * @param [options.snapAperture = SnapService.DEFAULT_SNAP_APERTURE] - The snap tolerance in CSS pixels.
+     * @returns The snap result, or <code>undefined</code> if no snap was possible.
+     */
+    snap(options: {
+        elementId: string;
+        testPoint: Cartesian3;
+        camera: Camera;
+        canvasWidth: number;
+        canvasHeight: number;
+        closePoint?: Cartesian3;
+        snapAperture?: number;
+    }): Promise<SnapService.Result | undefined>;
+    /**
+     * The default snap tolerance used by {@link SnapService#snap} when
+     * <code>options.snapAperture</code> is not provided, in CSS pixels.
+     * The value is implementation-defined.
+     */
+    static readonly DEFAULT_SNAP_APERTURE: number;
+}
+
 /**
  * A description of a sphere centered at the origin.
  * @example
@@ -18081,6 +18413,8 @@ export class VRTheWorldTerrainProvider {
      */
     loadTileDataAvailability(x: number, y: number, level: number): undefined | Promise<void>;
 }
+
+export const GRID_TARGET_SEGMENTS_PER_CELL = 16;
 
 /**
  * A vertex format defines what attributes make up a vertex.  A VertexFormat can be provided
@@ -26904,8 +27238,9 @@ export class Billboard {
      */
     rotation: number;
     /**
-     * Gets or sets the aligned axis in world space. The aligned axis is the unit vector that the billboard up vector points towards.
+     * The aligned axis is the direction vector that the billboard up vector points towards.
      * The default is the zero vector, which means the billboard is aligned to the screen up vector.
+     * Note that only the zero vector (0,0,0) resets the alignment to screen up.
      * @example
      * // Example 1.
      * // Have the billboard up vector point north
@@ -27938,6 +28273,38 @@ export type BufferPolygonOptions = {
 };
 
 /**
+ * @property [primitiveCountMax = BufferPrimitiveCollection.DEFAULT_CAPACITY] - Maximum number of polygons.
+ * @property [vertexCountMax = BufferPrimitiveCollection.DEFAULT_CAPACITY] - Maximum number of vertices.
+ * @property [holeCountMax = BufferPrimitiveCollection.DEFAULT_CAPACITY] - Maximum number of holes.
+ * @property [triangleCountMax = BufferPrimitiveCollection.DEFAULT_CAPACITY] - Maximum number of triangles.
+ * @property [positionDatatype = ComponentDatatype.DOUBLE] - The component datatype used to store position values.
+ * @property [positionNormalized = false] - When <code>true</code>, integer position values are treated as normalized,
+ *   where the full integer range maps to [-1, 1] (signed) or [0, 1] (unsigned). Only relevant for integer position datatypes
+ *   (BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT).
+ * @property [allowPicking = true] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
+ * @property [boundingVolume] - Bounding volume, in world space, for the collection. When
+ *    unspecified, a bounding volume is computed automatically and updated when primitive positions change. When
+ *    specified, users are responsible for updating bounding volume as needed. Pre-computing the bounding volume
+ *    manually, and updating it only as needed, will improve performance for larger dynamic collections.
+ * @property [heightReference = HeightReference.NONE] - When set to a clamping value, the
+ *   collection is draped onto terrain and/or 3D Tiles, rather than drawn as geometry of its own.
+ */
+export type BufferPolygonCollectionOptions = {
+    primitiveCountMax?: number;
+    vertexCountMax?: number;
+    holeCountMax?: number;
+    triangleCountMax?: number;
+    positionDatatype?: ComponentDatatype;
+    positionNormalized?: boolean;
+    show?: boolean;
+    allowPicking?: boolean;
+    boundingVolume?: BoundingSphere;
+    debugShowBoundingVolume?: boolean;
+    blendOption?: BlendOption;
+    heightReference?: HeightReference;
+};
+
+/**
  * Collection of polygons held in ArrayBuffer storage for performance and memory optimization.
  *
  * <p>Default buffer memory allocation is arbitrary, and collections cannot be resized,
@@ -27972,26 +28339,9 @@ export type BufferPolygonOptions = {
  *   collection.get(i, polygon);
  *   polygon.setMaterial(material);
  * }
- * @param [options.allowPicking = true] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
- * @param [options.boundingVolume] - Bounding volume, in world space, for the collection. When
- *    unspecified, a bounding volume is computed automatically and updated when primitive positions change. When
- *    specified, users are responsible for updating bounding volume as needed. Pre-computing the bounding volume
- *    manually, and updating it only as needed, will improve performance for larger dynamic collections.
  */
 export class BufferPolygonCollection extends BufferPrimitiveCollection<BufferPolygon> {
-    constructor(options: {
-        primitiveCountMax?: number;
-        vertexCountMax?: number;
-        holeCountMax?: number;
-        triangleCountMax?: number;
-        positionDatatype?: ComponentDatatype;
-        positionNormalized?: boolean;
-        show?: boolean;
-        allowPicking?: boolean;
-        boundingVolume?: BoundingSphere;
-        debugShowBoundingVolume?: boolean;
-        blendOption?: BlendOption;
-    });
+    constructor(options?: BufferPolygonCollectionOptions);
     /**
      * Duplicates the contents of this collection into the result collection.
      * Result collection is not resized, and must contain enough space for all
@@ -28003,8 +28353,18 @@ export class BufferPolygonCollection extends BufferPrimitiveCollection<BufferPol
      * @example
      * const result = new BufferPolygonCollection({ ... }); // allocate larger 'result' collection
      * BufferPolygonCollection.clone(collection, result);   // copy polygons from 'collection' into 'result'
+     * @param [predicate] - When provided, only polygons for which this returns <code>true</code> are copied. Surviving polygons are compacted into contiguous indices.
      */
-    static clone(collection: BufferPolygonCollection, result: BufferPolygonCollection): BufferPolygonCollection;
+    static clone(collection: BufferPolygonCollection, result: BufferPolygonCollection, predicate?: (...params: any[]) => any): BufferPolygonCollection;
+    /**
+     * Returns a copy of the given collection, overriding any constructor options
+     * provided. Omitted options are inherited from the source collection. Any
+     * resized buffers must be large enough to hold every polygon.
+     * @param collection - Source collection to copy.
+     * @param [options] - Constructor options to override. Omitted options are inherited from the source collection.
+     * @param [predicate] - When provided, only polygons for which this returns <code>true</code> are copied. Surviving polygons are compacted into contiguous indices.
+     */
+    static fromCollection(collection: BufferPolygonCollection, options?: BufferPolygonCollectionOptions, predicate?: (...params: any[]) => any): BufferPolygonCollection;
     /**
      * Adds a new polygon to the collection, with the specified options. A
      * {@link BufferPolygon} instance is linked to the new polygon, using
@@ -28156,8 +28516,34 @@ export type BufferPolylineOptions = {
  *   collection.get(i, polyline);
  *   polyline.setMaterial(material);
  * }
+ * @param [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ * @param [options.allowPicking = false] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
+ * @param [options.boundingVolume] - Bounding volume, in world space, for the collection.
+ * @param [options.widthUnits = "pixels"] - Unit of polyline widths in this collection:
+ *   <code>"pixels"</code> on the screen, or <code>"meters"</code> in world space. A clamped
+ *   {@link HeightReference} measures those meters on the ellipsoid surface, so elevation and terrain
+ *   slope stretch the drawn width.
  */
 export class BufferPolylineCollection extends BufferPrimitiveCollection<BufferPolyline> {
+    constructor(options?: {
+        modelMatrix?: Matrix4;
+        primitiveCountMax?: number;
+        vertexCountMax?: number;
+        show?: boolean;
+        positionDatatype?: ComponentDatatype;
+        positionNormalized?: boolean;
+        allowPicking?: boolean;
+        boundingVolume?: BoundingSphere;
+        debugShowBoundingVolume?: boolean;
+        blendOption?: BlendOption;
+        heightReference?: HeightReference;
+        widthUnits?: "pixels" | "meters";
+    });
+    /**
+     * Unit of polyline widths in this collection: <code>"pixels"</code> on the screen, or
+     * <code>"meters"</code> in world space, measured on the ellipsoid surface when clamped.
+     */
+    readonly widthUnits: "pixels" | "meters";
     /**
      * Adds a new polyline to the collection, with the specified options. A
      * {@link BufferPolyline} instance is linked to the new polyline, using
@@ -28172,7 +28558,8 @@ export class BufferPolylineCollection extends BufferPrimitiveCollection<BufferPo
  * @property [color = Color.WHITE] - Color of fill.
  * @property [outlineColor = Color.WHITE] - Color of outline.
  * @property [outlineWidth = 0.0] - Width of outline, 0-255px.
- * @property [width = 1.0] - Width of line, 0-255px.
+ * @property [width = 1.0] - Width of line, in the unit selected by
+ *   {@link BufferPolylineCollection#widthUnits}.
  */
 export type BufferPolylineMaterialOptions = {
     color?: Color;
@@ -28191,7 +28578,7 @@ export type BufferPolylineMaterialOptions = {
 export class BufferPolylineMaterial extends BufferPrimitiveMaterial {
     constructor(options?: BufferPolylineMaterialOptions);
     /**
-     * Width of polyline, 0–255px.
+     * Width of polyline, in the unit selected by {@link BufferPolylineCollection#widthUnits}.
      */
     width: number;
     static pack(material: BufferPolylineMaterial, view: DataView, byteOffset: number): void;
@@ -28263,39 +28650,53 @@ export type BufferPrimitiveOptions = {
 };
 
 /**
+ * @property [modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
+ * @property [primitiveCountMax = BufferPrimitiveCollection.DEFAULT_CAPACITY] - Maximum number of primitives.
+ * @property [vertexCountMax = BufferPrimitiveCollection.DEFAULT_CAPACITY] - Maximum number of vertices.
+ * @property [positionDatatype = ComponentDatatype.DOUBLE] - The component datatype used to store position values.
+ * @property [positionNormalized = false] - When <code>true</code>, integer position values are treated as normalized,
+ *   where the full integer range maps to [-1, 1] (signed) or [0, 1] (unsigned). Only relevant for integer position datatypes
+ *   (BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT).
+ * @property [allowPicking = false] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
+ * @property [boundingVolume] - Bounding volume, in world space, for the collection. When
+ *    unspecified, a bounding volume is computed automatically and updated when primitive positions change. When
+ *    specified, users are responsible for updating bounding volume as needed. Pre-computing the bounding volume
+ *    manually, and updating it only as needed, will improve performance for larger dynamic collections.
+ * @property [options.heightReference = HeightReference.NONE] - When set to a clamping value, the
+ *   collection is draped onto the surfaces selected by the value: {@link HeightReference.CLAMP_TO_TERRAIN} drapes
+ *   onto the globe, {@link HeightReference.CLAMP_TO_3D_TILE} drapes onto 3D Tiles, and
+ *   {@link HeightReference.CLAMP_TO_GROUND} drapes onto both. Only {@link BufferPolylineCollection} and
+ *   {@link BufferPolygonCollection} support draping, and only once the collection has been added to
+ *   {@link Scene#primitives}. A draped collection is not also drawn as geometry of its own.
+ */
+export type BufferPrimitiveCollectionOptions = {
+    modelMatrix?: Matrix4;
+    primitiveCountMax?: number;
+    vertexCountMax?: number;
+    show?: boolean;
+    positionDatatype?: ComponentDatatype;
+    positionNormalized?: boolean;
+    allowPicking?: boolean;
+    boundingVolume?: BoundingSphere;
+    debugShowBoundingVolume?: boolean;
+    blendOption?: BlendOption;
+};
+
+/**
  * Collection of primitives held in ArrayBuffer storage for performance and memory optimization.
  *
  * <p>To get the full performance benefit of using a BufferPrimitiveCollection containing "N" primitives,
  * be careful to avoid allocating "N" instances of any related JavaScript object. {@link BufferPrimitive},
  * {@link Color}, {@link Cartesian3}, and other objects can all be reused when working with large collections,
  * using the {@link https://en.wikipedia.org/wiki/Flyweight_pattern|flyweight pattern}.</p>
- * @param [options.modelMatrix = Matrix4.IDENTITY] - Transforms geometry from model to world coordinates.
- * @param [options.positionNormalized = false] - When <code>true</code>, integer position values are treated as normalized,
- *   where the full integer range maps to [-1, 1] (signed) or [0, 1] (unsigned). Only relevant for integer position datatypes
- *   (BYTE, UNSIGNED_BYTE, SHORT, UNSIGNED_SHORT).
- * @param [options.allowPicking = false] - When <code>true</code>, primitives are pickable with {@link Scene#pick}. When <code>false</code>, memory and initialization cost are lower.
- * @param [options.boundingVolume] - Bounding volume, in world space, for the collection. When
- *    unspecified, a bounding volume is computed automatically and updated when primitive positions change. When
- *    specified, users are responsible for updating bounding volume as needed. Pre-computing the bounding volume
- *    manually, and updating it only as needed, will improve performance for larger dynamic collections.
  */
 export class BufferPrimitiveCollection<T extends BufferPrimitive> {
-    constructor(options: {
-        modelMatrix?: Matrix4;
-        primitiveCountMax?: number;
-        vertexCountMax?: number;
-        show?: boolean;
-        positionDatatype?: ComponentDatatype;
-        positionNormalized?: boolean;
-        allowPicking?: boolean;
-        boundingVolume?: BoundingSphere;
-        debugShowBoundingVolume?: boolean;
-        blendOption?: BlendOption;
-    });
+    constructor(options?: BufferPrimitiveCollectionOptions);
     /**
      * Determines if primitives in this collection will be shown.
      */
     show: boolean;
+    protected readonly _heightReference: HeightReference;
     /**
      * Transforms geometry from model to world coordinates.
      */
@@ -28339,8 +28740,37 @@ export class BufferPrimitiveCollection<T extends BufferPrimitive> {
      * @example
      * const result = new BufferPrimitiveCollection({ ... }); // allocate larger 'result' collection
      * BufferPrimitiveCollection.clone(collection, result);   // copy primitives from 'collection' into 'result'
+     * @param [predicate] - When provided, only primitives for which this returns <code>true</code> are copied. Surviving primitives are compacted into contiguous indices.
      */
-    static clone<T extends BufferPrimitive>(collection: BufferPrimitiveCollection<T>, result: BufferPrimitiveCollection<T>): void;
+    static clone<T extends BufferPrimitive>(collection: BufferPrimitiveCollection<T>, result: BufferPrimitiveCollection<T>, predicate?: (...params: any[]) => any): void;
+    /**
+     * Returns a copy of the given collection, overriding any constructor options
+     * provided. Omitted options are inherited from the source collection. Any
+     * resized buffers must be large enough to hold every primitive.
+     *
+     * <p>Collection-level state (model matrix, blend option, picking, bounding-volume
+     * mode, etc.) is carried over, but GPU resources are not: the source collection
+     * retains ownership of its renderer resources, so the caller is responsible for
+     * calling {@link BufferPrimitiveCollection#destroy} on the source once it is no
+     * longer needed.</p>
+     * @example
+     * const grown = BufferPrimitiveCollection.fromCollection(collection, {
+     *   primitiveCountMax: collection.primitiveCountMax * 2,
+     *   vertexCountMax: collection.vertexCountMax * 2,
+     * });
+     * collection.destroy(); // release the source collection's GPU resources
+     * @example
+     * // Grow while dropping hidden primitives.
+     * const compacted = BufferPrimitiveCollection.fromCollection(
+     *   collection,
+     *   { primitiveCountMax: collection.primitiveCountMax * 2 },
+     *   (primitive) => primitive.show,
+     * );
+     * @param collection - Source collection to copy.
+     * @param [options] - Constructor options to override. Omitted options are inherited from the source collection.
+     * @param [predicate] - When provided, only primitives for which this returns <code>true</code> are copied. Surviving primitives are compacted into contiguous indices.
+     */
+    static fromCollection<T extends BufferPrimitive>(collection: BufferPrimitiveCollection<T>, options?: BufferPrimitiveCollectionOptions, predicate?: (...params: any[]) => any): BufferPrimitiveCollection<T>;
     /**
      * Makes the given {@link BufferPrimitive} a view onto this collection's
      * primitive at the given index, for use when reading/writing primitive
@@ -28410,6 +28840,12 @@ export class BufferPrimitiveCollection<T extends BufferPrimitive> {
      * (unsigned).
      */
     readonly positionNormalized: boolean;
+    /**
+     * Determines which surfaces the collection is draped onto, in addition to
+     * being drawn as standalone geometry. Draping requires that the collection
+     * has been added to {@link Scene#primitives}.
+     */
+    readonly heightReference: HeightReference;
     /**
      * Returns a JSON-serializable array representing the collection. This encoding
      * is not memory-efficient, and should generally be used for debugging and
@@ -28939,6 +29375,13 @@ export class Camera {
      * @param [offset] - The offset from the target in a reference frame centered at the target.
      */
     lookAtTransform(transform: Matrix4, offset?: Cartesian3 | HeadingPitchRange): void;
+    /**
+     * Sets the camera orientation to look at a target position in world coordinates. The camera's up vector will be oriented to the world up vector at the target position.
+     * If the camera is at the target position, the camera will be oriented to the world up vector at the target position.
+     * @param target - The target position in world coordinates.
+     * @param [ellipsoid = Ellipsoid.default] - The ellipsoid to use for determining the world up.
+     */
+    lookAtWorldPosition(target: Cartesian3, ellipsoid?: Ellipsoid): void;
     /**
      * Get the camera position needed to view a rectangle on an ellipsoid or map
      * @param rectangle - The rectangle to view.
@@ -30708,7 +31151,7 @@ export namespace Cesium3DTileset {
      * @property [clippingPlanes] - The {@link ClippingPlaneCollection} used to selectively disable rendering the tileset.
      * @property [clippingPolygons] - The {@link ClippingPolygonCollection} used to selectively disable rendering the tileset.
      * @property [classificationType] - Determines whether terrain, 3D Tiles or both will be classified by this tileset. See {@link Cesium3DTileset#classificationType} for details about restrictions and limitations.
-     * @property [heightReference] - Sets the {@link HeightReference} for point features in vector tilesets.
+     * @property [heightReference] - Sets the {@link HeightReference} for features in vector tilesets.
      * @property [scene] - The {@link CesiumWidget#scene} that the tileset will be rendered in, required for tilesets that specify a {@link heightReference} value for clamping 3D Tiles vector data content- like points, lines, and labels- to terrain or 3D tiles.
      * @property [ellipsoid = Ellipsoid.WGS84] - The ellipsoid determining the size and shape of the globe.
      * @property [pointCloudShading] - Options for constructing a {@link PointCloudShading} object to control point attenuation based on geometric error and lighting.
@@ -32119,26 +32562,66 @@ export class ClippingPlaneCollection {
  * const polygon = new Cesium.ClippingPolygon({
  *     positions: positions
  * });
+ * @example
+ * // A clipping polygon with two holes. Regions inside the holes are not clipped.
+ * const outerRing = Cesium.Cartesian3.fromDegreesArray([
+ *     -100.0, 40.0,
+ *     -90.0, 40.0,
+ *     -90.0, 50.0,
+ *     -100.0, 50.0,
+ * ]);
+ *
+ * const firstHole = Cesium.Cartesian3.fromDegreesArray([
+ *     -98.0, 42.0,
+ *     -96.0, 42.0,
+ *     -96.0, 44.0,
+ *     -98.0, 44.0,
+ * ]);
+ *
+ * const secondHole = Cesium.Cartesian3.fromDegreesArray([
+ *     -94.0, 46.0,
+ *     -92.0, 46.0,
+ *     -92.0, 48.0,
+ *     -94.0, 48.0,
+ * ]);
+ *
+ * const polygonWithHoles = new Cesium.ClippingPolygon({
+ *     positions: outerRing,
+ *     holes: [firstHole, secondHole],
+ * });
  * @param options - Object with the following properties:
  * @param options.positions - A list of three or more Cartesian coordinates defining the outer ring of the clipping polygon.
+ * @param [options.holes] - An array of interior rings (holes), each a list of three or more Cartesian coordinates. Regions inside a hole are excluded from the polygon.
  */
 export class ClippingPolygon {
     constructor(options: {
         positions: Cartesian3[];
+        holes?: Cartesian3[][];
         ellipsoid?: Ellipsoid;
     });
     /**
-     * Returns the total number of positions in the polygon, include any holes.
+     * Returns the total number of positions in the polygon, including any holes.
      */
     readonly length: number;
     /**
-     * Returns the outer ring of positions.
+     * Returns the outer ring of positions. A ClippingPolygon's geometry is
+     * immutable; the returned array and its coordinates are frozen.
      */
     readonly positions: Cartesian3[];
+    /**
+     * Returns the interior rings (holes) of the polygon, each a list of positions.
+     */
+    readonly holes: Cartesian3[][];
     /**
      * Returns the ellipsoid used to project the polygon onto surfaces when clipping.
      */
     readonly ellipsoid: Ellipsoid;
+    /**
+     * Returns the cartographic rectangle enclosing the polygon, computed once on
+     * construction. Since a ClippingPolygon's geometry is immutable, this rectangle
+     * never changes.
+     */
+    readonly rectangle: Rectangle;
     /**
      * Clones the ClippingPolygon without setting its ownership.
      * @param polygon - The ClippingPolygon to be cloned
@@ -32161,6 +32644,8 @@ export class ClippingPolygon {
      */
     computeRectangle(result?: Rectangle): Rectangle;
 }
+
+export const bufferPolygonScratch: any;
 
 /**
  * Specifies a set of clipping polygons. Clipping polygons selectively disable rendering in a region
@@ -32192,7 +32677,8 @@ export class ClippingPolygon {
  * @param [options.polygons = []] - An array of {@link ClippingPolygon} objects used to selectively disable rendering on the inside of each polygon.
  * @param [options.enabled = true] - Determines whether the clipping polygons are active.
  * @param [options.inverse = false] - If true, a region will be clipped if it is outside of every polygon in the collection. Otherwise, a region will only be clipped if it is on the inside of any polygon.
- * @param [options.quality = 1.0] - A scalar that controls the resolution of the signed distance texture used for clipping. Values greater than 1.0 increase quality, values less than 1.0 decrease it. Must be greater than 0.0.
+ * @param [options.quality = 1.0] - A scalar that controls the resolution of the signed distance texture used for clipping. Values greater than 1.0 increase quality, values less than 1.0 decrease it. Must be greater than 0.0. <p>Deprecated in CesiumJS 1.145 and will be removed in 1.147. Signed distance field clipping was replaced with vector clipping, so this option no longer has any effect.</p>
+ * @param [options.ellipsoid = Ellipsoid.default] - The ellipsoid to use to project the clipping polygons onto the globe.
  */
 export class ClippingPolygonCollection {
     constructor(options?: {
@@ -32200,6 +32686,7 @@ export class ClippingPolygonCollection {
         enabled?: boolean;
         inverse?: boolean;
         quality?: number;
+        ellipsoid?: Ellipsoid;
     });
     /**
      * If true, clipping will be enabled.
@@ -32212,11 +32699,6 @@ export class ClippingPolygonCollection {
      */
     inverse: boolean;
     /**
-     * A scalar that controls the resolution of the signed distance texture used for clipping.
-     * Values greater than 1.0 increase quality, values less than 1.0 decrease it. Must be greater than 0.0.
-     */
-    quality: number;
-    /**
      * An event triggered when a new clipping polygon is added to the collection.  Event handlers
      * are passed the new polygon and the index at which it was added.
      */
@@ -32227,11 +32709,23 @@ export class ClippingPolygonCollection {
      */
     polygonRemoved: Event;
     /**
+     * The ellipsoid to use to project the clipping polygons onto the globe.
+     */
+    ellipsoid: Ellipsoid;
+    /**
      * Returns the number of polygons in this collection.  This is commonly used with
      * {@link ClippingPolygonCollection#get} to iterate over all the polygons
      * in the collection.
      */
     readonly length: number;
+    /**
+     * If true, a debug texture visualizing the signed distance field is shown.
+     */
+    debugShowDistanceTexture: boolean;
+    /**
+     * A scalar that controlled the resolution of the signed distance texture used for clipping.
+     */
+    quality: number;
     /**
      * Adds the specified {@link ClippingPolygon} to the collection to be used to selectively disable rendering
      * on the inside of each polygon. Use {@link ClippingPolygonCollection#unionClippingRegions} to modify
@@ -32578,6 +33072,605 @@ export class ConditionsExpression {
  */
 export class ConeEmitter {
     constructor(angle?: number);
+}
+
+/**
+ * An interface for a camera controller that can be registered with the scene to handle input events, camera animations, and other interactions. Implementations of this interface are expected to be registered with the scene via a {@link ControllerHost}.
+ * This type describes an
+ * interface and is not intended to be instantiated directly.
+ */
+export class Controller {
+    /**
+     * Determines if the controller is enabled and should be updated by the host scene.
+     */
+    enabled: boolean;
+    /**
+     * Invoked when the controller is added to the DOM. Implement <code>connectedCallback</code> to set up any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    connectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked when the controller is removed from the DOM. Implement <code>disconnectedCallback</code> to tear down any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    disconnectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked once per frame. Implement <code>update</code> to modify the camera or other parts of the scene.
+     * @param time - The current simulation time.
+     */
+    update(scene: Scene, time: JulianDate): void;
+    /**
+     * Invoked when the controller is being updated the first time, immediately before <code>update</code> is called. Implement <code>firstUpdate</code> to perform one-time work after the relevant scene has begun its render loop. Some examples might include initializing simulation time values or adding a primitive to the scene.
+     * @param time - The current simulation time.
+     */
+    firstUpdate(scene: Scene, time: JulianDate): void;
+}
+
+/**
+ * Creates an instance of a <code>ControllerHost</code>. Typically, a <code>ControllerHost</code> is created by the Scene constructor and accessed via {@link Scene#controllerHost}.
+ */
+export class ControllerHost {
+    /**
+     * The number of controllers registered to this host.
+     */
+    readonly controllerCount: number;
+    /**
+     * Registers a controller implementation with this host.
+     * @param controller - An implementation of the Controller interface to register with this host.
+     * @param element - The DOM element containing the Cesium scene.
+     * @param [priority = 0] - An index, less than or equal to the current count of registed controllers, that defines the precedence of the new controller relative to those previously registered. A priority of <code>0</code> would mean the new controller would apply its updates before any other controller. As subsequent controllers are updated, their effects are applied on top of any previous update effects. If omitted, the new controller becomes the highest priority, i.e., its updates are applied after all other controllers.
+     */
+    registerController(controller: Controller, element: HTMLElement, priority?: number): void;
+    /**
+     * Unregisters a controller implementation from this host.
+     * @param controller - An implementation of the Controller interface to unregister from this host.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    unregisterController(controller: Controller, element: HTMLElement): void;
+    /**
+     * Invoked once per frame by the host scene. Updates all registered controllers in order of their priority.
+     * @param scene - The host scene.
+     * @param time - The current simulation time.
+     */
+    update(scene: Scene, time: JulianDate): void;
+}
+
+export interface HybridScreenSpacePanCameraController extends Controller {
+}
+
+/**
+ * A contextual camera controller that combines screenspace map panning and screenspace elevator panning. The controller automatically switches between the two based on the camera's angle relative to nadir. If the camera is looking mostly down (within angleThreshold of nadir), <code>ScreenSpaceMapCameraController</code> is used.
+ * If the camera is looking towards the horizon (beyond angleThreshold from nadir), the <code>ScreenSpaceElevatorCameraController</code> is used.
+ * @example
+ * viewer.scene.screenSpaceCameraController.enableInputs = false;
+ * viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
+ *
+ * const hybridController = new HybridScreenSpacePanCameraController();
+ * viewer.addController(hybridController);
+ */
+export class HybridScreenSpacePanCameraController implements Controller {
+    /**
+     * The angle threshold in radians that determines which controller is used. If the camera is looking within this angle of nadir, the map controller is used. Otherwise, the elevator controller is used.
+     */
+    angleThreshold: number;
+    /**
+     * The controller that is used when the camera is looking more horizontally (beyond angleThreshold from nadir).
+     */
+    readonly elevatorController: ScreenSpaceElevatorCameraController;
+    /**
+     * The controller that is used when the camera is looking mostly down (within angleThreshold of nadir).
+     */
+    readonly mapController: ScreenSpaceMapCameraController;
+    /**
+     * Determines if the controller is enabled and should be updated by the host scene.
+     */
+    enabled: boolean;
+    /**
+     * Invoked when the controller is added to the DOM. Implement <code>connectedCallback</code> to set up any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    connectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked when the controller is removed from the DOM. Implement <code>disconnectedCallback</code> to tear down any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    disconnectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked once per frame. Implement <code>update</code> to modify the camera or other parts of the scene.
+     * @param time - The current simulation time.
+     */
+    update(scene: Scene, time: JulianDate): void;
+    /**
+     * Invoked when the controller is being updated the first time, immediately before <code>update</code> is called. Implement <code>firstUpdate</code> to perform one-time work after the relevant scene has begun its render loop. Some examples might include initializing simulation time values or adding a primitive to the scene.
+     * @param time - The current simulation time.
+     */
+    firstUpdate(scene: Scene, time: JulianDate): void;
+}
+
+/**
+ * This enumerated type is for classifying mouse buttons: left, middle, and right.
+ */
+export enum MouseButton {
+    /**
+     * Represents a mouse left button.
+     */
+    LEFT = 0,
+    /**
+     * Represents a mouse middle button.
+     */
+    MIDDLE = 1,
+    /**
+     * Represents a mouse right button.
+     */
+    RIGHT = 2
+}
+
+export namespace ScreenSpaceElevatorCameraController {
+    /**
+     * @property [dragInputs] - The drag input bindings that control panning.
+     */
+    type ControllerOptions = {
+        dragInputs?: ScreenSpaceInputBindings.InputBinding[];
+    };
+}
+
+export interface ScreenSpaceElevatorCameraController extends Controller {
+}
+
+/**
+ * Creates an instance of a ScreenSpaceElevatorCameraController.
+ * @example
+ * viewer.scene.screenSpaceCameraController.enableInputs = false;
+ * viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
+ *
+ * const elevatorCameraController = new Cesium.ScreenSpaceElevatorCameraController();
+ * viewer.addController(elevatorCameraController);
+ * @example
+ * // Configure the controller to use the right mouse button for panning instead of the default left mouse button.
+ * const elevatorCameraController = new Cesium.ScreenSpaceElevatorCameraController({
+ *  dragInputs: [{ button: Cesium.MouseButton.RIGHT}]
+ * });
+ * viewer.addController(elevatorCameraController);
+ * @param [options] - The options for configuring the controller.
+ */
+export class ScreenSpaceElevatorCameraController implements Controller {
+    constructor(options?: ScreenSpaceElevatorCameraController.ControllerOptions);
+    /**
+     * The drag input bindings that control vertical panning. Each binding is a combination of the mouse button
+     * and an optional keyboard modifier.
+     */
+    dragInputs: ScreenSpaceInputBindings.InputBinding[];
+    /**
+     * A callback function used to pick the world position from which to pan. The function is called with {@link Scene}, the {@link Cartesian2} screen space position, and a {@link Cartesian3} instance to store the result. The function should return the {@link Cartesian3} world position from which to pan, or <code>undefined</code> if no position could be picked. If <code>undefined</code> is returned, the camera will pan relative to the ellipsoid surface below the camera.
+     * @example
+     * const elevatorCameraController = new Cesium.ScreenSpaceElevatorCameraController();
+     * elevatorCameraController.pickWorldPosition = function (scene, windowPosition, result) {
+     *   // Pick the world position from the depth buffer
+     *   return scene.pickPosition(windowPosition, result);
+     * };
+     * viewer.addController(elevatorCameraController);
+     */
+    pickWorldPosition: (...params: any[]) => any;
+    /**
+     * The speed in meters per pixel at which the camera pans.
+     */
+    panSpeed: number;
+    /**
+     * Enable or disable inertia when panning. When enabled, the camera will continue to move after the user stops dragging, gradually slowing down based on {@link ScreenSpaceMapCameraController#inertialDecay}.
+     */
+    inertiaEnabled: boolean;
+    /**
+     * The rate at which the camera's pan velocity decays over time.
+     */
+    inertialDecay: number;
+    /**
+     * A parameter in the range <code>[0, 1)</code> used to limit the range
+     * of inputs to a percentage of the window width/height per animation frame.
+     * This helps keep the camera under control in low-frame-rate situations.
+     */
+    maximumMovementRatio: number;
+    /**
+     * Determines if the controller is enabled and should be updated by the host scene.
+     */
+    enabled: boolean;
+    /**
+     * Invoked when the controller is added to the DOM. Implement <code>connectedCallback</code> to set up any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    connectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked when the controller is removed from the DOM. Implement <code>disconnectedCallback</code> to tear down any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    disconnectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked once per frame. Implement <code>update</code> to modify the camera or other parts of the scene.
+     * @param time - The current simulation time.
+     */
+    update(scene: Scene, time: JulianDate): void;
+    /**
+     * Invoked when the controller is being updated the first time, immediately before <code>update</code> is called. Implement <code>firstUpdate</code> to perform one-time work after the relevant scene has begun its render loop. Some examples might include initializing simulation time values or adding a primitive to the scene.
+     * @param time - The current simulation time.
+     */
+    firstUpdate(scene: Scene, time: JulianDate): void;
+}
+
+export namespace ScreenSpaceInputBindings {
+    /**
+     * @property button - The mouse button used for drag start/stop.
+     * @property [modifier] - The optional keyboard modifier to register.
+     */
+    type InputBinding = {
+        button: MouseButton;
+        modifier?: number;
+    };
+    /**
+     * @property [start] - Called on drag start.
+     * @property [end] - Called on drag stop.
+     * @property [change] - Called on drag move.
+     */
+    type DragInputActions = {
+        start?: (...params: any[]) => any;
+        end?: (...params: any[]) => any;
+        change?: (...params: any[]) => any;
+    };
+    /**
+     * @property isDragging - True if a drag is in progress, false otherwise.
+     */
+    type DragInputState = {
+        isDragging: boolean;
+    };
+    /**
+     * Registers drag input bindings on a screen space event handler.
+     * @param handler - The screen space event handler.
+     * @param inputBindings - The drag bindings to register.
+     * @param dragInputActions - The callbacks to invoke for drag actions.
+     * @returns The drag input state.
+     */
+    function registerDragInputBindings(handler: ScreenSpaceEventHandler, inputBindings: InputBinding[], dragInputActions: DragInputActions): DragInputState;
+}
+
+export namespace ScreenSpaceMapCameraController {
+    /**
+     * @property [dragInputs] - The drag input bindings that control panning.
+     */
+    type ControllerOptions = {
+        dragInputs?: ScreenSpaceInputBindings.InputBinding[];
+    };
+}
+
+export interface ScreenSpaceMapCameraController extends Controller {
+}
+
+/**
+ * Creates an instance of a ScreenSpaceMapCameraController.
+ * @example
+ * viewer.scene.screenSpaceCameraController.enableInputs = false;
+ *
+ * const mapCameraController = new Cesium.ScreenSpaceMapCameraController();
+ * viewer.addController(mapCameraController);
+ * @example
+ * // Configure the controller to use the right mouse button for panning instead of the default left mouse button.
+ * const mapCameraController = new Cesium.ScreenSpaceMapCameraController({
+ *  dragInputs: [{ button: Cesium.MouseButton.RIGHT}]
+ * });
+ * viewer.addController(mapCameraController);
+ * @param [options] - The options for configuring the controller.
+ */
+export class ScreenSpaceMapCameraController implements Controller {
+    constructor(options?: ScreenSpaceMapCameraController.ControllerOptions);
+    /**
+     * The drag input bindings that map panning. Each binding is a combination of the mouse button
+     * and an optional keyboard modifier.
+     */
+    dragInputs: ScreenSpaceInputBindings.InputBinding[];
+    /**
+     * A callback function used to pick the world position from which to pan. The function is called with {@link Scene}, the {@link Cartesian2} screen space position, and a {@link Cartesian3} instance to store the result. The function should return the {@link Cartesian3} world position from which to pan, or <code>undefined</code> if no position could be picked. If <code>undefined</code> is returned, the camera will pan relative to the ellipsoid surface below the camera.
+     * @example
+     * const mapCameraController = new Cesium.ScreenSpaceMapCameraController();
+     * mapCameraController.pickWorldPosition = function (scene, windowPosition, result) {
+     *   // Pick the world position from the depth buffer
+     *   return scene.pickPosition(windowPosition, result);
+     * };
+     * viewer.addController(mapCameraController);
+     */
+    pickWorldPosition: (...params: any[]) => any;
+    /**
+     * The speed in meters per pixel at which the camera pans.
+     */
+    panSpeed: number;
+    /**
+     * Enable or disable inertia when panning. When enabled, the camera will continue to move after the user stops dragging, gradually slowing down based on {@link ScreenSpaceMapCameraController#inertialDecay}.
+     */
+    inertiaEnabled: boolean;
+    /**
+     * The rate at which the camera's pan velocity decays over time.
+     */
+    inertialDecay: number;
+    /**
+     * A parameter in the range <code>[0, 1)</code> used to limit the range
+     * of inputs to a percentage of the window width/height per animation frame.
+     * This helps keep the camera under control in low-frame-rate situations.
+     */
+    maximumMovementRatio: number;
+    /**
+     * Determines if the controller is enabled and should be updated by the host scene.
+     */
+    enabled: boolean;
+    /**
+     * Invoked when the controller is added to the DOM. Implement <code>connectedCallback</code> to set up any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    connectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked when the controller is removed from the DOM. Implement <code>disconnectedCallback</code> to tear down any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    disconnectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked once per frame. Implement <code>update</code> to modify the camera or other parts of the scene.
+     * @param time - The current simulation time.
+     */
+    update(scene: Scene, time: JulianDate): void;
+    /**
+     * Invoked when the controller is being updated the first time, immediately before <code>update</code> is called. Implement <code>firstUpdate</code> to perform one-time work after the relevant scene has begun its render loop. Some examples might include initializing simulation time values or adding a primitive to the scene.
+     * @param time - The current simulation time.
+     */
+    firstUpdate(scene: Scene, time: JulianDate): void;
+}
+
+export namespace ScreenSpaceTiltOrbitCameraController {
+    /**
+     * @property [dragInputs] - The drag input bindings that control tilting and orbiting.
+     */
+    type ControllerOptions = {
+        dragInputs?: ScreenSpaceInputBindings.InputBinding[];
+    };
+}
+
+export interface ScreenSpaceTiltOrbitCameraController extends Controller {
+}
+
+/**
+ * Creates a new instance of <code>ScreenSpaceTiltOrbitCameraController</code>.
+ * @example
+ * viewer.scene.screenSpaceCameraController.enableInputs = false;
+ * viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
+ *
+ * const tiltOrbitController = new Cesium.ScreenSpaceTiltOrbitCameraController();
+ * viewer.addController(tiltOrbitController);
+ * @example
+ * // Tilt around the position under the cursor or tap when dragging starts instead of the position at the center of the screen.
+ * viewer.scene.screenSpaceCameraController.enableInputs = false;
+ * viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
+ *
+ * const tiltOrbitController = new Cesium.ScreenSpaceTiltOrbitCameraController();
+ * tiltOrbitController.useDragPosition = true;
+ * viewer.addController(tiltOrbitController);
+ * @example
+ * // Configure the controller to use the left mouse button for tilting and orbiting instead of the default right mouse button.
+ * const tiltOrbitController = new Cesium.ScreenSpaceTiltOrbitCameraController({
+ *  dragInputs: [{ button: Cesium.MouseButton.LEFT }]
+ * });
+ * viewer.addController(tiltOrbitController);
+ * @param [options] - The options for configuring the controller.
+ */
+export class ScreenSpaceTiltOrbitCameraController implements Controller {
+    constructor(options?: ScreenSpaceTiltOrbitCameraController.ControllerOptions);
+    /**
+     * Enabled dragging to tilt the camera.
+     */
+    tiltEnabled: boolean;
+    /**
+     * Enabled dragging to orbit the camera.
+     */
+    orbitEnabled: boolean;
+    /**
+     * If false, the camera will orbit and tilt around the position at the center of the screen. If true, the camera will orbit and tilt around the position under the cursor or tap when dragging starts.
+     */
+    useDragPosition: boolean;
+    /**
+     * The drag input bindings that control tilting. Each binding is a combination of the mouse button
+     * and an optional keyboard modifier.
+     */
+    dragInputs: ScreenSpaceInputBindings.InputBinding[];
+    /**
+     * A callback function used to pick the world position around which to tilt or orbit. The function is called with {@link Scene}, the {@link Cartesian2} screen space position, and a {@link Cartesian3} instance to store the result. The function should return the {@link Cartesian3} world position from which to tilt or orbit, or <code>undefined</code> if no position could be picked.
+     * @example
+     * const tiltOrbitCameraController = new Cesium.ScreenSpaceTiltOrbitCameraController();
+     * tiltOrbitCameraController.pickWorldPosition = function (scene, windowPosition, result) {
+     *   // Pick the world position from the depth buffer
+     *   return scene.pickPosition(windowPosition, result);
+     * };
+     * viewer.addController(tiltOrbitCameraController);
+     */
+    pickWorldPosition: (...params: any[]) => any;
+    /**
+     * The amount at which the camera tilts per dragged pixel. A value of 1.0 means that dragging the mouse across the entire canvas will tilt the camera by 90 degrees.
+     */
+    tiltMagnitude: number;
+    /**
+     * Enables or disables damping for tilt and orbit animations. Damping smooths out the camera movement and makes it feel more natural or weighty, but it can also introduce a slight delay in the camera response. If damping is disabled, the camera will respond immediately to user input.
+     */
+    dampingEnabled: boolean;
+    /**
+     * Specifies the length of time in seconds in which a single tilt animation is targeted to complete.
+     */
+    tiltAnimationDuration: number;
+    /**
+     * The maximum tilt velocity in radians per second. A value of Number.POSITIVE_INFINITY means that the maximum tilt velocity is unbounded.
+     */
+    maximumTiltVelocity: number;
+    /**
+     * The amount at which the camera orbits per dragged pixel. A value of 1.0 means that dragging the mouse across the entire canvas will orbit the camera by 180 degrees.
+     */
+    orbitMagnitude: number;
+    /**
+     * Specifies the length of time in seconds in which a single orbit animation completes.
+     */
+    orbitAnimationDuration: number;
+    /**
+     * The maximum orbit velocity in radians per second. A value of Number.POSITIVE_INFINITY means that the maximum orbit velocity is unbounded.
+     */
+    maximumOrbitVelocity: number;
+    /**
+     * A parameter in the range <code>[0, 1)</code> used to limit the range
+     * of inputs to a percentage of the window width/height per animation frame.
+     * This helps keep the camera under control in low-frame-rate situations.
+     */
+    maximumMovementRatio: number;
+    /**
+     * Attempts to orbit the camera around the specified origin by the specified amount in radians. Positive values orbit the camera clockwise, negative values orbit the camera counterclockwise. If the drag origin is not on the ellipsoid, no orbit is applied.
+     * @param camera - The camera to orbit.
+     * @param target - The origin position to orbit around in world coordinates.
+     * @param axis - The axis to orbit around, typically the negative of the surface normal at the target position.
+     * @param amount - The amount to orbit the camera in radians. Positive values orbit the camera clockwise, negative values orbit the camera counterclockwise.
+     * @param dt - The time delta in seconds since the last update.
+     * @param [ellipsoid = Ellipsoid.default] - The ellipsoid to pick for the orbit origin. If undefined, the default ellipsoid is used.
+     */
+    orbit(camera: Camera, target: Cartesian3, axis: Cartesian3, amount: number, dt: number, ellipsoid?: Ellipsoid): void;
+    /**
+     * Attempts to tilt the camera by the specified amount in radians. Positive values tilt the camera down, negative values tilt the camera up. If the drag origin is not on the ellipsoid, no tilt is applied.
+     * @param camera - The camera to tilt.
+     * @param target - The origin position to tilt around in world coordinates.
+     * @param axis - The axis to tilt around, typically the negative of the surface normal at the target position.
+     * @param amount - The amount to tilt the camera in radians. Positive values tilt the camera down, negative values tilt the camera up.
+     * @param dt - The time delta in seconds since the last update. Value must be greater than 0.
+     * @param [ellipsoid = Ellipsoid.default] - The ellipsoid to pick for the tilt origin. If undefined, the default ellipsoid is used.
+     */
+    tilt(camera: Camera, target: Cartesian3, axis: Cartesian3, amount: number, dt: number, ellipsoid?: Ellipsoid): void;
+    /**
+     * Determines if the controller is enabled and should be updated by the host scene.
+     */
+    enabled: boolean;
+    /**
+     * Invoked when the controller is added to the DOM. Implement <code>connectedCallback</code> to set up any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    connectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked when the controller is removed from the DOM. Implement <code>disconnectedCallback</code> to tear down any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    disconnectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked once per frame. Implement <code>update</code> to modify the camera or other parts of the scene.
+     * @param time - The current simulation time.
+     */
+    update(scene: Scene, time: JulianDate): void;
+    /**
+     * Invoked when the controller is being updated the first time, immediately before <code>update</code> is called. Implement <code>firstUpdate</code> to perform one-time work after the relevant scene has begun its render loop. Some examples might include initializing simulation time values or adding a primitive to the scene.
+     * @param time - The current simulation time.
+     */
+    firstUpdate(scene: Scene, time: JulianDate): void;
+}
+
+export namespace ScreenSpaceZoomCameraController {
+    /**
+     * @property [dragInputs] - The drag input bindings that control zooming.
+     * @property [scrollInputs] - The scroll input bindings that control zooming.
+     */
+    type ControllerOptions = {
+        dragInputs?: ScreenSpaceInputBindings.InputBinding[];
+        scrollInputs?: ScreenSpaceEventType[];
+    };
+}
+
+export interface ScreenSpaceZoomCameraController extends Controller {
+}
+
+/**
+ * Creates a new instance of <code>ScreenSpaceZoomCameraController</code>.
+ * @example
+ * viewer.scene.screenSpaceCameraController.enableInputs = false;
+ * viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
+ *
+ * const zoomCameraController = new Cesium.ScreenSpaceZoomCameraController();
+ * viewer.addController(zoomCameraController);
+ * @param [options] - The options for configuring the controller.
+ */
+export class ScreenSpaceZoomCameraController implements Controller {
+    constructor(options?: ScreenSpaceZoomCameraController.ControllerOptions);
+    /**
+     * If false, the camera will zoom to the position at the center of the screen. If true, the camera will zoom to the position under the cursor or tap when dragging starts or when scrolling with the scroll wheel.
+     */
+    usePointerPosition: boolean;
+    /**
+     * The drag input bindings that control zooming. Each binding is a combination of the mouse button
+     * and an optional keyboard modifier.
+     */
+    dragInputs: ScreenSpaceInputBindings.InputBinding[];
+    /**
+     * The scroll input bindings that control zooming.
+     */
+    scrollInputs: ScreenSpaceEventType[];
+    /**
+     * The rate at which the camera zooms in and out based on the mouse wheel delta.
+     */
+    zoomSensitivity: number;
+    /**
+     * A callback function used to pick the world position from which to zoom. The function is called with {@link Scene}, the {@link Cartesian2} screen space position, and a {@link Cartesian3} instance to store the result. The function should return the {@link Cartesian3} world position from which to zoom, or <code>undefined</code> if no position could be picked.
+     * @example
+     * const zoomCameraController = new Cesium.ScreenSpaceZoomCameraController();
+     * zoomCameraController.pickWorldPosition = function (scene, windowPosition, result) {
+     *   // Pick the world position from the depth buffer
+     *   return scene.pickPosition(windowPosition, result);
+     * };
+     * viewer.addController(zoomCameraController);
+     */
+    pickWorldPosition: (...params: any[]) => any;
+    /**
+     * The ratio of the camera's distance to the zoom target that defines how much the camera zooms in and out per second.
+     */
+    zoomDistanceRatio: number;
+    /**
+     * Enable or disable inertia when zooming. When enabled, the camera will continue to move after the user input stops, gradually slowing down based on {@link ScreenSpaceZoomCameraController#inertialDecay}.
+     */
+    inertiaEnabled: boolean;
+    /**
+     * The rate at which the camera's zoom velocity decays over time.
+     */
+    inertialDecay: number;
+    /**
+     * Maximum distance from the zoom target that the camera can move away.
+     */
+    maximumZoomDistance: number;
+    /**
+     * The maximum zoom velocity in meters per second. This limits the speed at which the camera can zoom in and out.
+     */
+    maximumZoomVelocity: number;
+    /**
+     * Enables or disables damping for zooming. Damping smooths out the camera movement and makes it feel more natural or weighty, but it can also introduce a slight delay in the camera response. If damping is disabled, the camera will respond immediately to user input.
+     */
+    dampingEnabled: boolean;
+    /**
+     * Specifies the length of time in seconds in which a single zoom animation is targeted to complete.
+     */
+    zoomAnimationDuration: number;
+    /**
+     * Determines if the controller is enabled and should be updated by the host scene.
+     */
+    enabled: boolean;
+    /**
+     * Invoked when the controller is added to the DOM. Implement <code>connectedCallback</code> to set up any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    connectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked when the controller is removed from the DOM. Implement <code>disconnectedCallback</code> to tear down any DOM event listeners.
+     * @param element - The DOM element containing the Cesium scene.
+     */
+    disconnectedCallback(element: HTMLElement): void;
+    /**
+     * Invoked once per frame. Implement <code>update</code> to modify the camera or other parts of the scene.
+     * @param time - The current simulation time.
+     */
+    update(scene: Scene, time: JulianDate): void;
+    /**
+     * Invoked when the controller is being updated the first time, immediately before <code>update</code> is called. Implement <code>firstUpdate</code> to perform one-time work after the relevant scene has begun its render loop. Some examples might include initializing simulation time values or adding a primitive to the scene.
+     * @param time - The current simulation time.
+     */
+    firstUpdate(scene: Scene, time: JulianDate): void;
 }
 
 /**
@@ -33977,6 +35070,11 @@ export class GaussianSplat3DTileContent implements Cesium3DTileContent {
     getFeature(batchId: number): Cesium3DTileFeature;
 }
 
+/**
+ * @property [heightReference = HeightReference.NONE] - Allows clamping (draping)
+ *  polylines and polygons on terrain and 3D Tiles. Point clamping is not currently supported.
+ * @property [scene] - Required for primitives that use a clamping {@link HeightReference}.
+ */
 export type GeoJsonPrimitiveConstructorOptions = {
     geoJson?: any;
     url?: Resource | string;
@@ -33984,6 +35082,8 @@ export type GeoJsonPrimitiveConstructorOptions = {
     allowPicking?: boolean;
     show?: boolean;
     pickObjectFactory?: (...params: any[]) => any;
+    heightReference?: HeightReference;
+    scene?: Scene;
 };
 
 /**
@@ -33995,14 +35095,33 @@ export type GeoJsonPrimitiveConstructorOptions = {
  * Instead, it exposes high-throughput buffer primitive collections that can be
  * added directly to {@link Scene#primitives}.
  * @example
+ * // Load GeoJSON
  * const loader = await Cesium.GeoJsonPrimitive.fromUrl("./data.geojson");
  * viewer.scene.primitives.add(loader);
- *
+ * @example
+ * // Access GeoJSON features and properties
  * loader.points;     // BufferPointCollection | undefined
  * loader.polylines;  // BufferPolylineCollection | undefined
  * loader.polygons;   // BufferPolygonCollection | undefined
  * loader.ids;        // source feature IDs
  * loader.properties; // source feature properties
+ * @example
+ * // Style GeoJSON
+ * const material = new Cesium.BufferPolylineMaterial({
+ *   color: Cesium.Color.RED,
+ *   width: 4,
+ * });
+ *
+ * const polyline = new Cesium.BufferPolyline();
+ * const count = primitive.polylines.primitiveCount;
+ * for (let i = 0; i < count; i++) {
+ *   primitive.polylines.get(i, polyline);
+ *
+ *   const properties = primitive.getProperties(polyline.featureId);
+ *   if (properties.myCustomProperty === true) {
+ *     polyline.setMaterial(material);
+ *   }
+ * }
  */
 export class GeoJsonPrimitive {
     constructor(options?: GeoJsonPrimitiveConstructorOptions);
@@ -35662,7 +36781,7 @@ export enum HeightReference {
      */
     RELATIVE_TO_GROUND = 2,
     /**
-     * The position is clamped to terain.
+     * The position is clamped to terrain.
      */
     CLAMP_TO_TERRAIN = 3,
     /**
@@ -37057,10 +38176,9 @@ export namespace IonImageryProvider {
  * @example
  * const imageryLayer = Cesium.ImageryLayer.fromProviderAsync(Cesium.IonImageryProvider.fromAssetId(3812));
  * viewer.imageryLayers.add(imageryLayer);
- * @param [options] - Object describing initialization options
  */
 export class IonImageryProvider {
-    constructor(options?: IonImageryProvider.ConstructorOptions);
+    constructor();
     /**
      * Gets the rectangle, in radians, of the imagery provided by the instance.
      */
@@ -37758,7 +38876,7 @@ export class Light {
  * This object is normally not instantiated directly, use {@link MVTDataProvider.fromUrl}.
  * </div>
  */
-export class MVTDataProvider {
+export class MVTDataProvider extends UrlTemplate3DTilesDataProvider {
     /**
      * Creates an MVTDataProvider from the specified URL template and options.
      * @param url - URL template, containing {z}, {x}, and {y} placeholders.
@@ -37767,13 +38885,21 @@ export class MVTDataProvider {
      * @param [options.maxZoom = 14] - Maximum zoom level represented in the generated tileset.
      * @param [options.extent] - Optional geographic extent in radians to constrain the generated tile tree.
      * @param [options.featureIdProperty] - MVT property name to use as feature ID.
+     * @param [options.heightReference] - Drapes the decoded points, lines and polygons onto the
+     *   surfaces selected by the value: {@link HeightReference.CLAMP_TO_TERRAIN} drapes onto the globe,
+     *   {@link HeightReference.CLAMP_TO_3D_TILE} drapes onto 3D Tiles and models, and
+     *   {@link HeightReference.CLAMP_TO_GROUND} drapes onto both. Requires <code>options.scene</code>.
+     * @param [options.scene] - The scene the generated tileset is rendered in, required when
+     *   <code>options.heightReference</code> is a clamping value.
      */
     static fromUrl(url: Resource | string, options?: {
         minZoom?: number;
         maxZoom?: number;
         extent?: Rectangle;
         featureIdProperty?: string;
-    }): void;
+        heightReference?: HeightReference;
+        scene?: Scene;
+    }): Promise<MVTDataProvider>;
 }
 
 /**
@@ -39605,7 +40731,7 @@ export enum LightingModel {
  *  {@link https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Vendor/EXT_mesh_gpu_instancing|EXT_mesh_gpu_instancing}
  *  </li>
  *  <li>
- *  {@link https://github.com/KhronosGroup/glTF/pull/2514|EXT_mesh_primitive_restart}
+ *  {@link https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Vendor/EXT_mesh_primitive_restart|EXT_mesh_primitive_restart}
  *  </li>
  *  <li>
  *  {@link https://github.com/KhronosGroup/glTF/pull/2479|EXT_mesh_primitive_edge_visibility}
@@ -39635,6 +40761,10 @@ export enum LightingModel {
  *  </li>
  *  <li>
  *  {@link https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_unlit/README.md|KHR_materials_unlit}
+ *  </li>
+ *  <li>
+ *  {@link https://github.com/KhronosGroup/glTF/pull/2569|KHR_mesh_primitive_restart}
+ *  (requires a WebGL 2 context; behavior on WebGL 1 is undefined)
  *  </li>
  *  <li>
  *  {@link https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_mesh_quantization|KHR_mesh_quantization}
@@ -43635,6 +44765,16 @@ export class Scene {
      */
     readonly camera: Camera;
     /**
+     * Collects an array of <code>Controller</code> objects that can be registered with the scene to handle input events, camera animations, and other interactions.
+     * @example
+     * scene.screenSpaceCameraController.enableInputs = false;
+     * scene.screenSpaceCameraController.enableCollisionDetection = false;
+     *
+     * const tiltOrbitController = new Cesium.ScreenSpaceTiltOrbitCameraController();
+     * scene.controllerHost.registerController(tiltOrbitController, scene.canvas.parentNode);
+     */
+    readonly controllerHost: ControllerHost;
+    /**
      * Gets the controller for camera input handling.
      */
     readonly screenSpaceCameraController: ScreenSpaceCameraController;
@@ -43805,6 +44945,27 @@ export class Scene {
      * @returns Object containing the picked primitive or <code>undefined</code> if nothing is at the location.
      */
     pick(windowPosition: Cartesian2, width?: number, height?: number): any | undefined;
+    /**
+     * Returns the best snap target in a screen-space region around <code>windowPosition</code>.
+     * Edges are preferred over surfaces; among hits of the same kind the one
+     * nearest the cursor wins. Returns <code>undefined</code> if the region contains
+     * no snappable geometry.
+     * <p>
+     * Only primitives rendered through the Model pipeline (e.g. 3D Tiles and glTF
+     * models) are snappable. Snapping requires float color attachments
+     * (WebGL2 with <code>EXT_color_buffer_float</code>); if unsupported, this
+     * function returns <code>undefined</code>.
+     * </p>
+     * @param windowPosition - Window coordinates at the center of the search region.
+     * @param [options] - Object with the following properties:
+     * @param [options.width = 25] - Width of the search region in pixels.
+     * @param [options.height = options.width] - Height of the search region in pixels.
+     * @returns The best snap target in the region, or <code>undefined</code> if there is none.
+     */
+    snap(windowPosition: Cartesian2, options?: {
+        width?: number;
+        height?: number;
+    }): SceneSnapResult | undefined;
     /**
      * Performs the same operation as Scene.pick but asynchonosly without blocking the main render thread.
      * Requires WebGL2 else using fallback.
@@ -44043,6 +45204,22 @@ export class Scene {
      */
     destroy(): void;
 }
+
+/**
+ * The result of a snap operation. See {@link Scene#snap}.
+ * @property object - The snapped primitive or feature.
+ * @property position - The world-space position of the snap point, un-projected from the snap framebuffer's eye-space depth.
+ * @property surfacePosition - The world-space position of the same object's surface fragment nearest the snap point. For a surface snap this equals <code>position</code>; for an edge snap it is a point on a face of the object rather than on its silhouette, or <code>undefined</code> if no surface fragment of the object is visible in the search region.
+ * @property screenPosition - The window coordinates of the snap point.
+ * @property isEdge - <code>true</code> if the snap point lies on an edge; <code>false</code> if it lies on a surface.
+ */
+export type SceneSnapResult = {
+    object: any;
+    position: Cartesian3;
+    surfacePosition: Cartesian3 | undefined;
+    screenPosition: Cartesian2;
+    isEdge: boolean;
+};
 
 /**
  * Indicates if the scene is viewed in 3D, 2D, or 2.5D Columbus view.
@@ -45440,6 +46617,66 @@ export enum Tonemapper {
     PBR_NEUTRAL = "PBR_NEUTRAL"
 }
 
+/**
+ * Base provider for URL-template vector sources that are rendered through a
+ * runtime-generated 3D Tiles tileset.
+ * @param urlTemplate - URL template containing {z}, {x}, and {y} placeholders.
+ * @param [options] - Provider options.
+ * @param [options.minZoom = 0] - Minimum zoom level represented in the generated tileset.
+ * @param [options.maxZoom = 14] - Maximum zoom level represented in the generated tileset.
+ * @param [options.extent] - Optional geographic extent in radians to constrain the generated tile tree.
+ * @param [options.featureIdProperty] - Feature property name to use as feature ID when supported by content decoding.
+ * @param [options.heightReference] - Drapes the vector content onto the surfaces selected by the
+ *   value. Requires <code>options.scene</code>.
+ * @param [options.scene] - The scene the generated tileset is rendered in, required when
+ *   <code>options.heightReference</code> is a clamping value.
+ */
+export class UrlTemplate3DTilesDataProvider {
+    constructor(urlTemplate: Resource | string, options?: {
+        minZoom?: number;
+        maxZoom?: number;
+        extent?: Rectangle;
+        featureIdProperty?: string;
+        heightReference?: HeightReference;
+        scene?: Scene;
+    });
+    /**
+     * Creates a provider from a URL template.
+     * @param url - URL template containing {z}, {x}, and {y} placeholders.
+     * @param [options] - Provider options.
+     */
+    static fromUrl(url: Resource | string, options?: any): Promise<UrlTemplate3DTilesDataProvider>;
+    /**
+     * URL template containing {z}/{x}/{y}.
+     */
+    readonly urlTemplate: string;
+    /**
+     * Resource derived from the URL template.
+     */
+    readonly resource: Resource;
+    /**
+     * Optional geographic extent in radians used to generate tile headers.
+     */
+    readonly extent: Rectangle | undefined;
+    /**
+     * Backing 3D Tileset.
+     */
+    readonly tileset: Cesium3DTileset | undefined;
+    /**
+     * Determines if the generated tileset is shown.
+     */
+    show: boolean;
+    protected _createRuntimeTilesetOptions(): void;
+    protected _createTilesetLoadOptions(): any;
+    protected _configureTileset(_tileset: Cesium3DTileset): void;
+    /**
+     * Subclasses must return a runtime content codec describing how to turn
+     * a downloaded tile payload into a {@link Cesium3DTileContent}. See
+     * {@link Cesium3DTileset#_runtimeContentCodec} for the expected shape.
+     */
+    protected _createCodec(): any;
+}
+
 export namespace UrlTemplateImageryProvider {
     /**
      * Initialization options for the UrlTemplateImageryProvider constructor
@@ -46288,7 +47525,10 @@ export namespace WebMapServiceImageryProvider {
      * @property [getFeatureInfoParameters = WebMapServiceImageryProvider.GetFeatureInfoDefaultParameters] - Additional parameters to pass to the WMS server in the GetFeatureInfo URL.
      * @property [getFeatureInfoUrl] - The getFeatureInfo URL of the WMS service. If the property is not defined then we use the property value of url.
      * @property [getFeatureInfoFormats = WebMapServiceImageryProvider.DefaultGetFeatureInfoFormats] - The formats
-     *        in which to try WMS GetFeatureInfo requests.
+     *        in which to try WMS GetFeatureInfo requests. Since feature info responses vary across WMS services,
+     *        you may need to supply a custom format and parsing callback; see the
+     *        {@link https://sandcastle.cesium.com/?id=web-map-tile-service-picking|Sandcastle example} for a complete
+     *        example of writing your own callback.
      * @property [rectangle = Rectangle.MAX_VALUE] - The rectangle of the layer.
      * @property [tilingScheme = new GeographicTilingScheme()] - The tiling scheme to use to divide the world into tiles.
      * @property [ellipsoid] - The ellipsoid.  If the tilingScheme is specified,
@@ -46499,7 +47739,10 @@ export namespace WebMapTileServiceImageryProvider {
      * @property [getFeatureInfoParameters] - Additional parameters to include in GetFeatureInfo requests. Keys are lowercased internally.
      * @property [getFeatureInfoUrl] - The GetFeatureInfo URL of the WMTS service. If not specified, the value of <code>url</code> is used.
      * @property [getFeatureInfoFormats = WebMapTileServiceImageryProvider.DefaultGetFeatureInfoFormats] - The formats
-     *                          in which to try WMTS GetFeatureInfo requests.
+     *                          in which to try WMTS GetFeatureInfo requests. Since feature info responses vary across WMTS services,
+     *                          you may need to supply a custom format and parsing callback; see the
+     *                          {@link https://sandcastle.cesium.com/?id=web-map-tile-service-picking|Sandcastle example} for a complete
+     *                          example of writing your own callback.
      * @property [rectangle = Rectangle.MAX_VALUE] - The rectangle covered by the layer.
      * @property [tilingScheme] - The tiling scheme corresponding to the organization of the tiles in the TileMatrixSet.
      * @property [ellipsoid] - The ellipsoid.  If not specified, the WGS84 ellipsoid is used.
@@ -47234,6 +48477,24 @@ export class CesiumWidget {
      * unless <code>useDefaultRenderLoop</code> is set to false;
      */
     render(): void;
+    /**
+     * Adds a controller— an implementation of the {@link Controller} interface used to handle input events, camera animations, and other interactions— to the widget's scene.
+     * @example
+     * widget.scene.screenSpaceCameraController.enableInputs = false;
+     * widget.scene.screenSpaceCameraController.enableCollisionDetection = false;
+     *
+     * const tiltOrbitController = new Cesium.ScreenSpaceTiltOrbitCameraController();
+     * widget.addController(tiltOrbitController);
+     * @param controller - An implementation of the <code>Controller</code> interface.
+     */
+    addController(controller: Controller): void;
+    /**
+     * Removes a controller— an implementation of the {@link Controller}  interface used to handle input events, camera animations, and other interactions— from the widget's scene.
+     * @example
+     * widget.removeController(tiltOrbitController);
+     * @param controller - An implementation of the <code>Controller</code> interface.
+     */
+    removeController(controller: Controller): void;
     /**
      * Asynchronously sets the camera to view the provided entity, entities, or data source.
      * If the data source is still in the process of loading or the visualization is otherwise still loading,
@@ -48524,11 +49785,6 @@ export class GeocoderViewModel {
      */
     suggestions: object[];
     /**
-     * Destroys the widget.  Should be called if permanently
-     * removing the widget from layout.
-     */
-    destroy(): void;
-    /**
      * A function to fly to the destination found by a successful geocode.
      */
     static flyToDestination: Geocoder.DestinationFoundFunction;
@@ -49650,6 +50906,24 @@ export class Viewer {
      * removing the widget from layout.
      */
     destroy(): void;
+    /**
+     * Adds a controller— an implementation of the {@link Controller} interface used to handle input events, camera animations, and other interactions— to the viewer's scene.
+     * @example
+     * viewer.scene.screenSpaceCameraController.enableInputs = false;
+     * viewer.scene.screenSpaceCameraController.enableCollisionDetection = false;
+     *
+     * const tiltOrbitController = new Cesium.ScreenSpaceTiltOrbitCameraController();
+     * viewer.addController(tiltOrbitController);
+     * @param controller - An implementation of the <code>Controller</code> interface.
+     */
+    addController(controller: Controller): void;
+    /**
+     * Removes a controller— an implementation of the {@link Controller} interface used to handle input events, camera animations, and other interactions— from the viewer's scene.
+     * @example
+     * viewer.removeController(tiltOrbitController);
+     * @param controller - An implementation of the <code>Controller</code> interface.
+     */
+    removeController(controller: Controller): void;
     /**
      * Asynchronously sets the camera to view the provided entity, entities, or data source.
      * If the data source is still in the process of loading or the visualization is otherwise still loading,
