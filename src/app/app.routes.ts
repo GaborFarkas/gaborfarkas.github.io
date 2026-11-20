@@ -22,6 +22,7 @@ export const routes: Routes = [
             { path: PageUrlMapping.PUBLICATIONS, loadComponent: () => import('@/company/publications/publications.page').then(m => m.PublicationsPage) },
             { path: PageUrlMapping.PARTNERSHIP, loadComponent: () => import('@/company/partnership/partnership.page').then(m => m.PartnershipPage) },
             { path: PageUrlMapping.COUNSELING, loadComponent: () => import('@/company/counseling/counseling.page').then(m => m.CounselingPage) },
+            { path: PageUrlMapping.PLATFORMSTARTER, loadComponent: () => import('@/company/products/platform-starter/platform-starter.page').then(m => m.PlatformStarterPage) },
             { path: PageUrlMapping.INSIGHTS, loadComponent: () => import('@/stories/stories.page').then(m => m.StoriesPage) },
             { path: PageUrlMapping.CASESTUDIES, loadComponent: () => import('@/stories/stories.page').then(m => m.StoriesPage) },
             { path: PageUrlMapping.FEATUREMATRIX, loadComponent: () => import('@/web-mapping/feature-matrix/feature-matrix.page').then(m => m.FeatureMatrixPage) },

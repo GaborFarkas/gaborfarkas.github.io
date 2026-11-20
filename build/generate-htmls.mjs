@@ -26,6 +26,12 @@ const configJson = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         category: 'home'
     });
 });
+['platform-starter'].forEach(slug => {
+    generateHtmlFile({
+        slug: path.join('products', slug),
+        category: 'home'
+    });
+});
 ['feature-matrix', 'sandbox'].forEach(slug => {
     generateHtmlFile({
         slug: path.join('web-mapping', slug),

@@ -5,7 +5,6 @@ import { Component } from '@angular/core';
  */
 @Component({
     selector: 'publications-page',
-    standalone: true,
     templateUrl: './publications.page.html'
 })
 export class PublicationsPage { }

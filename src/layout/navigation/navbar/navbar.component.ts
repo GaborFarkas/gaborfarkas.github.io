@@ -46,6 +46,12 @@ export class NavbarComponent {
             ]
         },
         {
+            label: 'Products',
+            items: [
+                { label: 'Platform starter', url: `/${PageUrlMapping.PLATFORMSTARTER}` }
+            ]
+        },
+        {
             label: 'About',
             items: [
                 { label: 'About me', url: `/${PageUrlMapping.ABOUT}` },
