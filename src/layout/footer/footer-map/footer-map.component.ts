@@ -1,8 +1,7 @@
-import { AfterViewInit, Component, ElementRef, viewChild } from '@angular/core';
-import { AttributionControl, FullscreenControl, Map as MaplibreMap, StyleSpecification, TerrainControl } from 'maplibre-gl';
-import { environment } from '@/environments/environment';
+import { AfterViewInit, Component, ElementRef, OnInit, viewChild } from '@angular/core';
+import { AttributionControl, FullscreenControl, Map as MaplibreMap, setWorkerUrl, StyleSpecification, TerrainControl } from 'maplibre-gl';
 import BuildingControl from '@/layout/footer/maplibregl/BuildingControl';
-import LayerToggleControl from '@/layout/footer/maplibregl/LayerToggleControl';
+import LayerToggleControl, { LayerSwitchEvent } from '@/layout/footer/maplibregl/LayerToggleControl';
 
 /**
  * Footer map module component.
@@ -12,7 +11,7 @@ import LayerToggleControl from '@/layout/footer/maplibregl/LayerToggleControl';
     standalone: true,
     templateUrl: './footer-map.component.html'
 })
-export class FooterMapComponent implements AfterViewInit {
+export class FooterMapComponent implements AfterViewInit, OnInit {
     /**
      * The HTML element for the map canvas.
      */
@@ -39,6 +38,13 @@ export class FooterMapComponent implements AfterViewInit {
     private baseMapLayers = new Map<BaseMapStyle, string[]>();
 
     /**
+     * Sets the Maplibre GL JS worker script's URL.
+     */
+    ngOnInit(): void {
+        setWorkerUrl(new URL('assets/maplibre/maplibre-gl-worker.mjs', document.baseURI).href);
+    }
+
+    /**
      * Loads the base map with a simple artistic style and positions it to Pécs.
      */
     ngAfterViewInit(): void {
@@ -48,7 +54,8 @@ export class FooterMapComponent implements AfterViewInit {
             style: 'https://tiles.stadiamaps.com/styles/stamen_watercolor.json',
             center: { lat: 46.0756, lng: 18.2210 },
             zoom: 12,
-            attributionControl: false
+            attributionControl: false,
+            canvasContextAttributes: {antialias: true}
         });
 
         const attribCtrl = new AttributionControl({
@@ -108,12 +115,11 @@ export class FooterMapComponent implements AfterViewInit {
         // Add sources and layers for DEM and 3D building extrusions (NOTE: flat roofs only).
         this.map.addSource('buildings-vector', {
             type: 'vector',
-            url: `https://api.maptiler.com/tiles/v3/tiles.json?key=${environment.mapTilerApiKey}`
+            url: 'https://tiles.openfreemap.org/planet'
         });
         this.map.addSource('terrainSrc', {
             type: 'raster-dem',
-            url: `https://api.maptiler.com/tiles/terrain-rgb/tiles.json?key=${environment.mapTilerApiKey}`,
-            tileSize: 256
+            url: 'https://tiles.mapterhorn.com/tilejson.json'
         });
 
         this.map.setTerrain({
@@ -156,7 +162,7 @@ export class FooterMapComponent implements AfterViewInit {
         this.baseMapLayers.set(BaseMapStyle.PRECISE, []);
 
         // Prepare a new topographic style to choose as base map.
-        this.map.setStyle(`https://api.maptiler.com/maps/basic-v2/style.json?key=${environment.mapTilerApiKey}`, {
+        this.map.setStyle('https://tiles.openfreemap.org/styles/bright', {
             transformStyle: function (this: FooterMapComponent, prevStyle: StyleSpecification|undefined, nextStyle: StyleSpecification) {
                 return {
                     ...nextStyle,
@@ -192,7 +198,7 @@ export class FooterMapComponent implements AfterViewInit {
         const togglerControl = new LayerToggleControl({
             layers: [BaseMapStyle.ARTISTIC, BaseMapStyle.PRECISE]
         });
-        togglerControl.on('layerswitch', function (this: FooterMapComponent, evt: LayerToggleEvent) {
+        togglerControl.on('layerswitch', function (this: FooterMapComponent, evt: LayerSwitchEvent) {
             for (const lyrGroup of this.baseMapLayers) {
                 // Set visibility for every layer in the layer group
                 for (const lyr of lyrGroup[1]) {
@@ -212,14 +218,4 @@ enum BaseMapStyle {
     ARTISTIC = 'watercolor',
     /** MapTiler vector tiles */
     PRECISE = 'topographic'
-}
-
-/**
- * Event object for the layer toggler's toggle event.
- */
-interface LayerToggleEvent {
-    /**
-     * The currently selected layer.
-     */
-    layer: string
 }

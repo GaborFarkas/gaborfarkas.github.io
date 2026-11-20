@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, input, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, input, OnInit, viewChild } from '@angular/core';
 import * as Maplibre from 'maplibre-gl';
 import { WebMap } from '@/web-mapping/map/web-map.model';
 import { FeatureSupportFeature } from '@/web-mapping/feature-matrix/feature-support.model';
@@ -13,7 +13,7 @@ type MaplibreExampleFunc = (this: Maplibre.Map, maplibregl: typeof Maplibre, map
     standalone: true,
     templateUrl: './maplibre-map.component.html'
 })
-export class MaplibreMapComponent implements AfterViewInit, WebMap {
+export class MaplibreMapComponent implements OnInit, AfterViewInit, WebMap {
     /**
      * The HTML element for the map canvas.
      */
@@ -27,6 +27,13 @@ export class MaplibreMapComponent implements AfterViewInit, WebMap {
     public example = input<string>();
 
     public exposePlay = input(false);
+
+    /**
+     * Sets the Maplibre GL JS worker script's URL.
+     */
+    ngOnInit(): void {
+        Maplibre.setWorkerUrl(new URL('assets/maplibre/maplibre-gl-worker.mjs', document.baseURI).href);
+    }
 
     /**
      * Loads the base map with a simple style and positions it to Pécs.

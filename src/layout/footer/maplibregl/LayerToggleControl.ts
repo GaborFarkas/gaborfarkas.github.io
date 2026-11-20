@@ -1,9 +1,9 @@
-import { Evented, IControl } from "maplibre-gl";
+import { Event as MaplibreEvent, Evented, IControl } from "maplibre-gl";
 
 /**
  * MapLibreGL 3D layer toggler control.
  */
-export default class LayerToggleControl extends Evented implements IControl {
+export default class LayerToggleControl extends Evented<LayerToggleEventType> implements IControl {
     /**
      * The control's button element.
      */
@@ -76,4 +76,30 @@ interface LayerToggleControlOptions {
      * The currently selected layer. Defaults to the first one.
      */
     selected?: string
+}
+
+/**
+ * Event type for the layer toggler control.
+ */
+type LayerToggleEventType = {
+    /**
+     * The currently selected layer.
+     */
+    layerswitch: LayerSwitchEvent
+}
+
+/**
+ * Event object for the layer toggler's toggle event.
+ */
+export class LayerSwitchEvent extends MaplibreEvent {
+    /**
+     * The currently selected layer.
+     */
+    layer: string;
+
+    constructor(type: string, layer: string) {
+        super(type);
+
+        this.layer = layer;
+    }
 }
